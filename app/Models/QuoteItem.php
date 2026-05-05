@@ -102,14 +102,13 @@ class QuoteItem extends Model
         $this->refresh();
         $price = $this->original_price;
 
-        $price_line = format_currency(($price * (1 - ($this->discount / 100))));
-        $price = $price_line;
+        $price_line = $price * (1 - ($this->discount / 100));
 
         $this->price = $price_line;
         $this->margin = $this->price - $this->raw_price;
-        $this->total = format_currency($this->price * $this->quantity * $this->contract_length);
-        $this->total_tax = format_currency($this->total * ($this->tax / 100));
-        $this->total_gross = format_currency($this->total * (($this->tax / 100) + 1));
+        $this->total = $this->price * $this->quantity * $this->contract_length;
+        $this->total_tax = $this->total * ($this->tax / 100);
+        $this->total_gross = $this->total * (($this->tax / 100) + 1);
     }
 
     public function isWithinMarginThresholds(): bool

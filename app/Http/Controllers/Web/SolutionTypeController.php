@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Enums\CalculatorLayoutsEnum;
 use App\Enums\CloudMarketSuppliersEnum;
-use App\Enums\TablesEnum;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\SolutionTypeCreateRequest;
 use App\Http\Requests\SolutionTypeUpdateRequest;
@@ -38,8 +36,6 @@ class SolutionTypeController extends BaseController
     {
         return Inertia::render('SolutionTypes/Create', [
             'solutions' => SolutionTypeResource::collection(SolutionType::all())->resolve(),
-            'available_tables' => TablesEnum::cases(),
-            'calculator_layouts' => CalculatorLayoutsEnum::asArray(),
         ]);
     }
 
@@ -70,15 +66,9 @@ class SolutionTypeController extends BaseController
      */
     public function edit(SolutionType $solutionType)
     {
-
-        $columns = require app_path('Helpers/Tables/Custom.php');
-
         return Inertia::render('SolutionTypes/Edit', [
             'solution_type' => (new SolutionTypeResource($solutionType))->resolve(),
-            'available_tables' => TablesEnum::cases(),
-            'available_columns' => $columns,
             'suppliers' => CloudMarketSuppliersEnum::asArray(),
-            'calculator_layouts' => CalculatorLayoutsEnum::asArray(),
         ]);
     }
 

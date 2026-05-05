@@ -51,32 +51,37 @@ const styles = {
 };
 </script>
 <template>
-    <ul style="margin: 0; padding: 5px 0; list-style: none" v-if="!!drillDown.length">
-        <li class="me-1 border-1 mb-1">
-            <div class="btn btn-category d-flex justify-content-between py-1" @click="rollback(null)">
-                <p class="m-0">All</p>
-            </div>
-        </li>
-        <li v-for="(item, index) in drillDown" class="me-1 border-1 mb-1" @click="rollback(item)">
-            <div
-                class="btn btn-category d-flex justify-content-between py-1"
-                :class="[drillDown.length == index + 1 ? 'btn-category-current' : '']"
-                @click="rollback(item)"
-            >
-                <p class="m-0">{{ item.name }}</p>
-            </div>
-        </li>
-    </ul>
-    <ul style="padding: 0; list-style: none" :style="styles[props.level]">
-        <template v-for="category in categories.filter((x) => x.parent_id == proxyValue?.id)">
-            <li>
-                <div class="btn btn-light d-flex justify-content-between pointer" @click="selectCategory(category)">
-                    <p class="m-0 text-left">{{ category.name }}</p>
-                    <div class="" v-if="categories.find((x) => x.parent_id == category.id)">
-                        <font-awesome-icon :icon="['fas', 'arrow-right']" />
-                    </div>
+    <div class="d-flex">
+        <ul style="margin: 0; padding: 5px 0; list-style: none" v-if="!!drillDown.length" class="d-flex">
+            <li class="me-1 border-1 mb-1">
+                <div class="btn btn-category d-flex justify-content-between py-1" @click="rollback(null)">
+                    <p class="m-0">All</p>
                 </div>
             </li>
-        </template>
-    </ul>
+            <li v-for="(item, index) in drillDown" class="me-1 border-1 mb-1" @click="rollback(item)">
+                <div
+                    class="btn btn-category d-flex justify-content-between py-1"
+                    :class="[drillDown.length == index + 1 ? 'btn-category-current' : '']"
+                    @click="rollback(item)"
+                >
+                    <p class="m-0">{{ item.name }}</p>
+                </div>
+            </li>
+        </ul>
+        <ul style="margin: 0; padding: 5px 0; list-style: none" :style="styles[props.level]" class="d-flex">
+            <template v-for="category in categories.filter((x) => x.parent_id == proxyValue?.id)">
+                <li class="me-1 border-1 mb-1">
+                    <div
+                        class="btn btn-light d-flex justify-content-between pointer py-1"
+                        @click="selectCategory(category)"
+                    >
+                        <p class="m-0 text-left">{{ category.name }}</p>
+                        <div class="" v-if="categories.find((x) => x.parent_id == category.id)">
+                            <font-awesome-icon class="ps-2" :icon="['fas', 'arrow-right']" />
+                        </div>
+                    </div>
+                </li>
+            </template>
+        </ul>
+    </div>
 </template>

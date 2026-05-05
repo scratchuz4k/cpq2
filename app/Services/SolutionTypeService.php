@@ -50,20 +50,6 @@ class SolutionTypeService
             }
         }
 
-        if (array_key_exists('tables', $array)) {
-            $olderItems = collect($solution_type->tables);
-            foreach ($array['tables'] as $table) {
-                $table = $solution_type->tables()->updateOrCreate([
-                    'code' => $table['code'],
-                ], [
-                    'group' => $table['group'] ?? null,
-                    'group_name' => $table['group_name'] ?? null,
-                    'columns' => $table['columns'],
-                ]);
-                $olderItems = $olderItems->reject(fn ($temp) => $temp->id === $table->id);
-            }
-        }
-
         if (
             array_key_exists('configurations', $array)
             && is_array($array['configurations'])

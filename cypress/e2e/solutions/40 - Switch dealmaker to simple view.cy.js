@@ -8,24 +8,16 @@ describe('Creates a Mobile Quote', () => {
         cy.login('companyadmin@example.com', 'werwerwer');
     });
 
-    it('Formats connectivity table to simple view', () => {
+    it('Formats solution types table to simple view (tenant settings)', () => {
         cy.visit('/quotes');
         cy.get('#settings').click();
-        cy.get('#link-solutions').click();
-        cy.get('#datatable-search').type('Connectivity');
-        cy.wait(1000);
-        cy.get('#datatable-btn-0-edit').click();
-        cy.get('#2-2').click();
-        cy.get('#solution_type-component').click();
-        cy.wait(500);
-        cy.get('.p-select-list-container')
-            .eq(0)
-            .within(() => {
-                cy.get('li[aria-label="Simple"]').should('exist').click();
-            });
+        cy.get('#link-tenant').click();
+        cy.get('#1-1').click();
 
-        cy.get('#btn-save-solution-type').click();
-        cy.get('.notyf').contains('Updated with Success');
+        cy.selectOption('#solution-type-component', 'Simple');
+        cy.wait(1000);
+
+        cy.get('.notyf').contains('Content updated successfully');
     });
 
     it('Creates Connectivity quote and has simple Table', () => {
@@ -90,27 +82,23 @@ describe('Creates a Mobile Quote', () => {
         cy.get('#table-simple > thead').contains('Months');
         cy.get('#table-simple > thead').contains('Price');
         cy.get('#table-simple > thead').contains('Total');
+
+        cy.get('.commission-calculator').should('not.exist');
     });
-    it('Formats connectivity table to DealMaker view', () => {
+
+    it('Formats solution types table to DealMaker view (tenant settings)', () => {
         cy.visit('/quotes');
         cy.get('#settings').click();
-        cy.get('#link-solutions').click();
-        cy.get('#datatable-search').type('Connectivity');
-        cy.wait(1000);
-        cy.get('#datatable-btn-0-edit').click();
-        cy.get('#2-2').click();
-        cy.get('#solution_type-component').click();
-        cy.wait(500);
-        cy.get('.p-select-list-container')
-            .eq(0)
-            .within(() => {
-                cy.contains('li', 'DealMaker').should('exist').click();
-            });
+        cy.get('#link-tenant').click();
+        cy.get('#1-1').click();
 
-        cy.get('#btn-save-solution-type').click();
-        cy.get('.notyf').contains('Updated with Success');
+        cy.selectOption('#solution-type-component', 'DealMaker');
+        cy.wait(1000);
+
+        cy.get('.notyf').contains('Content updated successfully');
     });
-    it('Creates Connectivity quote and has DealMaker Table', () => {
+
+    it('Check Connectivity quote and has DealMaker Table', () => {
         cy.visit('/quotes');
         cy.get('#datatable-btn-0-show').click();
 
@@ -122,5 +110,7 @@ describe('Creates a Mobile Quote', () => {
         cy.get('#table-recurring > thead').contains('Margin');
         cy.get('#table-recurring > thead').contains('Discount');
         cy.get('#table-recurring > thead').contains('Total');
+
+        cy.get('.commission-calculator').first().should('be.visible');
     });
 });

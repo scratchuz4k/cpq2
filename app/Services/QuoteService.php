@@ -125,7 +125,7 @@ class QuoteService
         // return view("pdf.$view", compact('quote', 'tenant', 'columns', 'items', 'group', 'groupName'))->render();
 
         return pdf()
-            ->view("pdf.$view", compact('quote', 'tenant', 'columns', 'items', 'group', 'groupName'))
+            ->view("pdf.$view", compact('quote', 'tenant', 'items', 'group', 'groupName'))
             ->format(Format::A4)
             ->withBrowsershot(function (Browsershot $browsershot) {
                 if (app()->environment(['local', 'testing'])) {
