@@ -50,6 +50,10 @@ const tenant = reactive({
         has_quote_approval: props.tenant.configurations.has_quote_approval ?? '0',
         quote_approval_flow: props.tenant.configurations.quote_approval_flow ?? 'Internal review',
         has_client_approval: props.tenant.configurations.has_client_approval ?? '0',
+        calculator_layout: props.tenant.configurations.calculator_layout
+            ? JSON.parse(props.tenant.configurations.calculator_layout)
+            : [],
+        component: props.tenant.configurations.component ?? 'DealMaker',
         customization_header: JSON.parse(props.tenant.configurations.customization_header ?? '[]'),
         customization_footer: JSON.parse(props.tenant.configurations.customization_footer ?? '[]'),
         customization_social: JSON.parse(props.tenant.configurations.customization_social ?? '[]'),
@@ -494,11 +498,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                         <div class="quote-summary-layout">
                                             <div>
                                                 <label for="quote-summary-layout" class="form-label lh-sm small pb-2">
-                                                    <i>
-                                                        This section contains all the customisations for the appearance
-                                                        of the solution type to match specific preferences within the
-                                                        quote.
-                                                    </i>
+                                                    <i> Customize how the quote summary is displayed. </i>
                                                 </label>
                                             </div>
                                             <div class="row g-3 mb-3">
@@ -515,27 +515,28 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                         >
                                                         </Select>
                                                     </div>
-                                                    <div
-                                                        class="mb-3"
-                                                        v-if="tenant.configurations.component === 'DealMaker'"
-                                                    >
+                                                    <div v-if="tenant.configurations.component === 'DealMaker'">
                                                         <label>
-                                                            Choose the Calculator Layout:
-                                                            <tooltip-with-icon
-                                                                class="ms-1 mt-1"
-                                                                :info_text="'If no layout is selected, all options will be shown.'"
-                                                            />
+                                                            Profitability Calculator Layout
+                                                            <span
+                                                                title="If no option is selected, all options are shown"
+                                                                data-bs-original-title="If no option is selected, all options are shown"
+                                                                v-tooltip
+                                                            >
+                                                                <SvgIcon width="16" height="16" name="info" />
+                                                            </span>
                                                         </label>
-                                                        <div class="row g-3 mb-3">
+                                                        <div class="row g-3">
                                                             <div class="col">
                                                                 <MultiSelect
                                                                     id="solution-type-calculator-layout"
                                                                     v-model="tenant.configurations.calculator_layout"
                                                                     style="width: 100%"
                                                                     :options="calculator_layouts"
-                                                                    placeholder="Select Layouts"
+                                                                    placeholder="Select Options"
                                                                     optionLabel="value"
                                                                     optionValue="name"
+                                                                    :maxSelectedLabels="1"
                                                                     @change="submitCalculatorLayout"
                                                                 />
                                                             </div>

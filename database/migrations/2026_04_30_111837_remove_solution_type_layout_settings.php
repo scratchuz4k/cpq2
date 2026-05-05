@@ -11,7 +11,7 @@ return new class extends Migration
     {
         DB::table('configurations')
             ->where('configurable_type', 'App\\Models\\SolutionType')
-            ->where('key', 'calculator_layout')
+            ->whereIn('key', ['calculator_layout', 'component', 'has_custom_table'])
             ->delete();
     }
 
