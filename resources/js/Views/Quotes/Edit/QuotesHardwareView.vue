@@ -9,7 +9,6 @@ const props = defineProps({
 });
 
 const solution_type = props.modelValue.solution_type;
-
 const urlParams = new URLSearchParams(window.location.search);
 const params = new Proxy(urlParams, {
     get: (searchParams, prop) => searchParams.get(prop)
