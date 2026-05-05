@@ -108,7 +108,7 @@ const items = ref([
                                     <span> ({{ format.decimalPlaces(quote.commission_rate) }}%) </span>
                                 </p>
                                 <p class="small value text-right">
-                                    {{ format.GBP(quote.commission_rate) }}
+                                    {{ format.GBP(quote.commission_value) }}
                                 </p>
                             </div>
                         </div>

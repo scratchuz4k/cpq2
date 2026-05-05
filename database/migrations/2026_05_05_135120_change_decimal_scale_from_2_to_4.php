@@ -19,6 +19,11 @@ return new class extends Migration
         Schema::table('prices', function (Blueprint $table) {
             $table->decimal('cost', 12, 4)->default(0)->change();
         });
+
+        Schema::table('quote_discounts', function (Blueprint $table) {
+            $table->decimal('value', 12, 4)->default(0)->change();
+            $table->decimal('total', 12, 4)->default(0)->change();
+        });
     }
 
     /**
@@ -33,6 +38,11 @@ return new class extends Migration
 
         Schema::table('prices', function (Blueprint $table) {
             $table->decimal('cost', 12, 2)->default(0)->change();
+        });
+
+        Schema::table('quote_discounts', function (Blueprint $table) {
+            $table->decimal('value', 12, 2)->default(0)->change();
+            $table->decimal('total', 12, 2)->default(0)->change();
         });
     }
 };
