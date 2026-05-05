@@ -89,44 +89,24 @@ const items = ref([
                 ></QuoteApprovalsPanel>
                 <div class="price-mobile-sidebar commission-calculator px-4 pt-4 pb-2 mb-3">
                     <h3 class="mb-3">Profitability Calculator</h3>
-                    <p
-                        class="mb-2"
-                        style="font-size: 14px"
-                        v-if="
-                            !calc_layout.length || ['MARGIN', 'COMMISSION'].some((item) => calc_layout.includes(item))
-                        "
-                    >
-                        Currently, you will make
-                        <span id="commission_text" v-if="!calc_layout.length || calc_layout.includes('COMMISSION')">
-                            <b>{{ format.GBP(quote.commission_value) }}</b>
-                            commission
-                        </span>
-                        <span
-                            v-if="
-                                !calc_layout.length ||
-                                ['MARGIN', 'COMMISSION'].every((item) => calc_layout.includes(item))
-                            "
-                        >
-                            and
-                        </span>
-                        <span id="margin_text" v-if="!calc_layout.length || calc_layout.includes('MARGIN')">
-                            <b>{{ format.decimalPlaces(quote.margin) }} %</b>
-                            margin
-                        </span>
-                        on this quote.
-                    </p>
                     <div class="p-3 mb-3 fw-semibold" style="background: var(--lighter-grey)">
                         <div v-if="!calc_layout.length || calc_layout.includes('MARGIN')" class="py-2">
                             <div class="margin d-flex text-muted justify-content-between">
-                                <p class="small label">Margin</p>
+                                <p class="small label">
+                                    Margin
+                                    <span> ({{ format.decimalPlaces(quote.margin) }}%) </span>
+                                </p>
                                 <p class="small value text-right">
-                                    {{ format.GBP(quote.margin) }}
+                                    {{ format.GBP(quote.total * (quote.margin / 100)) }}
                                 </p>
                             </div>
                         </div>
                         <div v-if="!calc_layout.length || calc_layout.includes('COMMISSION')" class="py-2">
                             <div class="comission d-flex text-muted justify-content-between">
-                                <p class="small label">Commission</p>
+                                <p class="small label">
+                                    Commission
+                                    <span> ({{ format.decimalPlaces(quote.commission_rate) }}%) </span>
+                                </p>
                                 <p class="small value text-right">
                                     {{ format.GBP(quote.commission_rate) }}
                                 </p>
