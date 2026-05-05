@@ -1,9 +1,11 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
 import { quote, setQuote } from '@composables/useQuote';
 import { can, hasRole } from '@composables/useAuth';
 
+const page = usePage();
+const tenant = page.props.tenant;
 const props = defineProps({
     quote: Object,
     pricePlans: Object
@@ -16,7 +18,7 @@ const solutionsViews = {
     DealMaker: 'QuotesTotalDealMakerView'
 };
 
-let component = props.quote.solution_type.configurations?.component;
+let component = tenant.configurations?.component;
 let view =
     component && Object.keys(solutionsViews).includes(component)
         ? solutionsViews[component]

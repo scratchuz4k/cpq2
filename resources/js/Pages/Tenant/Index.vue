@@ -4,7 +4,7 @@ import { Head } from '@inertiajs/vue3';
 import { reactive, ref } from 'vue';
 import axios from 'axios';
 import ToggleSwitch from 'primevue/toggleswitch';
-import { InputText } from 'primevue';
+import { InputText, MultiSelect, Select } from 'primevue';
 import _ from 'lodash';
 import InputColor from '@/Components/InputColor.vue';
 import Separator from '@/Components/Separator.vue';
@@ -13,7 +13,9 @@ const props = defineProps({
     isSuperAdmin: Boolean,
     tenant: Object,
     quote_approval_flows: Array,
-    social_links: Array
+    social_links: Array,
+    calculator_layouts: Array,
+    available_tables: Array
 });
 
 const defaultCustomizationColors = {
@@ -48,6 +50,10 @@ const tenant = reactive({
         has_quote_approval: props.tenant.configurations.has_quote_approval ?? '0',
         quote_approval_flow: props.tenant.configurations.quote_approval_flow ?? 'Internal review',
         has_client_approval: props.tenant.configurations.has_client_approval ?? '0',
+        calculator_layout: props.tenant.configurations.calculator_layout
+            ? JSON.parse(props.tenant.configurations.calculator_layout)
+            : [],
+        component: props.tenant.configurations.component ?? 'DealMaker',
         customization_header: JSON.parse(props.tenant.configurations.customization_header ?? '[]'),
         customization_footer: JSON.parse(props.tenant.configurations.customization_footer ?? '[]'),
         customization_social: JSON.parse(props.tenant.configurations.customization_social ?? '[]'),
@@ -65,6 +71,8 @@ const parseTenantConfigurations = (data) => {
         data.configurations.customization_colors = data.configurations.customization_colors
             ? JSON.parse(data.configurations.customization_colors)
             : defaultCustomizationColors;
+        data.configurations.calculator_layout = JSON.parse(data.configurations.calculator_layout ?? '[]');
+        data.configurations.component = data.configurations.component ?? 'DealMaker';
     }
     return data;
 };
@@ -131,6 +139,7 @@ const submitTenantSettings = async () => {
         configs.customization_footer = JSON.stringify(configs.customization_footer);
         configs.customization_social = JSON.stringify(configs.customization_social);
         configs.customization_colors = JSON.stringify(configs.customization_colors);
+        configs.calculator_layout = JSON.stringify(configs.calculator_layout);
 
         let res = await axios.put(`/api/tenants/` + tenant.id, { ...tenant, configurations: configs });
 
@@ -162,6 +171,10 @@ const setMarginDefaults = () => {
     tenant.configurations.quote_margin_rules_value = 0;
     submitTenantSettings();
 };
+
+const submitCalculatorLayout = _.debounce(function () {
+    submitTenantSettings();
+}, 1000);
 
 const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/settings' }, { label: 'Tenant' }]);
 </script>
@@ -471,6 +484,63 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                                 />
                                                             </template>
                                                         </ToggleSwitch>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="card bg-light border-0 settings-block h-100">
+                                    <div class="card-body">
+                                        <h6 class="fw-bold pe-5 mb-3">Summary Layout</h6>
+                                        <div class="quote-summary-layout">
+                                            <div>
+                                                <label for="quote-summary-layout" class="form-label lh-sm small pb-2">
+                                                    <i> Customize how the quote summary is displayed. </i>
+                                                </label>
+                                            </div>
+                                            <div class="row g-3 mb-3">
+                                                <div class="col">
+                                                    <div class="mb-3">
+                                                        <label>Choose the view:</label>
+                                                        <Select
+                                                            id="solution-type-component"
+                                                            class="form-select"
+                                                            v-model="tenant.configurations.component"
+                                                            @change="submitTenantSettings()"
+                                                            :options="available_tables"
+                                                            placeholder="Select a View"
+                                                        >
+                                                        </Select>
+                                                    </div>
+                                                    <div v-if="tenant.configurations.component === 'DealMaker'">
+                                                        <label>
+                                                            Profitability Calculator Layout
+                                                            <span
+                                                                title="If no option is selected, all options are shown"
+                                                                data-bs-original-title="If no option is selected, all options are shown"
+                                                                v-tooltip
+                                                            >
+                                                                <SvgIcon width="16" height="16" name="info" />
+                                                            </span>
+                                                        </label>
+                                                        <div class="row g-3">
+                                                            <div class="col">
+                                                                <MultiSelect
+                                                                    id="solution-type-calculator-layout"
+                                                                    v-model="tenant.configurations.calculator_layout"
+                                                                    style="width: 100%"
+                                                                    :options="calculator_layouts"
+                                                                    placeholder="Select Options"
+                                                                    optionLabel="value"
+                                                                    optionValue="name"
+                                                                    :maxSelectedLabels="1"
+                                                                    @change="submitCalculatorLayout"
+                                                                />
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>

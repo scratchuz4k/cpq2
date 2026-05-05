@@ -174,15 +174,15 @@ class Quote extends Model
                     continue;
                 }
 
-                $discounValue = $itemPrice - ($itemPrice * (1 - ($discount->discount / 100)));
-                $itemPrice = $itemPrice - $discounValue; // new base for next discount
+                $discountValue = $itemPrice * ($discount->discount / 100);
+                $itemPrice = $itemPrice - $discountValue; // new base for next discount
 
                 // accumulate into this discount (per item)
-                $lineDiscount = $discounValue * $item->quantity;
-                $lineTotal = $discounValue * $item->quantity * $item->contract_length;
+                $lineDiscount = $discountValue * $item->quantity;
+                $lineTotal = $discountValue * $item->quantity * $item->contract_length;
 
-                $discount->value += format_currency($lineDiscount);
-                $discount->total += format_currency($lineTotal);
+                $discount->value += $lineDiscount;
+                $discount->total += $lineTotal;
                 $totalDiscount += $lineTotal;
             }
 
@@ -194,13 +194,13 @@ class Quote extends Model
             $discount->saveQuietly();
         }
 
-        $this->total = format_currency($this->total - $totalDiscount);
-        $this->total_discount = format_currency($totalDiscount);
+        $this->total = $this->total - $totalDiscount;
+        $this->total_discount = $totalDiscount;
 
         $margin_value = ($this->total) - $total_cost;
 
-        $this->margin = $this->total ? format_currency(($margin_value / ($this->total)) * 100) : 0;
-        $this->commission_value = format_currency($margin_value * ($this->commission_rate / 100));
+        $this->margin = $this->total ? ($margin_value / ($this->total) * 100) : 0;
+        $this->commission_value = $margin_value * ($this->commission_rate / 100);
     }
 
     public static function resolveStatus(Quote $quote): string
