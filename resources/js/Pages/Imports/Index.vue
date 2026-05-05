@@ -227,7 +227,7 @@ watch(
                             falseValue="0"
                         />
                         <label class="form-check-label ms-2" for="overwrite-products">
-                            Overwrite existing products that have the same SKU
+                            Update existing products that have the same SKU
                         </label>
                     </div>
                     <hr />

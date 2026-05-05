@@ -10,7 +10,7 @@ class Category extends Model
 
     protected $dates = ['expire_at']; // Ensure the field is treated as a DateTime
 
-    protected $fillable = ['code', 'name', 'description', 'slug', 'parent_id', 'expire_at'];
+    protected $fillable = ['code', 'long_description', 'meta_description', 'meta_title', 'name', 'short_description', 'parent_id'];
 
     protected function casts(): array
     {

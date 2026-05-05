@@ -43,6 +43,7 @@ getStepsWithProducts(solution_type);
                         v-model="current_step"
                         :index="index"
                         :total_steps="active_steps.length + 1"
+                        :quote="quote"
                     >
                     </StepProductsView>
                 </template>

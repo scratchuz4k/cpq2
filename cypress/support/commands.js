@@ -126,3 +126,13 @@ Cypress.Commands.add('createUser', (role) => {
     cy.get('#datatable-search').type(user.name);
     cy.get('#users-table').contains(user.name);
 });
+
+Cypress.Commands.add('addProductAndVerifySummary', (selector, quoteItemsSelector = '.quote-items .product-name') => {
+    cy.get(selector).first().closest('.panel').find('h3').invoke('text').as('productName');
+
+    cy.get(selector).first().click();
+
+    cy.get('@productName').then((name) => {
+        cy.get(quoteItemsSelector).contains(name.trim()).should('exist');
+    });
+});
