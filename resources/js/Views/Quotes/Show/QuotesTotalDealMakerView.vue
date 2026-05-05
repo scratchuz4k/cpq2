@@ -89,33 +89,33 @@ const items = ref([
                 ></QuoteApprovalsPanel>
                 <div class="price-mobile-sidebar commission-calculator px-4 pt-4 pb-2 mb-3">
                     <h3 class="mb-3">Profitability Calculator</h3>
-                    <div class="p-3 mb-3 fw-semibold" style="background: var(--lighter-grey)">
-                        <div v-if="!calc_layout.length || calc_layout.includes('MARGIN')" class="py-2">
+                    <div class="px-3 py-2 mb-3 rounded" style="background: var(--lighter-grey)">
+                        <div v-if="!calc_layout.length || calc_layout.includes('MARGIN')" class="py-1">
                             <div class="margin d-flex text-muted justify-content-between">
                                 <p class="small label">
-                                    Margin
+                                    <span class="fw-semibold">Margin</span>
                                     <span> ({{ format.decimalPlaces(quote.margin) }}%) </span>
                                 </p>
-                                <p class="small value text-right">
+                                <p class="small value fw-bold text-right">
                                     {{ format.GBP(quote.total * (quote.margin / 100)) }}
                                 </p>
                             </div>
                         </div>
-                        <div v-if="!calc_layout.length || calc_layout.includes('COMMISSION')" class="py-2">
+                        <div v-if="!calc_layout.length || calc_layout.includes('COMMISSION')" class="py-1">
                             <div class="comission d-flex text-muted justify-content-between">
                                 <p class="small label">
-                                    Commission
+                                    <span class="fw-semibold">Commission</span>
                                     <span> ({{ format.decimalPlaces(quote.commission_rate) }}%) </span>
                                 </p>
-                                <p class="small value text-right">
+                                <p class="small value fw-bold text-right">
                                     {{ format.GBP(quote.commission_value) }}
                                 </p>
                             </div>
                         </div>
-                        <div v-if="!calc_layout.length || calc_layout.includes('TOTAL')" class="py-2">
+                        <div v-if="!calc_layout.length || calc_layout.includes('TOTAL')" class="py-1">
                             <div class="margin d-flex text-muted justify-content-between">
-                                <p class="small total label">Contract total</p>
-                                <p class="small value text-right">
+                                <p class="small total label fw-semibold">Contract total</p>
+                                <p class="small value fw-bold text-right">
                                     {{ format.GBP(quote.total) }}
                                 </p>
                             </div>
