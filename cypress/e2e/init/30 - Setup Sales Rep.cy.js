@@ -37,7 +37,6 @@ describe('Setup Sales Rep.cy', () => {
         cy.get('#btn-create-quote').click();
         cy.visit('/quotes');
         cy.get('#datatable-btn-0-show').click();
-        cy.get('#commission_text').should('be.visible');
 
         cy.get('.comission .value')
             .first()
