@@ -1,0 +1,18 @@
+<?php
+
+namespace App\Enums;
+
+enum ContractTermUnitsEnum: string
+{
+    case DAYS = 'Days';
+    case MONTHS = 'Months';
+    case YEARS = 'Years';
+
+    public static function asArray(): array
+    {
+        return array_map(fn ($case) => [
+            'name' => $case->name,
+            'value' => $case->value,
+        ], self::cases());
+    }
+}

@@ -47,6 +47,9 @@ class HandleInertiaRequests extends Middleware
                 'colors' => json_decode(array_key_exists('customization_colors', $configs) ? $configs['customization_colors'] : '[]'),
                 'social' => json_decode(array_key_exists('customization_social', $configs) ? $configs['customization_social'] : '[]'),
             ],
+            'flash' => [
+                'status' => $request->session()->get('status'),
+            ],
         ];
     }
 }
