@@ -71,6 +71,7 @@ describe('Creates a Mobile Quote', () => {
         cy.get('#solution_type-mobile').click();
         cy.get('#btn-create-quote').click();
 
+        cy.selectOption('.sort-order-select', 'Highest Price');
         cy.addProductAndVerifySummary('#btn-product-0-add-1');
         cy.addProductAndVerifySummary('#btn-product-1-add-1');
         cy.wait(1000);
@@ -260,6 +261,7 @@ describe('Creates a Mobile Quote', () => {
     it('Adds an addon to the Mobile quote and verifies it is in the quote', () => {
         cy.visit('/quotes');
         cy.get('#datatable-btn-0-edit').click();
+        cy.selectOption('.sort-order-select', 'Highest Price');
         cy.get('#step-1-search-products').clear().type(product.sku);
         cy.wait(1000);
         cy.get(`#input-product-0-quantity`).clear().type(1).blur();
