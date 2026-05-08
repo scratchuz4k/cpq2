@@ -82,7 +82,7 @@ class ProductController extends BaseController
         return Inertia::render('Products/Edit', [
             'product' => ProductResource::make($product->load(['prices', 'categories', 'steps']))->resolve(),
             'price_plans' => PricePlan::all(),
-            'contract_terms_units' => ContractTermUnitsEnum::cases(),
+            'contract_term_units' => ContractTermUnitsEnum::asArray(),
         ]);
     }
 

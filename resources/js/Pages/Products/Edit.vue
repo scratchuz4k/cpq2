@@ -15,7 +15,6 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { DateTime } from 'luxon';
 import format from '@/Composables/format.js';
 import InputNumber from 'primevue/inputnumber';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
 import axios from 'axios';
 
 const props = defineProps({
@@ -238,13 +237,13 @@ const items = ref([
                                                 class="me-3"
                                             />
                                             <Select
-                                                v-model="product.price_plan_id"
+                                                v-model="product.contract_term_unit"
                                                 :inputId="'contract_term_unit'"
                                                 :inputClass="'my-auto'"
                                                 :options="contract_term_units"
                                                 class="w-100"
-                                                optionLabel="name"
-                                                optionValue="id"
+                                                optionLabel="value"
+                                                optionValue="name"
                                                 placeholder="Select an Unit"
                                             />
                                         </div>
@@ -278,6 +277,19 @@ const items = ref([
                                                 }
                                             }"
                                         >
+                                            <template #empty>
+                                                <div class="d-flex justify-content-end">
+                                                    <Button
+                                                        class="p-button p-component p-button-icon-only p-button-secondary p-button-rounded p-button-text"
+                                                        @click="() => (showModal = !showModal)"
+                                                    >
+                                                        <font-awesome-icon
+                                                            class="text-primary"
+                                                            :icon="['fas', 'plus']"
+                                                        />
+                                                    </Button>
+                                                </div>
+                                            </template>
                                             <Column field="code" haeder="Code"></Column>
                                             <Column field="cost" header="Cost">
                                                 <template #body="{ data, field }">
@@ -345,18 +357,18 @@ const items = ref([
                                                 </template>
                                             </Column>
                                         </DataTable>
-                                        <div
-                                            class="mb-3 d-flex justify-content-end"
-                                            v-if="hasRole('Super Admin') || can('create price')"
-                                        >
-                                            <button
-                                                class="btn btn-primary"
-                                                @click="() => (showModal = !showModal)"
-                                                v-if="prices.length == 0"
-                                            >
-                                                Add Price
-                                            </button>
-                                        </div>
+                                        <!--                                        <div-->
+                                        <!--                                            class="mb-3 d-flex justify-content-end"-->
+                                        <!--                                            v-if="hasRole('Super Admin') || can('create price')"-->
+                                        <!--                                        >-->
+                                        <!--                                            <button-->
+                                        <!--                                                class="btn btn-primary"-->
+                                        <!--                                                @click="() => (showModal = !showModal)"-->
+                                        <!--                                                v-if="prices.length == 0"-->
+                                        <!--                                            >-->
+                                        <!--                                                Add Price-->
+                                        <!--                                            </button>-->
+                                        <!--                                        </div>-->
                                         <Dialog
                                             v-model:visible="showModal"
                                             modal
