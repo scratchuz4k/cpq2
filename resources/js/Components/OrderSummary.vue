@@ -73,7 +73,7 @@ watch(
             >
                 <div class="d-flex">
                     <div class="flex-grow-1 mb-0 text-truncate w-100">
-                        <p class="small fw-semibold product-name truncate-1-lines">
+                        <p class="small fw-semibold product-name truncate-1-lines" :title="item.name">
                             {{ item.name }}
                         </p>
                         <div>
@@ -99,7 +99,7 @@ watch(
                     class="addons-wrapper ps-2 py-1 d-flex"
                 >
                     <div class="flex-grow-1 mb-0 text-truncate w-100">
-                        <p class="small product-name text-muted truncate-1-lines">
+                        <p class="small product-name text-muted truncate-1-lines" :title="addon.name">
                             <font-awesome-icon
                                 :icon="['fas', 'plus']"
                                 :style="{ color: '#0000001A' }"
