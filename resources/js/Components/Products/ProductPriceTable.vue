@@ -113,6 +113,7 @@ const onRowEditSave = async (event) => {
             <div class="d-flex justify-content-end">
                 <Button
                     class="p-button p-component p-button-icon-only p-button-secondary p-button-rounded p-button-text"
+                    id="add-price-btn"
                     @click="showModal = true"
                 >
                     <font-awesome-icon class="text-primary" :icon="['fas', 'plus']" />

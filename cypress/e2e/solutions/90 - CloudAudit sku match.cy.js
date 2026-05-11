@@ -56,7 +56,6 @@ describe('Match CouldAudit Sku', () => {
         cy.get('#product-sku').type(product.sku);
         cy.get('#product-name').type(product.name);
 
-        cy.get('#1-1').click();
         cy.get('#add-price-btn').click();
 
         cy.get('#price-code').type(productPrice.code);
