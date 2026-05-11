@@ -71,7 +71,7 @@ const sortOptions = [
     }
 ];
 
-const sort = ref(sortOptions[3]);
+const sort = ref(sortOptions[0]);
 const search = ref(null);
 
 /**

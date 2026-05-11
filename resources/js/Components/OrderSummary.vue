@@ -71,49 +71,59 @@ watch(
                 v-for="item in quote?.items.filter((item) => item.data?.type === 'main_product')"
                 class="products-wrapper mb-2"
             >
-                <div class="d-flex justify-content-between mb-0">
-                    <span class="d-flex">
-                        <p class="small fw-semibold product-name truncate-2-lines">
+                <div class="d-flex">
+                    <div class="flex-grow-1 mb-0 text-truncate w-100">
+                        <p class="small fw-semibold product-name truncate-1-lines" :title="item.name">
                             {{ item.name }}
                         </p>
-                        <p class="small product-quantity ps-1" v-if="item.quantity > 1">(x{{ `${item.quantity}` }})</p>
-                    </span>
-                    <p class="small fw-semibold product-price ps-2 text-right">
-                        {{ format.GBP(item.original_price * item.quantity) }}
-                    </p>
+                        <div>
+                            <p v-if="item.price_plan?.code === 'MONTHLY'" class="small contract-length">
+                                {{ item.contract_length }} months
+                            </p>
+                        </div>
+                    </div>
+                    <div class="text-end px-1" style="width: 60px">
+                        <p class="small product-quantity" v-if="item.quantity > 1">(x{{ `${item.quantity}` }})</p>
+                    </div>
+                    <div class="text-end" style="width: 100px">
+                        <p class="small fw-semibold product-price">
+                            {{ format.GBP(item.original_price * item.quantity) }}
+                        </p>
+                    </div>
                 </div>
-                <div>
-                    <p v-if="item.price_plan?.code === 'MONTHLY'" class="small contract-length">
-                        {{ item.contract_length }} months
-                    </p>
-                </div>
+
                 <div
                     v-for="addon in quote?.items.filter(
                         (addon) => addon.data?.type === 'addon_product' && addon.group === item.group
                     )"
-                    class="addons-wrapper ps-2 py-1"
+                    class="addons-wrapper ps-2 py-1 d-flex"
                 >
-                    <div class="addon d-flex text-muted justify-content-between">
-                        <span class="d-flex">
-                            <p class="small product-name truncate-2-lines">
-                                <font-awesome-icon
-                                    :icon="['fas', 'plus']"
-                                    :style="{ color: '#0000001A' }"
-                                    class="my-auto"
-                                />
-                                {{ addon.name }}
+                    <div class="flex-grow-1 mb-0 text-truncate w-100">
+                        <p class="small product-name text-muted truncate-1-lines" :title="addon.name">
+                            <font-awesome-icon
+                                :icon="['fas', 'plus']"
+                                :style="{ color: '#0000001A' }"
+                                class="my-auto"
+                            />
+                            {{ addon.name }}
+                        </p>
+                        <div>
+                            <p
+                                v-if="addon.price_plan?.code === 'MONTHLY'"
+                                class="small text-muted contract-length ps-3"
+                            >
+                                {{ addon.contract_length }} months
                             </p>
-                            <p class="small product-quantity ps-1" v-if="addon.quantity > 1">
-                                (x{{ `${addon.quantity}` }})
-                            </p>
-                        </span>
-                        <p class="small product-price ps-2 text-right">
-                            {{ format.GBP(addon.original_price * addon.quantity) }}
+                        </div>
+                    </div>
+                    <div class="text-end px-1" style="width: 60px">
+                        <p class="small text-muted product-quantity" v-if="addon.quantity > 1">
+                            (x{{ `${addon.quantity}` }})
                         </p>
                     </div>
-                    <div>
-                        <p v-if="addon.price_plan?.code === 'MONTHLY'" class="small text-muted contract-length ps-3">
-                            {{ addon.contract_length }} months
+                    <div class="text-end" style="width: 100px">
+                        <p class="small text-muted product-price">
+                            {{ format.GBP(addon.original_price * addon.quantity) }}
                         </p>
                     </div>
                 </div>
@@ -173,7 +183,7 @@ watch(
     overflow-y: auto;
 }
 
-.quote-items .truncate-2-lines {
+.quote-items .truncate-1-lines {
     height: auto;
 }
 .quote-items .addons-wrapper {
