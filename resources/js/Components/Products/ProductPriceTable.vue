@@ -12,7 +12,7 @@ import axios from 'axios';
 const props = defineProps({
     productId: {
         type: Number,
-        required: true
+        default: null
     }
 });
 
@@ -29,48 +29,61 @@ const showModal = ref(false);
 const editingRows = ref([]);
 
 const savePrice = async () => {
-    try {
-        let res = await axios.post(`/api/prices`, {
-            ...price,
-            net: parseFloat(price.net) ?? 0,
-            cost: parseFloat(price.cost) ?? 0
-        });
-        prices.value.push(res.data.data);
+    if (props.productId) {
+        try {
+            let res = await axios.post(`/api/prices`, {
+                ...price,
+                net: parseFloat(price.net) ?? 0,
+                cost: parseFloat(price.cost) ?? 0,
+                product_id: props.productId
+            });
+            prices.value.push(res.data.data);
+            showModal.value = false;
+        } catch (ex) {
+            notyf.error(ex.response.data.message);
+        }
+    } else {
+        let temp = { ...price, net: parseFloat(price.net), cost: parseFloat(price.cost) };
+        prices.value.push(temp);
+        Object.assign(price, { code: null, cost: 0, net: 0 });
         showModal.value = false;
-    } catch (ex) {
-        notyf.error(ex.response.data.message);
     }
 };
 
 const deletePrice = async (id) => {
-    let result = await swal.fire({
-        title: 'Are you sure?'
-    });
+    let result = await swal.fire({ title: 'Are you sure?' });
+    if (['cancel', 'backdrop'].includes(result.dismiss)) return;
 
-    if (['cancel', 'backdrop'].includes(result.dismiss)) {
-        return;
-    }
-
-    try {
-        let index = prices.value.findIndex((e) => e.id == id);
-        await axios.delete(`/api/prices/${id}`);
+    if (props.productId) {
+        try {
+            let index = prices.value.findIndex((e) => e.id == id);
+            await axios.delete(`/api/prices/${id}`);
+            prices.value.splice(index, 1);
+        } catch (ex) {
+            notyf.error(ex.response.data.message);
+        }
+    } else {
+        let index = prices.value.findIndex((e) => e === id || e.code == id);
         prices.value.splice(index, 1);
-    } catch (ex) {
-        notyf.error(ex.response.data.message);
     }
 };
 
 const onRowEditSave = async (event) => {
     let { newData, index } = event;
-    try {
-        let res = await axios.put(`/api/prices/${newData.id}`, {
-            cost: parseFloat(newData.cost),
-            net: parseFloat(newData.net)
-        });
-        prices.value[index] = res.data.data;
-        notyf.success('Updated with success');
-    } catch (ex) {
-        notyf.error(ex.response.data.message);
+
+    if (props.productId) {
+        try {
+            let res = await axios.put(`/api/prices/${newData.id}`, {
+                cost: parseFloat(newData.cost),
+                net: parseFloat(newData.net)
+            });
+            prices.value[index] = res.data.data;
+            notyf.success('Updated with success');
+        } catch (ex) {
+            notyf.error(ex.response.data.message);
+        }
+    } else {
+        prices.value[index] = { ...newData };
     }
 };
 </script>
@@ -178,3 +191,11 @@ const onRowEditSave = async (event) => {
         </div>
     </Dialog>
 </template>
+<style>
+.custom-column-title {
+    &.p-datatable-column-title {
+        font-weight: 500;
+        color: var(--table-header-dark-grey) !important;
+    }
+}
+</style>

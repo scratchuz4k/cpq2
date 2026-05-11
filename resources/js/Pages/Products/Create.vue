@@ -1,23 +1,26 @@
 <script setup>
 import { reactive, ref } from 'vue';
 import { can, hasRole } from '@composables/useAuth';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import DataTable from 'primevue/datatable';
 import DatePicker from 'primevue/datepicker';
 import Column from 'primevue/column';
 import Dialog from 'primevue/dialog';
-import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import ToggleSwitch from 'primevue/toggleswitch';
 import Select from 'primevue/select';
 import { DateTime } from 'luxon';
 import InputSelectMultiple from '@/Components/InputSelectMultiple.vue';
 import InputPrice from '@/Components/InputPrice.vue';
+import Header from '@/Components/Header.vue';
+import ProductPriceTable from '@/Components/Products/ProductPriceTable.vue';
+import { InputNumber, RadioButton } from 'primevue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 
 const props = defineProps({
-    price_plans: Object
+    price_plans: Object,
+    contract_term_units: Array
 });
 
 const price = reactive({
@@ -33,7 +36,9 @@ const product = reactive({
     sku: null,
     description: null,
     prices: [],
-    is_active: true
+    is_active: true,
+    contract_term_value: null,
+    contract_term_unit: null
 });
 
 const editingRows = ref([]);
@@ -101,235 +106,287 @@ const items = ref([
 <template>
     <Head title="New Product" />
     <AuthenticatedLayout>
-        <div class="panel">
-            <Header title="New Product" :breadcrumbs="items">
-                <template #buttons>
-                    <PrimaryButton id="btn-save-product" @click="saveProduct()">
-                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>
-                        Save
-                    </PrimaryButton>
-                </template>
-            </Header>
-            <tabs class="mt-3">
-                <tab title="General" :selected="true">
-                    <div class="my-3">
-                        <p>
-                            This section provides an overview of the product, including general information, and
-                            associated suppliers.
-                        </p>
-                    </div>
-                    <div class="my-3 col-6">
-                        <div class="mb-3 d-flex flex-column">
-                            <label class="form-label" for="active-filter"> Active: </label>
-                            <ToggleSwitch id="active-filter" v-model="product.is_active">
-                                <template #handle>
-                                    <font-awesome-icon
-                                        :icon="product.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
-                                        class="text-primary"
-                                    />
-                                </template>
-                            </ToggleSwitch>
-                        </div>
-                        <div class="mb-3">
-                            <label for="product-sku" class="form-label">SKU:</label>
-                            <input id="product-sku" class="form-control" v-model="product.sku" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="product-name" class="form-label">Name:</label>
-                            <input id="product-name" class="form-control" v-model="product.name" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="product-description" class="form-label">Description:</label>
-                            <textarea
-                                id="product-description"
-                                class="form-control"
-                                v-model="product.description"
-                            ></textarea>
-                        </div>
+        <Header title="New Product" :breadcrumbs="items" />
+        <tabs class="mt-3">
+            <tab title="General" :selected="true">
+                <div class="row">
+                    <div class="col-6 px-0">
+                        <div class="panel my-4">
+                            <h3 class="fw-semibold">Product details</h3>
+                            <p class="my-3">Product overview including general information.</p>
+                            <div class="my-4">
+                                <div class="col-6">
+                                    <div class="mb-3 d-flex flex-column">
+                                        <label class="form-label" for="active-filter"> Active: </label>
+                                        <ToggleSwitch id="active-filter" v-model="product.is_active" />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="product-sku" class="form-label">SKU</label>
+                                        <input id="product-sku" class="form-control" v-model="product.sku" />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="product-name" class="form-label">Product</label>
+                                        <input id="product-name" class="form-control" v-model="product.name" />
+                                    </div>
 
-                        <div class="mb-5">
-                            <label for="product-expires_at" class="form-label">Expires At:</label>
+                                    <div class="mb-3">
+                                        <label for="product-description" class="form-label">Description</label>
+                                        <textarea
+                                            id="product-description"
+                                            class="form-control"
+                                            v-model="product.description"
+                                            >{{ product.description }}</textarea
+                                        >
+                                    </div>
 
-                            <DatePicker
-                                id="expire-date"
-                                class="w-100"
-                                v-model="product.expires_at"
-                                placeholder="Expires At"
-                                showIcon
-                                iconDisplay="input"
-                                dateFormat="dd/mm/yy"
-                            />
-                        </div>
-                        <h4>Relations</h4>
-                        <hr />
-                        <div class="mb-3">
-                            <label class="form-label">Price Plan</label>
-                            <Select
-                                v-model="product.price_plan_id"
-                                :inputId="'price_plan'"
-                                :options="props.price_plans"
-                                class="w-100"
-                                optionLabel="name"
-                                optionValue="id"
-                                placeholder="Select an Price Plan"
-                            />
-                        </div>
-                        <div class="mb-3">
-                            <label for="product-categories" class="form-label">Categories:</label>
-                            <InputSelectMultiple
-                                id="product-categories"
-                                url="/categories"
-                                :fields="['name']"
-                                v-model="categories"
-                                placeholder="Select a Categories"
-                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
-                            >
-                            </InputSelectMultiple>
-                        </div>
-                        <div class="mb-3">
-                            <label for="product-steps" class="form-label">Steps:</label>
-                            <InputSelectMultiple
-                                id="product-steps"
-                                url="/steps"
-                                :fields="['name', 'solution_type.name']"
-                                v-model="steps"
-                                placeholder="Select Steps"
-                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
-                            >
-                            </InputSelectMultiple>
-                        </div>
-                        <div class="mb-3">
-                            <label for="supplier-name" class="form-label">Supplier:</label>
-                            <InputSelect
-                                id="product-supplier"
-                                url="/suppliers"
-                                :fields="['name']"
-                                v-model="product.supplier"
-                                placeholder="Select a Supplier"
-                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
-                            >
-                            </InputSelect>
-                        </div>
-                    </div>
-                </tab>
-                <tab title="Prices" v-if="hasRole('Super Admin') || can('viewAny price')">
-                    <div class="my-3">
-                        <p>
-                            Here are the available prices for this product, including details like cost and net value.
-                        </p>
-                    </div>
-                    <div class="row my-4">
-                        <div class="col-8">
-                            <div class="mb-3">
-                                <DataTable
-                                    v-model:editingRows="editingRows"
-                                    :value="product.prices"
-                                    editMode="row"
-                                    dataKey="id"
-                                    @row-edit-save="onRowEditSave"
-                                    :pt="{
-                                        table: { style: 'min-width: 50rem' },
-                                        column: {
-                                            bodycell: ({ state }) => ({
-                                                style:
-                                                    state['d_editing'] &&
-                                                    'padding-top: 0.75rem; padding-bottom: 0.75rem'
-                                            })
-                                        }
-                                    }"
-                                >
-                                    <Column field="code" header="Code" style="width: 10%"></Column>
-                                    <Column field="cost" header="Cost">
-                                        <template #body="{ data, field }">
-                                            {{ format.GBP(data[field]) }}
-                                        </template>
-                                        <template #editor="{ data, field }">
-                                            <InputPrice v-model="data[field]" />
-                                        </template>
-                                    </Column>
-                                    <Column field="net" header="Net">
-                                        <template #body="{ data, field }">
-                                            {{ format.GBP(data[field]) }}
-                                        </template>
-                                        <template #editor="{ data, field }">
-                                            <InputPrice v-model="data[field]" />
-                                        </template>
-                                    </Column>
+                                    <div class="mb-3">
+                                        <label for="product-categories" class="form-label">Category</label>
+                                        <InputSelectMultiple
+                                            id="product-categories"
+                                            url="/categories"
+                                            :fields="['name']"
+                                            v-model="categories"
+                                            placeholder="Select a Category"
+                                            :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                                        >
+                                        </InputSelectMultiple>
+                                    </div>
 
-                                    <Column
-                                        :rowEditor="true"
-                                        v-if="hasRole('Super Admin') || can('update price')"
-                                        style="width: 5%"
-                                    >
-                                    </Column>
-                                    <Column
-                                        bodyStyle="text-align:center"
-                                        v-if="hasRole('Super Admin') || can('delete price')"
-                                        style="width: 5%"
-                                    >
-                                        <template #body="{ data }">
-                                            <Button
-                                                @click="deletePrice(data.id)"
-                                                class="p-button p-component p-button-icon-only p-button-secondary p-button-rounded p-button-text p-datatable-row-editor-init"
-                                                label="Button"
+                                    <div class="mb-3">
+                                        <label for="product-expires_at" class="form-label">Expiration date</label>
+                                        <DatePicker
+                                            id="expire-date"
+                                            class="w-100"
+                                            v-model="product.expires_at"
+                                            placeholder="Expires At"
+                                            showIcon
+                                            iconDisplay="input"
+                                            dateFormat="dd/mm/yy"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel my-4 pb-1">
+                            <h3 class="fw-semibold">Prices</h3>
+                            <div class="my-4">
+                                <div class="col">
+                                    <div class="mb-3">
+                                        <label class="form-label">Price Plan</label>
+                                        <div class="d-flex flex-column">
+                                            <div
+                                                v-for="plan in props.price_plans"
+                                                :key="plan.id"
+                                                class="d-flex items-center gap-2 mb-2"
                                             >
-                                                <font-awesome-icon :icon="['far', 'trash-can']" />
-                                            </Button>
-                                        </template>
-                                    </Column>
-                                </DataTable>
+                                                <RadioButton
+                                                    :inputId="'price_plan_' + plan.id"
+                                                    :value="plan.id"
+                                                    v-model="product.price_plan_id"
+                                                    name="dynamic"
+                                                    class="my-auto"
+                                                />
+                                                <label class="form-label ms-2 mb-0 fs-6" :for="'price_plan_' + plan.id">
+                                                    {{ plan.name }}</label
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Contract terms</label>
+                                        <div class="d-flex">
+                                            <InputNumber
+                                                v-model="product.contract_term_value"
+                                                :inputId="'contract_term_value'"
+                                                showButtons
+                                                class="me-3"
+                                            />
+                                            <Select
+                                                v-model="product.contract_term_unit"
+                                                :inputId="'contract_term_unit'"
+                                                :inputClass="'my-auto'"
+                                                :options="contract_term_units"
+                                                class="w-100"
+                                                optionLabel="value"
+                                                optionValue="name"
+                                                placeholder="Select an Unit"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Price</label>
+                                        <p class="mb-3">
+                                            Prices for this product, including any active special pricing agreements.
+                                        </p>
+                                        <ProductPriceTable v-model:prices="product.prices" />
+                                    </div>
+                                </div>
                             </div>
-                            <div
-                                class="mb-3 d-flex justify-content-end"
-                                v-if="hasRole('Super Admin') || can('create price')"
-                            >
-                                <button
-                                    id="add-price-btn"
-                                    class="btn btn-primary"
-                                    @click="() => (showModal = !showModal)"
-                                    v-if="product.prices.length == 0"
-                                >
-                                    Add Price
-                                </button>
-                            </div>
-                            <Dialog
-                                v-model:visible="showModal"
-                                modal
-                                :style="{ width: '50rem', marginTop: '4rem' }"
-                                :breakpoints="{
-                                    '1199px': '75vw',
-                                    '575px': '90vw'
-                                }"
-                                :draggable="false"
-                                position="top"
-                            >
-                                <template #header>
-                                    <h3>Add new Price</h3>
-                                </template>
-                                <div class="mb-3">
-                                    <label class="form-label">Code:</label>
-                                    <input id="price-code" class="form-control" v-model="price.code" />
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Cost</label>
-                                    <InputPrice id="price-cost" v-model="price.cost" />
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Price</label>
-                                    <InputPrice id="price-price" v-model="price.net" />
-                                </div>
-
-                                <div class="d-flex justify-content-end">
-                                    <button class="btn btn-secondary me-2" @click="() => (showModal = !showModal)">
-                                        Cancel
-                                    </button>
-                                    <button class="btn btn-primary" @click="savePrice()">Save</button>
-                                </div>
-                            </Dialog>
                         </div>
                     </div>
-                </tab>
-            </tabs>
+                </div>
+            </tab>
+            <tab title="Prices" v-if="hasRole('Super Admin') || can('viewAny price')">
+                <div class="my-3">
+                    <p>Here are the available prices for this product, including details like cost and net value.</p>
+                </div>
+                <div class="row my-4">
+                    <div class="col-8">
+                        <div class="mb-3">
+                            <DataTable
+                                v-model:editingRows="editingRows"
+                                :value="product.prices"
+                                editMode="row"
+                                dataKey="id"
+                                @row-edit-save="onRowEditSave"
+                                :pt="{
+                                    table: { style: 'min-width: 50rem' },
+                                    column: {
+                                        bodycell: ({ state }) => ({
+                                            style: state['d_editing'] && 'padding-top: 0.75rem; padding-bottom: 0.75rem'
+                                        })
+                                    }
+                                }"
+                            >
+                                <Column field="code" header="Code" style="width: 10%"></Column>
+                                <Column field="cost" header="Cost">
+                                    <template #body="{ data, field }">
+                                        {{ format.GBP(data[field]) }}
+                                    </template>
+                                    <template #editor="{ data, field }">
+                                        <InputPrice v-model="data[field]" />
+                                    </template>
+                                </Column>
+                                <Column field="net" header="Net">
+                                    <template #body="{ data, field }">
+                                        {{ format.GBP(data[field]) }}
+                                    </template>
+                                    <template #editor="{ data, field }">
+                                        <InputPrice v-model="data[field]" />
+                                    </template>
+                                </Column>
+
+                                <Column
+                                    :rowEditor="true"
+                                    v-if="hasRole('Super Admin') || can('update price')"
+                                    style="width: 5%"
+                                >
+                                </Column>
+                                <Column
+                                    bodyStyle="text-align:center"
+                                    v-if="hasRole('Super Admin') || can('delete price')"
+                                    style="width: 5%"
+                                >
+                                    <template #body="{ data }">
+                                        <Button
+                                            @click="deletePrice(data.id)"
+                                            class="p-button p-component p-button-icon-only p-button-secondary p-button-rounded p-button-text p-datatable-row-editor-init"
+                                            label="Button"
+                                        >
+                                            <font-awesome-icon :icon="['far', 'trash-can']" />
+                                        </Button>
+                                    </template>
+                                </Column>
+                            </DataTable>
+                        </div>
+                        <div
+                            class="mb-3 d-flex justify-content-end"
+                            v-if="hasRole('Super Admin') || can('create price')"
+                        >
+                            <button
+                                id="add-price-btn"
+                                class="btn btn-primary"
+                                @click="() => (showModal = !showModal)"
+                                v-if="product.prices.length == 0"
+                            >
+                                Add Price
+                            </button>
+                        </div>
+                        <Dialog
+                            v-model:visible="showModal"
+                            modal
+                            :style="{ width: '50rem', marginTop: '4rem' }"
+                            :breakpoints="{
+                                '1199px': '75vw',
+                                '575px': '90vw'
+                            }"
+                            :draggable="false"
+                            position="top"
+                        >
+                            <template #header>
+                                <h3>Add new Price</h3>
+                            </template>
+                            <div class="mb-3">
+                                <label class="form-label">Code:</label>
+                                <input id="price-code" class="form-control" v-model="price.code" />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Cost</label>
+                                <InputPrice id="price-cost" v-model="price.cost" />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Price</label>
+                                <InputPrice id="price-price" v-model="price.net" />
+                            </div>
+
+                            <div class="d-flex justify-content-end">
+                                <button class="btn btn-secondary me-2" @click="() => (showModal = !showModal)">
+                                    Cancel
+                                </button>
+                                <button class="btn btn-primary" @click="savePrice()">Save</button>
+                            </div>
+                        </Dialog>
+                    </div>
+                </div>
+            </tab>
+        </tabs>
+        <div>
+            <PrimaryButton @click="saveProduct()"> Save </PrimaryButton>
         </div>
     </AuthenticatedLayout>
 </template>
+<style>
+.p-toggleswitch {
+    &.p-toggleswitch-checked {
+        &:has(.p-toggleswitch-input),
+        &:has(.p-toggleswitch-input:hover) {
+            .p-toggleswitch-slider {
+                background: var(--color-primary) !important;
+                .p-toggleswitch-handle {
+                    background: var(--white) !important;
+                }
+            }
+        }
+    }
+
+    &:has(.p-toggleswitch-input:hover) {
+        .p-toggleswitch-slider {
+            background: var(--bs-border-color) !important;
+        }
+    }
+
+    .p-toggleswitch-slider {
+        background: var(--white);
+        border-color: var(--color-grey);
+        .p-toggleswitch-handle {
+            background: var(--color-grey) !important;
+        }
+    }
+}
+
+.p-breadcrumb-item-link {
+    color: var(--color-black) !important;
+    font-weight: 500;
+}
+
+.form-label {
+    color: var(--color-black);
+    font-weight: 500;
+}
+
+.p-inputnumber-button {
+    &:hover {
+        background: none !important;
+    }
+}
+</style>

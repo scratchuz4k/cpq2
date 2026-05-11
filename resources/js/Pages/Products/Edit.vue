@@ -262,19 +262,9 @@ const items = ref([
     font-weight: 500;
 }
 
-#contract_term_value {
-    max-width: 120px;
-}
-
 .p-inputnumber-button {
     &:hover {
         background: none !important;
-    }
-}
-.custom-column-title {
-    &.p-datatable-column-title {
-        font-weight: 500;
-        color: var(--table-header-dark-grey) !important;
     }
 }
 </style>
