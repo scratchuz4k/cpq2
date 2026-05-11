@@ -1,21 +1,12 @@
 <script setup>
-import { reactive, ref, watch } from 'vue';
-import { can, hasRole } from '@composables/useAuth';
-import InputPrice from '@/Components/InputPrice.vue';
+import { reactive, ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
-import { DataTable, DatePicker } from 'primevue';
-import Column from 'primevue/column';
-import Button from 'primevue/button';
-import Dialog from 'primevue/dialog';
-import ToggleSwitch from 'primevue/toggleswitch';
-import Select from 'primevue/select';
-import RadioButton from 'primevue/radiobutton';
+import { DatePicker, ToggleSwitch, Select, RadioButton, InputNumber } from 'primevue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { DateTime } from 'luxon';
-import format from '@/Composables/format.js';
-import InputNumber from 'primevue/inputnumber';
 import axios from 'axios';
+import ProductPriceTable from '@/Components/Products/ProductPriceTable.vue';
 
 const props = defineProps({
     product: Object,
@@ -39,7 +30,6 @@ const showModal = ref(false);
 const prices = ref(product.prices);
 const categories = ref(product.categories ?? []);
 const steps = ref(product.steps ?? []);
-const editingRows = ref([]);
 
 const saveProduct = () => {
     let temp = {
@@ -77,52 +67,6 @@ const deleteProduct = async (id) => {
             }
         });
     });
-};
-
-const savePrice = async () => {
-    try {
-        let res = await axios.post(`/api/prices`, {
-            ...price,
-            net: parseFloat(price.net) ?? 0,
-            cost: parseFloat(price.cost) ?? 0
-        });
-        prices.value.push(res.data.data);
-        showModal.value = !showModal.value;
-    } catch (ex) {
-        notyf.error(ex.response.data.message);
-    }
-};
-
-const deletePrice = async (id) => {
-    let result = await swal.fire({
-        title: 'Are you sure?'
-    });
-
-    if (['cancel', 'backdrop'].includes(result.dismiss)) {
-        return;
-    }
-
-    try {
-        let index = prices.value.findIndex((e) => e.id == id);
-        await axios.delete(`/api/prices/${id}`);
-        prices.value.splice(index, 1);
-    } catch (ex) {
-        notyf.error(ex.response.data.message);
-    }
-};
-
-const onRowEditSave = async (event) => {
-    let { newData, index } = event;
-    try {
-        let res = await axios.put(`/api/prices/${newData.id}`, {
-            cost: parseFloat(newData.cost),
-            net: parseFloat(newData.net)
-        });
-        prices.value[index] = res.data.data;
-        notyf.success('Updated with success');
-    } catch (ex) {
-        notyf.error(ex.response.data.message);
-    }
 };
 
 const items = ref([
@@ -253,144 +197,7 @@ const items = ref([
                                         <p class="mb-3">
                                             Prices for this product, including any active special pricing agreements.
                                         </p>
-                                        <DataTable
-                                            v-model:editingRows="editingRows"
-                                            :value="prices"
-                                            editMode="row"
-                                            dataKey="id"
-                                            @row-edit-save="onRowEditSave"
-                                            :pt="{
-                                                column: {
-                                                    bodycell: ({ state }) => ({
-                                                        style:
-                                                            state['d_editing'] &&
-                                                            'padding-top: 0.75rem; padding-bottom: 0.75rem',
-                                                        class: 'small'
-                                                    }),
-                                                    headercell: {
-                                                        style: 'color: var(--table-header-dark-grey); background: var(--table-header-light-grey)',
-                                                        class: 'small'
-                                                    },
-                                                    columntitle: {
-                                                        class: 'custom-column-title'
-                                                    }
-                                                }
-                                            }"
-                                        >
-                                            <template #empty>
-                                                <div class="d-flex justify-content-end">
-                                                    <Button
-                                                        class="p-button p-component p-button-icon-only p-button-secondary p-button-rounded p-button-text"
-                                                        @click="() => (showModal = !showModal)"
-                                                    >
-                                                        <font-awesome-icon
-                                                            class="text-primary"
-                                                            :icon="['fas', 'plus']"
-                                                        />
-                                                    </Button>
-                                                </div>
-                                            </template>
-                                            <Column field="code" haeder="Code"></Column>
-                                            <Column field="cost" header="Cost">
-                                                <template #body="{ data, field }">
-                                                    {{ format.GBP(data[field]) }}
-                                                </template>
-                                                <template #editor="{ data, field }">
-                                                    <InputPrice v-model="data[field]" />
-                                                </template>
-                                            </Column>
-                                            <Column field="net" header="Net">
-                                                <template #body="{ data, field }">
-                                                    {{ format.GBP(data[field]) }}
-                                                </template>
-                                                <template #editor="{ data, field }">
-                                                    <InputPrice v-model="data[field]" />
-                                                </template>
-                                            </Column>
-                                            <Column field="net" header="Net SPA">
-                                                <template #body="{ data, field }">
-                                                    {{ format.GBP(data[field]) }}
-                                                </template>
-                                            </Column>
-                                            <Column field="active_spas" header="Active SPA">
-                                                <template #body="slotProps">
-                                                    <p v-for="item in slotProps.data.active_spas">
-                                                        {{ item.operation.code }}:
-                                                        {{
-                                                            item.percentage
-                                                                ? format.decimalPlaces(item.percentage) + '%'
-                                                                : format.GBP(item.margin)
-                                                        }}
-                                                    </p>
-                                                </template>
-                                            </Column>
-                                            <Column
-                                                :rowEditor="true"
-                                                v-if="hasRole('Super Admin') || can('update price')"
-                                                style="width: 5%"
-                                            >
-                                                <template #roweditoriniticon>
-                                                    <Button
-                                                        class="p-button p-component p-button-icon-only p-button-secondary p-button-rounded p-button-text p-datatable-row-editor-init"
-                                                        label="Button"
-                                                    >
-                                                        <font-awesome-icon
-                                                            class="text-primary"
-                                                            :icon="['far', 'pen-to-square']"
-                                                        />
-                                                    </Button>
-                                                </template>
-                                            </Column>
-                                            <Column
-                                                bodyStyle="text-align:center"
-                                                v-if="hasRole('Super Admin') || can('delete price')"
-                                                style="width: 5%"
-                                            >
-                                                <template #body="{ data }">
-                                                    <Button
-                                                        @click="deletePrice(data.id)"
-                                                        class="p-button p-component p-button-icon-only p-button-secondary p-button-rounded p-button-text p-datatable-row-editor-init"
-                                                        label="Button"
-                                                    >
-                                                        <font-awesome-icon :icon="['far', 'trash-can']" />
-                                                    </Button>
-                                                </template>
-                                            </Column>
-                                        </DataTable>
-                                        <Dialog
-                                            v-model:visible="showModal"
-                                            modal
-                                            :style="{ width: '50rem', marginTop: '4rem' }"
-                                            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
-                                            :draggable="false"
-                                            position="top"
-                                        >
-                                            <template #header>
-                                                <h3>Add new Price</h3>
-                                            </template>
-                                            <div class="mb-3">
-                                                <label class="form-label">Code:</label>
-                                                <input class="form-control" v-model="price.code" />
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Cost</label>
-                                                <InputPrice id="price-cost" v-model="price.cost" />
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Price</label>
-                                                <InputPrice id="price-price" v-model="price.net" />
-                                            </div>
-
-                                            <div class="d-flex justify-content-end">
-                                                <button
-                                                    class="btn btn-secondary me-2"
-                                                    @click="() => (showModal = !showModal)"
-                                                >
-                                                    Cancel
-                                                </button>
-                                                <button class="btn btn-primary" @click="savePrice()">Save</button>
-                                            </div>
-                                        </Dialog>
+                                        <ProductPriceTable v-model:prices="prices" :productId="product.id" />
                                     </div>
                                 </div>
                             </div>
