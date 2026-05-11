@@ -271,8 +271,8 @@ const items = ref([
                                                         style: 'color: var(--table-header-dark-grey); background: var(--table-header-light-grey)',
                                                         class: 'small'
                                                     },
-                                                    title: {
-                                                        class: 'fw-medium'
+                                                    columntitle: {
+                                                        class: 'custom-column-title'
                                                     }
                                                 }
                                             }"
@@ -357,18 +357,6 @@ const items = ref([
                                                 </template>
                                             </Column>
                                         </DataTable>
-                                        <!--                                        <div-->
-                                        <!--                                            class="mb-3 d-flex justify-content-end"-->
-                                        <!--                                            v-if="hasRole('Super Admin') || can('create price')"-->
-                                        <!--                                        >-->
-                                        <!--                                            <button-->
-                                        <!--                                                class="btn btn-primary"-->
-                                        <!--                                                @click="() => (showModal = !showModal)"-->
-                                        <!--                                                v-if="prices.length == 0"-->
-                                        <!--                                            >-->
-                                        <!--                                                Add Price-->
-                                        <!--                                            </button>-->
-                                        <!--                                        </div>-->
                                         <Dialog
                                             v-model:visible="showModal"
                                             modal
@@ -476,18 +464,10 @@ const items = ref([
         background: none !important;
     }
 }
-
-/*
-.p-datatable-header-cell {
-    background-color: #e8e8e8 !important;
-    border-top: 1px solid #dee2e6 !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-    font-weight: 500;
-    font-size: 12px;
-    line-height: 20px;
-    vertical-align: bottom;
-    color: var(--table-header-dark-grey) !important;
+.custom-column-title {
+    &.p-datatable-column-title {
+        font-weight: 500;
+        color: var(--table-header-dark-grey) !important;
+    }
 }
-*/
 </style>
