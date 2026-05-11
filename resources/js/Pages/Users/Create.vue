@@ -3,7 +3,7 @@ import { computed, reactive, ref } from 'vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router, usePage } from '@inertiajs/vue3';
-import Select from 'primevue/select';
+import { integerOnly, checkValue } from '@/Composables/input.js';
 import InputSelect from '@/Components/InputSelect.vue';
 import ToggleSwitch from 'primevue/toggleswitch';
 
@@ -115,6 +115,9 @@ const items = ref([
                         <input
                             id="user-commission-rate"
                             type="number"
+                            max="100"
+                            @keydown="integerOnly"
+                            @input="checkValue"
                             class="form-control"
                             v-model="form.commission_rate"
                         />

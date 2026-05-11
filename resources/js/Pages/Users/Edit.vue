@@ -5,7 +5,7 @@ import { Head, router, usePage } from '@inertiajs/vue3';
 import Permissions from '@/Components/Permissions.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import ToggleSwitch from 'primevue/toggleswitch';
-import Select from 'primevue/select';
+import { integerOnly, checkValue } from '@/Composables/input.js';
 import InputSelect from '@/Components/InputSelect.vue';
 
 const props = defineProps({
@@ -115,6 +115,9 @@ const items = ref([
                             <input
                                 id="user-commission-rate"
                                 type="number"
+                                max="100"
+                                @keydown="integerOnly"
+                                @input="checkValue"
                                 class="form-control"
                                 v-model="user.commission_rate"
                             />
