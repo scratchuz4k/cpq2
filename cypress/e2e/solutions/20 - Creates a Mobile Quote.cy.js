@@ -70,8 +70,10 @@ describe('Creates a Mobile Quote', () => {
 
         cy.get('#solution_type-mobile').click();
         cy.get('#btn-create-quote').click();
-        cy.get('#btn-product-0-add-1').click();
-        cy.get('#btn-product-1-add-1').click();
+
+        cy.selectOption('.sort-order-select', 'Highest Price');
+        cy.addProductAndVerifySummary('#btn-product-0-add-1');
+        cy.addProductAndVerifySummary('#btn-product-1-add-1');
         cy.wait(1000);
 
         cy.get('#current-step')
@@ -184,9 +186,11 @@ describe('Creates a Mobile Quote', () => {
         cy.get('#datatable-btn-0-show').click();
         let quote = { margin: null, commission: null, global: null };
 
-        cy.get('#input-margin-order').then(($input) => {
-            quote.margin = $input.val().trim();
-        });
+        cy.get('.commission-calculator .margin .value')
+            .first()
+            .then(($input) => {
+                quote.margin = $input.val().trim();
+            });
         cy.scrollTo('top', { duration: 500 });
 
         cy.get('#btn-MONTHLY-edit').click();
@@ -202,10 +206,11 @@ describe('Creates a Mobile Quote', () => {
 
         cy.wait(1000);
 
-        cy.get('#input-margin-order')
-            .invoke('val')
-            .then((val) => {
-                expect(val).to.not.equal(quote.margin);
+        cy.get('.commission-calculator .margin .value')
+            .first()
+            .invoke('text')
+            .then((text) => {
+                expect(text).to.not.equal(quote.margin);
             });
 
         cy.get('#btn-MONTHLY-remove').click();
@@ -256,6 +261,7 @@ describe('Creates a Mobile Quote', () => {
     it('Adds an addon to the Mobile quote and verifies it is in the quote', () => {
         cy.visit('/quotes');
         cy.get('#datatable-btn-0-edit').click();
+        cy.selectOption('.sort-order-select', 'Highest Price');
         cy.get('#step-1-search-products').clear().type(product.sku);
         cy.wait(1000);
         cy.get(`#input-product-0-quantity`).clear().type(1).blur();
@@ -264,7 +270,7 @@ describe('Creates a Mobile Quote', () => {
         cy.get('[id^="btn-addon-"][id$="-add-1"]').should('be.visible');
         // The product with the newly linked addon should be visible in step 1
         // Product is already in the quote (qty > 0), so the addon section is shown
-        cy.get('[id^="btn-addon-"][id$="-add-1"]').first().click();
+        cy.addProductAndVerifySummary('[id^="btn-addon-"][id$="-add-1"]');
 
         // Verify the addon quantity was incremented to 1
         cy.get('[id^="input-addon-"][id$="-quantity"]').first().should('have.value', '1');

@@ -135,7 +135,7 @@ createInertiaApp({
             pt: {
                 select: {
                     root: { class: 'form-select' },
-                    label: { class: 'p-0 w-100' },
+                    label: { class: 'ps-0 py-0 w-100' },
                     dropdown: { class: 'd-none' }
                 }
             }

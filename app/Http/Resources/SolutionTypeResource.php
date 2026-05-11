@@ -19,6 +19,9 @@ class SolutionTypeResource extends JsonResource
             return [];
         }
 
+        $tenant = $this->resource->tenant();
+        $info = $tenant ? $this->resource->tenant()->pivot->toArray() : [];
+
         $solutionType = null;
         foreach (SolutionTypesEnum::cases() as $case) {
             if ($case->value == $this->code) {
@@ -36,20 +39,19 @@ class SolutionTypeResource extends JsonResource
         $columns = [];
         if (file_exists($file)) {
             $data = require $file;
-            if (array_key_exists('component', $this->configs) && array_key_exists($this->configs['component'], $data)) {
-                $columns = $data[$this->configs['component']];
+            if (
+                $this->resource->tenant()
+                && array_key_exists('component', $this->tenant()->configs)
+                && array_key_exists($this->tenant()->configs['component'], $data)
+            ) {
+                $columns = $data[$this->tenant()->configs['component']];
             } else {
                 $columns = $data['DealMaker'];
             }
         }
 
         $table = $this->tables->first() ? $this->tables->first()->toArray() : [];
-        // if (! array_key_exists('has_custom_table', $this->configs) || ! $this->configs['has_custom_table']) {
-        //     $table['columns'] = (array) $columns;
-        // }
         $table['columns'] = (array) $columns;
-
-        $info = $this->resource->tenant() ? $this->resource->tenant()->pivot->toArray() : [];
 
         return [
             ...$this->resource->toArray(),

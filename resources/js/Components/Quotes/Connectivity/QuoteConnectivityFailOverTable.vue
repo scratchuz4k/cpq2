@@ -902,8 +902,8 @@ getArticles(false, true);
                                             article.providerKey === 'its' &&
                                             article.isContended === false
                                         "
-                                        title="ITS Managed Fibre Bright and Leased Lines include 24/7 availability monitoring and a 6-hour fix SLA. No router is supplied — where ITS provide the fibre an ONT is included; where third-party."
-                                        data-bs-original-title="ITS Managed Fibre Bright and Leased Lines include 24/7 availability monitoring and a 6-hour fix SLA. No router is supplied — where ITS provide the fibre an ONT is included; where third-party."
+                                        title="ITS managed service includes 24/7 monitoring and a 6-hour fix SLA, however no router is included. Instead, ITS-provided fibre includes an ONT (optical network terminal) while third-party fibre (e.g. Openreach) uses the carrier's own Network Termination Equipment (NTE)."
+                                        data-bs-original-title="ITS managed service includes 24/7 monitoring and a 6-hour fix SLA, however no router is included. Instead, ITS-provided fibre includes an ONT (optical network terminal) while third-party fibre (e.g. Openreach) uses the carrier's own Network Termination Equipment (NTE)."
                                         v-tooltip
                                     >
                                         {{
