@@ -55,10 +55,20 @@ describe('Creates a Mobile Quote', () => {
                 cy.get('#product-name').type(product.name);
                 cy.get('#product-sku').type(product.sku);
 
-                cy.selectLazyOption('product-steps', 'Plans');
-
                 cy.get('#btn-save-product').click();
                 cy.get('.notyf').contains('Created with Success');
+
+                cy.get('#settings').click();
+                cy.get('#link-steps').click();
+                cy.get('#datatable-search').type('Plans');
+                cy.wait(1000);
+                cy.get('#datatable-btn-0-edit').click();
+
+                cy.get('#1-1').click();
+                cy.selectLazyOption('select-product', product.name);
+                cy.get('#button-add-product-to-step').click();
+                cy.get('.notyf').contains('Product added with Success');
+                cy.get('.p-datatable-table').contains(product.name);
             }
         });
     });
@@ -243,7 +253,7 @@ describe('Creates a Mobile Quote', () => {
         cy.get('#datatable-search').clear().type(product.sku);
         cy.wait(1000);
         cy.get('#datatable-btn-0-edit').click();
-        cy.get('#tabs-product-edit-3-3').click();
+        cy.get('#tabs-product-edit-2-2').click();
         cy.get('#btn-add-addons').click();
         cy.get('#addons-search-global').type(addonProduct.sku);
         cy.get('#addons-table').should('not.contain', 'Loading');

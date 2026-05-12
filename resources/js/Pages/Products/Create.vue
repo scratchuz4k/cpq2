@@ -228,7 +228,7 @@ const items = ref([
             </tab>
         </tabs>
         <div>
-            <PrimaryButton @click="saveProduct()"> Save </PrimaryButton>
+            <PrimaryButton id="btn-save-product" @click="saveProduct()"> Save </PrimaryButton>
         </div>
     </AuthenticatedLayout>
 </template>
