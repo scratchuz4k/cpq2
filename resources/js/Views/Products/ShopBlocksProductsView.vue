@@ -103,7 +103,7 @@ const sorts = [
     }
 ];
 
-const sort = ref(sorts[3]);
+const sort = ref(sorts[0]);
 const step = ref(props.modelValue + 1);
 
 let abortController = null;
