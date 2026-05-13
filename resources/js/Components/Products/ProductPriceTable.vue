@@ -175,7 +175,7 @@ const onRowEditSave = async (event) => {
 
         <div class="mb-3">
             <label class="form-label">Code:</label>
-            <input class="form-control" v-model="price.code" />
+            <input id="price-code" class="form-control" v-model="price.code" />
         </div>
         <div class="mb-3">
             <label class="form-label">Cost</label>
