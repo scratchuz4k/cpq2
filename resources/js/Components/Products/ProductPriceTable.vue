@@ -66,6 +66,7 @@ const deletePrice = async (id) => {
         let index = prices.value.findIndex((e) => e === id || e.code == id);
         prices.value.splice(index, 1);
     }
+    Object.assign(price, { code: null, cost: 0, net: 0 });
 };
 
 const onRowEditSave = async (event) => {
