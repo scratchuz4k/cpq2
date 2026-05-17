@@ -20,12 +20,6 @@ const getUniqueSolutionTypes = (steps) => {
 };
 
 const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/settings' }, { label: 'Products' }]);
-
-onMounted(() => {
-    if (page.props.flash?.status) {
-        notyf.success(page.props.flash.status);
-    }
-});
 </script>
 <template>
     <Head title="Products" />
