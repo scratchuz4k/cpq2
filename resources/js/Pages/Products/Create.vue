@@ -19,7 +19,7 @@ const props = defineProps({
 
 const product = reactive({
     name: null,
-    price_plan_id: 1,
+    price_plan_id: null,
     supplier_id: null,
     sku: null,
     description: null,
@@ -144,7 +144,7 @@ const items = ref([
                                 <div class="col">
                                     <div class="mb-3">
                                         <label class="form-label">Price Plan</label>
-                                        <div class="d-flex flex-column">
+                                        <div class="d-flex flex-column-reverse">
                                             <div
                                                 v-for="plan in props.price_plans"
                                                 :key="plan.id"
@@ -169,6 +169,7 @@ const items = ref([
                                             <div class="col-3">
                                                 <InputNumber
                                                     v-model="product.contract_term_value"
+                                                    :disabled="product.price_plan_id !== 1"
                                                     :min="0"
                                                     :max="100"
                                                     :inputId="'contract_term_value'"
@@ -180,6 +181,7 @@ const items = ref([
                                             <div class="col-6">
                                                 <Select
                                                     v-model="product.contract_term_unit"
+                                                    :disabled="product.price_plan_id !== 1"
                                                     :inputId="'contract_term_unit'"
                                                     :inputClass="'my-auto'"
                                                     :options="contract_term_units"

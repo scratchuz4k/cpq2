@@ -177,6 +177,7 @@ const items = ref([
                                             <div class="col-3">
                                                 <InputNumber
                                                     v-model="product.contract_term_value"
+                                                    :disabled="product.price_plan_id !== 1"
                                                     :min="0"
                                                     :max="100"
                                                     :inputId="'contract_term_value'"
@@ -188,6 +189,7 @@ const items = ref([
                                             <div class="col-6">
                                                 <Select
                                                     v-model="product.contract_term_unit"
+                                                    :disabled="product.price_plan_id !== 1"
                                                     :inputId="'contract_term_unit'"
                                                     :inputClass="'my-auto'"
                                                     :options="contract_term_units"
