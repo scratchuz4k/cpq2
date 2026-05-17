@@ -1,18 +1,12 @@
 <script setup>
 import { reactive, ref } from 'vue';
-import { can, hasRole } from '@composables/useAuth';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
-import DataTable from 'primevue/datatable';
 import DatePicker from 'primevue/datepicker';
-import Column from 'primevue/column';
-import Dialog from 'primevue/dialog';
-import Button from 'primevue/button';
 import ToggleSwitch from 'primevue/toggleswitch';
 import Select from 'primevue/select';
 import { DateTime } from 'luxon';
 import InputSelectMultiple from '@/Components/InputSelectMultiple.vue';
-import InputPrice from '@/Components/InputPrice.vue';
 import Header from '@/Components/Header.vue';
 import ProductPriceTable from '@/Components/Products/ProductPriceTable.vue';
 import { InputNumber, RadioButton } from 'primevue';
@@ -21,12 +15,6 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 const props = defineProps({
     price_plans: Object,
     contract_term_units: Array
-});
-
-const price = reactive({
-    code: null,
-    cost: 0,
-    net: 0
 });
 
 const product = reactive({
@@ -41,8 +29,6 @@ const product = reactive({
     contract_term_unit: null
 });
 
-const editingRows = ref([]);
-const showModal = ref(false);
 const categories = ref([]);
 const steps = ref([]);
 
@@ -71,31 +57,6 @@ const saveProduct = () => {
     );
 };
 
-const savePrice = async () => {
-    let temp = {};
-    Object.assign(temp, price);
-    product.prices.push(temp);
-    Object.assign(price, { code: null, cost: 0, net: 0 });
-    showModal.value = !showModal.value;
-};
-
-const deletePrice = async (id) => {
-    let result = await swal.fire({
-        title: 'Are you sure?'
-    });
-
-    if (['cancel', 'backdrop'].includes(result.dismiss)) {
-        return;
-    }
-
-    product.prices.splice(0, 1);
-};
-
-const onRowEditSave = async (event) => {
-    let { newData, index } = event;
-    product.prices[index] = newData;
-};
-
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'Settings', url: '/settings' },
@@ -122,11 +83,21 @@ const items = ref([
                                     </div>
                                     <div class="mb-3">
                                         <label for="product-sku" class="form-label">SKU</label>
-                                        <input id="product-sku" class="form-control" v-model="product.sku" />
+                                        <input
+                                            id="product-sku"
+                                            class="form-control"
+                                            maxlength="255"
+                                            v-model="product.sku"
+                                        />
                                     </div>
                                     <div class="mb-3">
                                         <label for="product-name" class="form-label">Product</label>
-                                        <input id="product-name" class="form-control" v-model="product.name" />
+                                        <input
+                                            id="product-name"
+                                            class="form-control"
+                                            maxlength="255"
+                                            v-model="product.name"
+                                        />
                                     </div>
 
                                     <div class="mb-3">
@@ -194,23 +165,30 @@ const items = ref([
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Contract terms</label>
-                                        <div class="d-flex">
-                                            <InputNumber
-                                                v-model="product.contract_term_value"
-                                                :inputId="'contract_term_value'"
-                                                showButtons
-                                                class="me-3"
-                                            />
-                                            <Select
-                                                v-model="product.contract_term_unit"
-                                                :inputId="'contract_term_unit'"
-                                                :inputClass="'my-auto'"
-                                                :options="contract_term_units"
-                                                class="w-100"
-                                                optionLabel="value"
-                                                optionValue="name"
-                                                placeholder="Select an Unit"
-                                            />
+                                        <div class="row">
+                                            <div class="col-3">
+                                                <InputNumber
+                                                    v-model="product.contract_term_value"
+                                                    :min="0"
+                                                    :max="100"
+                                                    :inputId="'contract_term_value'"
+                                                    :inputClass="'w-100'"
+                                                    showButtons
+                                                    class="w-100"
+                                                />
+                                            </div>
+                                            <div class="col-6">
+                                                <Select
+                                                    v-model="product.contract_term_unit"
+                                                    :inputId="'contract_term_unit'"
+                                                    :inputClass="'my-auto'"
+                                                    :options="contract_term_units"
+                                                    class="h-100"
+                                                    optionLabel="value"
+                                                    optionValue="name"
+                                                    placeholder="Select an Unit"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="mb-3">

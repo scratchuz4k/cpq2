@@ -173,23 +173,30 @@ const items = ref([
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Contract terms</label>
-                                        <div class="d-flex">
-                                            <InputNumber
-                                                v-model="product.contract_term_value"
-                                                :inputId="'contract_term_value'"
-                                                showButtons
-                                                class="me-3"
-                                            />
-                                            <Select
-                                                v-model="product.contract_term_unit"
-                                                :inputId="'contract_term_unit'"
-                                                :inputClass="'my-auto'"
-                                                :options="contract_term_units"
-                                                class="w-100"
-                                                optionLabel="value"
-                                                optionValue="name"
-                                                placeholder="Select an Unit"
-                                            />
+                                        <div class="row">
+                                            <div class="col-3">
+                                                <InputNumber
+                                                    v-model="product.contract_term_value"
+                                                    :min="0"
+                                                    :max="100"
+                                                    :inputId="'contract_term_value'"
+                                                    :inputClass="'w-100'"
+                                                    showButtons
+                                                    class="w-100"
+                                                />
+                                            </div>
+                                            <div class="col-6">
+                                                <Select
+                                                    v-model="product.contract_term_unit"
+                                                    :inputId="'contract_term_unit'"
+                                                    :inputClass="'my-auto'"
+                                                    :options="contract_term_units"
+                                                    class="h-100"
+                                                    optionLabel="value"
+                                                    optionValue="name"
+                                                    placeholder="Select an Unit"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="mb-3">

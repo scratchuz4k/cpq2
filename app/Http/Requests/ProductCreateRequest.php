@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\ContractTermUnitsEnum;
 use App\Enums\ProductStatusesEnum;
 use App\Models\Product;
 use App\Rules\TenantExistsRule;
@@ -39,22 +40,16 @@ class ProductCreateRequest extends FormRequest
                 new TenantUniqueRule('products', 'sku'),
             ],
             'name' => 'required|string|max:255',
-            'supplier_id' => [
-                'nullable',
-                'numeric',
-                new TenantExistsRule('suppliers'),
-            ],
             'price_plan_id' => [
                 'required',
                 'numeric',
                 Rule::exists('price_plans', 'id'),
             ],
-            'steps' => [
-                'array', 'nullable',
-            ],
-            'steps.*' => [
-                'integer',
-                new TenantExistsRule('steps'),
+            'contract_term_value' => 'nullable|integer|between:1,100',
+            'contract_term_unit' => [
+                'nullable',
+                'required_with:contract_term_value',
+                Rule::enum(ContractTermUnitsEnum::class),
             ],
             'categories.*' => [
                 'integer',
