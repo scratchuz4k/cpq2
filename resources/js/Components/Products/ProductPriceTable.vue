@@ -16,6 +16,8 @@ const props = defineProps({
     }
 });
 
+const isLoading = ref(false);
+
 const prices = defineModel('prices', { required: true });
 
 const price = reactive({
@@ -29,6 +31,7 @@ const showModal = ref(false);
 const editingRows = ref([]);
 
 const savePrice = async () => {
+    isLoading.value = true;
     if (props.productId) {
         try {
             let res = await axios.post(`/api/prices`, {
@@ -48,6 +51,7 @@ const savePrice = async () => {
         Object.assign(price, { code: null, cost: 0, net: 0 });
         showModal.value = false;
     }
+    isLoading.value = false;
 };
 
 const deletePrice = async (id) => {
@@ -189,7 +193,7 @@ const onRowEditSave = async (event) => {
 
         <div class="d-flex justify-content-end">
             <button class="btn btn-secondary me-2" @click="showModal = false">Cancel</button>
-            <button class="btn btn-primary" @click="savePrice()">Save</button>
+            <button class="btn btn-primary" :disabled="isLoading" @click="savePrice()">Save</button>
         </div>
     </Dialog>
 </template>
