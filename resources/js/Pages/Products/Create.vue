@@ -19,7 +19,7 @@ const props = defineProps({
 
 const product = reactive({
     name: null,
-    price_plan_id: null,
+    price_plan_id: 1,
     supplier_id: null,
     sku: null,
     description: null,
@@ -239,11 +239,6 @@ const items = ref([
             background: var(--color-grey) !important;
         }
     }
-}
-
-.p-breadcrumb-item-link {
-    color: var(--color-black) !important;
-    font-weight: 500;
 }
 
 .form-label {

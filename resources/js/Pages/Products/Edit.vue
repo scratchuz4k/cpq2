@@ -261,11 +261,6 @@ const items = ref([
     }
 }
 
-.p-breadcrumb-item-link {
-    color: var(--color-black) !important;
-    font-weight: 500;
-}
-
 .form-label {
     color: var(--color-black);
     font-weight: 500;
