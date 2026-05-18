@@ -37,6 +37,9 @@ describe('Manage Products Step relation', () => {
             cy.get('#product-sku').type(product.sku);
             cy.get('#product-name').type(product.name);
 
+            cy.get('#contract_term_value').type('100');
+            cy.selectOption('#contract_term_unit', 'Days');
+
             cy.get('#btn-save-product').click();
             cy.get('.notyf').contains('Created with Success');
 

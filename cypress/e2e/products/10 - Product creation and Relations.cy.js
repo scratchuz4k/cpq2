@@ -51,6 +51,9 @@ describe('Creates products and associates Category.cy', () => {
 
                 cy.selectLazyOption('product-categories', category.name);
 
+                cy.get('#contract_term_value').type('100');
+                cy.selectOption('#contract_term_unit', 'Days');
+
                 cy.get('#btn-save-product').click();
                 cy.get('.notyf').contains('Created with Success');
             }
@@ -68,6 +71,9 @@ describe('Creates products and associates Category.cy', () => {
 
                 cy.get('#product-name').type(addonsProduct.name);
                 cy.get('#product-sku').type(addonsProduct.sku);
+
+                cy.get('#contract_term_value').type('100');
+                cy.selectOption('#contract_term_unit', 'Days');
 
                 cy.get('#btn-save-product').click();
                 cy.get('.notyf').contains('Created with Success');
@@ -114,12 +120,20 @@ describe('Validates same-step product link restriction', () => {
         cy.get('#product-create-btn').click();
         cy.get('#product-name').type(sameStepParent.name);
         cy.get('#product-sku').type(sameStepParent.sku);
+
+        cy.get('#contract_term_value').type('100');
+        cy.selectOption('#contract_term_unit', 'Days');
+
         cy.get('#btn-save-product').click();
         cy.get('.notyf').contains('Created with Success');
 
         cy.get('#product-create-btn').click();
         cy.get('#product-name').type(sameStepChild.name);
         cy.get('#product-sku').type(sameStepChild.sku);
+
+        cy.get('#contract_term_value').type('100');
+        cy.selectOption('#contract_term_unit', 'Days');
+
         cy.get('#btn-save-product').click();
         cy.get('.notyf').contains('Created with Success');
 

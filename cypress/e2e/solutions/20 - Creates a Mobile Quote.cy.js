@@ -55,6 +55,9 @@ describe('Creates a Mobile Quote', () => {
                 cy.get('#product-name').type(product.name);
                 cy.get('#product-sku').type(product.sku);
 
+                cy.get('#contract_term_value').type('100');
+                cy.selectOption('#contract_term_unit', 'Days');
+
                 cy.get('#btn-save-product').click();
                 cy.get('.notyf').contains('Created with Success');
 
@@ -245,6 +248,10 @@ describe('Creates a Mobile Quote', () => {
                 cy.get('#product-create-btn').click();
                 cy.get('#product-name').type(addonProduct.name);
                 cy.get('#product-sku').type(addonProduct.sku);
+
+                cy.get('#contract_term_value').type('100');
+                cy.selectOption('#contract_term_unit', 'Days');
+
                 cy.get('#btn-save-product').click();
                 cy.get('.notyf').contains('Created with Success');
             }

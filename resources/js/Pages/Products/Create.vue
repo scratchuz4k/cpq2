@@ -67,148 +67,154 @@ const items = ref([
 <template>
     <Head title="New Product" />
     <AuthenticatedLayout>
-        <Header title="New Product" :breadcrumbs="items" />
-        <tabs class="mt-3">
-            <tab title="General" :selected="true">
-                <div class="row">
-                    <div class="col-6 px-0">
-                        <div class="panel my-4">
-                            <h3 class="fw-semibold">Product details</h3>
-                            <p class="my-3">Product overview including general information.</p>
-                            <div class="my-4">
-                                <div class="col-6">
-                                    <div class="mb-3 d-flex flex-column">
-                                        <label class="form-label" for="active-filter"> Active: </label>
-                                        <ToggleSwitch id="active-filter" v-model="product.is_active" />
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="product-sku" class="form-label">SKU</label>
-                                        <input
-                                            id="product-sku"
-                                            class="form-control"
-                                            maxlength="255"
-                                            v-model="product.sku"
-                                        />
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="product-name" class="form-label">Product</label>
-                                        <input
-                                            id="product-name"
-                                            class="form-control"
-                                            maxlength="255"
-                                            v-model="product.name"
-                                        />
-                                    </div>
+        <div class="panel">
+            <Header title="New Product" :breadcrumbs="items" />
+            <tabs class="mt-3">
+                <tab title="General" :selected="true">
+                    <div class="row">
+                        <div class="col-6 px-0">
+                            <div class="panel my-4">
+                                <h3 class="fw-semibold">Product details</h3>
+                                <p class="my-3">Product overview including general information.</p>
+                                <div class="my-4">
+                                    <div class="col-6">
+                                        <div class="mb-3 d-flex flex-column">
+                                            <label class="form-label" for="active-filter"> Active: </label>
+                                            <ToggleSwitch id="active-filter" v-model="product.is_active" />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="product-sku" class="form-label">SKU</label>
+                                            <input
+                                                id="product-sku"
+                                                class="form-control"
+                                                maxlength="255"
+                                                v-model="product.sku"
+                                            />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="product-name" class="form-label">Product</label>
+                                            <input
+                                                id="product-name"
+                                                class="form-control"
+                                                maxlength="255"
+                                                v-model="product.name"
+                                            />
+                                        </div>
 
-                                    <div class="mb-3">
-                                        <label for="product-description" class="form-label">Description</label>
-                                        <textarea
-                                            id="product-description"
-                                            class="form-control"
-                                            v-model="product.description"
-                                            >{{ product.description }}</textarea
-                                        >
-                                    </div>
+                                        <div class="mb-3">
+                                            <label for="product-description" class="form-label">Description</label>
+                                            <textarea
+                                                id="product-description"
+                                                class="form-control"
+                                                v-model="product.description"
+                                                >{{ product.description }}</textarea
+                                            >
+                                        </div>
 
-                                    <div class="mb-3">
-                                        <label for="product-categories" class="form-label">Category</label>
-                                        <InputSelectMultiple
-                                            id="product-categories"
-                                            url="/categories"
-                                            :fields="['name']"
-                                            v-model="categories"
-                                            placeholder="Select a Category"
-                                            :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
-                                        >
-                                        </InputSelectMultiple>
-                                    </div>
+                                        <div class="mb-3">
+                                            <label for="product-categories" class="form-label">Category</label>
+                                            <InputSelectMultiple
+                                                id="product-categories"
+                                                url="/categories"
+                                                :fields="['name']"
+                                                v-model="categories"
+                                                placeholder="Select a Category"
+                                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                                            >
+                                            </InputSelectMultiple>
+                                        </div>
 
-                                    <div class="mb-3">
-                                        <label for="product-expires_at" class="form-label">Expiration date</label>
-                                        <DatePicker
-                                            id="expire-date"
-                                            class="w-100"
-                                            v-model="product.expires_at"
-                                            placeholder="Expires At"
-                                            showIcon
-                                            iconDisplay="input"
-                                            dateFormat="dd/mm/yy"
-                                        />
+                                        <div class="mb-3">
+                                            <label for="product-expires_at" class="form-label">Expiration date</label>
+                                            <DatePicker
+                                                id="expire-date"
+                                                class="w-100"
+                                                v-model="product.expires_at"
+                                                placeholder="Expires At"
+                                                showIcon
+                                                iconDisplay="input"
+                                                dateFormat="dd/mm/yy"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="panel my-4 pb-1">
-                            <h3 class="fw-semibold">Prices</h3>
-                            <div class="my-4">
-                                <div class="col">
-                                    <div class="mb-3">
-                                        <label class="form-label">Price Plan</label>
-                                        <div class="d-flex flex-column-reverse">
-                                            <div
-                                                v-for="plan in props.price_plans"
-                                                :key="plan.id"
-                                                class="d-flex items-center gap-2 mb-2"
-                                            >
-                                                <RadioButton
-                                                    :inputId="'price_plan_' + plan.id"
-                                                    :value="plan.id"
-                                                    v-model="product.price_plan_id"
-                                                    name="dynamic"
-                                                    class="my-auto"
-                                                />
-                                                <label class="form-label ms-2 mb-0 fs-6" :for="'price_plan_' + plan.id">
-                                                    {{ plan.name }}</label
+                            <div class="panel my-4 pb-1">
+                                <h3 class="fw-semibold">Prices</h3>
+                                <div class="my-4">
+                                    <div class="col">
+                                        <div class="mb-3">
+                                            <label class="form-label">Price Plan</label>
+                                            <div class="d-flex flex-column-reverse">
+                                                <div
+                                                    v-for="plan in props.price_plans"
+                                                    :key="plan.id"
+                                                    class="d-flex items-center gap-2 mb-2"
                                                 >
+                                                    <RadioButton
+                                                        :inputId="'price_plan_' + plan.id"
+                                                        :value="plan.id"
+                                                        v-model="product.price_plan_id"
+                                                        name="dynamic"
+                                                        class="my-auto"
+                                                    />
+                                                    <label
+                                                        class="form-label ms-2 mb-0 fs-6"
+                                                        :for="'price_plan_' + plan.id"
+                                                    >
+                                                        {{ plan.name }}</label
+                                                    >
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Contract terms</label>
-                                        <div class="row">
-                                            <div class="col-3">
-                                                <InputNumber
-                                                    v-model="product.contract_term_value"
-                                                    :disabled="product.price_plan_id !== 1"
-                                                    :min="0"
-                                                    :max="100"
-                                                    :inputId="'contract_term_value'"
-                                                    :inputClass="'w-100'"
-                                                    showButtons
-                                                    class="w-100"
-                                                />
-                                            </div>
-                                            <div class="col-6">
-                                                <Select
-                                                    v-model="product.contract_term_unit"
-                                                    :disabled="product.price_plan_id !== 1"
-                                                    :inputId="'contract_term_unit'"
-                                                    :inputClass="'my-auto'"
-                                                    :options="contract_term_units"
-                                                    class="h-100"
-                                                    optionLabel="value"
-                                                    optionValue="name"
-                                                    placeholder="Select an Unit"
-                                                />
+                                        <div class="mb-3">
+                                            <label class="form-label">Contract terms</label>
+                                            <div class="row">
+                                                <div class="col-3">
+                                                    <InputNumber
+                                                        v-model="product.contract_term_value"
+                                                        :disabled="product.price_plan_id !== 1"
+                                                        :min="0"
+                                                        :max="100"
+                                                        :inputId="'contract_term_value'"
+                                                        :inputClass="'w-100'"
+                                                        showButtons
+                                                        class="w-100"
+                                                    />
+                                                </div>
+                                                <div class="col-6">
+                                                    <Select
+                                                        v-model="product.contract_term_unit"
+                                                        :disabled="product.price_plan_id !== 1"
+                                                        :inputId="'contract_term_unit'"
+                                                        :inputClass="'my-auto'"
+                                                        :options="contract_term_units"
+                                                        class="h-100"
+                                                        optionLabel="value"
+                                                        optionValue="name"
+                                                        placeholder="Select an Unit"
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Price</label>
-                                        <p class="mb-3">
-                                            Prices for this product, including any active special pricing agreements.
-                                        </p>
-                                        <ProductPriceTable v-model:prices="product.prices" />
+                                        <div class="mb-3">
+                                            <label class="form-label">Price</label>
+                                            <p class="mb-3">
+                                                Prices for this product, including any active special pricing
+                                                agreements.
+                                            </p>
+                                            <ProductPriceTable v-model:prices="product.prices" />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </tab>
-        </tabs>
-        <div>
-            <PrimaryButton id="btn-save-product" @click="saveProduct()"> Save </PrimaryButton>
+                </tab>
+            </tabs>
+            <div>
+                <PrimaryButton id="btn-save-product" @click="saveProduct()"> Save </PrimaryButton>
+            </div>
         </div>
     </AuthenticatedLayout>
 </template>

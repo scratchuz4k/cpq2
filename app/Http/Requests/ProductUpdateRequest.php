@@ -8,7 +8,6 @@ use App\Rules\TenantExistsRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\RequiredIf;
 
 class ProductUpdateRequest extends FormRequest
 {
@@ -47,15 +46,13 @@ class ProductUpdateRequest extends FormRequest
             ],
             'price_plan_id' => 'exists:price_plans,id',
             'contract_term_value' => [
-                'nullable',
+                Rule::requiredIf(fn () => $this->input('price_plan_id') == 1),
                 'integer',
                 'between:1,100',
-                new RequiredIf($this->price_plan_id === 1),
             ],
             'contract_term_unit' => [
-                'nullable',
-                new RequiredIf($this->price_plan_id === 1),
-                Rule::enum(ContractTermUnitsEnum::class),
+                Rule::requiredIf(fn () => $this->input('price_plan_id') == 1),
+                Rule::in(ContractTermUnitsEnum::names()),
             ],
         ];
     }
