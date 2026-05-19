@@ -1,12 +1,26 @@
 <script setup>
 import { quote } from '@/Composables/useQuote.js';
 import { computed } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
+import format from '@/Composables/format.js';
+
+const page = usePage();
+const quote_expiration_days = page.props.tenant.configurations?.quote_expiration_days;
+
+const props = defineProps({
+    showExpireData: {
+        required: false,
+        default: false
+    }
+});
 
 const contactInfo = computed(() =>
     [
         quote.account?.main_contact?.phone ? `Contact Number: ${quote.account.main_contact.phone}` : null,
-        quote.account?.main_contact?.email ? `Email: ${quote.account.main_contact.email}` : null
+        quote.account?.main_contact?.email ? `Email: ${quote.account.main_contact.email}` : null,
+        props.showExpireData
+            ? `This quote will expire on: ${format.expireDate(quote.created_at, quote_expiration_days)}`
+            : null
     ]
         .filter(Boolean)
         .join(' | ')
