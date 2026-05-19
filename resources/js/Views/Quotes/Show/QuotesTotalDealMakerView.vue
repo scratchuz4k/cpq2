@@ -41,7 +41,17 @@ const items = ref([
     <div class="panel panel-mobile">
         <div class="row justify-content-between">
             <div class="col-lg-8 mb-5 price-summary">
-                <Header title="Build your deal" :breadcrumbs="items"></Header>
+                <Header title="Quote Overview" :breadcrumbs="items">
+                    <template #badge>
+                        <span
+                            :id="'quote-' + quote.id + '-status'"
+                            class="badge badge-quote-status rounded-pill ms-2"
+                            :class="`${quote.status.toLowerCase()}`"
+                        >
+                            {{ quote.status }}
+                        </span>
+                    </template>
+                </Header>
                 <ContactInfo />
                 <div
                     class="row"

@@ -1,9 +1,10 @@
 <template>
     <div class="d-flex justify-content-between align-items-center pb-1">
-        <!--style="border-bottom: 1px solid lightgray; " -->
         <div class="d-flex justify-content-between" style="justify-content: space-between">
-            <h1 id="page-title" class="m-0 font-bold">{{ title }}</h1>
-            <!--<span>.</span>-->
+            <h1 id="page-title" class="m-0 font-bold text-break">{{ title }}</h1>
+            <div class="d-block my-auto ms-4">
+                <slot name="badge"></slot>
+            </div>
         </div>
         <div>
             <slot name="buttons"></slot>

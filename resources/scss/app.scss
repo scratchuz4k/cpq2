@@ -145,6 +145,27 @@ body {
         padding: 4px 12px;
         font-size: 12px;
     }
+
+    .badge-quote-status {
+        color: var(--white);
+        border-radius: 16px;
+        padding: 4px 12px;
+        font-size: 12px;
+        background-color: var(--color-secondary);
+
+        &.pending {
+            background-color: var(--badge-status-pending);
+        }
+        &.approved {
+            background-color: var(--badge-status-approved);
+        }
+        &.completed {
+            background-color: var(--badge-status-completed);
+        }
+        &.rejected {
+            background-color: var(--badge-status-rejected);
+        }
+    }
 }
 
 #app {
