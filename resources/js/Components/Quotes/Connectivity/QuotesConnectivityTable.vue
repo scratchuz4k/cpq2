@@ -53,7 +53,7 @@ const filters = reactive({
         value: quote.configs?.bearer ?? null,
         name: 'Bearer'
     },
-    speed: {
+    formattedSpeed: {
         operator: 'greater_than_or_equal_to',
         value: quote.configs?.speed ?? null,
         name: 'Speed'
@@ -70,7 +70,7 @@ const filterList = reactive({
     connectivitySupplierGroup: [],
     contractTermMonths: [],
     bearer: [],
-    speed: []
+    formattedSpeed: []
 });
 
 const meta = reactive({
@@ -150,9 +150,12 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
 
         Object.assign(filterList, res.data.filters);
 
-        const configSpeed = quote.configs?.speed;
-        if (configSpeed && !Object.prototype.hasOwnProperty.call(filterList.speed, configSpeed)) {
-            filterList.speed[configSpeed] = 0;
+        const configFormattedSpeed = quote.configs?.formattedSpeed;
+        if (
+            configFormattedSpeed &&
+            !Object.prototype.hasOwnProperty.call(filterList.formattedSpeed, configFormattedSpeed)
+        ) {
+            filterList.formattedSpeed[configFormattedSpeed] = 0;
         }
 
         const configBearer = quote.configs?.bearer;
@@ -179,7 +182,7 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
         filterList.bearer = bearerFilters;
 
         let speedFilters = [];
-        Object.keys(filterList.speed).forEach((key) => {
+        Object.keys(filterList.formattedSpeed).forEach((key) => {
             if (key !== 'null') {
                 speedFilters.push({
                     label: format.speed(key),
@@ -187,7 +190,7 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
                 });
             }
         });
-        filterList.speed = speedFilters;
+        filterList.formattedSpeed = speedFilters;
 
         let contractLengthsFilters = [];
         Object.keys(filterList.contractTermMonths).forEach((key) => {
@@ -480,9 +483,9 @@ onMounted(() => {
                                 <label for="filter-contract" class="form-label">Min. Speed</label>
                                 <Select
                                     id="speed-multiselect"
-                                    v-model="filters['speed'].value"
+                                    v-model="filters['formattedSpeed'].value"
                                     style="width: 100%"
-                                    :options="filterList.speed"
+                                    :options="filterList.formattedSpeed"
                                     optionLabel="label"
                                     optionValue="value"
                                     placeholder="All"

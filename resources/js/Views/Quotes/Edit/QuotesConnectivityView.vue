@@ -62,7 +62,6 @@ import { ref, watch, watchEffect } from 'vue';
 import { getQuote, quote } from '@/Composables/useQuote';
 import { remove, addons, isLoading, checks } from '@/Composables/useConnectivityItem';
 import axios from 'axios';
-import StepActionBar from '@/Components/Steps/StepActionBar.vue';
 import { actionBarButtons } from '@/Composables/useQuoteSteps.js';
 
 const props = defineProps({

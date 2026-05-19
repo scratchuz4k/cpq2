@@ -19,7 +19,7 @@ class CloudMarketConnectivityProducts extends CloudMarket
         'connectivitySupplierGroup' => [],
         'contractTermMonths' => [],
         'bearer' => [],
-        'speed' => [],
+        'formattedSpeed' => [],
         'isManaged' => [],
     ];
 
@@ -62,7 +62,7 @@ class CloudMarketConnectivityProducts extends CloudMarket
             $temp['providerName'] = $temp['providerName'] == 'Virtual1' ? 'PXC' : $temp['providerName'];
             $temp['connectivitySupplierName'] = $supplierName;
             $temp['connectivitySupplierGroup'] = $this->getConsolidatedProviderGroup($supplierName);
-            $temp['speed'] = ceil($temp['speed'] / 100) * 100;
+            $temp['formattedSpeed'] = floor($temp['speed'] / 100) * 100;
             $temp['code'] = '';
             foreach (array_keys($temp) as $itemKey) {
                 if (! (is_string($temp[$itemKey]) || is_numeric($temp[$itemKey]))) {
