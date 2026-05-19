@@ -35,7 +35,7 @@ const items = ref([
 </script>
 <template>
     <Header title="Create a quote" :breadcrumbs="items"></Header>
-    <InfoConnectivity v-if="!preview" :quote="quote"></InfoConnectivity>
+    <ContactInfo />
     <div class="row" v-if="warningProviders.find((x) => x.is_present) || quote.items.some((x) => !x.is_margin_valid)">
         <div class="col">
             <InfoBox class="mb-4 py-0" severity="danger">

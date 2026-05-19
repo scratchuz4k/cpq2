@@ -278,23 +278,6 @@ watch(
 <template>
     <div id="mobile_step_shopblocks" class="step">
         <div class="row mb-3">
-            <h5>
-                {{
-                    `Quote ${quote.id} for ${quote.account?.main_contact?.primary_contact_name ?? quote?.account?.name}`
-                }}
-            </h5>
-            <p v-if="quote.account.main_contact" class="fw-medium">
-                {{
-                    [
-                        quote.account.main_contact.phone ? `Contact Number: ${quote.account.main_contact.phone}` : null,
-                        quote.account.main_contact.email ? `Email: ${quote.account.main_contact.email}` : null
-                    ]
-                        .filter(Boolean)
-                        .join(' | ')
-                }}
-            </p>
-        </div>
-        <div class="row mb-3">
             <div class="col-9 d-flex justify-content-between align-items-center">
                 <h3 class="mb-0">{{ step }}. {{ quote.solution_type.code == 4 ? 'Handsets' : 'Hardware' }}</h3>
                 <div class="d-flex">
