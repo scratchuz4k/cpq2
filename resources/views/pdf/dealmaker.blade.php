@@ -65,6 +65,13 @@
         )['name'] ?? null;
     }
 
+    function formatUKPhone(string $number): string
+    {
+        $digits = preg_replace('/\D/', '', $number);
+        $withoutLeadingZero = str_starts_with($digits, '0') ? substr($digits, 1) : $digits;
+        return "+44 (0){$withoutLeadingZero}";
+    }
+
     $discounts = [
         'quote' => getDiscount($quote, 'App\Models\Quote', $quote['uuid']),
         'one_off' => getDiscount($quote, 'App\Models\PricePlan', 'SINGLE'),
@@ -152,20 +159,24 @@
                 @endif
             </div>
             <div class="col text-end" id="header_right">
-                <p>{{ $quote['account']['name'] }}<br>{{ $quote['address_data']['label'] ?? '' }}</p>
-                <p>Tel: +44 (0) 191 300 700</p>
-                <p>Email: sales@example.com</p>
+                <p>{{ $quote['account']['main_contact']['primary_contact_name'] ?? $quote['account']['name'] }}<br>{{ $quote['address_data']['label'] ?? '' }}</p>
+                @if($quote['account']['main_contact']['phone'])
+                    <p>Tel: {{ formatUKPhone($quote['account']['main_contact']['phone']) }}</p>
+                @endif
+                @if($quote['account']['main_contact']['email'])
+                    <p>Email: {{ $quote['account']['main_contact']['email'] }}</p>
+                @endif
             </div>
         </div>
         <div class="row mt-4">
             <div class="col">
                 <div class="d-flex">
-                    <h1 class="mb-1">Quote Q-{{ $quote['id'] }}</h1>
-                    @if ($quote['status'] === 'EXPIRED')
-                        <span class="badge border border-secondary text-secondary opacity-75 ms-4 lh-sm my-auto">
-                            {{ $quote['status'] }}
-                        </span>
-                    @endif
+                    <h1 class="mb-1">Quote #{{ $quote['id'] }}</h1>
+                    <span
+                        class="badge badge-quote-status rounded-pill ms-2 my-auto {{ mb_strtolower($quote['status']) }}"
+                    >
+                    {{ $quote['status'] }}
+                </span>
                 </div>
 
 
