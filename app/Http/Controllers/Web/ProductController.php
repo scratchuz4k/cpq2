@@ -46,7 +46,7 @@ class ProductController extends BaseController
     public function create()
     {
         return Inertia::render('Products/Create', [
-            'price_plans' => PricePlan::all(),
+            'price_plans' => PricePlan::orderBy('code', 'desc')->get(),
             'contract_term_units' => ContractTermUnitsEnum::asArray(),
         ]);
     }
@@ -81,7 +81,7 @@ class ProductController extends BaseController
 
         return Inertia::render('Products/Edit', [
             'product' => ProductResource::make($product->load(['prices', 'categories', 'steps']))->resolve(),
-            'price_plans' => PricePlan::all(),
+            'price_plans' => PricePlan::orderBy('code', 'desc')->get(),
             'contract_term_units' => ContractTermUnitsEnum::asArray(),
         ]);
     }

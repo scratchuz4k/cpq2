@@ -47,11 +47,13 @@ class ProductCreateRequest extends FormRequest
             ],
             'contract_term_value' => [
                 Rule::requiredIf(fn () => $this->input('price_plan_id') == 1),
+                'nullable',
                 'integer',
                 'between:1,100',
             ],
             'contract_term_unit' => [
                 Rule::requiredIf(fn () => $this->input('price_plan_id') == 1),
+                'nullable',
                 Rule::in(ContractTermUnitsEnum::names()),
             ],
             'categories.*' => [

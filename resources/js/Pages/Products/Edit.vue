@@ -1,11 +1,10 @@
 <script setup>
-import { reactive, ref } from 'vue';
+import { reactive, ref, watch } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { DatePicker, ToggleSwitch, Select, RadioButton, InputNumber } from 'primevue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { DateTime } from 'luxon';
-import axios from 'axios';
 import ProductPriceTable from '@/Components/Products/ProductPriceTable.vue';
 
 const props = defineProps({
@@ -75,6 +74,16 @@ const items = ref([
     { label: 'Products', url: '/products' },
     { label: 'Edit Product' }
 ]);
+
+watch(
+    () => product.price_plan_id,
+    (newVal) => {
+        if (newVal !== 1) {
+            product.contract_term_unit = null;
+            product.contract_term_value = null;
+        }
+    }
+);
 </script>
 <template>
     <Head :title="'Edit Products: ' + product.name" />

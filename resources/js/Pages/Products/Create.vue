@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref } from 'vue';
+import { reactive, ref, watch } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import DatePicker from 'primevue/datepicker';
@@ -63,6 +63,16 @@ const items = ref([
     { label: 'Products', url: '/products' },
     { label: 'New Product' }
 ]);
+
+watch(
+    () => product.price_plan_id,
+    (newVal) => {
+        if (newVal !== 1) {
+            product.contract_term_unit = null;
+            product.contract_term_value = null;
+        }
+    }
+);
 </script>
 <template>
     <Head title="New Product" />
@@ -145,7 +155,7 @@ const items = ref([
                                     <div class="col">
                                         <div class="mb-3">
                                             <label class="form-label">Price Plan</label>
-                                            <div class="d-flex flex-column-reverse">
+                                            <div class="d-flex flex-column">
                                                 <div
                                                     v-for="plan in props.price_plans"
                                                     :key="plan.id"
