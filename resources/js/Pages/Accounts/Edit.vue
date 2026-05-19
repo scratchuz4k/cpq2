@@ -8,6 +8,7 @@ import AccordionHeader from 'primevue/accordionheader';
 import AccordionContent from 'primevue/accordioncontent';
 import { ref, reactive } from 'vue';
 import ToggleSwitch from 'primevue/toggleswitch';
+import InputMask from 'primevue/inputmask';
 
 const props = defineProps({
     account: Object
@@ -120,6 +121,15 @@ const items = ref([
                                     :id="'contact-email-' + key"
                                     class="form-control"
                                     v-model="contact.email"
+                                />
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label :for="'contact-phone-' + key" class="form-label"> Phone: </label>
+                                <InputMask
+                                    id="uk-phone"
+                                    class="form-control"
+                                    v-model="contact.phone"
+                                    mask="09999 999999"
                                 />
                             </div>
                             <div class="col-6 mb-3">
