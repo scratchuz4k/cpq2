@@ -386,6 +386,12 @@ const items = ref([
                 >
                     <ProductAddonManage v-model="product" />
                 </tab>
+
+                <tab
+                    :title="`Bundles <span class='badge badge-primary rounded-pill ms-2'>${product.bundles.length}</span>`"
+                >
+                    <ProductBundleManage v-model="product" />
+                </tab>
             </tabs>
         </div>
     </AuthenticatedLayout>
