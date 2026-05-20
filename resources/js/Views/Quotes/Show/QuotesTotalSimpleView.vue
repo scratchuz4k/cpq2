@@ -45,7 +45,7 @@ const items = ref([
             </span>
         </template>
     </Header>
-    <ContactInfo :showExpireData="true" />
+    <ContactInfo />
     <div class="row" v-if="warningProviders.find((x) => x.is_present) || quote.items.some((x) => !x.is_margin_valid)">
         <div class="col">
             <InfoBox class="mb-4 py-0" severity="danger">
