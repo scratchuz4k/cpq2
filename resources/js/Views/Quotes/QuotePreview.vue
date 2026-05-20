@@ -43,19 +43,19 @@ let view = component && Object.keys(solutionsViews).includes(component) ? soluti
                     <AppLogo type="logo_docs" :class="'preview-logo'"></AppLogo>
                 </div>
                 <div class="col text-end" id="header_right">
-                    <p>{{ quote.account?.name }}<br />{{ quote.address_data?.label }}</p>
-                    <p>Tel: +44 (0) 191 300 700</p>
-                    <p>Email: sales@example.com</p>
+                    <p>
+                        {{ quote.account?.main_contact?.primary_contact_name ?? quote.account?.name }}
+                        <br />
+                        {{ quote.address_data?.label }}
+                    </p>
+                    <p v-if="quote.account?.main_contact?.phone">
+                        Tel: {{ format.formatUKPhone(quote.account.main_contact.phone) }}
+                    </p>
+                    <p v-if="quote.account?.main_contact?.email">Email: {{ quote.account.main_contact.email }}</p>
                 </div>
             </div>
             <div class="mt-4 d-flex">
-                <h1 class="mb-1 w-auto">Quote Q-{{ quote.id }}</h1>
-                <span
-                    v-if="quote.status === 'EXPIRED'"
-                    class="badge border border-secondary text-secondary opacity-75 ms-4 lh-sm my-auto"
-                >
-                    {{ quote.status }}
-                </span>
+                <h1 class="mb-1 w-auto">Quote #{{ quote.id }}</h1>
             </div>
             <div class="row mb-3">
                 <div class="col">

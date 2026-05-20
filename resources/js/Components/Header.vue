@@ -1,9 +1,10 @@
 <template>
     <div class="d-flex justify-content-between align-items-center pb-1">
-        <!--style="border-bottom: 1px solid lightgray; " -->
         <div class="d-flex justify-content-between" style="justify-content: space-between">
-            <h1 id="page-title" class="m-0 font-bold">{{ title }}</h1>
-            <!--<span>.</span>-->
+            <h1 id="page-title" class="m-0 font-bold text-break truncate-2-lines">{{ title }}</h1>
+            <div class="d-block my-auto ms-3">
+                <slot name="badge"></slot>
+            </div>
         </div>
         <div>
             <slot name="buttons"></slot>
@@ -33,5 +34,9 @@ defineProps({
 <style>
 .font-bold {
     font-weight: bold;
+}
+#page-title.truncate-2-lines {
+    line-height: 48px;
+    height: auto;
 }
 </style>

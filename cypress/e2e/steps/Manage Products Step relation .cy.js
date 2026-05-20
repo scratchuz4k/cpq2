@@ -33,17 +33,24 @@ describe('Manage Products Step relation', () => {
             cy.get('#link-products').click();
 
             cy.get('#product-create-btn').click();
-
+            cy.wait(1000);
             cy.get('#product-sku').type(product.sku);
             cy.get('#product-name').type(product.name);
 
-            cy.selectLazyOption('product-steps', steps[0].name);
-            cy.get('#input-select-product-steps').click();
-            cy.selectLazyOption('product-steps', steps[1].name);
+            cy.get('#price_plan_1').click();
+            cy.get('#contract_term_value').type('100');
+            cy.selectOption('#contract_term_unit', 'Days');
 
             cy.get('#btn-save-product').click();
             cy.get('.notyf').contains('Created with Success');
 
+            //Add procuct to step
+            cy.addProductToStep(steps[0].name, product.name);
+            cy.addProductToStep(steps[1].name, product.name);
+
+            //check prod step relation
+            cy.get('#settings').click();
+            cy.get('#link-products').click();
             cy.get('#datatable-search').type(product.sku);
             cy.get('.p-datatable-table').contains(product.name);
             cy.get('.p-datatable-table').contains(steps[0].name);

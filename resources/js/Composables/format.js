@@ -82,9 +82,9 @@ const format = {
         let suffix = 'Mb';
 
         if (temp < 100) {
-            number = Math.ceil(temp / 10) * 10;
+            number = Math.floor(temp / 10) * 10;
         } else if (temp < 1000) {
-            number = Math.ceil(temp / 100) * 100;
+            number = Math.floor(temp / 100) * 100;
         } else {
             number = temp / 1000;
             suffix = 'Gb';
@@ -177,6 +177,11 @@ const format = {
         return dayjs(date)
             .add(expireDays ?? 30, 'day')
             .format('DD/MM/YYYY');
+    },
+    formatUKPhone(number) {
+        const digits = number.replace(/\D/g, '');
+        const withoutLeadingZero = digits.startsWith('0') ? digits.slice(1) : digits;
+        return `+44 (0)${withoutLeadingZero}`;
     }
 };
 

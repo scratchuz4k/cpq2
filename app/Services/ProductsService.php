@@ -50,9 +50,11 @@ class ProductsService
         }
 
         if (array_key_exists('steps', $array) && ! is_null($array['steps'])) {
-            $product->steps()->sync($array['steps']);
-        } else {
-            $product->steps()->sync([]);
+            $product->steps()->syncWithoutDetaching($array['steps']);
+        }
+
+        if (array_key_exists('detach_steps', $array) && ! is_null($array['detach_steps'])) {
+            $product->steps()->detach($array['detach_steps']);
         }
 
         return $product->refresh();

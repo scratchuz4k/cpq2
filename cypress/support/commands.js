@@ -136,3 +136,16 @@ Cypress.Commands.add('addProductAndVerifySummary', (selector, quoteItemsSelector
         cy.get(quoteItemsSelector).contains(name.trim()).should('exist');
     });
 });
+
+Cypress.Commands.add('addProductToStep', (stepName, productName) => {
+    cy.get('#settings').click();
+    cy.get('#link-steps').click();
+    cy.get('#datatable-search').type(stepName);
+    cy.wait(1000);
+    cy.get('#datatable-btn-0-edit').click();
+    cy.get('#1-1').click();
+    cy.selectLazyOption('select-product', productName);
+    cy.get('#button-add-product-to-step').click();
+    cy.get('.notyf').contains('Product added with Success');
+    cy.get('.p-datatable-table').contains(productName);
+});
