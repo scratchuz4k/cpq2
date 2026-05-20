@@ -51,6 +51,7 @@ describe('Creates products and associates Category.cy', () => {
 
                 cy.selectLazyOption('product-categories', category.name);
 
+                cy.get('#price_plan_1').click();
                 cy.get('#contract_term_value').type('100');
                 cy.selectOption('#contract_term_unit', 'Days');
 
@@ -72,6 +73,7 @@ describe('Creates products and associates Category.cy', () => {
                 cy.get('#product-name').type(addonsProduct.name);
                 cy.get('#product-sku').type(addonsProduct.sku);
 
+                cy.get('#price_plan_1').click();
                 cy.get('#contract_term_value').type('100');
                 cy.selectOption('#contract_term_unit', 'Days');
 
@@ -121,6 +123,7 @@ describe('Validates same-step product link restriction', () => {
         cy.get('#product-name').type(sameStepParent.name);
         cy.get('#product-sku').type(sameStepParent.sku);
 
+        cy.get('#price_plan_1').click();
         cy.get('#contract_term_value').type('100');
         cy.selectOption('#contract_term_unit', 'Days');
 
@@ -131,6 +134,7 @@ describe('Validates same-step product link restriction', () => {
         cy.get('#product-name').type(sameStepChild.name);
         cy.get('#product-sku').type(sameStepChild.sku);
 
+        cy.get('#price_plan_1').click();
         cy.get('#contract_term_value').type('100');
         cy.selectOption('#contract_term_unit', 'Days');
 
