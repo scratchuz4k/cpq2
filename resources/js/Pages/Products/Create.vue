@@ -19,7 +19,7 @@ const props = defineProps({
 
 const product = reactive({
     name: null,
-    price_plan_id: 1,
+    price_plan_id: 2,
     supplier_id: null,
     sku: null,
     description: null,
