@@ -12,7 +12,16 @@ class Contact extends Model
 {
     use HasFactory, SetTenantId;
 
-    protected $fillable = ['primary_contact_name', 'email', 'address_1', 'city', 'postcode', 'account_id', 'tenant_id'];
+    protected $fillable = [
+        'primary_contact_name',
+        'email',
+        'phone',
+        'address_1',
+        'city',
+        'postcode',
+        'account_id',
+        'tenant_id',
+    ];
 
     protected static function booted(): void
     {

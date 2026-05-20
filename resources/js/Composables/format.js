@@ -177,6 +177,11 @@ const format = {
         return dayjs(date)
             .add(expireDays ?? 30, 'day')
             .format('DD/MM/YYYY');
+    },
+    formatUKPhone(number) {
+        const digits = number.replace(/\D/g, '');
+        const withoutLeadingZero = digits.startsWith('0') ? digits.slice(1) : digits;
+        return `+44 (0)${withoutLeadingZero}`;
     }
 };
 

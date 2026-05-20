@@ -46,14 +46,17 @@ const items = ref([
     <AuthenticatedLayout :quote="quote" :show-step-action-bar="true">
         <div class="row mb-3">
             <div class="col">
-                <Header title="Create a quote" :breadcrumbs="items"></Header>
-            </div>
-            <div class="col" style="text-align: right">
-                <template v-if="quote.status === 'EXPIRED'">
-                    <div class="badge text-bg-dark h2 mt-4 mx-2">
-                        {{ quote.status }}
-                    </div>
-                </template>
+                <Header title="Quote Overview" :breadcrumbs="items">
+                    <template #badge>
+                        <span
+                            :id="'quote-' + quote.id + '-status'"
+                            class="badge badge-quote-status rounded-pill ms-2"
+                            :class="`${quote.status.toLowerCase()}`"
+                        >
+                            {{ quote.status }}
+                        </span>
+                    </template>
+                </Header>
             </div>
         </div>
         <QuotePreview v-model="props.quote" :pricePlans="pricePlans"></QuotePreview>
