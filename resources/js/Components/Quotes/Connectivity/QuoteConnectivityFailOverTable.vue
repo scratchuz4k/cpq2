@@ -349,8 +349,11 @@ getArticles(false, true);
                                                 column === 'isManaged'
                                                     ? 'Managed: ' +
                                                       (value === '1' ? 'Yes' : value === '0' ? 'No' : 'N/A')
-                                                    : ['speed', 'bearer'].includes(column)
-                                                      ? 'Min. ' + _.capitalize(column) + ': ' + format.speed(value)
+                                                    : ['formattedSpeed', 'bearer'].includes(column)
+                                                      ? 'Min. ' +
+                                                        (column === 'formattedSpeed' ? 'Speed' : _.capitalize(column)) +
+                                                        ': ' +
+                                                        format.speed(value)
                                                       : ['contractTermMonths'].includes(column)
                                                         ? value + ' Months'
                                                         : value
