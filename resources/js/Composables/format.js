@@ -82,9 +82,9 @@ const format = {
         let suffix = 'Mb';
 
         if (temp < 100) {
-            number = Math.ceil(temp / 10) * 10;
+            number = Math.floor(temp / 10) * 10;
         } else if (temp < 1000) {
-            number = Math.ceil(temp / 100) * 100;
+            number = Math.floor(temp / 100) * 100;
         } else {
             number = temp / 1000;
             suffix = 'Gb';

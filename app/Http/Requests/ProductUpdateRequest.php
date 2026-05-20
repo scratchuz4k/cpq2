@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\ContractTermUnitsEnum;
 use App\Models\Product;
 use App\Rules\TenantExistsRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -43,15 +44,18 @@ class ProductUpdateRequest extends FormRequest
                 'integer',
                 new TenantExistsRule('categories'),
             ],
-            'steps' => [
-                'array', 'nullable',
-            ],
-            'steps.*' => [
-                'integer',
-                new TenantExistsRule('steps'),
-            ],
             'price_plan_id' => 'exists:price_plans,id',
-            'supplier_id' => 'nullable|exists:suppliers,id',
+            'contract_term_value' => [
+                Rule::requiredIf($this->input('price_plan_id') == 1),
+                'nullable',
+                'integer',
+                'between:1,100',
+            ],
+            'contract_term_unit' => [
+                Rule::requiredIf($this->input('price_plan_id') == 1),
+                'nullable',
+                Rule::in(ContractTermUnitsEnum::names()),
+            ],
         ];
     }
 

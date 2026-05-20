@@ -56,7 +56,10 @@ describe('Match CouldAudit Sku', () => {
         cy.get('#product-sku').type(product.sku);
         cy.get('#product-name').type(product.name);
 
-        cy.get('#1-1').click();
+        cy.get('#price_plan_1').click();
+        cy.get('#contract_term_value').type('100');
+        cy.selectOption('#contract_term_unit', 'Days');
+
         cy.get('#add-price-btn').click();
 
         cy.get('#price-code').type(productPrice.code);
