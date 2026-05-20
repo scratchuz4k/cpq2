@@ -56,13 +56,6 @@ let view = component && Object.keys(solutionsViews).includes(component) ? soluti
             </div>
             <div class="mt-4 d-flex">
                 <h1 class="mb-1 w-auto">Quote #{{ quote.id }}</h1>
-                <span
-                    :id="'quote-' + quote.id + '-status'"
-                    class="badge badge-quote-status rounded-pill ms-2 my-auto"
-                    :class="`${quote.status.toLowerCase()}`"
-                >
-                    {{ quote.status }}
-                </span>
             </div>
             <div class="row mb-3">
                 <div class="col">

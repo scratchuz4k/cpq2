@@ -18,8 +18,8 @@ const contactInfo = computed(() =>
 );
 </script>
 <template>
-    <div class="row my-4">
-        <h5>
+    <div class="row mt-2 mb-4">
+        <h5 class="mb-0">
             {{ `Quote ${quote.id} for ${quote.account?.main_contact?.primary_contact_name ?? quote?.account?.name}` }}
         </h5>
         <p class="fw-medium">

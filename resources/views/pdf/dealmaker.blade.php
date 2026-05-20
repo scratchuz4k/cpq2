@@ -159,11 +159,12 @@
                 @endif
             </div>
             <div class="col text-end" id="header_right">
-                <p>{{ $quote['account']['main_contact']['primary_contact_name'] ?? $quote['account']['name'] }}<br>{{ $quote['address_data']['label'] ?? '' }}</p>
-                @if($quote['account']['main_contact']['phone'] ?? false)
+                <p>{{ $quote['account']['main_contact']['primary_contact_name'] ?? $quote['account']['name'] }}<br>{{ $quote['address_data']['label'] ?? '' }}
+                </p>
+                @if ($quote['account']['main_contact']['phone'] ?? false)
                     <p>Tel: {{ formatUKPhone($quote['account']['main_contact']['phone']) }}</p>
                 @endif
-                @if($quote['account']['main_contact']['email'] ?? false)
+                @if ($quote['account']['main_contact']['email'] ?? false)
                     <p>Email: {{ $quote['account']['main_contact']['email'] }}</p>
                 @endif
             </div>
@@ -172,11 +173,6 @@
             <div class="col">
                 <div class="d-flex">
                     <h1 class="mb-1">Quote #{{ $quote['id'] }}</h1>
-                    <span
-                        class="badge badge-quote-status rounded-pill ms-2 my-auto {{ mb_strtolower($quote['status']) }}"
-                    >
-                    {{ $quote['status'] }}
-                </span>
                 </div>
 
 
