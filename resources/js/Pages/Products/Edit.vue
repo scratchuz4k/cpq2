@@ -91,7 +91,19 @@ watch(
         <div class="panel">
             <Header :title="'Edit Products: ' + product.name" :breadcrumbs="items">
                 <template #badge>
-                    <span :id="'product-' + product.id + '-status'" class="badge badge-success rounded-pill ms-2">
+                    <span
+                        :id="'product-' + product.id + '-status'"
+                        :class="[
+                            'badge',
+                            'rounded-pill',
+                            'ms-2',
+                            product.status === 'Active'
+                                ? 'badge-success'
+                                : product.status === 'Inactive'
+                                  ? 'badge-danger'
+                                  : 'badge-muted'
+                        ]"
+                    >
                         {{ product.status }}
                     </span>
                 </template>
@@ -100,14 +112,19 @@ watch(
                 <tab title="General" :selected="true">
                     <div class="row">
                         <div class="col-6 px-0">
-                            <div class="panel my-4">
+                            <div class="panel mt-4 mb-0">
                                 <h3 class="fw-semibold">Product details</h3>
-                                <p class="my-3">Product overview including general information.</p>
+                                <p class="my-3 small">Product overview including general information.</p>
                                 <div class="my-4">
                                     <div class="col-6">
                                         <div class="mb-3 d-flex flex-column">
-                                            <label class="form-label" for="active-filter"> Active: </label>
-                                            <ToggleSwitch id="active-filter" v-model="product.is_active" />
+                                            <label class="form-label" for="active-filter">Status</label>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <ToggleSwitch id="active-filter" v-model="product.is_active" />
+                                                <span class="small">{{
+                                                    product.is_active ? 'Active' : 'Inactive'
+                                                }}</span>
+                                            </div>
                                         </div>
                                         <div class="mb-3">
                                             <label for="product-sku" class="form-label">SKU</label>
@@ -156,7 +173,7 @@ watch(
                                     </div>
                                 </div>
                             </div>
-                            <div class="panel my-4 pb-1">
+                            <div class="panel mb-4 mt-0 pb-1">
                                 <h3 class="fw-semibold">Prices</h3>
                                 <div class="my-4">
                                     <div class="col">
@@ -196,7 +213,6 @@ watch(
                                                         :inputId="'contract_term_value'"
                                                         :inputClass="'w-100'"
                                                         showButtons
-                                                        class="w-100"
                                                     />
                                                 </div>
                                                 <div class="col-6">
@@ -216,7 +232,7 @@ watch(
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Price</label>
-                                            <p class="mb-3">
+                                            <p class="mb-3 small">
                                                 Prices for this product, including any active special pricing
                                                 agreements.
                                             </p>
