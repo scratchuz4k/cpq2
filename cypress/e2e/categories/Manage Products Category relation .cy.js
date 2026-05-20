@@ -44,6 +44,10 @@ describe('Manage Products Category relation', () => {
             cy.get('#input-select-product-categories').click();
             cy.selectLazyOption('product-categories', categories[1].name);
 
+            cy.get('#price_plan_1').click();
+            cy.get('#contract_term_value').type('100');
+            cy.selectOption('#contract_term_unit', 'Days');
+
             cy.get('#btn-save-product').click();
             cy.get('.notyf').contains('Created with Success');
 

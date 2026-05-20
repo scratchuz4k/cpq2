@@ -93,7 +93,7 @@ function generateModelsData()
 {
     return [
         'tenants' => Tenant::factory()->make()->toArray(),
-        'products' => Product::factory()->make()->toArray(),
+        'products' => Product::factory()->create()->toArray(),
         'suppliers' => Supplier::factory()->make()->toArray(),
         'spas' => Spa::factory()->make()->toArray(),
         'users' => User::factory()->make()->toArray(),

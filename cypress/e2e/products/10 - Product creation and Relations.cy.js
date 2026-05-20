@@ -51,6 +51,10 @@ describe('Creates products and associates Category.cy', () => {
 
                 cy.selectLazyOption('product-categories', category.name);
 
+                cy.get('#price_plan_1').click();
+                cy.get('#contract_term_value').type('100');
+                cy.selectOption('#contract_term_unit', 'Days');
+
                 cy.get('#btn-save-product').click();
                 cy.get('.notyf').contains('Created with Success');
             }
@@ -69,6 +73,10 @@ describe('Creates products and associates Category.cy', () => {
                 cy.get('#product-name').type(addonsProduct.name);
                 cy.get('#product-sku').type(addonsProduct.sku);
 
+                cy.get('#price_plan_1').click();
+                cy.get('#contract_term_value').type('100');
+                cy.selectOption('#contract_term_unit', 'Days');
+
                 cy.get('#btn-save-product').click();
                 cy.get('.notyf').contains('Created with Success');
             }
@@ -77,7 +85,7 @@ describe('Creates products and associates Category.cy', () => {
         cy.get('#datatable-search').type(addonsProduct.sku);
         cy.wait(1000);
         cy.get('#datatable-btn-0-edit').click();
-        cy.get('#tabs-product-edit-2-2').click();
+        cy.get('#tabs-product-edit-1-1').click();
         cy.get('#btn-add-links').click();
         cy.get('#links-search-global').type(product.sku);
         cy.get('#links-table').contains(product.sku);
@@ -114,16 +122,41 @@ describe('Validates same-step product link restriction', () => {
         cy.get('#product-create-btn').click();
         cy.get('#product-name').type(sameStepParent.name);
         cy.get('#product-sku').type(sameStepParent.sku);
-        cy.selectLazyOption('product-steps', sameStep.name);
+
+        cy.get('#price_plan_1').click();
+        cy.get('#contract_term_value').type('100');
+        cy.selectOption('#contract_term_unit', 'Days');
+
         cy.get('#btn-save-product').click();
         cy.get('.notyf').contains('Created with Success');
 
         cy.get('#product-create-btn').click();
         cy.get('#product-name').type(sameStepChild.name);
         cy.get('#product-sku').type(sameStepChild.sku);
-        cy.selectLazyOption('product-steps', sameStep.name);
+
+        cy.get('#price_plan_1').click();
+        cy.get('#contract_term_value').type('100');
+        cy.selectOption('#contract_term_unit', 'Days');
+
         cy.get('#btn-save-product').click();
         cy.get('.notyf').contains('Created with Success');
+
+        cy.get('#settings').click();
+        cy.get('#link-steps').click();
+        cy.get('#datatable-search').type(sameStep.name);
+        cy.wait(1000);
+        cy.get('#datatable-btn-0-edit').click();
+
+        cy.get('#1-1').click();
+        cy.selectLazyOption('select-product', sameStepParent.name);
+        cy.get('#button-add-product-to-step').click();
+        cy.get('.notyf').contains('Product added with Success');
+        cy.get('.p-datatable-table').contains(sameStepParent.name);
+
+        cy.selectLazyOption('select-product', sameStepChild.name);
+        cy.get('#button-add-product-to-step').click();
+        cy.get('.notyf').contains('Product added with Success');
+        cy.get('.p-datatable-table').contains(sameStepChild.name);
     });
 
     it('Rejects linking a child product that shares a step with the parent', () => {
@@ -133,7 +166,7 @@ describe('Validates same-step product link restriction', () => {
         cy.get('#datatable-search').type(sameStepParent.sku);
         cy.wait(1000);
         cy.get('#datatable-btn-0-edit').click();
-        cy.get('#tabs-product-edit-2-2').click();
+        cy.get('#tabs-product-edit-1-1').click();
         cy.get('#btn-add-links').click();
         cy.get('#links-search-global').type(sameStepChild.sku);
         cy.wait(1000);

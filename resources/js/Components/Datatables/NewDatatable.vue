@@ -188,7 +188,7 @@ onMounted(() => {
 </script>
 <template>
     <div class="datatable-header d-flex justify-content-between py-3">
-        <IconField>
+        <IconField class="ps-2">
             <InputIcon>
                 <font-awesome-icon :icon="['fas', 'search']" />
             </InputIcon>
@@ -385,6 +385,11 @@ onMounted(() => {
         :totalRecords="api.meta.total"
         :rowsPerPageOptions="[10, 20, 50]"
         @page="api.handlePaginator"
+        :pt="{
+            root: {
+                style: 'background: none'
+            }
+        }"
     >
     </Paginator>
 </template>

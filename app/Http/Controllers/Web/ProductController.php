@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Enums\ContractTermUnitsEnum;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\ProductCreateRequest;
 use App\Http\Requests\ProductUpdateRequest;
@@ -45,7 +46,8 @@ class ProductController extends BaseController
     public function create()
     {
         return Inertia::render('Products/Create', [
-            'price_plans' => PricePlan::all(),
+            'price_plans' => PricePlan::orderBy('code', 'desc')->get(),
+            'contract_term_units' => ContractTermUnitsEnum::asArray(),
         ]);
     }
 
@@ -79,7 +81,8 @@ class ProductController extends BaseController
 
         return Inertia::render('Products/Edit', [
             'product' => ProductResource::make($product->load(['prices', 'categories', 'steps']))->resolve(),
-            'price_plans' => PricePlan::all(),
+            'price_plans' => PricePlan::orderBy('code', 'desc')->get(),
+            'contract_term_units' => ContractTermUnitsEnum::asArray(),
         ]);
     }
 
@@ -102,6 +105,12 @@ class ProductController extends BaseController
      */
     public function destroy(Product $product)
     {
-        //
+        $product->delete();
+
+        return redirect()
+            ->route('products.index')
+            ->with([
+                'status' => __('Product deleted with Success'),
+            ]);
     }
 }
