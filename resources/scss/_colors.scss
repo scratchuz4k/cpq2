@@ -30,4 +30,9 @@
     --color-header-text: var(--color-white);
     --color-navbar-text: var(--color-white);
     --color-footer-text: var(--color-white);
+
+    --badge-status-pending: #227d9b;
+    --badge-status-approved: #3c8334;
+    --badge-status-completed: #a34996;
+    --badge-status-rejected: #be1717;
 }

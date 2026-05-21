@@ -1,11 +1,12 @@
 <script setup>
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, router, useForm } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import Accordion from 'primevue/accordion';
 import AccordionPanel from 'primevue/accordionpanel';
 import AccordionHeader from 'primevue/accordionheader';
 import AccordionContent from 'primevue/accordioncontent';
+import InputMask from 'primevue/inputmask';
 import { reactive, ref } from 'vue';
 import ToggleSwitch from 'primevue/toggleswitch';
 
@@ -122,6 +123,15 @@ const items = ref([
                                     :id="'contact-email-' + key"
                                     class="form-control"
                                     v-model="contact.email"
+                                />
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label :for="'contact-phone-' + key" class="form-label"> Phone: </label>
+                                <InputMask
+                                    id="uk-phone"
+                                    class="form-control"
+                                    v-model="contact.phone"
+                                    mask="09999 999999"
                                 />
                             </div>
                             <div class="col-6 mb-3">

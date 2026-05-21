@@ -1,5 +1,4 @@
 <template>
-    <InfoConnectivity></InfoConnectivity>
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex justify-content-between align-items-center">
             <p class="fs-4 me-3 mb-0">
