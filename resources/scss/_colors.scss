@@ -9,6 +9,7 @@
     --color-soft-danger: #f8e7e7;
     --color-muted: #383838;
     --color-soft-muted: #e9e9e9;
+    --color-input-border: #a7a7a7;
 
     --color-dark: #100034;
     --color-violet: #4a3a6f;
@@ -19,6 +20,7 @@
     --color-pink-light: #fe4daf;
     --color-blue: #356e8e;
     --color-blue-light: #def1fb;
+    --color-grey: #909090;
 
     --color-white: #ffffff;
     --color-black: #000000;
@@ -28,4 +30,9 @@
     --color-header-text: var(--color-white);
     --color-navbar-text: var(--color-white);
     --color-footer-text: var(--color-white);
+
+    --badge-status-pending: #227d9b;
+    --badge-status-approved: #3c8334;
+    --badge-status-completed: #a34996;
+    --badge-status-rejected: #be1717;
 }
