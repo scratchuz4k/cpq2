@@ -58,7 +58,7 @@ describe('Creates a Connectivity quote', () => {
         cy.get('.p-multiselect-list-container')
             .eq(0)
             .within(() => {
-                cy.get('.p-multiselect-option').contains(connectivityType).click();
+                cy.get('.p-multiselect-option').contains(subprovider).click();
             });
 
         //connectivityType filter
@@ -67,7 +67,7 @@ describe('Creates a Connectivity quote', () => {
         cy.get('.p-multiselect-list-container')
             .eq(0)
             .within(() => {
-                cy.get('.p-multiselect-option').contains(technologyType).click();
+                cy.get('.p-multiselect-option').contains(connectivityType).click();
             });
 
         //technologyType filter
@@ -76,8 +76,9 @@ describe('Creates a Connectivity quote', () => {
         cy.get('.p-multiselect-list-container')
             .eq(0)
             .within(() => {
-                cy.get('.p-multiselect-option').contains(subprovider).click();
+                cy.get('.p-multiselect-option').contains(technologyType).click();
             });
+        cy.get('#technologyType-multiselect').click();
 
         // Scroll back to top
         cy.scrollTo('top');
