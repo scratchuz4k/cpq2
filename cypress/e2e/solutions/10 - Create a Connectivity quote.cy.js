@@ -4,6 +4,8 @@ const temp = getCurrentDate();
 const account = { ref: generateHash(temp), name: temp };
 const provider = 'Giacom';
 const subprovider = 'BT';
+const connectivityType = 'Ethernet';
+const technologyType = 'Fibre';
 
 describe('Creates a Connectivity quote', () => {
     beforeEach(() => {
@@ -52,6 +54,24 @@ describe('Creates a Connectivity quote', () => {
 
         //SubProvider filter
         cy.get('#subprovider-multiselect').click();
+        cy.wait(500);
+        cy.get('.p-multiselect-list-container')
+            .eq(0)
+            .within(() => {
+                cy.get('.p-multiselect-option').contains(connectivityType).click();
+            });
+
+        //connectivityType filter
+        cy.get('#connectivityType-multiselect').click();
+        cy.wait(500);
+        cy.get('.p-multiselect-list-container')
+            .eq(0)
+            .within(() => {
+                cy.get('.p-multiselect-option').contains(technologyType).click();
+            });
+
+        //technologyType filter
+        cy.get('#technologyType-multiselect').click();
         cy.wait(500);
         cy.get('.p-multiselect-list-container')
             .eq(0)
