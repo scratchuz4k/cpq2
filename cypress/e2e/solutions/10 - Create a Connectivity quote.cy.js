@@ -60,6 +60,7 @@ describe('Creates a Connectivity quote', () => {
             .within(() => {
                 cy.get('.p-multiselect-option').contains(subprovider).click();
             });
+        cy.get('#subprovider-multiselect').click();
 
         //connectivityType filter
         cy.get('#connectivityType-multiselect').click();
