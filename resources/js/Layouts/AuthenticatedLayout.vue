@@ -1,14 +1,13 @@
 <script setup>
-import _ from 'lodash';
-import { Link, usePage } from '@inertiajs/vue3';
-import { Comment, computed, ref, useSlots } from 'vue';
+import { usePage } from '@inertiajs/vue3';
+import { Comment, computed, onMounted, ref, useSlots } from 'vue';
 import TopBarSearchable from '@/Components/TopBarSearchable.vue';
 import Resources from '@/Components/Resources.vue';
 import { can, hasRole } from '@/Composables/useAuth.js';
 import StepActionBar from '@/Components/Steps/StepActionBar.vue';
 import SvgIcon from '@/Components/Custom/SvgIcon.vue';
 import { actionBarButtons } from '@/Composables/useQuoteSteps.js';
-import { selectedItems, addSelected } from '@/Composables/useComparator';
+import { selectedItems } from '@/Composables/useComparator';
 import * as Sentry from '@sentry/vue';
 import UserFeedback from '@/Components/UserFeedback.vue';
 
@@ -56,6 +55,12 @@ const hasActionBarContent = computed(() => {
     const flatNodes = flatten(Array.isArray(nodes) ? nodes : [nodes]);
 
     return flatNodes.some((node) => node.type !== Comment);
+});
+
+onMounted(() => {
+    if (page.props.flash?.status) {
+        notyf.success(page.props.flash.status);
+    }
 });
 </script>
 

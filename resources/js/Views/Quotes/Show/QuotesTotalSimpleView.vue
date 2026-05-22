@@ -34,8 +34,18 @@ const items = ref([
 ]);
 </script>
 <template>
-    <Header title="Create a quote" :breadcrumbs="items"></Header>
-    <InfoConnectivity v-if="!preview" :quote="quote"></InfoConnectivity>
+    <Header title="Quote Overview" :breadcrumbs="items">
+        <template #badge>
+            <span
+                :id="'quote-' + quote.id + '-status'"
+                class="badge badge-quote-status rounded-pill ms-2"
+                :class="`${quote.status.toLowerCase()}`"
+            >
+                {{ quote.status }}
+            </span>
+        </template>
+    </Header>
+    <ContactInfo />
     <div class="row" v-if="warningProviders.find((x) => x.is_present) || quote.items.some((x) => !x.is_margin_valid)">
         <div class="col">
             <InfoBox class="mb-4 py-0" severity="danger">

@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { Head, Link, usePage } from '@inertiajs/vue3';
+import { onMounted, ref } from 'vue';
 
 const props = defineProps({
     solution_types: {
@@ -10,6 +10,7 @@ const props = defineProps({
     }
 });
 
+const page = usePage();
 const getUniqueSolutionTypes = (steps) => {
     if (!steps) {
         return [];
