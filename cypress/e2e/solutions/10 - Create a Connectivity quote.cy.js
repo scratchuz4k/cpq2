@@ -70,16 +70,7 @@ describe('Creates a Connectivity quote', () => {
             .within(() => {
                 cy.get('.p-multiselect-option').contains(connectivityType).click();
             });
-
-        //technologyType filter
-        cy.get('#technologyType-multiselect').click();
-        cy.wait(500);
-        cy.get('.p-multiselect-list-container')
-            .eq(0)
-            .within(() => {
-                cy.get('.p-multiselect-option').contains(technologyType).click();
-            });
-        cy.get('#technologyType-multiselect').click();
+        cy.get('#connectivityType-multiselect').click();
 
         // Scroll back to top
         cy.scrollTo('top');
