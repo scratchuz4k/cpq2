@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 
 class CloudMarketApi
 {
-    private static int $requestTimeout = 420;
+    private static int $requestTimeout = 600;
 
     public static function getQuotes(Quote $quote, CloudMarketAddress $address)
     {
