@@ -92,13 +92,13 @@ const setMeta = (newTotals) => {
             </span>
         </template>
         <template #item.price.cost="{ data, value }">
-            {{ value ? format.GBP(value) : 'N/A' }}
+            <p class="small">{{ value ? format.GBP(value) : 'N/A' }}</p>
         </template>
         <template #item.price.net="{ data, value }">
-            {{ value ? format.GBP(value) : 'N/A' }}
+            <p class="small">{{ value ? format.GBP(value) : 'N/A' }}</p>
         </template>
         <template #item.price.net_spa="{ data, value }">
-            {{ value ? format.GBP(value) : 'N/A' }}
+            <p class="small">{{ value ? format.GBP(value) : 'N/A' }}</p>
         </template>
 
         <template #item.price.active_spas="{ data, value }">

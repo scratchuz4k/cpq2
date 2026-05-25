@@ -256,7 +256,7 @@ watch(
                 </tab>
 
                 <tab
-                    :title="`Bundles <span class='badge badge-primary rounded-pill ms-2'>${product.bundles.length}</span>`"
+                    :title="`Bundle <span class='badge badge-primary rounded-pill ms-2'>${product.bundles.length}</span>`"
                 >
                     <ProductBundleManage v-model="product" />
                 </tab>
