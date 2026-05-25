@@ -29,6 +29,7 @@ const items = ref([
     <Head :title="'Quote #' + quote.id" />
     <AuthenticatedLayout :quote="quote" :show-step-action-bar="true" :show-comparator="true">
         <Header title="Create a quote" :breadcrumbs="items"></Header>
+        <ContactInfo />
         <component
             v-if="Object.keys(solutionsViews).includes(quote.solution_type.code)"
             :is="solutionsViews[quote.solution_type.code]"

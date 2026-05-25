@@ -108,12 +108,7 @@
         <div class="row mt-4">
             <div class="col">
                 <div class="d-flex">
-                    <h1 class="mb-1">Quote Q-{{ $quote['id'] }}</h1>
-                    @if ($quote['status'] === 'EXPIRED')
-                        <span class="badge border border-secondary text-secondary opacity-75 ms-4 lh-sm my-auto">
-                            {{ $quote['status'] }}
-                        </span>
-                    @endif
+                    <h1 class="mb-1">Quote #{{ $quote['id'] }}</h1>
                 </div>
                 <div class="row mb-3">
                     <div class="col">

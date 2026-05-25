@@ -39,7 +39,11 @@ const setStepProduct = async (product_id, step_id) => {
         return;
     }
     try {
-        await axios.put('/api/products/' + product_id, { steps: step_id ? [step_id] : null });
+        if (step_id) {
+            await axios.put('/api/products/' + product_id, { steps: [step_id] });
+        } else {
+            await axios.put('/api/products/' + product_id, { detach_steps: [step.id] });
+        }
         product.value = null;
 
         notyf.success(step_id ? 'Product added with Success' : 'Product removed with success');
@@ -116,7 +120,17 @@ const items = ref([
                                 v-model="product"
                                 placeholder="Select an Product"
                                 :query="[
-                                    { column: 'steps.id', operator: 'is_null', value: 'steps.id' },
+                                    {
+                                        group: [
+                                            { column: 'steps.id', operator: 'is_null', value: null },
+                                            {
+                                                column: 'steps.id',
+                                                operator: 'not_equals',
+                                                value: step.id,
+                                                function: 'orWhere'
+                                            }
+                                        ]
+                                    },
                                     { column: 'is_active', operator: 'equals', value: 1 }
                                 ]"
                             >

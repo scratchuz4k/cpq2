@@ -1,5 +1,4 @@
 <template>
-    <InfoConnectivity></InfoConnectivity>
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex justify-content-between align-items-center">
             <p class="fs-4 me-3 mb-0">
@@ -62,7 +61,6 @@ import { ref, watch, watchEffect } from 'vue';
 import { getQuote, quote } from '@/Composables/useQuote';
 import { remove, addons, isLoading, checks } from '@/Composables/useConnectivityItem';
 import axios from 'axios';
-import StepActionBar from '@/Components/Steps/StepActionBar.vue';
 import { actionBarButtons } from '@/Composables/useQuoteSteps.js';
 
 const props = defineProps({
