@@ -122,13 +122,15 @@ class CloudMarketApi
             'productId' => $product->data?->productCode,
             'quoteId' => $product->data?->quoteId,
             'addOns' => self::saveAddons($quote),
+            'customerName' => $quote->account->name,
+            'customReference' => $quote->account->reference,
         ];
 
         if (is_array($quote->data) && isset($quote->data['quoteReference'])) {
             $params['quoteReference'] = $quote->data['quoteReference'];
         }
 
-        Log::debug('CloudMarketApi::saveQuote request:', $params);
+        Log::debug('CloudMarketApi::saveQuote request:', array_merge($params, $credentials));
 
         $credentials = Arr::undot($credentials);
 
