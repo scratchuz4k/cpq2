@@ -130,7 +130,7 @@ class CloudMarketApi
             $params['quoteReference'] = $quote->data['quoteReference'];
         }
 
-        Log::debug('CloudMarketApi::saveQuote request:', array_merge($params, $credentials));
+        Log::debug('CloudMarketApi::saveQuote request:', $params);
 
         $credentials = Arr::undot($credentials);
 
