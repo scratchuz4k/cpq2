@@ -36,6 +36,7 @@ class CloudMarketApi
         $params = [
             'ProductId' => $product->data?->productCode,
             'QuoteId' => $product->data?->quoteId,
+            'IsManaged' => $product->data?->isManaged ?? null,
         ];
         Log::debug('CloudMarketApi::getFailover lookup:', $params);
 
@@ -55,6 +56,7 @@ class CloudMarketApi
             'ProductId' => $product->data?->productCode,
             'QuoteId' => $product->data?->quoteId,
             'FailoverProductId' => $failover?->data?->productCode ?? null,
+            'IsManaged' => $product->data?->isManaged ?? null,
         ];
         Log::debug('CloudMarketApi::getAddons lookup:', $params);
 
@@ -78,6 +80,7 @@ class CloudMarketApi
             'FailoverProductId' => $failover?->data?->productCode ?? null,
             'PrimaryHardwareProductId' => $primaryHardware?->data?->productCode ?? null,
             'FailoverHardwareProductId' => $failoverHardware?->data?->productCode ?? null,
+            'IsManaged' => $product->data?->isManaged ?? null,
         ];
         Log::debug('CloudMarketApi::getOptions lookup:', $params);
 
@@ -101,6 +104,7 @@ class CloudMarketApi
             'FailoverProductId' => $failover?->data?->productCode ?? null,
             'PrimaryHardwareProductId' => $primaryHardware?->data?->productCode ?? null,
             'FailoverHardwareProductId' => $failoverHardware?->data?->productCode ?? null,
+            'IsManaged' => $product->data?->isManaged ?? null,
         ];
         Log::debug('CloudMarketApi::getAssignments lookup:', $params);
 
