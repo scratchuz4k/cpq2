@@ -101,7 +101,7 @@ class SharedLinkController extends Controller
 
             'QuoteApprovals' => [
                 'pricePlans' => PricePlan::all(),
-                'model' => new QuoteResource($item->quote->load(['items', 'tenant.logo', 'tenant.configurations'])),
+                'model' => new QuoteResource($item->quote->load(['items', 'tenant.logo', 'tenant.logoAlt', 'tenant.logoDocs', 'tenant.configurations'])),
                 'customization' => $this->getCustomizationColors($configs),
                 'shareableType' => 'quote-approval',
             ],
