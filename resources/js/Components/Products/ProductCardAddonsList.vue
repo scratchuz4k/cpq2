@@ -276,7 +276,7 @@ onMounted(async () => {
                             />
                         </div>
 
-                        <p class="mb-0 text-nowrap small fw-semibold text-end" style="width: 57px">
+                        <p class="price mb-0 text-nowrap small fw-semibold text-end">
                             {{ format.GBP(item.addon.price?.net_spa || 0) }}
                         </p>
                     </div>
@@ -326,5 +326,9 @@ onMounted(async () => {
 
 .addon-list .truncate-2-lines {
     height: auto;
+}
+
+.addon-list .price {
+    min-width: 4rem;
 }
 </style>

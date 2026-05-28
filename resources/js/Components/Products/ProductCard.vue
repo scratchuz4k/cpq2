@@ -257,7 +257,7 @@ watch(searchInput, () => {
                             v-model="proxyValue.quantity"
                             @change="(val) => checkQuantity(proxyValue, val, true)"
                         />
-                        <p class="bold big ps-1 ms-4">
+                        <p class="price bold big ps-1 ms-3 text-end">
                             {{ format.GBP(proxyValue.price?.net_spa || 0) }}
                         </p>
                     </div>
@@ -521,5 +521,9 @@ h3 {
     background: #dee2e6;
     z-index: 1;
     overflow: hidden;
+}
+
+.price {
+    min-width: 6rem;
 }
 </style>
