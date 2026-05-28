@@ -524,6 +524,6 @@ h3 {
 }
 
 .price {
-    min-width: 6rem;
+    min-width: 90px;
 }
 </style>
