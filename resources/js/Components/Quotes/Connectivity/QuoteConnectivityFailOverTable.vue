@@ -62,6 +62,16 @@ const filters = reactive({
         operator: 'in',
         value: ['1', 'null'],
         name: 'Managed'
+    },
+    connectivityType: {
+        operator: 'in',
+        value: null,
+        name: 'Connectivity'
+    },
+    technologyType: {
+        operator: 'in',
+        value: null,
+        name: 'Technology'
     }
 });
 
@@ -70,7 +80,9 @@ const filterList = reactive({
     connectivitySupplierGroup: [],
     contractTermMonths: [],
     bearer: [],
-    formattedSpeed: []
+    formattedSpeed: [],
+    connectivityType: [],
+    technologyType: []
 });
 
 const meta = reactive({
@@ -376,11 +388,11 @@ getArticles(false, true);
                         </div>
                     </div>
                 </div>
-                <div id="filters" v-if="showFilters" class="p-0 m-0 mt-2 mb-4 row">
-                    <div class="col-lg-10 col-12">
+                <div id="filters" v-if="showFilters" class="p-0 m-0 mt-2 mb-3 row">
+                    <div class="col-lg-10 col-12 px-1">
                         <div class="row">
-                            <div class="col-lg-2 col-12 p-0 pe-1">
-                                <label for="filter-managed" class="form-label">Managed</label>
+                            <div class="col-lg-3 col-12 px-2 mb-2">
+                                <label for="filter-managed" class="form-label mb-0">Managed</label>
                                 <MultiSelect
                                     id="managed-multiselect"
                                     v-model="filters['isManaged'].value"
@@ -403,8 +415,8 @@ getArticles(false, true);
                                     </template>
                                 </MultiSelect>
                             </div>
-                            <div class="col-lg-2 col-12 p-0 pe-1">
-                                <label for="filter-provider" class="form-label">Provider</label>
+                            <div class="col-lg-3 col-12 px-2 mb-2">
+                                <label for="filter-provider" class="form-label mb-0">Provider</label>
                                 <MultiSelect
                                     id="provider-multiselect"
                                     v-model="filters['providerName'].value"
@@ -421,8 +433,8 @@ getArticles(false, true);
                                     </template>
                                 </MultiSelect>
                             </div>
-                            <div class="col-lg-2 col-12 p-0 pe-1">
-                                <label for="filter-subprovider" class="form-label">Subprovider</label>
+                            <div class="col-lg-3 col-12 px-2 mb-2">
+                                <label for="filter-subprovider" class="form-label mb-0">Subprovider</label>
                                 <MultiSelect
                                     id="subprovider-multiselect"
                                     v-model="filters['connectivitySupplierGroup'].value"
@@ -440,8 +452,8 @@ getArticles(false, true);
                                     </template>
                                 </MultiSelect>
                             </div>
-                            <div class="col-lg-2 col-12 p-0 pe-1">
-                                <label for="filter-contract" class="form-label">Min. Bearer</label>
+                            <div class="col-lg-3 col-12 px-2 mb-2">
+                                <label for="filter-contract" class="form-label mb-0">Min. Bearer</label>
                                 <Select
                                     id="bearer-multiselect"
                                     v-model="filters['bearer'].value"
@@ -460,8 +472,8 @@ getArticles(false, true);
                                     </template>
                                 </Select>
                             </div>
-                            <div class="col-lg-2 col-12 p-0 pe-1">
-                                <label for="filter-contract" class="form-label">Min. Speed</label>
+                            <div class="col-lg-3 col-12 px-2 mb-2">
+                                <label for="filter-contract" class="form-label mb-0">Min. Speed</label>
                                 <Select
                                     id="speed-multiselect"
                                     v-model="filters['formattedSpeed'].value"
@@ -480,8 +492,8 @@ getArticles(false, true);
                                     </template>
                                 </Select>
                             </div>
-                            <div class="col-lg-2 col-12 p-0 pe-1">
-                                <label for="filter-contract" class="form-label">Contract Length</label>
+                            <div class="col-lg-3 col-12 px-2 mb-2">
+                                <label for="filter-contract" class="form-label mb-0">Contract Length</label>
                                 <MultiSelect
                                     id="contract-length-multiselect"
                                     v-model="filters['contractTermMonths'].value"
@@ -500,9 +512,46 @@ getArticles(false, true);
                                     </template>
                                 </MultiSelect>
                             </div>
+                            <div class="col-lg-3 col-12 px-2 mb-2">
+                                <label for="filter-connectivityType" class="form-label mb-0">Connectivity</label>
+                                <MultiSelect
+                                    id="connectivityType-multiselect"
+                                    v-model="filters['connectivityType'].value"
+                                    style="width: 100%"
+                                    :options="Object.keys(filterList.connectivityType).filter((key) => key !== 'null')"
+                                    placeholder="All"
+                                    size="small"
+                                    class="me-3 custom-multiselect"
+                                >
+                                    <template #option="slotProps">
+                                        <div style="font-size: 14px; line-height: 1.5rem">
+                                            {{ slotProps.option }} (
+                                            {{ filterList.connectivityType[slotProps.option] }} )
+                                        </div>
+                                    </template>
+                                </MultiSelect>
+                            </div>
+                            <div class="col-lg-3 col-12 px-2 mb-2">
+                                <label for="filter-technologyType" class="form-label mb-0">Technology</label>
+                                <MultiSelect
+                                    id="technologyType-multiselect"
+                                    v-model="filters['technologyType'].value"
+                                    style="width: 100%"
+                                    :options="Object.keys(filterList.technologyType).filter((key) => key !== 'null')"
+                                    placeholder="All"
+                                    size="small"
+                                    class="me-3 custom-multiselect"
+                                >
+                                    <template #option="slotProps">
+                                        <div style="font-size: 14px; line-height: 1.5rem">
+                                            {{ slotProps.option }} ( {{ filterList.technologyType[slotProps.option] }} )
+                                        </div>
+                                    </template>
+                                </MultiSelect>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-lg-2 col-12 align-self-end justify-content-around">
+                    <div class="col-lg-2 col-12 align-self-start justify-content-around mt-3 mb-2">
                         <div class="row">
                             <div class="col-12 d-flex align-self-end justify-content-around" style="margin-bottom: 2px">
                                 <button class="btn btn-secondary btn-sm mt-2 me-2 w-100" @click="resetFilters()">
@@ -818,6 +867,50 @@ getArticles(false, true);
                                     </span>
                                 </th>
                                 <th
+                                    id="table-header-connectivity-type"
+                                    class="text-center"
+                                    :style="{
+                                        whiteSpace: 'nowrap'
+                                    }"
+                                    @click="orderBy('connectivityType')"
+                                >
+                                    Connectivity
+                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
+                                        <template v-if="sort.field == 'connectivityType'">
+                                            <font-awesome-icon
+                                                v-if="sort.order == 'desc'"
+                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
+                                            />
+                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
+                                        </template>
+                                        <template v-else>
+                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
+                                        </template>
+                                    </span>
+                                </th>
+                                <th
+                                    id="table-header-technology-type"
+                                    class="text-center"
+                                    :style="{
+                                        whiteSpace: 'nowrap'
+                                    }"
+                                    @click="orderBy('technologyType')"
+                                >
+                                    Technology
+                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
+                                        <template v-if="sort.field == 'technologyType'">
+                                            <font-awesome-icon
+                                                v-if="sort.order == 'desc'"
+                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
+                                            />
+                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
+                                        </template>
+                                        <template v-else>
+                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
+                                        </template>
+                                    </span>
+                                </th>
+                                <th
                                     v-if="!hasProduct()"
                                     :style="{
                                         width: '130px'
@@ -1002,6 +1095,8 @@ getArticles(false, true);
                                     </span>
                                 </td>
                                 <td>{{ article.contractTermMonths }} Months</td>
+                                <td>{{ article.connectivityType ?? 'N/A' }}</td>
+                                <td>{{ article.technologyType ?? 'N/A' }}</td>
                                 <td class="text-end" v-if="!hasProduct()">
                                     <button
                                         v-if="!quote.items.find((x) => x.product_code == article.code)"

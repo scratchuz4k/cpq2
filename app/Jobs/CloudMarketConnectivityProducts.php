@@ -21,6 +21,8 @@ class CloudMarketConnectivityProducts extends CloudMarket
         'bearer' => [],
         'formattedSpeed' => [],
         'isManaged' => [],
+        'connectivityType' => [],
+        'technologyType' => [],
     ];
 
     public function __construct(protected Quote $quote, protected string $file, protected CloudMarketAddress $address)

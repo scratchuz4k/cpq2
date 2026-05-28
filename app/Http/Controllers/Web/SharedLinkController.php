@@ -58,6 +58,8 @@ class SharedLinkController extends Controller
     {
         $sharedLink = SharedLink::where('token', $token)->firstOrFail();
 
+        $sharedLink->tenant?->makeCurrent();
+
         if ($sharedLink->isExpired()) {
             abort(410, 'This link has expired.');
         }

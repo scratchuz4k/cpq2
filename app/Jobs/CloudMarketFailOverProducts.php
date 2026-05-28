@@ -21,6 +21,8 @@ class CloudMarketFailOverProducts extends CloudMarket
         'bearer' => [],
         'formattedSpeed' => [],
         'isManaged' => [],
+        'connectivityType' => [],
+        'technologyType' => [],
     ];
 
     /**

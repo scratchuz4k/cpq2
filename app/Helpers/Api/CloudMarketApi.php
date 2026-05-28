@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 
 class CloudMarketApi
 {
-    private static int $requestTimeout = 420;
+    private static int $requestTimeout = 600;
 
     public static function getQuotes(Quote $quote, CloudMarketAddress $address)
     {
@@ -122,6 +122,8 @@ class CloudMarketApi
             'productId' => $product->data?->productCode,
             'quoteId' => $product->data?->quoteId,
             'addOns' => self::saveAddons($quote),
+            'customerName' => $quote->account->name,
+            'customReference' => $quote->account->reference,
         ];
 
         if (is_array($quote->data) && isset($quote->data['quoteReference'])) {
