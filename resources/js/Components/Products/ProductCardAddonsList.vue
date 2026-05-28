@@ -318,7 +318,7 @@ onMounted(async () => {
 }
 
 .addon-list {
-    max-height: 147px;
+    max-height: 170px;
     overflow-y: auto;
 }
 

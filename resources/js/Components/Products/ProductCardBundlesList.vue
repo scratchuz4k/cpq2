@@ -10,7 +10,7 @@ const props = defineProps({
 
 const visible = ref(false);
 
-const formatTerm = (item) => {
+const formatBundleDescription = (item) => {
     const parts = [];
     if (item.sku) {
         parts.push(`P${item.sku}`);
@@ -21,7 +21,7 @@ const formatTerm = (item) => {
     if (item.price_plan?.name) {
         parts.push(item.price_plan.name);
     }
-    // parts.push('Qty 1');
+    parts.push('Qty 1');
     return parts.join(' · ');
 };
 </script>
@@ -38,7 +38,7 @@ const formatTerm = (item) => {
             <div class="bundle-list">
                 <div v-for="item in bundles" :key="item.id" class="py-1">
                     <p class="mb-0 small fw-semibold">{{ item.name }}</p>
-                    <p class="mb-0 small text-muted">{{ formatTerm(item) }}</p>
+                    <p class="mb-0 small text-muted">{{ formatBundleDescription(item) }}</p>
                 </div>
             </div>
 
@@ -64,7 +64,7 @@ const formatTerm = (item) => {
 
 <style scoped>
 .bundle-list {
-    max-height: 220px;
+    max-height: 185px;
     overflow-y: auto;
 }
 </style>
