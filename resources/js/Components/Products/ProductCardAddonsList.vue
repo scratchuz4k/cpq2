@@ -221,10 +221,8 @@ onMounted(async () => {
 <template>
     <div>
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <p class="small text-muted mb-0">
-                This product has {{ modelValue.addons.length }} add-on<span v-if="modelValue.addons.length !== 1"
-                    >s</span
-                >
+            <p class="small bold text-muted mb-0">
+                {{ modelValue.addons.length }} add-on<span v-if="modelValue.addons.length !== 1">s</span>
                 available
             </p>
             <span v-if="selectedCount > 0" class="badge badge-muted">{{ selectedCount }} selected</span>
