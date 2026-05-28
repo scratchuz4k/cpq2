@@ -36,8 +36,12 @@ class CloudMarketApi
         $params = [
             'ProductId' => $product->data?->productCode,
             'QuoteId' => $product->data?->quoteId,
-            'IsManaged' => $product->data?->isManaged ?? null,
         ];
+
+        if ($product->data?->isManaged !== null) {
+            $params['IsManaged'] = $product->data->isManaged ? 'true' : 'false';
+        }
+
         Log::debug('CloudMarketApi::getFailover lookup:', $params);
 
         return self::makeRequest('/PartnerQuoteService/GetFailover', array_merge($params, $credentials));
@@ -56,8 +60,12 @@ class CloudMarketApi
             'ProductId' => $product->data?->productCode,
             'QuoteId' => $product->data?->quoteId,
             'FailoverProductId' => $failover?->data?->productCode ?? null,
-            'IsManaged' => $product->data?->isManaged ?? null,
         ];
+
+        if ($product->data?->isManaged !== null) {
+            $params['IsManaged'] = $product->data->isManaged ? 'true' : 'false';
+        }
+
         Log::debug('CloudMarketApi::getAddons lookup:', $params);
 
         return self::makeRequest('/PartnerQuoteService/GetHardware', array_merge($params, $credentials));
@@ -80,8 +88,12 @@ class CloudMarketApi
             'FailoverProductId' => $failover?->data?->productCode ?? null,
             'PrimaryHardwareProductId' => $primaryHardware?->data?->productCode ?? null,
             'FailoverHardwareProductId' => $failoverHardware?->data?->productCode ?? null,
-            'IsManaged' => $product->data?->isManaged ?? null,
         ];
+
+        if ($product->data?->isManaged !== null) {
+            $params['IsManaged'] = $product->data->isManaged ? 'true' : 'false';
+        }
+
         Log::debug('CloudMarketApi::getOptions lookup:', $params);
 
         return self::makeRequest('/PartnerQuoteService/GetOptions', array_merge($params, $credentials));
@@ -104,8 +116,12 @@ class CloudMarketApi
             'FailoverProductId' => $failover?->data?->productCode ?? null,
             'PrimaryHardwareProductId' => $primaryHardware?->data?->productCode ?? null,
             'FailoverHardwareProductId' => $failoverHardware?->data?->productCode ?? null,
-            'IsManaged' => $product->data?->isManaged ?? null,
         ];
+
+        if ($product->data?->isManaged !== null) {
+            $params['IsManaged'] = $product->data->isManaged ? 'true' : 'false';
+        }
+
         Log::debug('CloudMarketApi::getAssignments lookup:', $params);
 
         return self::makeRequest('/PartnerQuoteService/GetIPAssignments', array_merge($params, $credentials));
@@ -114,9 +130,6 @@ class CloudMarketApi
     public static function saveQuote(Quote $quote)
     {
         $product = self::getPrimaryProduct($quote);
-        $failover = self::getFailoverProduct($quote);
-        $primaryHardware = self::getHardwareProduct($quote, 'Primary Hardware Product');
-        $failoverHardware = self::getHardwareProduct($quote, 'Failover Hardware Product');
         $provider = self::resolveProvider($product);
 
         $apis = self::fetchApisForProvider($provider);
