@@ -118,6 +118,10 @@ const checkProduct = (article) => {
     article.group = props.currentStep + 1;
 
     if (index == -1) {
+        if ((checks.primaryHardwareRequired || checks.failoverHardwareRequired) && article.productCode == -1) {
+            notyf.error('Please select a different hardware product to proceed');
+            return;
+        }
         addAddon(article);
     } else {
         removeAddon(item);
