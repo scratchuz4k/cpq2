@@ -264,7 +264,7 @@ onMounted(async () => {
                             {{ item.addon.stock > 0 ? item.addon.stock + ' in stock' : 'Out of stock' }}
                         </span>
 
-                        <div style="width: 130px" class="me-3 flex-shrink-0">
+                        <div style="width: 130px" class="flex-shrink-0">
                             <InputQuantity
                                 :id="'addon-' + item.id"
                                 :modelValue="item.addon.quantity"
@@ -274,7 +274,7 @@ onMounted(async () => {
                             />
                         </div>
 
-                        <p class="mb-0 text-nowrap small fw-semibold text-end" style="width: 57px">
+                        <p class="price mb-0 text-nowrap small fw-semibold text-end">
                             {{ format.GBP(item.addon.price?.net_spa || 0) }}
                         </p>
                     </div>
@@ -320,9 +320,14 @@ onMounted(async () => {
 .addon-list {
     max-height: 170px;
     overflow-y: auto;
+    scrollbar-gutter: stable;
 }
 
 .addon-list .truncate-2-lines {
     height: auto;
+}
+
+.addon-list .price {
+    min-width: 88px;
 }
 </style>

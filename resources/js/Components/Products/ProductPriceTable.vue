@@ -142,7 +142,7 @@ const onRowEditSave = async (event) => {
             <template #body="slotProps">
                 <p v-for="item in slotProps.data.active_spas" :key="item.id">
                     {{ item.operation.code }}:
-                    {{ item.percentage ? format.decimalPlaces(item.percentage) + '%' : format.GBP(item.margin) }}
+                    {{ item.percentage ? format.decimalPlaces(item.percentage) + '%' : format.GBP(item.value) }}
                 </p>
             </template>
         </Column>
