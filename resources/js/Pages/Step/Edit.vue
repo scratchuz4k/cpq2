@@ -112,7 +112,7 @@ const items = ref([
                 <tab title="Products">
                     <form @submit.prevent="setStepProduct(product?.id, step.id)" class="mt-3 d-flex">
                         <div class="me-3" style="width: 100%">
-                            <label class="form-label">Add Products without step:</label>
+                            <label class="form-label">Add Products:</label>
                             <InputSelect
                                 id="select-product"
                                 url="/products"

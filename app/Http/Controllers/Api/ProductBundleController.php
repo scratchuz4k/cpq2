@@ -80,6 +80,8 @@ class ProductBundleController extends BaseController
      */
     public function destroy(ProductBundle $productBundle)
     {
-        //
+        $productBundle->delete();
+
+        return response()->noContent();
     }
 }
