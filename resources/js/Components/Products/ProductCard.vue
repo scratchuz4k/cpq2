@@ -223,7 +223,7 @@ watch(searchInput, () => {
                     <p v-else class="truncate-2-lines bold">{{ proxyValue.name }}</p>
                     <div class="d-flex gap-2">
                         <div v-if="proxyValue.bundles && proxyValue.bundles.length > 0">
-                            <p class="badge badge-bundle" style="white-space: nowrap">Bundles</p>
+                            <p class="badge badge-bundle" style="white-space: nowrap">Bundle</p>
                         </div>
                         <div v-if="proxyValue.stock > 0">
                             <p class="badge badge-success" style="white-space: nowrap">
@@ -262,7 +262,7 @@ watch(searchInput, () => {
                             v-model="proxyValue.quantity"
                             @change="(val) => checkQuantity(proxyValue, val, true)"
                         />
-                        <p class="bold big ps-1 ms-4">
+                        <p class="price bold big ps-1 ms-3 text-end">
                             {{ format.GBP(proxyValue.price?.net_spa || 0) }}
                         </p>
                     </div>
@@ -530,5 +530,9 @@ h3 {
     background: #dee2e6;
     z-index: 1;
     overflow: hidden;
+}
+
+.price {
+    min-width: 90px;
 }
 </style>

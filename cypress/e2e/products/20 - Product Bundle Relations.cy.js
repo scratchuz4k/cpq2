@@ -102,8 +102,8 @@ describe('Product Bundle Relations', () => {
         cy.get('#step-1-search-products').clear().type(bundleParent.sku);
         cy.wait(1000);
 
-        // The product card for the bundle parent should show the "Bundles" badge
-        cy.contains('.badge-bundle', 'Bundles').should('be.visible');
+        // The product card for the bundle parent should show the "Bundle" badge
+        cy.contains('.badge-bundle', 'Bundle').should('be.visible');
 
         // The bundle list header should be visible with item count
         cy.contains('Bundle includes').should('be.visible');
