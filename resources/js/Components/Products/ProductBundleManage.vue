@@ -46,9 +46,9 @@ optionBundle.setAllowedActions({
 });
 
 const bundleProductQueries = () => {
-    const existingAddonIds = (proxyValue.value.addons ?? []).map((addon) => addon.id);
+    const existingBundleIds = (proxyValue.value.bundles ?? []).map((bundle) => bundle.id);
 
-    if (existingAddonIds.length === 0) {
+    if (existingBundleIds.length === 0) {
         return [];
     }
 
@@ -57,7 +57,7 @@ const bundleProductQueries = () => {
             group: 'parent',
             column: 'id',
             operator: FilterOperators.NOT_IN,
-            value: existingAddonIds
+            value: existingBundleIds
         }
     ];
 };
