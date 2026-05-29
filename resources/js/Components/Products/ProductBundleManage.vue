@@ -46,12 +46,18 @@ optionBundle.setAllowedActions({
 });
 
 const bundleProductQueries = () => {
+    const existingBundleIds = (proxyValue.value.bundles ?? []).map((bundle) => bundle.id);
+
+    if (existingBundleIds.length === 0) {
+        return [];
+    }
+
     return [
         {
             group: 'parent',
             column: 'id',
             operator: FilterOperators.NOT_IN,
-            value: proxyValue.value.bundles.map((bundle) => bundle.id)
+            value: existingBundleIds
         }
     ];
 };
