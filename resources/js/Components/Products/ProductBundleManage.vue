@@ -46,7 +46,20 @@ optionBundle.setAllowedActions({
 });
 
 const bundleProductQueries = () => {
-    return [];
+    const existingAddonIds = (proxyValue.value.addons ?? []).map((addon) => addon.id);
+
+    if (existingAddonIds.length === 0) {
+        return [];
+    }
+
+    return [
+        {
+            group: 'parent',
+            column: 'id',
+            operator: FilterOperators.NOT_IN,
+            value: existingAddonIds
+        }
+    ];
 };
 
 const getProductBundles = async () => {

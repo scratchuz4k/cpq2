@@ -45,7 +45,20 @@ optionAddons.setAllowedActions({
     allowExport: can(`export product`) || hasRole('Super Admin')
 });
 const addonProductQueries = () => {
-    return [];
+    const existingAddonIds = (proxyValue.value.addons ?? []).map((addon) => addon.id);
+
+    if (existingAddonIds.length === 0) {
+        return [];
+    }
+
+    return [
+        {
+            group: 'parent',
+            column: 'id',
+            operator: FilterOperators.NOT_IN,
+            value: existingAddonIds
+        }
+    ];
 };
 
 const getProductAddons = async () => {
