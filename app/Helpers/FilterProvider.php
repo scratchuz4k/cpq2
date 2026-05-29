@@ -83,7 +83,9 @@ class FilterProvider
     {
         switch ($operator) {
             case 'equals':
-                return $data->where($column, $value);
+                $isBoolValue = in_array($value, ['true', 'false'], true) ? ($value === 'true' ? 1 : 0) : $value;
+
+                return $data->where($column, $isBoolValue);
             case 'contains':
                 return $data->filter(fn ($item) => Str::contains($item[$column], $value));
             case 'in':
