@@ -58,6 +58,8 @@ class SharedLinkController extends Controller
     {
         $sharedLink = SharedLink::where('token', $token)->firstOrFail();
 
+        $sharedLink->tenant?->makeCurrent();
+
         if ($sharedLink->isExpired()) {
             abort(410, 'This link has expired.');
         }
@@ -90,7 +92,7 @@ class SharedLinkController extends Controller
         return match ($component) {
             'Quotes' => [
                 'pricePlans' => PricePlan::all(),
-                'model' => new QuoteResource($item->load(['items', 'tenant.logo', 'tenant.configurations'])),
+                'model' => new QuoteResource($item->load(['items', 'tenant.logo', 'tenant.logoAlt', 'tenant.logoDocs', 'tenant.configurations'])),
                 'customization' => [
                     'colors' => json_decode(array_key_exists('customization_colors', $configs) ? $configs['customization_colors'] : '[]'),
                 ],
@@ -99,7 +101,7 @@ class SharedLinkController extends Controller
 
             'QuoteApprovals' => [
                 'pricePlans' => PricePlan::all(),
-                'model' => new QuoteResource($item->quote->load(['items', 'tenant.logo', 'tenant.configurations'])),
+                'model' => new QuoteResource($item->quote->load(['items', 'tenant.logo', 'tenant.logoAlt', 'tenant.logoDocs', 'tenant.configurations'])),
                 'customization' => $this->getCustomizationColors($configs),
                 'shareableType' => 'quote-approval',
             ],

@@ -39,7 +39,7 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
     public function middleware()
     {
         return [
-            (new WithoutOverlapping('sync:ShopBlocksProducts'))->expireAfter(180),
+            (new WithoutOverlapping('sync:shopblocks'))->expireAfter(180),
         ];
     }
 

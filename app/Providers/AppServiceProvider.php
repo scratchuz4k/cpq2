@@ -74,7 +74,7 @@ class AppServiceProvider extends ServiceProvider
         Sanctum::usePersonalAccessTokenModel(Token::class);
 
         RateLimiter::for('shopblocks-api', function () {
-            return Limit::perMinute(100); // max API limit is 300
+            return Limit::perMinute(50); // max API limit is 300
         });
     }
 }

@@ -221,10 +221,8 @@ onMounted(async () => {
 <template>
     <div>
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <p class="small text-muted mb-0">
-                This product has {{ modelValue.addons.length }} add-on<span v-if="modelValue.addons.length !== 1"
-                    >s</span
-                >
+            <p class="small bold text-muted mb-0">
+                {{ modelValue.addons.length }} add-on<span v-if="modelValue.addons.length !== 1">s</span>
                 available
             </p>
             <span v-if="selectedCount > 0" class="badge badge-muted">{{ selectedCount }} selected</span>
@@ -266,7 +264,7 @@ onMounted(async () => {
                             {{ item.addon.stock > 0 ? item.addon.stock + ' in stock' : 'Out of stock' }}
                         </span>
 
-                        <div style="width: 130px" class="me-3 flex-shrink-0">
+                        <div style="width: 130px" class="flex-shrink-0">
                             <InputQuantity
                                 :id="'addon-' + item.id"
                                 :modelValue="item.addon.quantity"
@@ -276,7 +274,7 @@ onMounted(async () => {
                             />
                         </div>
 
-                        <p class="mb-0 text-nowrap small fw-semibold text-end" style="width: 57px">
+                        <p class="price mb-0 text-nowrap small fw-semibold text-end">
                             {{ format.GBP(item.addon.price?.net_spa || 0) }}
                         </p>
                     </div>
@@ -320,11 +318,16 @@ onMounted(async () => {
 }
 
 .addon-list {
-    max-height: 147px;
+    max-height: 170px;
     overflow-y: auto;
+    scrollbar-gutter: stable;
 }
 
 .addon-list .truncate-2-lines {
     height: auto;
+}
+
+.addon-list .price {
+    min-width: 88px;
 }
 </style>

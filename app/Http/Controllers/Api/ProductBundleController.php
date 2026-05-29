@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
+use App\Http\Resources\ProductBundleResource;
 use App\Models\ProductBundle;
 use App\Services\ProductBundleService;
 use Exception;
@@ -33,7 +34,7 @@ class ProductBundleController extends BaseController
             return handleException($e);
         }
 
-        return JsonResource::collection($data);
+        return ProductBundleResource::collection($data);
     }
 
     /**
@@ -79,6 +80,8 @@ class ProductBundleController extends BaseController
      */
     public function destroy(ProductBundle $productBundle)
     {
-        //
+        $productBundle->delete();
+
+        return response()->noContent();
     }
 }

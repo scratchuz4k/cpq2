@@ -162,6 +162,7 @@ class QuoteController extends BaseController
             ->withoutGlobalScopes()
             ->with([
                 'account' => fn ($query) => $query->withoutGlobalScopes(),
+                'tenant',
             ])
             ->where('uuid', $uuid)
             ->first();
@@ -173,6 +174,8 @@ class QuoteController extends BaseController
         ) {
             return response()->json(['message' => 'Quote not available or not shared.'], 404);
         }
+
+        $quote->tenant?->makeCurrent();
 
         $pdf = $this->quoteService->generatePdf($request, $quote);
 

@@ -221,13 +221,18 @@ watch(searchInput, () => {
                         {{ proxyValue.name }}
                     </h3>
                     <p v-else class="truncate-2-lines bold">{{ proxyValue.name }}</p>
-                    <div v-if="proxyValue.stock > 0">
-                        <p class="badge badge-success" style="white-space: nowrap">
-                            <span :id="'hardware-' + index + '-stock'">
-                                {{ proxyValue.stock }}
-                            </span>
-                            in stock
-                        </p>
+                    <div class="d-flex gap-2">
+                        <div v-if="proxyValue.bundles && proxyValue.bundles.length > 0">
+                            <p class="badge badge-bundle" style="white-space: nowrap">Bundle</p>
+                        </div>
+                        <div v-if="proxyValue.stock > 0">
+                            <p class="badge badge-success" style="white-space: nowrap">
+                                <span :id="'hardware-' + index + '-stock'">
+                                    {{ proxyValue.stock }}
+                                </span>
+                                in stock
+                            </p>
+                        </div>
                     </div>
                 </div>
                 <p class="product-description truncate-2-lines my-3" v-html="proxyValue.description"></p>
@@ -257,7 +262,7 @@ watch(searchInput, () => {
                             v-model="proxyValue.quantity"
                             @change="(val) => checkQuantity(proxyValue, val, true)"
                         />
-                        <p class="bold big ps-1 ms-4">
+                        <p class="price bold big ps-1 ms-3 text-end">
                             {{ format.GBP(proxyValue.price?.net_spa || 0) }}
                         </p>
                     </div>
@@ -292,6 +297,10 @@ watch(searchInput, () => {
                             @change="(val) => checkQuantity(proxyValue, val)"
                         />
                     </div>
+                </div>
+                <div v-if="proxyValue.bundles && proxyValue.bundles.length > 0" class="mt-3">
+                    <hr class="my-2" />
+                    <ProductCardBundlesList :bundles="proxyValue.bundles" />
                 </div>
                 <div v-if="proxyValue.addons && proxyValue.addons.length > 0" class="mt-3">
                     <hr class="my-2" />
@@ -521,5 +530,9 @@ h3 {
     background: #dee2e6;
     z-index: 1;
     overflow: hidden;
+}
+
+.price {
+    min-width: 90px;
 }
 </style>

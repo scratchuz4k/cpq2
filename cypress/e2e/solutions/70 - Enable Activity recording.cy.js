@@ -59,6 +59,7 @@ describe('Creates a Mobile Quote', () => {
             .within(() => {
                 cy.get('.p-multiselect-option').contains(subprovider).click();
             });
+        cy.get('#subprovider-multiselect').click();
 
         // Scroll back to top
         cy.scrollTo('top');

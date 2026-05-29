@@ -62,7 +62,7 @@ class ProductController extends BaseController
             return $product;
         });
 
-        $data = ProductResource::collection($data->load(['prices', 'categories', 'steps']))->toArray(request());
+        $data = ProductResource::collection($data->load(['prices', 'categories', 'steps', 'bundles.pricePlan']))->toArray(request());
 
         return FilterProvider::paginate(collect($data));
     }
