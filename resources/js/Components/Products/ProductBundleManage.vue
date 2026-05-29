@@ -46,14 +46,7 @@ optionBundle.setAllowedActions({
 });
 
 const bundleProductQueries = () => {
-    return [
-        {
-            group: 'parent',
-            column: 'id',
-            operator: FilterOperators.NOT_IN,
-            value: proxyValue.value.bundles.map((bundle) => bundle.id)
-        }
-    ];
+    return [];
 };
 
 const getProductBundles = async () => {
