@@ -2,6 +2,7 @@
 import { updateQuoteItem, removeQuoteItem, temp } from '@composables/useQuoteItem';
 import { getQuote, quote } from '@/Composables/useQuote';
 import format from '@/Composables/format';
+import { ref } from 'vue';
 
 const props = defineProps({
     code: String,
@@ -17,6 +18,11 @@ const props = defineProps({
     }
 });
 const item = defineModel('item');
+const showBundleItems = ref(true);
+
+const toggleBundleItems = () => {
+    showBundleItems.value = !showBundleItems.value;
+};
 
 const edit = (p) => {
     temp.quantity = p.quantity;
@@ -93,7 +99,7 @@ emitter.on('quote-items:toggle:is-editing', () => (item.value.is_editing = false
             </td>
         </template>
         <td v-if="!preview && !quote.is_blocked" class="text-center p-0">
-            <div class="d-flex justify-content-end">
+            <div class="d-flex justify-content-start">
                 <template v-if="!item.is_editing">
                     <font-awesome-icon
                         :id="'btn-' + props.code + '-' + index + '-remove'"
@@ -126,9 +132,34 @@ emitter.on('quote-items:toggle:is-editing', () => (item.value.is_editing = false
                         @click="save(item)"
                     />
                 </template>
+                <div v-if="item.data?.bundle_items != null && !preview">
+                    <font-awesome-icon
+                        v-if="showBundleItems"
+                        :id="'btn-' + props.code + '-' + index + '-save'"
+                        role="button"
+                        class="px-2 py-2 text-primary"
+                        :icon="['fas', 'chevron-down']"
+                        @click="toggleBundleItems()"
+                    />
+                    <font-awesome-icon
+                        v-else
+                        :id="'btn-' + props.code + '-' + index + '-save'"
+                        role="button"
+                        class="px-2 py-2 text-primary"
+                        :icon="['fas', 'chevron-up']"
+                        @click="toggleBundleItems()"
+                    />
+                </div>
             </div>
         </td>
     </tr>
+    <template v-if="item.data?.bundle_items != null && showBundleItems">
+        <tr v-for="(bundleItem, bundleIndex) in item.data.bundle_items" :key="bundleIndex" class="child-bg">
+            <td colspan="100%">
+                <p class="small ps-2">{{ bundleItem.name }}</p>
+            </td>
+        </tr>
+    </template>
 </template>
 <style>
 .child-bg > td {

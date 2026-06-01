@@ -47,6 +47,8 @@ class QuoteItemCreateRequest extends FormRequest
             'discount' => 'numeric|min:0|max:100',
             'price_plan_id' => 'required|exists:price_plans,id',
             'contract_length' => 'numeric|min:1',
+            'data' => 'nullable|array',
+            'data.type' => 'nullable|string|in:main_product,addon_product',
         ];
     }
 }

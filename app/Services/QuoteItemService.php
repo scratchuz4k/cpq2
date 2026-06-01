@@ -15,26 +15,21 @@ class QuoteItemService
             $array['price_plan_id'] = $id;
         }
 
-        if (array_key_exists('product_id', $array) && ! is_null($array['product_id'])) {
+        $data = is_array($array['data'] ?? null) ? $array['data'] : [];
+
+        if (! empty($array['product_id']) && ($data['type'] ?? null) === 'main_product') {
             $product = Product::find($array['product_id']);
-
-            if (! array_key_exists('data', $array) && ! is_array($array['data'])) {
-                $array['data'] = [];
-            }
-
             if ($product->bundles->count() > 0) {
-                $array['data']['bundle_items'] = $product->bundles->map(function ($bundle) {
-                    return [
-                        'product_id' => $bundle->id,
-                        'name' => $bundle->name,
-                    ];
-                })->toArray();
+                $data['bundle_items'] = $product->bundles
+                    ->map(fn ($bundle) => ['product_id' => $bundle->id, 'name' => $bundle->name])
+                    ->toArray();
             }
         }
 
         $quoteItem = QuoteItem::create([
             ...$array,
             'original_price' => $array['price'] ?? 0,
+            'data' => $data,
         ]);
 
         return $quoteItem;

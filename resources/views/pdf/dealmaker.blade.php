@@ -319,6 +319,15 @@
                                             £{{ number_format($item['price'] * $item['quantity'], 2) }}
                                         </td>
                                     </tr>
+                                    @if ($item['data'] && isset($item['data']?->bundle_items))
+                                        @foreach ($item['data']->bundle_items as $bundle_item)
+                                            <tr class="item-row child-bg" style="vertical-align: middle;">
+                                                <td colspan="100%">
+                                                    <p class="small ps-2 mb-1">{{ $bundle_item->name }}</p>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @endif
                                 @endforeach
                                 @if ($discounts['monthly']['discount'])
                                     <tr class="item-row" style="vertical-align: middle;">
@@ -448,6 +457,16 @@
                                             £{{ number_format($item['total'], 2) }}
                                         </td>
                                     </tr>
+
+                                    @if ($item['data'] && isset($item['data']?->bundle_items))
+                                        @foreach ($item['data']->bundle_items as $bundle_item)
+                                            <tr class="item-row child-bg" style="vertical-align: middle;">
+                                                <td colspan="100%">
+                                                    <p class="small ps-2 mb-1">{{ $bundle_item->name }}</p>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @endif
                                 @endforeach
                                 @if ($discounts['one_off']['discount'])
                                     <tr class="item-row" style="vertical-align: middle;"></tr>
