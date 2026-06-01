@@ -48,7 +48,7 @@ class QuoteItemCreateRequest extends FormRequest
             'price_plan_id' => 'required|exists:price_plans,id',
             'contract_length' => 'numeric|min:1',
             'data' => 'nullable|array',
-            'data.type' => 'nullable|string|in:main_product,addon_product',
+            'data.type' => 'nullable|string|in:main_product,addon_product,Primary Product,Primary Hardware Product,Failover Product,Failover Hardware Product,Option Product',
         ];
     }
 }
