@@ -31,7 +31,6 @@ class TokenController extends BaseController
     {
         $users = User::where('tenant_id', Auth::user()->tenant_id)
             ->with('roles')
-            ->permission(['view token', 'viewAny token', 'create token'])
             ->get();
 
         return Inertia::render('Tokens/Create', [
