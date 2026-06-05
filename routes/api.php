@@ -60,6 +60,7 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         Route::get('products', [ShopBlocksProductController::class, 'index']);
         Route::get('products/{article}', [ShopBlocksProductController::class, 'show']);
         Route::get('product-dimensions', [ProductDimensionController::class, 'index']);
+        Route::get('categories/tree', [ShopBlocksCategoryController::class, 'tree']);
         Route::get('categories', [ShopBlocksCategoryController::class, 'index']);
     });
 

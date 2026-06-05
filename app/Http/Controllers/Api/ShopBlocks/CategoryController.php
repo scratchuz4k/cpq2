@@ -13,6 +13,7 @@ use App\Models\ShopBlocks\Product;
 use App\Services\External\ShopBlocksService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -62,6 +63,28 @@ class CategoryController extends BaseController
         // $items = FilterProvider::get($res['items'], request()->input('filters', []));
 
         // return new LengthAwarePaginator($items, $items->count(), 1000, 1);
+    }
+
+    public function tree(): JsonResponse
+    {
+        $all = Category::where('active', true)->get(['id', 'name', 'parent_id']);
+
+        $map = [];
+        foreach ($all as $c) {
+            $map[$c->id] = array_merge($c->toArray(), ['children' => []]);
+        }
+
+        $roots = [];
+        foreach ($map as $id => &$node) {
+            if ($node['parent_id'] && isset($map[$node['parent_id']])) {
+                $map[$node['parent_id']]['children'][] = &$node;
+            } else {
+                $roots[] = &$node;
+            }
+        }
+        unset($node);
+
+        return response()->json($roots);
     }
 
     /**
