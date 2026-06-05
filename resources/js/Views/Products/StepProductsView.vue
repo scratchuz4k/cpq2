@@ -4,7 +4,7 @@ import { computed, reactive, ref, watch, onMounted, watchEffect } from 'vue';
 import { quote } from '@composables/useQuote';
 import _ from 'lodash';
 import { Paginator, Select, Skeleton } from 'primevue';
-import { selectedItems, addSelected } from '@/Composables/useComparator';
+import { addSelected } from '@/Composables/useComparator';
 import { actionBarButtons } from '@/Composables/useQuoteSteps.js';
 import OrderSummary from '@/Components/OrderSummary.vue';
 import InputText from 'primevue/inputtext';
@@ -42,9 +42,7 @@ const proxyValue = computed({
 });
 
 const products = ref([]);
-const categories = ref([]);
-const allCategories = ref([]);
-const currentCategory = ref(null);
+const currentCategories = ref([]);
 const currentStep = ref(props.index);
 const showCards = ref(false);
 
@@ -98,21 +96,11 @@ const getProducts = async () => {
         }
     ];
 
-    if (currentCategory.value) {
-        let array = [currentCategory.value];
-        let items = [];
-
-        do {
-            let current = array.pop();
-            items.push(current);
-            let temp = allCategories.value.filter((x) => x.parent_id == current.id);
-            array.push(...temp);
-        } while (array.length != 0);
-
+    if (currentCategories.value) {
         filters.push({
             column: 'categories.id',
             operator: 'in',
-            value: items.map((x) => x.id)
+            value: currentCategories.value.map((x) => x.id).join(',')
         });
     }
 
@@ -128,39 +116,13 @@ const getProducts = async () => {
 
     let res = await axios.get('/api/products' + '?' + query);
 
-    const tempCategories = [...allCategories.value];
-
     res.data.data.forEach((e) => {
         let temp = quote.items.find((x) => x.product_code == e.sku);
         e.quantity = temp ? temp.quantity : 0;
         e.contract_length = e.price_plan.code == 'SINGLE' ? 1 : 12;
-        (e.categories || []).forEach((cat) => {
-            if (!tempCategories.find((c) => c.id === cat.id)) {
-                tempCategories.push({
-                    id: cat.id,
-                    name: cat.name,
-                    parent_id: cat.parent_id,
-                    ...cat
-                });
-            }
-
-            (cat.parent_tree || []).forEach((parentCat) => {
-                if (!tempCategories.find((c) => c.id === parentCat.id)) {
-                    tempCategories.push({
-                        id: parentCat.id,
-                        name: parentCat.name,
-                        parent_id: parentCat.parent_id,
-                        ...parentCat
-                    });
-                }
-            });
-        });
     });
 
     products.value = res.data.data;
-
-    allCategories.value = tempCategories;
-    categories.value = tempCategories;
 
     meta.first = (meta.page - 1) * meta.limit;
     meta.total = res.data.total;
@@ -208,7 +170,7 @@ watch(sort, () => {
 });
 
 watch(
-    currentCategory,
+    currentCategories,
     _.debounce(() => {
         meta.page = 1;
         getProducts();
@@ -217,7 +179,7 @@ watch(
 );
 
 watch(proxyValue, async () => {
-    currentCategory.value = null;
+    currentCategories.value = [];
     await getProducts();
 });
 
@@ -271,15 +233,14 @@ watch(
             </div>
             <div class="row">
                 <div class="col-9">
-                    <div v-if="categories.length" class="filters rounded bg-white p-3 mb-3">
-                        <div class="row mb-3">
+                    <div class="filters rounded bg-white p-3 mb-3">
+                        <div class="row">
                             <div class="col-3">
                                 <div class="mt-2">
-                                    <p class="bold">Categories</p>
-                                    <CategoriesSelect
-                                        v-model="currentCategory"
-                                        :categories="categories.map((x) => x.id)"
-                                    ></CategoriesSelect>
+                                    <InputSelectCategories
+                                        v-model="currentCategories"
+                                        :step-id="step.id"
+                                    ></InputSelectCategories>
                                 </div>
                             </div>
                         </div>
@@ -305,7 +266,7 @@ watch(
                             v-model:first="meta.first"
                             :rows="meta.limit"
                             :totalRecords="meta.total"
-                            :rowsPerPageOptions="[12, 24, 48]"
+                            :rowsPerPageOptions="[10, 24, 48]"
                             @page="handlePaginator"
                         >
                         </Paginator>

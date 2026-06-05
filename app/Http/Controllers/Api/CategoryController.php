@@ -12,6 +12,7 @@ use App\Models\Category;
 use App\Services\CategoryService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -40,6 +41,60 @@ class CategoryController extends BaseController
         }
 
         return CategoryResource::collection($data);
+    }
+
+    /**
+     * List Categories as nested tree (all active, no pagination)
+     */
+    public function tree(): JsonResponse
+    {
+        $stepId = request('step_id');
+
+        $all = Category::where('is_active', true)->get(['id', 'name', 'parent_id', 'sort_order']);
+
+        $map = [];
+        foreach ($all as $c) {
+            $map[$c->id] = array_merge($c->toArray(), ['children' => []]);
+        }
+
+        $roots = [];
+        foreach ($map as $id => &$node) {
+            if ($node['parent_id'] && isset($map[$node['parent_id']])) {
+                $map[$node['parent_id']]['children'][] = &$node;
+            } else {
+                $roots[] = &$node;
+            }
+        }
+        unset($node);
+
+        if ($stepId) {
+            $matchingIds = Category::where('is_active', true)
+                ->whereHas('products', fn ($q) => $q->whereHas('steps', fn ($q2) => $q2->where('steps.id', $stepId)))
+                ->pluck('id')
+                ->flip()
+                ->all();
+
+            $roots = array_values(array_filter(array_map(
+                fn (&$node) => $this->pruneTree($node, $matchingIds),
+                $roots
+            )));
+        }
+
+        return response()->json($roots);
+    }
+
+    private function pruneTree(array &$node, array $matchingIds): ?array
+    {
+        $node['children'] = array_values(array_filter(array_map(
+            fn (&$child) => $this->pruneTree($child, $matchingIds),
+            $node['children']
+        )));
+
+        if (isset($matchingIds[$node['id']]) || count($node['children']) > 0) {
+            return $node;
+        }
+
+        return null;
     }
 
     /**

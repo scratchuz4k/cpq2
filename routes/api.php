@@ -90,6 +90,8 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
     });
     Route::post('/quotes/{quote}/complete', [QuoteController::class, 'complete']);
 
+    Route::get('categories/tree', [CategoryController::class, 'tree']);
+
     Route::apiResources([
         'apis' => ApiController::class,
         'activity' => ActivityController::class,
