@@ -1,93 +1,106 @@
 <template>
     <div class="filters rounded bg-white p-3 mb-3">
-        <div class="row mb-3">
-            <div class="col-3">
-                <div class="mt-2">
-                    <p class="bold">Categories</p>
-                    <ShopBlocksCategories v-model="proxyValue.categories"></ShopBlocksCategories>
-                </div>
-            </div>
-            <div class="col-3">
-                <div class="mt-2">
-                    <p class="bold">Brands</p>
-                    <ShopBlocksBrands v-model="proxyValue.brands" :category="currentCategory"></ShopBlocksBrands>
-                </div>
-            </div>
-            <div class="col-3">
-                <div class="mt-2">
-                    <p class="bold">Models</p>
-                    <ShopBlocksModels v-model="proxyValue.models" :category="currentCategory"></ShopBlocksModels>
-                </div>
-            </div>
-            <div class="col-3">
-                <div class="mt-2">
-                    <p class="bold">Storage</p>
-                    <ShopBlocksStorages v-model="proxyValue.storage" :category="currentCategory"></ShopBlocksStorages>
-                </div>
-            </div>
-        </div>
         <div class="row">
-            <div class="col">
-                <ul class="d-flex list-unstyled p-0 m-0">
-                    <li>
-                        <Badge class="mb-1" v-for="(brand, index) in currentBrand" :value="brand.name">
-                            <template #close-button>
-                                <font-awesome-icon
-                                    :icon="['fas', 'x']"
-                                    role="button"
-                                    class="me-1 fs-7"
-                                    @click="() => currentBrand.splice(index, 1)"
-                                />
-                            </template>
-                        </Badge>
-                        <Badge class="mb-1" v-for="(model, index) in currentModel" :value="model.name">
-                            <template #close-button>
-                                <font-awesome-icon
-                                    :icon="['fas', 'x']"
-                                    role="button"
-                                    class="me-1 fs-7"
-                                    @click="() => currentModel.splice(index, 1)"
-                                />
-                            </template>
-                        </Badge>
-                        <Badge class="mb-1" v-for="(storage, index) in currentStorage" :value="storage.value">
-                            <template #close-button>
-                                <font-awesome-icon
-                                    :icon="['fas', 'x']"
-                                    role="button"
-                                    class="me-1 fs-7"
-                                    @click="() => currentStorage.splice(index, 1)"
-                                />
-                            </template>
-                        </Badge>
-                    </li>
-                </ul>
+            <div class="col-9">
+                <!-- Primary filters — always visible (4 per row) -->
+                <div class="filters-grid">
+                    <template v-for="(filter, key) in filterComponent.filter((f) => f.show)" :key="key">
+                        <component
+                            :is="filter.component"
+                            v-if="showFilter(filter.name) && (!hasMoreFilters ? key <= 3 : true)"
+                            v-model="proxyValue[filter.name]"
+                            :categories="proxyValue.categories"
+                        ></component>
+                    </template>
+                </div>
+            </div>
+
+            <div class="col-3">
+                <div class="d-flex align-items-center justify-content-end gap-1 flex-shrink-0 h-100">
+                    <button class="btn btn-sm text-primary" @click="clearFilters">
+                        <FontAwesomeIcon :icon="['fas', 'arrow-rotate-left']"></FontAwesomeIcon>
+                        Reset
+                    </button>
+                    <button
+                        v-if="filterComponent.filter((f) => f.show).length > 4"
+                        class="btn btn-sm"
+                        :class="[hasMoreFilters ? 'btn-primary' : 'btn-outline-primary']"
+                        @click="moreFilters"
+                    >
+                        <FontAwesomeIcon :icon="['fas', 'filter']"></FontAwesomeIcon>
+                        More Filters
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 </template>
 <script setup>
-import { computed, reactive } from 'vue';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { computed, ref } from 'vue';
+import { quote } from '@/Composables/useQuote';
 
 const props = defineProps({
-    modelValue: Object
+    modelValue: Object,
+    filters: {
+        type: Array,
+        default: () => ['categories', 'brands', 'models', 'storage']
+    }
 });
 
+const filterComponent = [
+    {
+        show: props.filters.includes('categories'),
+        name: 'categories',
+        component: 'ShopBlocksCategories'
+    },
+    {
+        show: props.filters.includes('brands'),
+        name: 'brands',
+        component: 'ShopBlocksBrands'
+    },
+    {
+        show: props.filters.includes('models'),
+        name: 'models',
+        component: 'ShopBlocksModels'
+    },
+    {
+        show: props.filters.includes('storage'),
+        name: 'storage',
+        component: 'ShopBlocksStorages'
+    }
+];
+
+const emit = defineEmits(['update:modelValue']);
 const proxyValue = computed({
     get: () => props.modelValue,
     set: (value) => emit('update:modelValue', value)
 });
 
-const filterList = reactive({
-    models: [],
-    storage: [
-        { label: '1TB', value: '1TB' },
-        { label: '512 GB', value: '512 GB' },
-        { label: '256 GB', value: '256 GB' },
-        { label: '128 GB', value: '128 GB' },
-        { label: '64 GB', value: '64 GB' },
-        { label: '32 GB', value: '32 GB' },
-        { label: '16 GB', value: '16 GB' }
-    ]
-});
+const hasMoreFilters = ref(false);
+
+const showFilter = (name) => props.filters.includes(name);
+
+const moreFilters = () => {
+    hasMoreFilters.value = !hasMoreFilters.value;
+};
+
+const clearFilters = () => {
+    proxyValue.value.categories = [];
+    proxyValue.value.brands = [];
+    proxyValue.value.models = [];
+    proxyValue.value.storage = [];
+
+    if (quote.solution_type.code == 4) {
+        proxyValue.value.categories = [{ id: 22 }];
+    }
+};
 </script>
+
+<style scoped>
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+}
+</style>

@@ -84,7 +84,32 @@ class CategoryController extends BaseController
         }
         unset($node);
 
+        $matchingIds = Product::where('stock', '>=', 1)
+            ->whereNotNull('category_id')
+            ->pluck('category_id')
+            ->flip()
+            ->all();
+
+        $roots = array_values(array_filter(array_map(
+            fn (&$node) => $this->pruneTree($node, $matchingIds),
+            $roots
+        )));
+
         return response()->json($roots);
+    }
+
+    private function pruneTree(array &$node, array $matchingIds): ?array
+    {
+        $node['children'] = array_values(array_filter(array_map(
+            fn (&$child) => $this->pruneTree($child, $matchingIds),
+            $node['children']
+        )));
+
+        if (isset($matchingIds[$node['id']]) || count($node['children']) > 0) {
+            return $node;
+        }
+
+        return null;
     }
 
     /**

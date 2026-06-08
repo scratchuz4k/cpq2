@@ -18,6 +18,7 @@ const tree = ref([]);
 const isLoading = ref(false);
 const showOptions = ref(false);
 const searchQuery = ref('');
+const collapsedIds = ref(new Set());
 
 const proxyValue = computed({
     get: () => props.modelValue ?? [],
@@ -40,12 +41,12 @@ async function fetchTree() {
     }
 }
 
-function flattenWithDepth(nodes, depth = 0) {
+function flattenWithDepth(nodes, depth = 0, collapsed = null) {
     const result = [];
     for (const node of nodes) {
         result.push({ ...node, _depth: depth });
-        if (node.children?.length) {
-            result.push(...flattenWithDepth(node.children, depth + 1));
+        if (node.children?.length && !collapsed?.has(node.id)) {
+            result.push(...flattenWithDepth(node.children, depth + 1, collapsed));
         }
     }
     return result;
@@ -61,12 +62,33 @@ function collectDescendants(node) {
     return result;
 }
 
-const flatOptions = computed(() => flattenWithDepth(tree.value));
+function toggleCollapse(e, node) {
+    e.stopPropagation();
+    const next = new Set(collapsedIds.value);
+    if (next.has(node.id)) next.delete(node.id);
+    else next.add(node.id);
+    collapsedIds.value = next;
+}
+
+const flatOptions = computed(() => flattenWithDepth(tree.value, 0, collapsedIds.value));
+
+function collectBranchMatches(nodes, q, depth = 0) {
+    const result = [];
+    for (const node of nodes) {
+        const childMatches = node.children?.length ? collectBranchMatches(node.children, q, depth + 1) : [];
+        const selfMatches = node.name.toLowerCase().includes(q);
+        if (selfMatches || childMatches.length) {
+            result.push({ ...node, _depth: depth });
+            result.push(...childMatches);
+        }
+    }
+    return result;
+}
 
 const filteredOptions = computed(() => {
     const q = searchQuery.value?.trim().toLowerCase();
     if (!q) return flatOptions.value;
-    return flatOptions.value.filter((n) => n.name.toLowerCase().includes(q));
+    return collectBranchMatches(tree.value, q);
 });
 
 const selectedIds = computed(() => new Set(proxyValue.value.map((c) => c.id)));
@@ -87,8 +109,6 @@ function select(option) {
         const toAdd = descendants.filter((d) => !existingIds.has(d.id));
         proxyValue.value = [...proxyValue.value, ...toAdd];
     }
-
-    searchQuery.value = '';
 }
 
 function clear(e) {
@@ -110,22 +130,28 @@ onMounted(() => {
 
 <template>
     <div :id="id" class="position-relative">
-        <div class="form-select w-100 d-flex cursor-pointer" @click="showOptions = !showOptions">
-            <template v-if="!proxyValue.length">
-                {{ placeholder }}
-            </template>
-            <span v-else class="text-truncate">
-                {{ proxyValue.map((c) => c.name).join(', ') }}
+        <div
+            class="trigger-select w-100 d-flex align-items-center cursor-pointer gap-2"
+            @click="showOptions = !showOptions"
+        >
+            <span>{{ placeholder }}</span>
+            <font-awesome-icon :icon="['fas', 'chevron-down']" style="font-size: 0.65rem; opacity: 0.6" />
+            <span class="ms-auto d-flex align-items-center gap-2">
+                <span
+                    v-if="proxyValue.length"
+                    class="badge rounded-pill text-white"
+                    style="background-color: var(--color-purple); font-size: 0.7rem"
+                >
+                    {{ proxyValue.length }}
+                </span>
+                <font-awesome-icon
+                    v-if="proxyValue.length"
+                    role="button"
+                    style="font-size: 0.8rem"
+                    :icon="['fas', 'xmark']"
+                    @click.stop="clear"
+                />
             </span>
-
-            <font-awesome-icon
-                v-if="proxyValue.length"
-                class="my-auto ms-auto flex-shrink-0"
-                role="button"
-                style="font-size: 0.8rem"
-                :icon="['fas', 'xmark']"
-                @click="clear"
-            />
         </div>
 
         <div
@@ -134,7 +160,7 @@ onMounted(() => {
                 visibility: showOptions ? 'visible' : 'hidden',
                 height: showOptions ? 'auto' : '0'
             }"
-            style="z-index: 1000; width: 100%; max-width: 300px"
+            style="z-index: 1000; width: 500px"
         >
             <IconField class="p-0">
                 <InputIcon v-if="isLoading">
@@ -154,14 +180,40 @@ onMounted(() => {
                     v-else
                     v-for="option in filteredOptions"
                     :key="option.id"
-                    class="option"
+                    class="option d-flex align-items-center gap-2"
                     :class="{ selected: isSelected(option) }"
                     :style="{ paddingLeft: `${0.75 + option._depth * 1}rem` }"
-                    @click="select(option)"
+                    @click.stop="select(option)"
                     style="cursor: pointer"
                 >
-                    <span v-if="option._depth > 0" class="me-1" style="opacity: 0.4">↳</span>
-                    {{ option.name }}
+                    <span class="flex-shrink-0 option-checkbox">
+                        <font-awesome-icon v-if="isSelected(option)" :icon="['fas', 'square-check']" />
+                        <font-awesome-icon v-else :icon="['far', 'square']" />
+                    </span>
+                    <span
+                        v-if="option.name.length > 30"
+                        v-tooltip
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="top"
+                        :title="option.name"
+                        class="flex-grow-1 truncate-1-line"
+                    >
+                        {{ option.name }}
+                    </span>
+                    <span v-else class="flex-grow-1">
+                        {{ option.name }}
+                    </span>
+                    <span
+                        v-if="option.children?.length && !searchQuery"
+                        class="ms-auto flex-shrink-0 toggle-icon"
+                        style="opacity: 0.5; padding: 0 0.25rem"
+                        @click.stop="toggleCollapse($event, option)"
+                    >
+                        <font-awesome-icon
+                            :icon="['fas', collapsedIds.has(option.id) ? 'chevron-down' : 'chevron-up']"
+                            style="font-size: 0.65rem"
+                        />
+                    </span>
                 </div>
             </div>
         </div>
@@ -169,6 +221,25 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.truncate-1-line {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1rem;
+    height: calc(1rem * 1);
+}
+
+.trigger-select {
+    padding: 0.375rem 0.75rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    background-color: #fff;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
 .options-container {
     display: flex;
     flex-direction: column;
@@ -180,13 +251,11 @@ onMounted(() => {
     border-radius: 4px;
 }
 
-.option.selected {
-    color: white;
-    background-color: var(--color-purple);
+.option-checkbox {
+    color: var(--color-purple);
 }
 
-.option:not(.selected):hover {
-    color: black;
+.option:hover {
     background-color: var(--color-purple-light);
 }
 </style>
