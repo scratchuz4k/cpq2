@@ -236,12 +236,10 @@ watch(
                     <div class="filters rounded bg-white p-3 mb-3">
                         <div class="row">
                             <div class="col-3">
-                                <div class="mt-2">
-                                    <InputSelectCategories
-                                        v-model="currentCategories"
-                                        :step-id="step.id"
-                                    ></InputSelectCategories>
-                                </div>
+                                <InputSelectCategories
+                                    v-model="currentCategories"
+                                    :step-id="step.id"
+                                ></InputSelectCategories>
                             </div>
                         </div>
                     </div>

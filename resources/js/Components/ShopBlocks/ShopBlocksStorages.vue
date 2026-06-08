@@ -3,7 +3,7 @@ import { computed, onMounted, reactive, ref, watch } from 'vue';
 import queryString from 'qs';
 
 const props = defineProps({
-    category: Object,
+    categories: Array,
     modelValue: Object
 });
 
@@ -31,12 +31,13 @@ const getFilters = async () => {
 
     filters.value = [
         { column: 'dimension_type_id', operator: 'equals', value: res.data.data[0].id },
-        { column: 'products.category.code', operator: 'equals', value: 22 }
+        { column: 'products.category.id', operator: 'in', value: props.categories?.map((x) => x.id).join(',') },
+        { column: 'products.stock', operator: 'greater_than_or_equal_to', value: 1 }
     ];
 };
 
 watch(
-    () => props.category,
+    () => props.categories,
     () => {
         getFilters();
     },
@@ -49,7 +50,7 @@ watch(
         url="/shop-blocks/dimensions"
         :fields="['value']"
         v-model="proxyValue"
-        placeholder="Select a Storage"
+        placeholder="Storage"
         :query="filters"
     >
     </InputSelectMultiple>
