@@ -1102,6 +1102,7 @@ getArticles(false, true);
                                         v-if="!quote.items.find((x) => x.product_code == article.code)"
                                         class="btn btn-outline-primary me-2 py-1"
                                         @click="checkProduct(article)"
+                                        style="white-space: nowrap"
                                     >
                                         <font-awesome-icon :icon="['fas', 'plus']" />
                                         Add
