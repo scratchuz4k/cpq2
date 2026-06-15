@@ -21,7 +21,7 @@ class QuoteItemService
             $product = Product::find($array['product_id']);
             if ($product->bundles->count() > 0) {
                 $data['bundle_items'] = $product->bundles
-                    ->map(fn ($bundle) => ['product_id' => $bundle->id, 'name' => $bundle->name])
+                    ->map(fn ($bundle) => ['product_id' => $bundle->id, 'name' => $bundle->name, 'quantity' => 1])
                     ->toArray();
             }
         }

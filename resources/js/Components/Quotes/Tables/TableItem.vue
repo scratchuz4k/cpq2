@@ -18,7 +18,7 @@ const props = defineProps({
     }
 });
 const item = defineModel('item');
-const showBundleItems = ref(true);
+const showBundleItems = ref(false);
 
 const toggleBundleItems = () => {
     showBundleItems.value = !showBundleItems.value;
@@ -138,7 +138,7 @@ emitter.on('quote-items:toggle:is-editing', () => (item.value.is_editing = false
                         :id="'btn-' + props.code + '-' + index + '-save'"
                         role="button"
                         class="px-2 py-2 text-primary"
-                        :icon="['fas', 'chevron-down']"
+                        :icon="['fas', 'chevron-up']"
                         @click="toggleBundleItems()"
                     />
                     <font-awesome-icon
@@ -146,7 +146,7 @@ emitter.on('quote-items:toggle:is-editing', () => (item.value.is_editing = false
                         :id="'btn-' + props.code + '-' + index + '-save'"
                         role="button"
                         class="px-2 py-2 text-primary"
-                        :icon="['fas', 'chevron-up']"
+                        :icon="['fas', 'chevron-down']"
                         @click="toggleBundleItems()"
                     />
                 </div>
@@ -156,7 +156,7 @@ emitter.on('quote-items:toggle:is-editing', () => (item.value.is_editing = false
     <template v-if="item.data?.bundle_items != null && showBundleItems">
         <tr v-for="(bundleItem, bundleIndex) in item.data.bundle_items" :key="bundleIndex" class="child-bg">
             <td colspan="100%">
-                <p class="small ps-2">{{ bundleItem.name }}</p>
+                <p class="small ps-2">{{ bundleItem.name }} x{{ bundleItem.quantity }}</p>
             </td>
         </tr>
     </template>

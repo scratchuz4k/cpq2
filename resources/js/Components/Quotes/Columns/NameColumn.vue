@@ -1,6 +1,6 @@
 <script setup>
 import { quote } from '@/Composables/useQuote';
-import { computed } from 'vue';
+import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
 
 const props = defineProps({
     code: String,
@@ -11,20 +11,49 @@ const props = defineProps({
 });
 const item = defineModel();
 
+const textElement = ref(null);
+const isOverflowing = ref(false);
+
 const mainProduct = computed(() => {
     if (!item.value.data || item.value.data?.type === 'main_product') {
         return null;
     }
     return quote.items.find((x) => x.group === item.value.group && x.data?.type === 'main_product') || null;
 });
+
+const checkOverflow = () => {
+    if (textElement.value) {
+        isOverflowing.value = textElement.value.scrollWidth > textElement.value.clientWidth;
+    }
+};
+
 const itemNameTooltip = computed(() => {
-    return item.value[props.column.value]?.length > 25 ? item.value[props.column.value] : null;
+    return isOverflowing.value ? item.value[props.column.value] : null;
+});
+
+watch(
+    () => item.value[props.column.value],
+    () => {
+        checkOverflow();
+    },
+    { immediate: true }
+);
+
+onMounted(() => {
+    checkOverflow();
+    window.addEventListener('resize', checkOverflow);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('resize', checkOverflow);
 });
 </script>
 <template>
     <div :class="!preview ? 'd-flex align-baseline' : ''">
         <p
-            class="small semi-bold truncate-name-line w-100"
+            ref="textElement"
+            class="small semi-bold w-100"
+            :class="!preview ? 'truncate-name-line' : '*:'"
             v-tooltip
             data-bs-toggle="tooltip"
             data-bs-placement="top"
