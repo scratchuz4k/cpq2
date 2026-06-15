@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue';
+import format from '@composables/format';
 
 const props = defineProps({
     bundles: {
@@ -12,11 +13,8 @@ const visible = ref(false);
 
 const formatBundleDescription = (item) => {
     const parts = [];
-    if (item.sku) {
-        parts.push(`P${item.sku}`);
-    }
     if (item.contract_term_value && item.contract_term_unit) {
-        parts.push(`P${item.contract_term_value}${item.contract_term_unit}`);
+        parts.push(`${item.contract_term_value} ${format.capitalizeFirstLetter(item.contract_term_unit)}`);
     }
     if (item.price_plan?.name) {
         parts.push(item.price_plan.name);
