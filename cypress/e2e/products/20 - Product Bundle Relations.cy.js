@@ -95,8 +95,12 @@ describe('Product Bundle Relations', () => {
     });
 
     it('Verifies the bundle badge and items list are shown in the mobile quote journey', () => {
-        cy.visit('/quotes');
-        cy.get('#datatable-btn-0-edit').click();
+        cy.visit('/quotes/create');
+        cy.selectFirstOption('account_id');
+        cy.get('.step-action-bar #btn-next-step').click();
+
+        cy.get('#solution_type-mobile').click();
+        cy.get('#btn-create-quote').click();
 
         // Search for the bundle parent product in the step
         cy.get('#step-1-search-products').clear().type(bundleParent.sku);
