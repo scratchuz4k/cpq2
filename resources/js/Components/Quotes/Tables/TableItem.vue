@@ -18,7 +18,7 @@ const props = defineProps({
     }
 });
 const item = defineModel('item');
-const showBundleItems = ref(false);
+const showBundleItems = ref(props.preview || false);
 
 const toggleBundleItems = () => {
     showBundleItems.value = !showBundleItems.value;

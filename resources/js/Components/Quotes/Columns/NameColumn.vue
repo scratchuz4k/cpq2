@@ -11,9 +11,6 @@ const props = defineProps({
 });
 const item = defineModel();
 
-const textElement = ref(null);
-const isOverflowing = ref(false);
-
 const mainProduct = computed(() => {
     if (!item.value.data || item.value.data?.type === 'main_product') {
         return null;
@@ -21,37 +18,14 @@ const mainProduct = computed(() => {
     return quote.items.find((x) => x.group === item.value.group && x.data?.type === 'main_product') || null;
 });
 
-const checkOverflow = () => {
-    if (textElement.value) {
-        isOverflowing.value = textElement.value.scrollWidth > textElement.value.clientWidth;
-    }
-};
-
 const itemNameTooltip = computed(() => {
-    return isOverflowing.value ? item.value[props.column.value] : null;
-});
-
-watch(
-    () => item.value[props.column.value],
-    () => {
-        checkOverflow();
-    },
-    { immediate: true }
-);
-
-onMounted(() => {
-    checkOverflow();
-    window.addEventListener('resize', checkOverflow);
-});
-
-onUnmounted(() => {
-    window.removeEventListener('resize', checkOverflow);
+    return item.value[props.column.value]?.length > 25 ? item.value[props.column.value] : null;
 });
 </script>
 <template>
     <div :class="!preview ? 'd-flex align-baseline' : ''">
         <p
-            ref="textElement"
+            ref="element"
             class="small semi-bold w-100"
             :class="!preview ? 'truncate-name-line' : '*:'"
             v-tooltip

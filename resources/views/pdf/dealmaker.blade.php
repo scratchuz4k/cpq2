@@ -323,7 +323,7 @@
                                         @foreach ($item['data']->bundle_items as $bundle_item)
                                             <tr class="item-row child-bg" style="vertical-align: middle;">
                                                 <td colspan="100%">
-                                                    <p class="small ps-2 mb-1">{{ $bundle_item->name }}</p>
+                                                    <p class="small ps-2 mb-1">{{ $bundle_item->name }} x1</p>
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -462,7 +462,7 @@
                                         @foreach ($item['data']->bundle_items as $bundle_item)
                                             <tr class="item-row child-bg" style="vertical-align: middle;">
                                                 <td colspan="100%">
-                                                    <p class="small ps-2 mb-1">{{ $bundle_item->name }}</p>
+                                                    <p class="small ps-2 mb-1">{{ $bundle_item->name }} x1</p>
                                                 </td>
                                             </tr>
                                         @endforeach
