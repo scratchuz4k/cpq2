@@ -1094,7 +1094,9 @@ getArticles(false, true);
                                         <font-awesome-icon :icon="['far', 'circle-question']"></font-awesome-icon>
                                     </span>
                                 </td>
-                                <td>{{ article.contractTermMonths }} Months</td>
+                                <td>
+                                    {{ article.contractTermMonths ? article.contractTermMonths + ' Months' : 'N/A' }}
+                                </td>
                                 <td>{{ article.connectivityType ?? 'N/A' }}</td>
                                 <td>{{ article.technologyType ?? 'N/A' }}</td>
                                 <td class="text-end" v-if="!hasProduct()">
