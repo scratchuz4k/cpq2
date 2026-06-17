@@ -128,12 +128,10 @@ class QuoteItemController extends BaseController
 
         // delete related products from quote
         if ($cascadeProductIds->isNotEmpty()) {
-            $quote->items()
-                ->whereIn('product_id', $cascadeProductIds)
-                ->delete();
+            foreach ($quote->items->whereIn('product_id', $cascadeProductIds) as $item) {
+                $item->delete();
+            }
         }
-
-        $quote->computeTotals();
 
         return response(null, 200);
     }

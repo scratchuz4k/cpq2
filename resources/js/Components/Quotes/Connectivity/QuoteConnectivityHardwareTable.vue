@@ -98,7 +98,6 @@ const getAddons = async () => {
     } catch (error) {
         isLoading.value = false;
         meta.isRequestCompleted = true;
-        notyf.error(error.response.data.message);
     }
 
     if (!meta.isRequestCompleted) {

@@ -1094,7 +1094,9 @@ getArticles(false, true);
                                         <font-awesome-icon :icon="['far', 'circle-question']"></font-awesome-icon>
                                     </span>
                                 </td>
-                                <td>{{ article.contractTermMonths }} Months</td>
+                                <td>
+                                    {{ article.contractTermMonths ? article.contractTermMonths + ' Months' : 'N/A' }}
+                                </td>
                                 <td>{{ article.connectivityType ?? 'N/A' }}</td>
                                 <td>{{ article.technologyType ?? 'N/A' }}</td>
                                 <td class="text-end" v-if="!hasProduct()">
@@ -1102,6 +1104,7 @@ getArticles(false, true);
                                         v-if="!quote.items.find((x) => x.product_code == article.code)"
                                         class="btn btn-outline-primary me-2 py-1"
                                         @click="checkProduct(article)"
+                                        style="white-space: nowrap"
                                     >
                                         <font-awesome-icon :icon="['fas', 'plus']" />
                                         Add
