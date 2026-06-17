@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\PricePlan;
+use App\Models\Product;
 use App\Models\QuoteItem;
 
 class QuoteItemService
@@ -14,9 +15,21 @@ class QuoteItemService
             $array['price_plan_id'] = $id;
         }
 
+        $data = is_array($array['data'] ?? null) ? $array['data'] : [];
+
+        if (! empty($array['product_id']) && ($data['type'] ?? null) === 'main_product') {
+            $product = Product::find($array['product_id']);
+            if ($product->bundles->count() > 0) {
+                $data['bundle_items'] = $product->bundles
+                    ->map(fn ($bundle) => ['product_id' => $bundle->id, 'name' => $bundle->name, 'quantity' => 1])
+                    ->toArray();
+            }
+        }
+
         $quoteItem = QuoteItem::create([
             ...$array,
             'original_price' => $array['price'] ?? 0,
+            'data' => $data,
         ]);
 
         return $quoteItem;

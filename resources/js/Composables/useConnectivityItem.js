@@ -62,7 +62,7 @@ export const add = async (article) => {
             let res = await axios.post('/api/quote-items', x);
         }
     } catch (ex) {
-        alert(ex.response.data.message);
+        notyf.error(ex.response.data.message);
     }
     await getQuote(quote.id);
 };

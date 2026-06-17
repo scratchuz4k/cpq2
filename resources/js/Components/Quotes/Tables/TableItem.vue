@@ -2,6 +2,7 @@
 import { updateQuoteItem, removeQuoteItem, temp } from '@composables/useQuoteItem';
 import { getQuote, quote } from '@/Composables/useQuote';
 import format from '@/Composables/format';
+import { ref } from 'vue';
 
 const props = defineProps({
     code: String,
@@ -17,6 +18,11 @@ const props = defineProps({
     }
 });
 const item = defineModel('item');
+const showBundleItems = ref(props.preview || false);
+
+const toggleBundleItems = () => {
+    showBundleItems.value = !showBundleItems.value;
+};
 
 const edit = (p) => {
     temp.quantity = p.quantity;
@@ -92,43 +98,70 @@ emitter.on('quote-items:toggle:is-editing', () => (item.value.is_editing = false
                 </component>
             </td>
         </template>
-        <td v-if="!preview && !quote.is_blocked" class="text-center p-0">
-            <div class="d-flex justify-content-end">
-                <template v-if="!item.is_editing">
-                    <font-awesome-icon
-                        :id="'btn-' + props.code + '-' + index + '-remove'"
-                        role="button"
-                        class="px-2 py-2 text-primary"
-                        :icon="['fas', 'trash-alt']"
-                        @click="remove(item)"
-                    />
-                    <font-awesome-icon
-                        :id="'btn-' + props.code + '-' + index + '-edit'"
-                        role="button"
-                        class="px-2 py-2 text-primary"
-                        :icon="['fas', 'edit']"
-                        @click="edit(item)"
-                    />
+        <td v-if="!preview" class="text-center p-0">
+            <div class="d-flex">
+                <template v-if="!quote.is_blocked">
+                    <template v-if="!item.is_editing">
+                        <font-awesome-icon
+                            :id="'btn-' + props.code + '-' + index + '-remove'"
+                            role="button"
+                            class="px-2 py-2 text-primary"
+                            :icon="['fas', 'trash-alt']"
+                            @click="remove(item)"
+                        />
+                        <font-awesome-icon
+                            :id="'btn-' + props.code + '-' + index + '-edit'"
+                            role="button"
+                            class="px-2 py-2 text-primary"
+                            :icon="['fas', 'edit']"
+                            @click="edit(item)"
+                        />
+                    </template>
+                    <template v-else>
+                        <font-awesome-icon
+                            :id="'btn-' + props.code + '-' + index + '-cancel'"
+                            role="button"
+                            class="px-2 py-2 text-primary"
+                            :icon="['fas', 'cancel']"
+                            @click="cancel(item)"
+                        />
+                        <font-awesome-icon
+                            :id="'btn-' + props.code + '-' + index + '-save'"
+                            role="button"
+                            class="px-2 py-2 text-primary"
+                            :icon="['fas', 'save']"
+                            @click="save(item)"
+                        />
+                    </template>
                 </template>
-                <template v-else>
+                <div v-if="item.data?.bundle_items != null && !preview" class="ms-auto">
                     <font-awesome-icon
-                        :id="'btn-' + props.code + '-' + index + '-cancel'"
-                        role="button"
-                        class="px-2 py-2 text-primary"
-                        :icon="['fas', 'cancel']"
-                        @click="cancel(item)"
-                    />
-                    <font-awesome-icon
+                        v-if="showBundleItems"
                         :id="'btn-' + props.code + '-' + index + '-save'"
                         role="button"
                         class="px-2 py-2 text-primary"
-                        :icon="['fas', 'save']"
-                        @click="save(item)"
+                        :icon="['fas', 'chevron-up']"
+                        @click="toggleBundleItems()"
                     />
-                </template>
+                    <font-awesome-icon
+                        v-else
+                        :id="'btn-' + props.code + '-' + index + '-save'"
+                        role="button"
+                        class="px-2 py-2 text-primary"
+                        :icon="['fas', 'chevron-down']"
+                        @click="toggleBundleItems()"
+                    />
+                </div>
             </div>
         </td>
     </tr>
+    <template v-if="item.data?.bundle_items != null && showBundleItems">
+        <tr v-for="(bundleItem, bundleIndex) in item.data.bundle_items" :key="bundleIndex" class="child-bg">
+            <td colspan="100%">
+                <p class="small ps-2">{{ bundleItem.name }} x{{ bundleItem.quantity }}</p>
+            </td>
+        </tr>
+    </template>
 </template>
 <style>
 .child-bg > td {

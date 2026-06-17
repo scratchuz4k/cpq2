@@ -67,7 +67,7 @@ const editableColumns = (columns, code) => {
                         >
                             {{ column.name }}
                         </th>
-                        <th style="width: 60px" class="text-center" v-if="!preview && !quote.is_blocked"></th>
+                        <th style="width: 60px" class="text-center" v-if="!preview"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -108,7 +108,7 @@ const editableColumns = (columns, code) => {
                                 </span>
                             </div>
                         </th>
-                        <th v-if="!preview && !quote.is_blocked"></th>
+                        <th v-if="!preview"></th>
                     </tr>
                 </tfoot>
             </table>

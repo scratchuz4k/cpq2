@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\Models\Product;
+use App\Models\ProductBundle;
 use App\Models\User;
 
 class ProductBundlePolicy
@@ -24,7 +24,7 @@ class ProductBundlePolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Product $product): bool
+    public function view(User $user, ProductBundle $product): bool
     {
         if ($user->can("view $this->model")) {
             return true;
@@ -48,7 +48,7 @@ class ProductBundlePolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Product $product): bool
+    public function update(User $user, ProductBundle $product): bool
     {
         if ($user->can("update $this->model")) {
             return true;
@@ -60,7 +60,7 @@ class ProductBundlePolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Product $product): bool
+    public function delete(User $user, ProductBundle $product): bool
     {
         if ($user->can("delete $this->model")) {
             return true;
@@ -72,7 +72,7 @@ class ProductBundlePolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Product $product): bool
+    public function restore(User $user, ProductBundle $product): bool
     {
         if ($user->can("restore $this->model")) {
             return true;
@@ -84,7 +84,7 @@ class ProductBundlePolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Product $product): bool
+    public function forceDelete(User $user, ProductBundle $product): bool
     {
         if ($user->can("forceDelete $this->model")) {
             return true;
