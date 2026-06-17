@@ -1,9 +1,9 @@
 <script setup>
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, watch } from 'vue';
 import { categories } from '@composables/custom/shopblocks';
 
 const props = defineProps({
-    category: Object,
+    categories: Array,
     modelValue: Object
 });
 
@@ -14,18 +14,29 @@ const proxyValue = computed({
 });
 
 const getFilters = () => {
-    let array = props.category ? [props.category] : [];
-    let items = [];
-    if (props.category) {
-        do {
-            let current = array.pop();
-            items.push(current);
-            let temp = categories.value.filter((x) => x.parent_id == current.id);
-            array.push(...temp);
-        } while (array.length != 0);
-    }
-    return items.length ? [{ column: 'products.category.id', operator: 'in', value: items.map((x) => x.id) }] : [];
+    let filters = [];
+    filters.push({
+        column: 'products.category.id',
+        operator: 'in',
+        value: props.categories?.map((x) => x.id).join(',')
+    });
+
+    filters.push({
+        column: 'products.stock',
+        operator: 'greater_than_or_equal_to',
+        value: 1
+    });
+
+    return filters;
 };
+
+watch(
+    () => props.categories,
+    () => {
+        getFilters();
+    },
+    { immediate: true }
+);
 </script>
 <template>
     <InputSelectMultiple
@@ -33,7 +44,7 @@ const getFilters = () => {
         url="/shop-blocks/brands"
         :fields="['name']"
         v-model="proxyValue"
-        placeholder="Select a Brand"
+        placeholder="Brand"
         :query="getFilters()"
     >
     </InputSelectMultiple>

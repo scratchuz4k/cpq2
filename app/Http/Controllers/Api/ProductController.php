@@ -7,6 +7,7 @@ use App\Helpers\FilterProvider;
 use App\Helpers\Prices\PriceRules;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
+use App\Http\Requests\ProductCreateRequest;
 use App\Http\Requests\ProductUpdateRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Account;
@@ -14,7 +15,6 @@ use App\Models\Product;
 use App\Services\ProductsService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ProductController extends BaseController
@@ -71,9 +71,15 @@ class ProductController extends BaseController
      * Store a new Product
      */
     #[ExcludeRouteFromDocs]
-    public function store(Request $request)
+    public function store(ProductCreateRequest $request)
     {
-        //
+        try {
+            $product = DB::transaction(fn () => $this->service->store($request->all()));
+        } catch (Exception $e) {
+            return handleException($e);
+        }
+
+        return new ProductResource($product);
     }
 
     /**

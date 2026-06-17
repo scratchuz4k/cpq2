@@ -6,7 +6,6 @@ import { quote } from '@/Composables/useQuote';
 import { selectedItems, addSelected } from '@/Composables/useComparator';
 import { categories } from '@composables/custom/shopblocks';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
-import ShopBlocksStorages from '@/Components/ShopBlocks/ShopBlocksStorages.vue';
 
 const emit = defineEmits(['save', 'update:modelValue']);
 const proxyValue = computed({
@@ -36,39 +35,22 @@ const meta = reactive({
     limit: 12,
     isLoading: false
 });
+
+const filters = reactive({
+    categories: [],
+    brands: [],
+    models: [],
+    storage: []
+});
+
+if (quote.solution_type.code == 4) {
+    filters.categories = [{ id: 22 }];
+}
+
 const search = ref(null);
 const showCards = ref(false);
 const currentStep = ref(props.current_step);
 const productsHardware = ref([]);
-
-const filters = reactive({
-    model: {
-        operator: 'in',
-        value: null
-    },
-    name: {
-        operator: 'contains',
-        value: null
-    }
-});
-
-const currentCategory = ref(null);
-const currentBrand = ref([]);
-const currentModel = ref([]);
-const currentStorage = ref([]);
-
-const filterList = reactive({
-    models: [],
-    storage: [
-        { label: '1TB', value: '1TB' },
-        { label: '512 GB', value: '512 GB' },
-        { label: '256 GB', value: '256 GB' },
-        { label: '128 GB', value: '128 GB' },
-        { label: '64 GB', value: '64 GB' },
-        { label: '32 GB', value: '32 GB' },
-        { label: '16 GB', value: '16 GB' }
-    ]
-});
 
 const sorts = [
     {
@@ -115,25 +97,25 @@ const getProductsShopBlocks = async () => {
     }
     abortController = new AbortController();
 
-    let filters = [];
+    let tempfilters = [];
 
     //Hide out of stock products
-    filters.push({
+    tempfilters.push({
         column: 'stock',
         operator: 'greater_than_or_equal_to',
         value: 1
     });
 
     if (props.category) {
-        filters.push({
+        tempfilters.push({
             column: 'category.id',
             operator: 'equals',
             value: props.category
         });
     }
 
-    if (currentCategory.value) {
-        let array = [currentCategory.value];
+    if (filters.categories.length) {
+        let array = [...filters.categories];
         let items = [];
 
         do {
@@ -143,35 +125,35 @@ const getProductsShopBlocks = async () => {
             array.push(...temp);
         } while (array.length != 0);
 
-        filters.push({
+        tempfilters.push({
             column: 'category.id',
             operator: 'in',
             value: items.map((x) => x.id)
         });
     }
 
-    if (currentBrand.value.length) {
-        filters.push({
+    if (filters.brands.length) {
+        tempfilters.push({
             column: 'brand.id',
             operator: 'in',
-            value: currentBrand.value.map((x) => x.id)
+            value: filters.brands.map((x) => x.id)
         });
     }
 
-    if (currentModel.value.length) {
-        filters.push({
+    if (filters.models.length) {
+        tempfilters.push({
             column: 'model.id',
             operator: 'in',
-            value: currentModel.value.map((x) => x.id)
+            value: filters.models.map((x) => x.id)
         });
     }
 
-    let dimensions = currentStorage.value.length
+    let dimensions = filters.storage.length
         ? [
               {
                   column: 'internal-storage-capacity',
                   operator: 'in',
-                  value: currentStorage.value.map((x) => x.value)
+                  value: filters.storage.map((x) => x.value)
               }
           ]
         : [];
@@ -179,7 +161,7 @@ const getProductsShopBlocks = async () => {
     let query = queryString.stringify({
         page: meta.page,
         limit: meta.limit,
-        filters: filters,
+        filters: tempfilters,
         order: sort.value.order,
         orderBy: sort.value.orderBy,
         columns: 'description,name',
@@ -202,14 +184,6 @@ const getProductsShopBlocks = async () => {
         meta.total = res.data.total;
         meta.overallTotal = res.data.overall_total;
         meta.isLoading = false;
-        filterList.models = res.data?.filters?.model
-            ? Object.keys(res.data.filters.model)
-                  .sort()
-                  .reduce((acc, key) => {
-                      acc[key] = res.data.filters.model[key];
-                      return acc;
-                  }, {})
-            : [];
     } catch (error) {
         if (axios.isCancel?.(error) || error.name === 'CanceledError' || error.code === 'ERR_CANCELED') {
             // Request was cancelled, do nothing
@@ -252,14 +226,16 @@ watchEffect(() => {
     ].filter(Boolean);
 });
 
-watch([filters, sort], () => {
-    getProductsShopBlocks();
-});
-
 watch(
-    [currentCategory, currentBrand, currentModel, currentStorage],
+    [filters, sort],
     _.debounce(() => {
         meta.page = 1;
+        if (quote.solution_type.code == 4) {
+            if (!filters.categories.find((x) => x.id === 22)) {
+                filters.categories = [{ id: 22 }];
+            }
+        }
+
         getProductsShopBlocks();
     }, 500),
     { deep: true }
@@ -279,6 +255,7 @@ watch(
     <div id="mobile_step_shopblocks" class="step">
         <div class="row mb-3">
             <div class="col-9 d-flex justify-content-between align-items-center">
+                <!-- {{ filters.categories }} -->
                 <h3 class="mb-0">{{ step }}. {{ quote.solution_type.code == 4 ? 'Handsets' : 'Hardware' }}</h3>
                 <div class="d-flex">
                     <IconField class="me-2">
@@ -313,82 +290,15 @@ watch(
         </div>
         <div class="row">
             <div class="col-9">
-                <div class="filters rounded bg-white p-3 mb-3">
-                    <div class="row mb-3">
-                        <div class="col-3">
-                            <div class="mt-2">
-                                <p class="bold">Categories</p>
-                                <ShopBlocksCategories
-                                    v-model="currentCategory"
-                                    :categories="category"
-                                ></ShopBlocksCategories>
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <div class="mt-2">
-                                <p class="bold">Brands</p>
-                                <ShopBlocksBrands v-model="currentBrand" :category="currentCategory"></ShopBlocksBrands>
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <div class="mt-2">
-                                <p class="bold">Models</p>
-                                <ShopBlocksModels v-model="currentModel" :category="currentCategory"></ShopBlocksModels>
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <div class="mt-2">
-                                <p class="bold">Storage</p>
-                                <ShopBlocksStorages
-                                    v-model="currentStorage"
-                                    :category="currentCategory"
-                                ></ShopBlocksStorages>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <ul class="d-flex list-unstyled p-0 m-0">
-                                <li>
-                                    <Badge class="mb-1" v-for="(brand, index) in currentBrand" :value="brand.name">
-                                        <template #close-button>
-                                            <font-awesome-icon
-                                                :icon="['fas', 'x']"
-                                                role="button"
-                                                class="me-1 fs-7"
-                                                @click="() => currentBrand.splice(index, 1)"
-                                            />
-                                        </template>
-                                    </Badge>
-                                    <Badge class="mb-1" v-for="(model, index) in currentModel" :value="model.name">
-                                        <template #close-button>
-                                            <font-awesome-icon
-                                                :icon="['fas', 'x']"
-                                                role="button"
-                                                class="me-1 fs-7"
-                                                @click="() => currentModel.splice(index, 1)"
-                                            />
-                                        </template>
-                                    </Badge>
-                                    <Badge
-                                        class="mb-1"
-                                        v-for="(storage, index) in currentStorage"
-                                        :value="storage.value"
-                                    >
-                                        <template #close-button>
-                                            <font-awesome-icon
-                                                :icon="['fas', 'x']"
-                                                role="button"
-                                                class="me-1 fs-7"
-                                                @click="() => currentStorage.splice(index, 1)"
-                                            />
-                                        </template>
-                                    </Badge>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+                <ShopBlocksFilters
+                    v-if="productsHardware.length"
+                    v-model="filters"
+                    :filters="
+                        quote.solution_type.code == 4
+                            ? ['brands', 'models', 'storage']
+                            : ['categories', 'brands', 'models', 'storage']
+                    "
+                ></ShopBlocksFilters>
                 <template v-if="meta.isLoading">
                     <ShopblocksProductSkeleton v-for="item in [0, 1, 2, 3, 4]"></ShopblocksProductSkeleton
                 ></template>
