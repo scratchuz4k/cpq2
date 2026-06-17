@@ -135,7 +135,7 @@ watch(
             </div>
         </td>
         <td v-if="!props.preview && !quote.is_blocked">
-            <div class="d-flex justify-content-end">
+            <div class="d-flex justify-content-start">
                 <template v-if="!isEditing">
                     <font-awesome-icon
                         :id="'btn-' + props.pricePlan.code + '-remove'"

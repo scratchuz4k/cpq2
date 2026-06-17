@@ -251,7 +251,7 @@ const sendToOrder = async () => {
 };
 
 const canToggleDialog = () => {
-    return has_quote_approval && (can('viewAny quote_approval') || hasRole('Super Admin'));
+    return can('viewAny quote_approval') || hasRole('Super Admin');
 };
 
 const toggleDialog = () => {
