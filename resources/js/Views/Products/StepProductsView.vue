@@ -10,6 +10,7 @@ import OrderSummary from '@/Components/OrderSummary.vue';
 import InputText from 'primevue/inputtext';
 import InputIcon from 'primevue/inputicon';
 import IconField from 'primevue/iconfield';
+import QuoteMobileFilters from '@/Components/Quotes/Filters/QuoteMobileFilters.vue';
 
 const meta = reactive({
     page: 1,
@@ -41,8 +42,11 @@ const proxyValue = computed({
     }
 });
 
+const filters = reactive({
+    categories: []
+});
+
 const products = ref([]);
-const currentCategories = ref([]);
 const currentStep = ref(props.index);
 const showCards = ref(false);
 
@@ -77,7 +81,7 @@ const search = ref(null);
  */
 const getProducts = async () => {
     meta.isLoading = true;
-    let filters = [
+    let temp = [
         {
             column: 'steps.id',
             operator: 'equals',
@@ -96,18 +100,18 @@ const getProducts = async () => {
         }
     ];
 
-    if (currentCategories.value) {
-        filters.push({
+    if (filters.categories.length) {
+        temp.push({
             column: 'categories.id',
             operator: 'in',
-            value: currentCategories.value.map((x) => x.id).join(',')
+            value: filters.categories.map((x) => x.id).join(',')
         });
     }
 
     let query = queryString.stringify({
         page: meta.page,
         limit: meta.limit,
-        filters: filters,
+        filters: temp,
         account_id: props.account.id,
         order: sort.value.order,
         orderBy: sort.value.orderBy,
@@ -170,7 +174,7 @@ watch(sort, () => {
 });
 
 watch(
-    currentCategories,
+    filters,
     _.debounce(() => {
         meta.page = 1;
         getProducts();
@@ -179,7 +183,7 @@ watch(
 );
 
 watch(proxyValue, async () => {
-    currentCategories.value = [];
+    filters.categories = [];
     await getProducts();
 });
 
@@ -233,16 +237,7 @@ watch(
             </div>
             <div class="row">
                 <div class="col-9">
-                    <div class="filters rounded bg-white p-3 mb-3">
-                        <div class="row">
-                            <div class="col-3">
-                                <InputSelectCategories
-                                    v-model="currentCategories"
-                                    :step-id="step.id"
-                                ></InputSelectCategories>
-                            </div>
-                        </div>
-                    </div>
+                    <QuoteMobileFilters v-model="filters" :step="step" v-show="false"></QuoteMobileFilters>
                     <template v-if="meta.isLoading">
                         <ProductSkeleton v-for="item in [0, 1, 2, 3, 4]"></ProductSkeleton>
                     </template>

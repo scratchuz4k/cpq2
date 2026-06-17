@@ -16,7 +16,7 @@
             </div>
 
             <div class="col-3">
-                <div class="d-flex align-items-center justify-content-end gap-1 flex-shrink-0 h-100">
+                <div class="d-flex align-items-start justify-content-end gap-1 flex-shrink-0 h-100">
                     <button class="btn btn-sm text-primary" @click="clearFilters">
                         <FontAwesomeIcon :icon="['fas', 'arrow-rotate-left']"></FontAwesomeIcon>
                         Reset
@@ -28,7 +28,7 @@
                         @click="moreFilters"
                     >
                         <FontAwesomeIcon :icon="['fas', 'filter']"></FontAwesomeIcon>
-                        More Filters
+                        {{ hasMoreFilters ? 'Less' : 'More' }} Filters
                     </button>
                 </div>
             </div>

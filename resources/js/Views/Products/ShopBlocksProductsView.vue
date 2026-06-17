@@ -291,6 +291,7 @@ watch(
         <div class="row">
             <div class="col-9">
                 <ShopBlocksFilters
+                    v-if="productsHardware.length"
                     v-model="filters"
                     :filters="
                         quote.solution_type.code == 4

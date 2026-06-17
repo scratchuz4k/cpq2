@@ -30,11 +30,11 @@ class DataProvider
         return $this->builder->paginate(perPage: $limit, page: $page);
     }
 
-    public function getCollection()
+    public function getCollection($columns = ['*'])
     {
         $this->processFilters();
 
-        return $this->builder->get();
+        return $this->builder->get($columns);
     }
 
     public function group(string $resource)

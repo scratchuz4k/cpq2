@@ -6,6 +6,7 @@ import { DatePicker, ToggleSwitch, Select, RadioButton, InputNumber } from 'prim
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { DateTime } from 'luxon';
 import ProductPriceTable from '@/Components/Products/ProductPriceTable.vue';
+import InputSelectCategories from '@/Components/Categories/InputSelectCategories.vue';
 
 const props = defineProps({
     product: Object,
@@ -147,15 +148,13 @@ watch(
 
                                         <div class="mb-3">
                                             <label for="product-categories" class="form-label">Category</label>
-                                            <InputSelectMultiple
+                                            <InputSelectCategories
                                                 id="product-categories"
-                                                url="/categories"
-                                                :fields="['name']"
-                                                v-model="categories"
-                                                placeholder="Select a Category"
                                                 :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                                                v-model="categories"
+                                                :select-children="false"
                                             >
-                                            </InputSelectMultiple>
+                                            </InputSelectCategories>
                                         </div>
 
                                         <div class="mb-3">

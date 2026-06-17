@@ -47,14 +47,7 @@
                 <div class="col">
                     <label for="search-category" class="form-label">Category</label>
 
-                    <InputSelectMultiple
-                        id="select-category"
-                        url="/categories"
-                        class="w-100"
-                        :fields="['name']"
-                        v-model="search.categories"
-                        placeholder="Select a Categories"
-                    ></InputSelectMultiple>
+                    <InputSelectCategories id="product-categories" v-model="search.categories"> </InputSelectCategories>
                 </div>
             </div>
         </div>

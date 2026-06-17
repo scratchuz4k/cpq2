@@ -46,11 +46,12 @@ class CategoryController extends BaseController
     /**
      * List Categories as nested tree (all active, no pagination)
      */
-    public function tree(): JsonResponse
+    public function tree(IndexRequest $request): JsonResponse
     {
-        $stepId = request('step_id');
+        $stepId = $request->input('step_id');
 
-        $all = Category::where('is_active', true)->get(['id', 'name', 'parent_id', 'sort_order']);
+        $dataProvider = new DataProvider(Category::class);
+        $all = $dataProvider->getCollection(['id', 'name', 'parent_id', 'sort_order']);
 
         $map = [];
         foreach ($all as $c) {

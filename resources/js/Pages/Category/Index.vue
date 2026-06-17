@@ -28,11 +28,12 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                     }"
                     :columns="[
                         { data: 'id', title: '#', style: 'width:5%' },
-                        { data: 'is_active', title: 'Active', style: 'width:5%' },
-                        { data: 'code', title: 'Code', style: 'width:20%' },
-                        { data: 'name', title: 'Name', style: 'width:30%' },
-                        { data: 'created_at', title: 'Created At', style: 'width:15%' },
-                        { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
+                        { data: 'is_active', title: 'Active' },
+                        { data: 'code', title: 'Code', style: 'width:10%' },
+                        { data: 'name', title: 'Name', style: 'width:10%' },
+                        { data: 'parent.name', title: 'Parent' },
+                        { data: 'created_at', title: 'Created At' },
+                        { data: 'updated_at', title: 'Updated At' }
                     ]"
                     route="/categories"
                 >

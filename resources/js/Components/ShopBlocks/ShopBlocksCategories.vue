@@ -28,11 +28,23 @@ const proxyValue = computed({
     }
 });
 
+function collectParentIds(nodes) {
+    const ids = new Set();
+    for (const node of nodes) {
+        if (node.children?.length) {
+            ids.add(node.id);
+            for (const id of collectParentIds(node.children)) ids.add(id);
+        }
+    }
+    return ids;
+}
+
 async function fetchTree() {
     isLoading.value = true;
     try {
         const res = await axios.get('/api/shop-blocks/categories/tree');
         tree.value = res.data;
+        collapsedIds.value = collectParentIds(tree.value);
     } catch (e) {
         tree.value = [];
         console.error(e?.response?.data?.message ?? e);
@@ -97,13 +109,33 @@ function isSelected(option) {
     return selectedIds.value.has(option.id);
 }
 
+function isPartial(option) {
+    if (!option.children?.length) return false;
+    if (isSelected(option)) return false;
+    const descendants = collectDescendants(option).slice(1);
+    return descendants.some((d) => selectedIds.value.has(d.id));
+}
+
+function findAncestors(nodes, targetId, path = []) {
+    for (const node of nodes) {
+        if (node.id === targetId) return path;
+        if (node.children?.length) {
+            const found = findAncestors(node.children, targetId, [...path, node]);
+            if (found) return found;
+        }
+    }
+    return null;
+}
+
 function select(option) {
     const descendants = collectDescendants(option);
     const alreadySelected = descendants.every((d) => selectedIds.value.has(d.id));
 
     if (alreadySelected) {
         const removeIds = new Set(descendants.map((d) => d.id));
-        proxyValue.value = proxyValue.value.filter((c) => !removeIds.has(c.id));
+        const ancestors = findAncestors(tree.value, option.id) ?? [];
+        const ancestorIds = new Set(ancestors.map((a) => a.id));
+        proxyValue.value = proxyValue.value.filter((c) => !removeIds.has(c.id) && !ancestorIds.has(c.id));
     } else {
         const existingIds = selectedIds.value;
         const toAdd = descendants.filter((d) => !existingIds.has(d.id));
@@ -188,6 +220,11 @@ onMounted(() => {
                 >
                     <span class="flex-shrink-0 option-checkbox">
                         <font-awesome-icon v-if="isSelected(option)" :icon="['fas', 'square-check']" />
+                        <font-awesome-icon
+                            v-else-if="isPartial(option)"
+                            :icon="['fas', 'square-minus']"
+                            style="opacity: 0.6"
+                        />
                         <font-awesome-icon v-else :icon="['far', 'square']" />
                     </span>
                     <span
