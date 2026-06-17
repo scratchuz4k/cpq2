@@ -99,7 +99,7 @@ emitter.on('quote-items:toggle:is-editing', () => (item.value.is_editing = false
             </td>
         </template>
         <td v-if="!preview" class="text-center p-0">
-            <div class="d-flex justify-content-end">
+            <div class="d-flex">
                 <template v-if="!quote.is_blocked">
                     <template v-if="!item.is_editing">
                         <font-awesome-icon
@@ -134,7 +134,7 @@ emitter.on('quote-items:toggle:is-editing', () => (item.value.is_editing = false
                         />
                     </template>
                 </template>
-                <div v-if="item.data?.bundle_items != null && !preview">
+                <div v-if="item.data?.bundle_items != null && !preview" class="ms-auto">
                     <font-awesome-icon
                         v-if="showBundleItems"
                         :id="'btn-' + props.code + '-' + index + '-save'"
