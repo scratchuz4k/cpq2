@@ -270,7 +270,7 @@ onMounted(() => {
                     <span
                         v-if="option.children?.length && !searchQuery"
                         class="ms-auto flex-shrink-0 toggle-icon"
-                        style="opacity: 0.5; padding: 0 0.25rem"
+                        style="opacity: 0.5; padding: 0 1rem"
                         @click.stop="toggleCollapse($event, option)"
                     >
                         <font-awesome-icon
@@ -301,12 +301,16 @@ onMounted(() => {
 }
 
 .option {
-    padding: 0.25rem 0.75rem;
+    padding: 0.25rem 0 0.25rem 0.75rem;
     border-radius: 4px;
 }
 
 .option-checkbox {
     color: var(--color-purple);
+}
+
+.option-checkbox svg {
+    height: 1.125rem;
 }
 
 .option:hover {
