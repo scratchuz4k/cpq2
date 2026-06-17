@@ -237,7 +237,7 @@ watch(
             </div>
             <div class="row">
                 <div class="col-9">
-                    <QuoteMobileFilters v-model="filters" :step="step" v-show="false"></QuoteMobileFilters>
+                    <QuoteMobileFilters v-model="filters" :step="step"></QuoteMobileFilters>
                     <template v-if="meta.isLoading">
                         <ProductSkeleton v-for="item in [0, 1, 2, 3, 4]"></ProductSkeleton>
                     </template>
