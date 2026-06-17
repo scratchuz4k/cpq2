@@ -105,9 +105,10 @@ body {
     }
 
     .badge {
-        border-radius: 20px;
         line-height: 16px;
         border: 0;
+        font-size: 12px;
+        min-width: 24px;
     }
 
     .badge-primary {
@@ -169,8 +170,11 @@ body {
     }
 
     .badge-bundle {
-        background-color: var(--badge-soft-bundle);
         color: var(--badge-bundle);
+        border-radius: 16px;
+        padding: 4px 12px;
+        font-size: 12px;
+        background-color: var(--badge-soft-bundle);
     }
 }
 
