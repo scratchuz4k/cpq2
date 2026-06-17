@@ -9,41 +9,70 @@
     </div>
 
     <div class="row mb-4" v-if="result.length">
-        <div class="col-3" v-for="(article, index) in result">
-            <div :id="'connectivity-product-' + (index + 1)" class="card">
-                <div class="card-body">
-                    <h5 class="card-title">{{ article.data.type }}</h5>
-                    <p>{{ article.name }}</p>
-                    <div class="d-flex my-2 items-center">
-                        <img
-                            class="img-provider me-3"
-                            @error="setAltImg"
-                            :src="`/images/providers/${format.toLowerCase(article.data.providerKey)}.png`"
-                            :alt="article.data.providerName"
-                            :title="article.data.providerName"
-                            :data-bs-original-title="article.data.providerName"
-                            v-tooltip
-                        /><img
-                            class="img-subprovider"
-                            @error="setAltImg"
-                            :src="`/images/providers/${format.toLowerCase(article.data.connectivitySupplierGroup)}.png`"
-                            :alt="article.data.connectivitySupplierName"
-                            :title="article.data.connectivitySupplierName"
-                            :data-bs-original-title="article.data.connectivitySupplierName"
-                            v-tooltip
-                        />
-                    </div>
-                    <div class="text-end">
-                        <button
-                            type="button "
-                            class="btn btn-primary btn-sm btn-secondary mt-2"
-                            data-mdb-ripple-init
-                            @click="removeItem(article)"
-                        >
-                            Remove
-                        </button>
+        <div :class="[showConditionalContent ? 'col-6' : 'col-12']">
+            <div class="row">
+                <div :class="[showConditionalContent ? 'col-6' : 'col-3']" v-for="(article, index) in result">
+                    <div :id="'connectivity-product-' + (index + 1)" class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ article.data.type }}</h5>
+                            <p>{{ article.name }}</p>
+                            <div class="d-flex my-2 items-center">
+                                <img
+                                    class="img-provider me-3"
+                                    @error="setAltImg"
+                                    :src="`/images/providers/${format.toLowerCase(article.data.providerKey)}.png`"
+                                    :alt="article.data.providerName"
+                                    :title="article.data.providerName"
+                                    :data-bs-original-title="article.data.providerName"
+                                    v-tooltip
+                                /><img
+                                    class="img-subprovider"
+                                    @error="setAltImg"
+                                    :src="`/images/providers/${format.toLowerCase(article.data.connectivitySupplierGroup)}.png`"
+                                    :alt="article.data.connectivitySupplierName"
+                                    :title="article.data.connectivitySupplierName"
+                                    :data-bs-original-title="article.data.connectivitySupplierName"
+                                    v-tooltip
+                                />
+                            </div>
+                            <div class="text-end">
+                                <button
+                                    type="button "
+                                    class="btn btn-primary btn-sm btn-secondary mt-2"
+                                    data-mdb-ripple-init
+                                    @click="removeItem(article)"
+                                >
+                                    Remove
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div v-if="showConditionalContent" class="col-6">
+            <div class="d-flex mb-2">
+                <font-awesome-icon :icon="['fas', 'circle-check']" size="lg" class="me-2 text-primary my-auto" />
+                <h5 class="m-0">RESILIENCE</h5>
+            </div>
+            <div>
+                <h5 class="m-0">Broadband Backup</h5>
+                <p>
+                    A fully managed and automated backup service for your primary FibreBright or Leased Line connection
+                    over a Broadband connection (SoGEA or FTTP).
+                </p>
+                <i class="bold text-primary">
+                    Prior to order, availability of the broadband service must be checked by
+                    <a href="https://www.zen.co.uk/business" target="_blank"> clicking here </a>
+                    or
+                    <a href="https://www.zen.co.uk/business" target="_blank"> https://www.zen.co.uk/business </a>
+                </i>
+                <p>
+                    If Business Pro, Business Essentials, Unlimited Fibre 1 or Unlimited Fibre 2 are the options
+                    returned, then SoGEA Broadband Backup is available for ordering. If the following "Full Fibre, 100,
+                    300, 500 and 900" are shown as available on the Zen portal then ITS Broadband FTTP Back up service
+                    will be available (All FTTP speeds/bandwidths will be available).
+                </p>
             </div>
         </div>
     </div>
@@ -57,7 +86,7 @@
     ></component>
 </template>
 <script setup>
-import { ref, watch, watchEffect } from 'vue';
+import { computed, ref, watch, watchEffect } from 'vue';
 import { getQuote, quote } from '@/Composables/useQuote';
 import { remove, addons, isLoading, checks } from '@/Composables/useConnectivityItem';
 import axios from 'axios';
@@ -71,6 +100,14 @@ const needsAddons = ref(false);
 const result = ref([]);
 const currentStep = ref(0);
 const connectivitySteps = ref(['QuotesConnectivityTable']);
+
+const showConditionalContent = computed(() => {
+    const primary = getPrimary();
+    return (
+        primary?.data?.providerKey === 'its' &&
+        connectivitySteps.value[currentStep.value] === 'QuoteConnectivityFailOverTable'
+    );
+});
 
 const setAltImg = (event) => {
     event.target.src = '/images/no_image.png';
