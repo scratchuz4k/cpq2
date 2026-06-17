@@ -2,7 +2,7 @@
 import { updateQuoteItem, removeQuoteItem, temp } from '@composables/useQuoteItem';
 import { getQuote, quote } from '@/Composables/useQuote';
 import format from '@/Composables/format';
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 
 const props = defineProps({
     code: String,
@@ -18,7 +18,7 @@ const props = defineProps({
     }
 });
 const item = defineModel('item');
-const showBundleItems = ref(quote.is_blocked || props.preview || false);
+const showBundleItems = ref(props.preview || false);
 
 const toggleBundleItems = () => {
     showBundleItems.value = !showBundleItems.value;
@@ -76,12 +76,6 @@ const getComponent = (column) => {
 };
 
 emitter.on('quote-items:toggle:is-editing', () => (item.value.is_editing = false));
-watch(
-    () => quote.status,
-    () => {
-        showBundleItems.value = quote.is_blocked || props.preview || false;
-    }
-);
 </script>
 <template>
     <tr
