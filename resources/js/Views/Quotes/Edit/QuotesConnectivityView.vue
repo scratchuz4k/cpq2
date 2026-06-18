@@ -9,9 +9,9 @@
     </div>
 
     <div class="row mb-4" v-if="result.length">
-        <div :class="[showConditionalContent ? 'col-6' : 'col-12']">
+        <div :class="[showConditionalContent ? 'col-3' : 'col-12']">
             <div class="row">
-                <div :class="[showConditionalContent ? 'col-6' : 'col-3']" v-for="(article, index) in result">
+                <div :class="[showConditionalContent ? 'col-12' : 'col-3']" v-for="(article, index) in result">
                     <div :id="'connectivity-product-' + (index + 1)" class="card">
                         <div class="card-body">
                             <h5 class="card-title">{{ article.data.type }}</h5>
@@ -50,29 +50,27 @@
                 </div>
             </div>
         </div>
-        <div v-if="showConditionalContent" class="col-6">
-            <div class="d-flex mb-2">
+        <div v-if="showConditionalContent" class="col-8 offset-1">
+            <div class="d-flex">
                 <font-awesome-icon :icon="['fas', 'circle-check']" size="lg" class="me-2 text-primary my-auto" />
-                <h5 class="m-0">RESILIENCE</h5>
+                <h5 class="m-0">RESILIENCE (Broadband Backup)</h5>
             </div>
             <div>
-                <h5 class="m-0">Broadband Backup</h5>
-                <p>
+                <small>
                     A fully managed and automated backup service for your primary FibreBright or Leased Line connection
                     over a Broadband connection (SoGEA or FTTP).
-                </p>
-                <i class="bold text-primary">
-                    Prior to order, availability of the broadband service must be checked by
-                    <a href="https://www.zen.co.uk/business" target="_blank"> clicking here </a>
-                    or
-                    <a href="https://www.zen.co.uk/business" target="_blank"> https://www.zen.co.uk/business </a>
-                </i>
-                <p>
+                    <i class="bold text-primary">
+                        Prior to order, availability of the broadband service must be checked by
+                        <a href="https://www.zen.co.uk/business" target="_blank"> clicking here </a>
+                        or
+                        <a href="https://www.zen.co.uk/business" target="_blank"> https://www.zen.co.uk/business </a>
+                    </i>
+                    <br />
                     If Business Pro, Business Essentials, Unlimited Fibre 1 or Unlimited Fibre 2 are the options
                     returned, then SoGEA Broadband Backup is available for ordering. If the following "Full Fibre, 100,
                     300, 500 and 900" are shown as available on the Zen portal then ITS Broadband FTTP Back up service
                     will be available (All FTTP speeds/bandwidths will be available).
-                </p>
+                </small>
             </div>
         </div>
     </div>
