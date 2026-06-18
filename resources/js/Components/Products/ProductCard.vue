@@ -302,7 +302,7 @@ watch(searchInput, () => {
                     <hr class="my-2" />
                     <ProductCardBundlesList :bundles="proxyValue.bundles" />
                 </div>
-                <div v-if="proxyValue.addons && proxyValue.addons.length > 0" class="mt-3">
+                <div v-if="proxyValue.addons_children && proxyValue.addons_children.length > 0" class="mt-3">
                     <hr class="my-2" />
                     <ProductCardAddonsList v-model="proxyValue" />
                 </div>

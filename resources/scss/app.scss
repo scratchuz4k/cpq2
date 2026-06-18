@@ -197,6 +197,12 @@ body {
         }
     }
 
+    .btn {
+        font-size: 14px !important;
+        padding: 4px 12px;
+        border-radius: 4px !important;
+    }
+
     .btn-primary {
         background-color: var(--color-purple);
         border-color: var(--color-purple);

@@ -49,7 +49,7 @@ const linkedProductQueries = () => {
 const sharesStep = (item) => {
     return (
         item.steps.some((s) => proxyValue.value.steps?.some((ps) => ps.id === s.id)) ||
-        proxyValue.value.children.some((c) => c.id == item.id)
+        proxyValue.value.linked_children.some((c) => c.id == item.id)
     );
 };
 
