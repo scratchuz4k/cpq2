@@ -1,6 +1,8 @@
 <script setup>
 import { temp } from '@composables/useQuoteItem';
 import { integerOnly, checkValue } from '@/Composables/input.js';
+import queryString from 'qs';
+import { ref } from 'vue';
 defineProps({
     code: String,
     column: Object,
@@ -9,6 +11,32 @@ defineProps({
     index: Number
 });
 const item = defineModel();
+
+const stock = ref(null);
+
+const getProductStock = async () => {
+    if (item.value.product_id) {
+        return;
+    }
+
+    let query = queryString.stringify({
+        filters: [
+            {
+                column: 'sku',
+                operator: 'equals',
+                value: item.value.product_code
+            }
+        ]
+    });
+    try {
+        let res = await axios.get('/api/shop-blocks/products?' + query);
+        stock.value = res.data.data[0].stock;
+    } catch (err) {
+        notyf.error(err?.response?.data?.message ?? 'Something went wrong');
+    }
+};
+
+getProductStock();
 </script>
 <template>
     <template v-if="!isGroup">
@@ -19,7 +47,7 @@ const item = defineModel();
             class="form-control text-center p-0 px-1"
             type="number"
             min="1"
-            max="9999"
+            :max="stock ?? '9999'"
             v-model="temp.quantity"
             @keydown="integerOnly"
             @input="checkValue"
