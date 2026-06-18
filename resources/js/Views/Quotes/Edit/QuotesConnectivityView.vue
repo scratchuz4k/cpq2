@@ -101,9 +101,12 @@ const connectivitySteps = ref(['QuotesConnectivityTable']);
 
 const showConditionalContent = computed(() => {
     const primary = getPrimary();
+    const hasFailover = quote.items?.some((x) => x.data?.type === 'Failover Product');
+
     return (
         primary?.data?.providerKey === 'its' &&
-        connectivitySteps.value[currentStep.value] === 'QuoteConnectivityFailOverTable'
+        connectivitySteps.value[currentStep.value] === 'QuoteConnectivityFailOverTable' &&
+        !hasFailover
     );
 });
 
