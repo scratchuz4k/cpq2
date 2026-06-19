@@ -21,13 +21,12 @@ const handleQuantityInput = (e) => {
     const max = stock.value ?? 9999;
 
     if (value > max) {
+        target.value = max;
         notyf.open({
             type: 'warning',
             message: 'You can only add up to the number of units in stock. The quantity is automatically adjusted'
         });
     }
-
-    checkValue(e); // still clamps the value as before
 };
 const getProductStock = async () => {
     if (item.value.product_id) {
@@ -62,10 +61,11 @@ getProductStock();
             class="form-control text-center p-0 px-1"
             type="number"
             min="1"
-            :max="stock ?? '9999'"
+            max="9999"
             v-model="temp.quantity"
             @keydown="integerOnly"
-            @input="handleQuantityInput"
+            @input="checkValue"
+            @blur="handleQuantityInput"
         />
     </template>
 </template>
