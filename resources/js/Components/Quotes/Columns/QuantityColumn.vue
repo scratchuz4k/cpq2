@@ -13,7 +13,6 @@ defineProps({
 const item = defineModel();
 
 const stock = ref(null);
-const showStockWarning = ref(false);
 
 const handleQuantityInput = (e) => {
     const target = e.target ? e.target : e.originalEvent.target;
@@ -21,7 +20,7 @@ const handleQuantityInput = (e) => {
     const max = stock.value ?? 9999;
 
     if (value > max) {
-        target.value = max;
+        temp.quantity = max;
         notyf.open({
             type: 'warning',
             message: 'You can only add up to the number of units in stock. The quantity is automatically adjusted'
