@@ -13,7 +13,22 @@ defineProps({
 const item = defineModel();
 
 const stock = ref(null);
+const showStockWarning = ref(false);
 
+const handleQuantityInput = (e) => {
+    const target = e.target ? e.target : e.originalEvent.target;
+    const value = parseFloat(target.value.replace(',', '.'));
+    const max = stock.value ?? 9999;
+
+    if (value > max) {
+        notyf.open({
+            type: 'warning',
+            message: 'You can only add up to the number of units in stock. The quantity is automatically adjusted'
+        });
+    }
+
+    checkValue(e); // still clamps the value as before
+};
 const getProductStock = async () => {
     if (item.value.product_id) {
         return;
@@ -32,7 +47,7 @@ const getProductStock = async () => {
         let res = await axios.get('/api/shop-blocks/products?' + query);
         stock.value = res.data.data[0].stock;
     } catch (err) {
-        notyf.error(err?.response?.data?.message ?? 'Something went wrong');
+        notyf.warning(err?.response?.data?.message ?? 'Something went wrong');
     }
 };
 
@@ -50,7 +65,7 @@ getProductStock();
             :max="stock ?? '9999'"
             v-model="temp.quantity"
             @keydown="integerOnly"
-            @input="checkValue"
+            @input="handleQuantityInput"
         />
     </template>
 </template>
