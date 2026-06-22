@@ -9,6 +9,7 @@ import AccordionContent from 'primevue/accordioncontent';
 import InputMask from 'primevue/inputmask';
 import { reactive, ref } from 'vue';
 import ToggleSwitch from 'primevue/toggleswitch';
+import { checkLength, integerOnly } from '@/Composables/input.js';
 
 const account = reactive({
     name: null,
@@ -128,11 +129,13 @@ const items = ref([
                             <div class="col-6 mb-3">
                                 <label :for="'contact-phone-' + key" class="form-label"> Phone: </label>
                                 <input
-                                    type="text"
                                     id="uk-phone"
-                                    class="form-control"
-                                    maxlength="12"
+                                    type="number"
                                     v-model="contact.phone"
+                                    class="form-control input-phone"
+                                    @keydown="integerOnly"
+                                    :maxlength="12"
+                                    @input="checkLength"
                                 />
                             </div>
                             <div class="col-6 mb-3">

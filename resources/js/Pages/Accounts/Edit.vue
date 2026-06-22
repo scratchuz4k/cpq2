@@ -8,7 +8,7 @@ import AccordionHeader from 'primevue/accordionheader';
 import AccordionContent from 'primevue/accordioncontent';
 import { ref, reactive } from 'vue';
 import ToggleSwitch from 'primevue/toggleswitch';
-import InputMask from 'primevue/inputmask';
+import { checkLength, integerOnly } from '@/Composables/input.js';
 
 const props = defineProps({
     account: Object
@@ -48,6 +48,7 @@ const saveAccount = () => {
         }
     });
 };
+
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'Settings', url: '/settings' },
@@ -126,11 +127,13 @@ const items = ref([
                             <div class="col-6 mb-3">
                                 <label :for="'contact-phone-' + key" class="form-label"> Phone: </label>
                                 <input
-                                    type="text"
                                     id="uk-phone"
-                                    class="form-control"
-                                    maxlength="12"
+                                    type="number"
                                     v-model="contact.phone"
+                                    class="form-control input-phone"
+                                    @keydown="integerOnly"
+                                    :maxlength="12"
+                                    @input="checkLength"
                                 />
                             </div>
                             <div class="col-6 mb-3">
