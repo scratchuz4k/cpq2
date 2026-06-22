@@ -127,11 +127,12 @@ const items = ref([
                             </div>
                             <div class="col-6 mb-3">
                                 <label :for="'contact-phone-' + key" class="form-label"> Phone: </label>
-                                <InputMask
+                                <input
+                                    type="text"
                                     id="uk-phone"
                                     class="form-control"
+                                    maxlength="12"
                                     v-model="contact.phone"
-                                    mask="09999 999999"
                                 />
                             </div>
                             <div class="col-6 mb-3">

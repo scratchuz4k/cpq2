@@ -40,6 +40,7 @@ class AccountCreateRequest extends FormRequest
             ],
             'contacts.*.name' => 'nullable',
             'contacts.*.email' => 'nullable|email',
+            'contacts.*.phone' => 'nullable|min_digits:10|max_digits:12',
         ];
     }
 }
