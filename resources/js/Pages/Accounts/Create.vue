@@ -130,12 +130,11 @@ const items = ref([
                                 <label :for="'contact-phone-' + key" class="form-label"> Phone: </label>
                                 <input
                                     id="uk-phone"
-                                    type="number"
+                                    type="tel"
                                     v-model="contact.phone"
                                     class="form-control input-phone"
+                                    maxlength="12"
                                     @keydown="integerOnly"
-                                    :maxlength="12"
-                                    @input="checkLength"
                                 />
                             </div>
                             <div class="col-6 mb-3">

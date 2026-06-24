@@ -41,9 +41,17 @@ class AccountUpdateRequest extends FormRequest
             ],
             'contacts.*.name' => 'nullable',
             'contacts.*.email' => 'nullable|email',
-            'contacts.*.phone' => 'nullable|min_digits:10|max_digits:12',
+            'contacts.*.phone' => 'nullable|max_digits:12',
             'is_active' => 'boolean',
         ];
 
+    }
+
+    public function messages(): array
+    {
+        return [
+            'contacts.*.phone.max_digits' => 'The contact phone number must not exceed :max digits.',
+            'contacts.*.email.email' => 'Please enter a valid email address for the contact.',
+        ];
     }
 }

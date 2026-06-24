@@ -18,9 +18,11 @@ const activePanel = reactive({
     value: 0
 });
 
+const contacts = ref([...props.account.contacts]);
+
 const addContact = () => {
-    props.account.contacts.push({});
-    activePanel.value = props.account.contacts.length - 1;
+    contacts.value.push({});
+    activePanel.value = contacts.value.length - 1;
 };
 const removeContact = (key) => {
     swal.fire({
@@ -30,23 +32,27 @@ const removeContact = (key) => {
             //bulkOperation.value = ''
             return;
         }
-        props.account.contacts.splice(key, 1);
+        contacts.value.splice(key, 1);
     });
 };
 
 const saveAccount = () => {
-    router.put(`/accounts/${props.account.id}`, props.account, {
-        onSuccess: (page) => {
-            notyf.success('Updated with Success');
-        },
-        onError: (errors) => {
-            let string = '';
-            Object.keys(errors).forEach((key) => {
-                string += errors[key] + '<br>';
-            });
-            notyf.error(string);
+    router.put(
+        `/accounts/${props.account.id}`,
+        { ...props.account, contacts: contacts.value },
+        {
+            onSuccess: (page) => {
+                notyf.success('Updated with Success');
+            },
+            onError: (errors) => {
+                let string = '';
+                Object.keys(errors).forEach((key) => {
+                    string += errors[key] + '<br>';
+                });
+                notyf.error(string);
+            }
         }
-    });
+    );
 };
 
 const items = ref([
@@ -92,7 +98,7 @@ const items = ref([
             </div>
             <h2>Contacts</h2>
             <Accordion v-model:value="activePanel.value">
-                <AccordionPanel v-for="(contact, key) in account.contacts" :key="'account-' + key" :value="key">
+                <AccordionPanel v-for="(contact, key) in contacts" :key="'account-' + key" :value="key">
                     <AccordionHeader>
                         <div class="d-flex justify-content-between align-items-center w-100 pe-3">
                             <p class="m-0">
@@ -132,7 +138,7 @@ const items = ref([
                                     v-model="contact.phone"
                                     class="form-control input-phone"
                                     maxlength="12"
-                                    @input="integerOnly"
+                                    @keydown="integerOnly"
                                 />
                             </div>
                             <div class="col-6 mb-3">
