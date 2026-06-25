@@ -15,7 +15,10 @@ export const checkValue = (e) => {
 };
 
 export const integerOnly = (e) => {
-    if (['e', 'E', '+', '-', '.', ','].includes(e.key)) e.preventDefault();
+    const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'];
+    if (!/^\d$/.test(e.key) && !allowedKeys.includes(e.key)) {
+        e.preventDefault();
+    }
 };
 
 export const checkLength = (e) => {
