@@ -102,7 +102,7 @@ const items = ref([
                     <AccordionHeader>
                         <div class="d-flex justify-content-between align-items-center w-100 pe-3">
                             <p class="m-0">
-                                Contact #{{ contact.id }}
+                                Contact #{{ key + 1 }}
                                 {{ contact.primary_contact_name ? ' - ' + contact.primary_contact_name : '' }}
                             </p>
                             <PrimaryButton class="btn-sm btn-secondary" @click.stop="removeContact(key)"
@@ -133,7 +133,6 @@ const items = ref([
                             <div class="col-6 mb-3">
                                 <label :for="'contact-phone-' + key" class="form-label"> Phone: </label>
                                 <input
-                                    id="uk-phone"
                                     type="tel"
                                     v-model="contact.phone"
                                     class="form-control input-phone"

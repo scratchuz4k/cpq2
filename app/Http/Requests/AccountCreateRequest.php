@@ -44,11 +44,23 @@ class AccountCreateRequest extends FormRequest
         ];
     }
 
+    public function attributes(): array
+    {
+        $attributes = [];
+
+        foreach ($this->input('contacts', []) as $index => $contact) {
+            $attributes["contacts.{$index}.phone"] = $index + 1;
+            $attributes["contacts.{$index}.email"] = $index + 1;
+        }
+
+        return $attributes;
+    }
+
     public function messages(): array
     {
         return [
-            'contacts.*.phone.max_digits' => 'The contacts phone number must not exceed :max digits.',
-            'contacts.*.email.email' => 'Please enter a valid email address for the contacts.',
+            'contacts.*.phone.max_digits' => 'The contact #:attribute phone number must not exceed :max digits.',
+            'contacts.*.email.email' => 'The contact #:attribute email must be a valid email address',
         ];
     }
 }
