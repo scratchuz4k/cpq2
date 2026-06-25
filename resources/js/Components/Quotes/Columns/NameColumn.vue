@@ -69,11 +69,10 @@ const itemNameTooltip = computed(() => {
             >
                 <font-awesome-icon :icon="['fas', 'network-wired']"></font-awesome-icon>
             </span>
+            <span v-if="item.data && item.data?.bundle_items?.length > 0" class="badge badge-bundle float-end">
+                Bundle
+            </span>
         </p>
-
-        <span v-if="item.data && item.data?.bundle_items?.length > 0 && !preview" class="badge badge-bundle">
-            Bundle
-        </span>
     </div>
     <p v-if="mainProduct" class="main-product-reference">{{ mainProduct.name }}</p>
 </template>

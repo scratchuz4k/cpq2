@@ -284,6 +284,11 @@
                                                         <i class="fa-solid fa-network-wired"></i>
                                                     </span>
                                                 @endif
+                                                @if (isset($item['data']->bundle_items))
+                                                    <span class="badge badge-bundle float-end">
+                                                        Bundle
+                                                    </span>
+                                                @endif
                                             </p>
                                             @if (getMainProductName($quote, $item))
                                                 <p class="main-product-reference">
@@ -430,6 +435,11 @@
                                                     v-tooltip>
                                                     Burstable Service
                                                 </span>
+                                            @endif
+                                            @if (isset($item['data']->bundle_items))
+                                                <span class="badge badge-bundle float-end">
+                                                        Bundle
+                                                    </span>
                                             @endif
                                         </td>
                                         @if ($isConnectivity)
