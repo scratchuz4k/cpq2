@@ -158,7 +158,7 @@ class Product extends Model
         $product = Product::find($product_id);
         $descendants = collect();
 
-        foreach ($product->children as $child) {
+        foreach ($product->linkedChildren as $child) {
             $descendants->push($child);
             $descendants = $descendants->merge($child->descendants($child->id));
         }

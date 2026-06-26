@@ -21,6 +21,7 @@ const activeColumnsDropdown = ref(false);
 
 const onScroll = () => {
     isScrolled.value = tableContainer.value?.scrollLeft > 0;
+    showTooltip.value = false;
 };
 
 const props = defineProps({
@@ -35,6 +36,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:meta']);
 const activeFilters = ref(false);
+const activeMenuIndex = ref(null);
 const api = reactive(new Api(props.options.route));
 
 const form = reactive({
@@ -169,7 +171,7 @@ const sendTooltipValues = (ev, object) => {
     };
 
     showTooltip.value = true;
-    tooltipValues.items = object.items;
+    tooltipValues.items = object.items.slice(0, 10);
     tooltipValues.keys = object.key.join('.');
 };
 
@@ -179,10 +181,9 @@ const getExportData = async () => {
     if (exportDisabled.value) return;
     exportDisabled.value = true;
 
-    let columns = props.options.columns
-        .filter((column) => column.data !== 'actions')
-        .map((x) => x.data)
-        .join(',');
+    const visibleColumns = props.options.columns.filter(
+        (col) => !col.isHidden && !isUserHidden(col) && col.column !== 'actions'
+    );
 
     let filters = {
         filters: JSON.stringify([
@@ -190,7 +191,8 @@ const getExportData = async () => {
             ...props.options.query
         ]),
         search: form.search,
-        columns: columns
+        columns: visibleColumns.map((x) => x.column).join(','),
+        column_titles: visibleColumns.map((x) => x.title).join(',')
     };
 
     exportData(filters, '/' + props.options.route);
@@ -245,6 +247,13 @@ watch(
 
 onMounted(() => {
     debouncedSearch();
+    window.addEventListener(
+        'scroll',
+        () => {
+            showTooltip.value = false;
+        },
+        { passive: true }
+    );
     var select = document.getElementById(props.options.id + '-tooltip');
     var selectColumns = document.getElementById(props.options.id + '-column-select');
     document.addEventListener('click', (ev) => {
@@ -257,6 +266,13 @@ onMounted(() => {
 
         if (!selectColumns.contains(ev.target)) {
             activeColumnsDropdown.value = false;
+        }
+
+        const isMenuClick = Array.from(document.getElementsByClassName('datatable-actions-menu')).some((x) =>
+            x.contains(ev.target)
+        );
+        if (!isMenuClick) {
+            activeMenuIndex.value = null;
         }
     });
 });
@@ -390,7 +406,7 @@ onMounted(() => {
                         v-if="props.options.allow.update || props.options.allow.link || props.options.allow.destroy"
                         class="datatable-table-header"
                         :class="['datatable-col', 'p-0']"
-                        style="position: sticky; top: -1px; z-index: 2; min-width: 100px !important"
+                        style="position: sticky; top: -1px; z-index: 2; min-width: 100px !important; width: 10px"
                     ></th>
                 </tr>
             </thead>
@@ -433,39 +449,57 @@ onMounted(() => {
                     <td
                         v-if="props.options.allow.update || props.options.allow.link || props.options.allow.destroy"
                         :class="['datatable-col', 'p-0']"
+                        style="width: 10px"
                     >
-                        <div class="d-flex justify-content-end align-i">
-                            <font-awesome-icon class="btn p-2 mx-1 border-0" :icon="['fas', 'ellipsis-vertical']" />
-                            <template v-if="props.options.allow.update">
-                                <Link
-                                    :id="'datatable-btn-' + index + '-edit'"
-                                    :href="props.options.route + '/' + item.id + '/edit'"
-                                    class="btn p-2 mx-1 border-0"
-                                >
-                                    <font-awesome-icon :icon="['fas', 'edit']" />
-                                </Link>
-                            </template>
-
-                            <template v-if="props.options.allow.link">
-                                <Link
-                                    :id="'datatable-btn-' + index + '-show'"
-                                    :href="props.options.route + '/' + item.id"
-                                    class="btn p-2 mx-1 border-0"
-                                >
-                                    <font-awesome-icon :icon="['fas', 'eye']" />
-                                </Link>
-                            </template>
-
-                            <template v-if="props.options.allow.destroy">
-                                <button
-                                    type="button"
-                                    :id="'datatable-btn-' + index + '-delete'"
-                                    class="btn p-2 mx-1 border-0"
-                                    @click="deleteRecord(item.id)"
-                                >
-                                    <font-awesome-icon :icon="['fas', 'trash-alt']" />
-                                </button>
-                            </template>
+                        <div
+                            class="d-flex justify-content-end align-items-center datatable-actions-menu"
+                            style="position: relative"
+                        >
+                            <button
+                                type="button"
+                                class="btn p-2 border-0 datatable-actions-trigger"
+                                @click.stop="activeMenuIndex = activeMenuIndex === index ? null : index"
+                            >
+                                <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" />
+                            </button>
+                            <div v-if="activeMenuIndex === index" class="datatable-actions-dropdown">
+                                <template v-if="props.options.allow.update">
+                                    <Link
+                                        :id="'datatable-btn-' + index + '-edit'"
+                                        :href="props.options.route + '/' + item.id + '/edit'"
+                                        class="datatable-actions-item"
+                                    >
+                                        <font-awesome-icon :icon="['fas', 'pen-to-square']" class="me-2" />
+                                        Edit
+                                    </Link>
+                                </template>
+                                <template v-if="props.options.allow.link">
+                                    <Link
+                                        :id="'datatable-btn-' + index + '-show'"
+                                        :href="props.options.route + '/' + item.id"
+                                        class="datatable-actions-item"
+                                    >
+                                        <font-awesome-icon :icon="['fas', 'eye']" class="me-2" />
+                                        View
+                                    </Link>
+                                </template>
+                                <template v-if="props.options.allow.destroy">
+                                    <button
+                                        type="button"
+                                        :id="'datatable-btn-' + index + '-delete'"
+                                        class="datatable-actions-item datatable-actions-item-danger"
+                                        @click="
+                                            () => {
+                                                deleteRecord(item.id);
+                                                activeMenuIndex = null;
+                                            }
+                                        "
+                                    >
+                                        <font-awesome-icon :icon="['fas', 'trash']" class="me-2" />
+                                        Delete
+                                    </button>
+                                </template>
+                            </div>
                         </div>
                     </td>
                 </tr>
@@ -606,9 +640,55 @@ onMounted(() => {
     font-size: 14px;
 }
 
+.datatable-actions-trigger {
+    color: #6c757d;
+    background: transparent;
+}
+.datatable-actions-trigger:hover {
+    background-color: #f1f3f5;
+    color: #343a40;
+}
+.datatable-actions-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    z-index: 100;
+    min-width: 160px;
+    padding: 4px 0;
+}
+.datatable-actions-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 8px 16px;
+    font-size: 14px;
+    color: #343a40;
+    background: transparent;
+    border: none;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+.datatable-actions-item:hover {
+    background-color: #f8f9fa;
+    color: #343a40;
+}
+.datatable-actions-item-danger {
+    color: #dc3545;
+}
+.datatable-actions-item-danger:hover {
+    background-color: #fff5f5;
+    color: #dc3545;
+}
+
 .datatable-tooltip {
     position: fixed;
-    width: 250px;
+    width: 200px;
     background-color: #101828;
     z-index: 1000;
     padding: 0.5rem;

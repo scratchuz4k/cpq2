@@ -21,23 +21,22 @@ const proxyValue = computed({
 
 const totals = ref(proxyValue.value.bundles?.length ?? 0);
 const optionBundle = new DatatableOptions('product-bundles', 'product-bundles');
-optionBundle.addColumn('item.sku', 'SKU', null, { isSticky: true });
-optionBundle.addColumn('item.name', 'Name', null, { isSticky: true });
-optionBundle.addColumn('item.description', 'Description', null, {});
-optionBundle.addColumn('item.categories.name', 'Categories', {}, {});
-optionBundle.addColumn('item.status', 'Status', null, {});
-optionBundle.addColumn('item.price.cost', 'Cost Price', { width: '150px' }, { isSearchable: false });
-optionBundle.addColumn('item.price.net', 'Net Price', { width: '150px' }, { isSearchable: false });
-optionBundle.addColumn('item.price.net_spa', 'Net SPA', { width: '150px' }, { isSearchable: false });
-optionBundle.addColumn(
-    'item.price.active_spas',
-    'Active SPAs',
-    { width: '350px' },
-    { isSearchable: false, isSortable: false }
-);
-optionBundle.addColumn('item.price_plan.name', 'Contract Term', {}, {});
-optionBundle.addColumn('item.steps.name', 'Steps', { width: '150px' }, {});
-optionBundle.addColumn('item.steps.solution_type.name', 'Solution Type', { width: '250px' }, {});
+optionBundle.addColumn('item.sku', 'SKU', { isSticky: true });
+optionBundle.addColumn('item.name', 'Name', { isSticky: true });
+optionBundle.addColumn('item.description', 'Description');
+optionBundle.addColumn('item.categories.name', 'Categories');
+optionBundle.addColumn('item.status', 'Status');
+optionBundle.addColumn('item.price.cost', 'Cost Price', { style: { width: '150px' }, isSearchable: false });
+optionBundle.addColumn('item.price.net', 'Net Price', { style: { width: '150px' }, isSearchable: false });
+optionBundle.addColumn('item.price.net_spa', 'Net SPA', { style: { width: '150px' }, isSearchable: false });
+optionBundle.addColumn('item.price.active_spas', 'Active SPAs', {
+    style: { width: '350px' },
+    isSearchable: false,
+    isSortable: false
+});
+optionBundle.addColumn('item.price_plan.name', 'Contract Term');
+optionBundle.addColumn('item.steps.name', 'Steps', { style: { width: '150px' } });
+optionBundle.addColumn('item.steps.solution_type.name', 'Solution Type', { style: { width: '250px' } });
 
 optionBundle.addQuery('product_id', FilterOperators.EQUALS, proxyValue.value.id);
 optionBundle.setAllowedActions({
