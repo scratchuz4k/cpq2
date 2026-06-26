@@ -2,10 +2,9 @@
 import _, { chain } from 'lodash';
 import { Link } from '@inertiajs/vue3';
 
-import Paginator from 'primevue/paginator';
 import { IconField, InputIcon, InputText } from 'primevue';
 
-import { reactive, ref, useSlots, watch, markRaw, onMounted } from 'vue';
+import { computed, reactive, ref, useSlots, watch, onMounted } from 'vue';
 import axios from 'axios';
 import { exportData } from '@/Composables/export.js';
 import { DatatableOptions } from './DatatableOptions';
@@ -181,7 +180,7 @@ const getExportData = async () => {
     if (exportDisabled.value) return;
     exportDisabled.value = true;
 
-    const visibleColumns = props.options.columns.filter(
+    const exportColumns = columnOrder.value.filter(
         (col) => !col.isHidden && !isUserHidden(col) && col.column !== 'actions'
     );
 
@@ -191,8 +190,8 @@ const getExportData = async () => {
             ...props.options.query
         ]),
         search: form.search,
-        columns: visibleColumns.map((x) => x.column).join(','),
-        column_titles: visibleColumns.map((x) => x.title).join(',')
+        columns: exportColumns.map((x) => x.column).join(','),
+        column_titles: exportColumns.map((x) => x.title).join(',')
     };
 
     exportData(filters, '/' + props.options.route);
@@ -207,6 +206,56 @@ const userHiddenColumns = ref(
 );
 const isUserHidden = (column) => {
     return userHiddenColumns.value.includes(column.column);
+};
+
+const savedOrder = JSON.parse(localStorage.getItem('datatable_column_order_' + props.options.id) || 'null');
+const columnOrder = ref(
+    savedOrder
+        ? props.options.columns.slice().sort((a, b) => {
+              const ai = savedOrder.indexOf(a.column);
+              const bi = savedOrder.indexOf(b.column);
+              return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
+          })
+        : props.options.columns.slice()
+);
+
+const saveColumnOrder = () => {
+    localStorage.setItem(
+        'datatable_column_order_' + props.options.id,
+        JSON.stringify(columnOrder.value.map((c) => c.column))
+    );
+};
+
+const dragState = reactive({ fromIndex: null });
+
+const onDragStart = (index) => {
+    dragState.fromIndex = index;
+};
+
+const onDragOver = (e, index) => {
+    e.preventDefault();
+    if (dragState.fromIndex === null || dragState.fromIndex === index) return;
+    const col = columnOrder.value[dragState.fromIndex];
+    if (col.isSticky) return;
+    const target = columnOrder.value[index];
+    if (target.isSticky) return;
+    columnOrder.value.splice(dragState.fromIndex, 1);
+    columnOrder.value.splice(index, 0, col);
+    dragState.fromIndex = index;
+};
+
+const onDrop = () => {
+    dragState.fromIndex = null;
+    saveColumnOrder();
+};
+
+const visibleColumns = computed(() => columnOrder.value.filter((x) => !x.isHidden && !isUserHidden(x)));
+
+const stickyCount = computed(() => columnOrder.value.filter((x) => x.isSticky).length);
+const stickyLeft = (col, visIndex) => {
+    if (!col.isSticky) return 0;
+    const stickyBefore = visibleColumns.value.slice(0, visIndex).filter((c) => c.isSticky);
+    return stickyBefore.length * 150;
 };
 
 const toggleUserHiddenColumn = (column) => {
@@ -321,7 +370,7 @@ onMounted(() => {
                 </button>
                 <div v-show="activeColumnsDropdown" class="datatable-columns-dropdown p-2">
                     <div
-                        v-for="column in props.options.columns.filter((x) => !x.isHidden)"
+                        v-for="column in columnOrder.filter((x) => !x.isHidden)"
                         :key="column.key"
                         class="d-flex align-items-center justify-content-start"
                     >
@@ -353,24 +402,28 @@ onMounted(() => {
             <thead>
                 <tr>
                     <th
-                        v-for="(data, key) in props.options.columns.filter((x) => !x.isHidden && !isUserHidden(x))"
-                        :key="key"
+                        v-for="(data, key) in visibleColumns"
+                        :key="data.column"
                         class="datatable-table-header"
+                        :draggable="!data.isSticky"
                         :style="{
                             ...data.style,
                             position: 'sticky',
                             top: '-1px',
-                            left: data.isSticky ? key * 150 + 'px' : 0,
+                            left: data.isSticky ? stickyLeft(data, key) + 'px' : 0,
                             zIndex: data.isSticky ? 3 : 2,
-                            cursor: data.isSearchable ? 'pointer' : 'default'
+                            cursor: data.isSticky ? 'default' : 'grab',
+                            opacity: dragState.fromIndex === key ? 0.5 : 1
                         }"
                         :class="[
                             'datatable-col',
                             data.isSticky ? `datatable-col-sticky datatable-col-sticky-${key + 1}` : '',
-                            key === props.options.columns.filter((x) => x.isSticky).length - 1
-                                ? 'datatable-col-last-sticky'
-                                : ''
+                            key === stickyCount - 1 ? 'datatable-col-last-sticky' : ''
                         ]"
+                        @dragstart="onDragStart(key)"
+                        @dragover="onDragOver($event, key)"
+                        @drop="onDrop"
+                        @dragend="onDrop"
                     >
                         <div
                             v-if="data.column != 'actions'"
@@ -413,17 +466,15 @@ onMounted(() => {
             <tbody v-if="api.items.length">
                 <tr v-for="(item, index) in api.items" :key="index">
                     <td
-                        v-for="(data, key) in props.options.columns.filter((x) => !x.isHidden && !isUserHidden(x))"
-                        :key="key"
+                        v-for="(data, key) in visibleColumns"
+                        :key="data.column"
                         class="datatable-table-column"
                         :class="[
                             'datatable-col',
                             data.isSticky ? `datatable-col-sticky datatable-col-sticky-${key + 1}` : '',
-                            key === props.options.columns.filter((x) => x.isSticky).length - 1
-                                ? 'datatable-col-last-sticky'
-                                : ''
+                            key === stickyCount - 1 ? 'datatable-col-last-sticky' : ''
                         ]"
-                        :style="{ ...data.style, left: data.isSticky ? key * 150 + 'px' : 0 }"
+                        :style="{ ...data.style, left: data.isSticky ? stickyLeft(data, key) + 'px' : 0 }"
                     >
                         <slot
                             v-if="usedSlots.includes(data.column)"
@@ -506,14 +557,14 @@ onMounted(() => {
             </tbody>
             <tbody v-else-if="api.isLoading">
                 <tr>
-                    <td :colspan="props.options.columns.filter((x) => !x.isHidden).length + 1" class="text-center">
+                    <td :colspan="visibleColumns.length + 1" class="text-center">
                         <font-awesome-icon :icon="['fas', 'spinner']" spin size="2x" class="mt-3" />
                     </td>
                 </tr>
             </tbody>
             <tbody v-if="!api.items.length && !api.isLoading">
                 <tr>
-                    <td :colspan="props.options.columns.filter((x) => !x.isHidden).length + 1">
+                    <td :colspan="visibleColumns.length + 1">
                         <p class="w-full text-center py-2">No records found</p>
                     </td>
                 </tr>
@@ -534,19 +585,58 @@ onMounted(() => {
             {{ getValue(item, tooltipValues.keys) }}
         </p>
     </div>
-    <Paginator
-        v-model:first="api.meta.first"
-        :rows="api.meta.limit"
-        :totalRecords="api.meta.total"
-        :rowsPerPageOptions="[10, 20, 50]"
-        @page="api.handlePaginator"
-        :pt="{
-            root: {
-                style: 'background: none'
-            }
-        }"
-    >
-    </Paginator>
+    <div class="datatable-footer">
+        <div class="datatable-footer-left">
+            <span class="datatable-footer-label">Items per page</span>
+            <div class="datatable-limit-select">
+                <select
+                    :value="api.meta.limit"
+                    @change="(e) => api.handlePaginator({ rows: +e.target.value, page: 0 })"
+                >
+                    <option v-for="n in [10, 20, 50]" :key="n" :value="n">{{ n }}</option>
+                </select>
+                <font-awesome-icon :icon="['fas', 'chevron-down']" class="datatable-limit-chevron" />
+            </div>
+            <span class="datatable-footer-divider"></span>
+            <span class="datatable-footer-label">
+                {{ (api.meta.page - 1) * api.meta.limit + 1 }}–{{
+                    Math.min(api.meta.page * api.meta.limit, api.meta.total)
+                }}
+                <span class="datatable-footer-total">of {{ api.meta.total }}</span>
+            </span>
+        </div>
+
+        <div class="datatable-footer-right">
+            <button
+                class="datatable-page-btn datatable-page-btn-arrow"
+                :disabled="api.meta.page <= 1"
+                @click="() => api.handlePaginator({ rows: api.meta.limit, page: api.meta.page - 2 })"
+            >
+                <font-awesome-icon :icon="['fas', 'chevron-left']" />
+            </button>
+
+            <template v-for="link in api.meta.links.slice(1, -1)" :key="link.label">
+                <span v-if="link.label === '...'" class="datatable-page-ellipsis">…</span>
+                <button
+                    v-else
+                    class="datatable-page-btn"
+                    :class="{ 'datatable-page-btn-active': link.active }"
+                    :disabled="!link.url"
+                    @click="() => api.handlePaginator({ rows: api.meta.limit, page: +link.label - 1 })"
+                >
+                    {{ link.label }}
+                </button>
+            </template>
+
+            <button
+                class="datatable-page-btn datatable-page-btn-arrow"
+                :disabled="api.meta.page >= api.meta.last_page"
+                @click="() => api.handlePaginator({ rows: api.meta.limit, page: api.meta.page })"
+            >
+                <font-awesome-icon :icon="['fas', 'chevron-right']" />
+            </button>
+        </div>
+    </div>
 </template>
 <style scoped>
 .relation-table {
@@ -695,5 +785,132 @@ onMounted(() => {
     border-radius: 4px;
     color: white;
     font-size: 12px;
+}
+
+.datatable-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background-color: white;
+    border-top: 1px solid #dee2e6;
+    border-radius: 0 0 4px 4px;
+    font-size: 13px;
+}
+
+.datatable-footer-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #6c757d;
+}
+
+.datatable-footer-label {
+    font-size: 13px;
+    color: #6c757d;
+}
+
+.datatable-limit-select {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.datatable-limit-select select {
+    appearance: none;
+    -webkit-appearance: none;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 3px 28px 3px 10px;
+    font-size: 13px;
+    color: #343a40;
+    background: white;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.datatable-limit-select select:hover,
+.datatable-limit-select select:focus {
+    border-color: var(--color-primary);
+}
+
+.datatable-limit-chevron {
+    position: absolute;
+    right: 8px;
+    font-size: 10px;
+    color: #6c757d;
+    pointer-events: none;
+}
+
+.datatable-footer-divider {
+    width: 1px;
+    height: 16px;
+    background-color: #dee2e6;
+}
+
+.datatable-footer-total {
+    color: #adb5bd;
+}
+
+.datatable-footer-right {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.datatable-page-btn {
+    min-width: 30px;
+    height: 30px;
+    padding: 0 6px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background: white;
+    color: #343a40;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.15s;
+}
+
+.datatable-page-btn:hover:not(:disabled) {
+    background-color: var(--color-purple-light);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.datatable-page-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.datatable-page-btn-active {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+}
+
+.datatable-page-btn-active:hover:not(:disabled) {
+    background-color: var(--color-purple-dark);
+    border-color: var(--color-purple-dark);
+}
+
+.datatable-page-btn-arrow {
+    border: none;
+    background: transparent;
+}
+
+.datatable-page-btn-arrow:hover:not(:disabled) {
+    background-color: var(--color-purple-light);
+    border: none;
+}
+
+.datatable-page-ellipsis {
+    padding: 0 4px;
+    color: #6c757d;
+    font-size: 13px;
+    line-height: 30px;
 }
 </style>
