@@ -126,7 +126,17 @@ const items = ref([
                                 :fields="['name']"
                                 placeholder="Select a Product"
                                 :query="[
-                                    { column: 'categories.id', operator: 'is_null', value: 'category.id' },
+                                    {
+                                        group: [
+                                            { column: 'categories.id', operator: 'is_null', value: null },
+                                            {
+                                                column: 'categories.id',
+                                                operator: 'not_equals',
+                                                value: category.id,
+                                                function: 'orWhere'
+                                            }
+                                        ]
+                                    },
                                     { column: 'is_active', operator: 'equals', value: 1 }
                                 ]"
                                 url="/products"
