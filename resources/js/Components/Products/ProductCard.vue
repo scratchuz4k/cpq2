@@ -27,75 +27,78 @@ const proxyValue = computed({
     set: (value) => emit('update:modelValue', value)
 });
 
+let currentPromise = Promise.resolve();
+
 const checkQuantity = _.throttle(async (product, temp) => {
     isDisabled.value = true;
     isBlocked.value = true;
-    if (temp < 0) {
-        product.quantity = 0;
-        isDisabled.value = false;
-        isBlocked.value = false;
-        return;
-    }
+    return (currentPromise = currentPromise.then(async () => {
+        try {
+            if (temp < 0) {
+                product.quantity = 0;
+                return;
+            }
 
-    if (temp > product.stock) {
-        notyf.open({
-            type: 'warning',
-            message: 'You can only add up to the number of units in stock. The quantity is automatically adjusted'
-        });
-        temp = product.stock ?? 0;
-    }
-    product.quantity = temp;
-
-    let code = product.sku ?? product.code;
-    let item = quote.items.find((x) => x.product_code == code && x.data?.type == 'main_product');
-    let oldQuantity = item ? item.quantity : 0;
-
-    if (!item) {
-        if (temp == 0) {
-            return;
-        }
-
-        await createQuoteItem({
-            quote_id: quote.id,
-            product_code: code,
-            quantity: temp,
-            contract_length: product.contract_length,
-            product_id: props.addInternalProduct ? product.id : null,
-            name: product.name,
-            raw_price: product.price ? product.price.net : 0,
-            price: product.price ? product.price.net_spa : 0,
-            price_plan_id: product.price_plan_id,
-            data: { type: 'main_product' }
-        });
-    } else {
-        if (temp == 0) {
-            let groupItems = quote.items.filter((x) => x.group == item.group);
-
-            if (groupItems.length > 1) {
-                let result = await swal.fire({
-                    width: '400px',
-                    title: 'Are you sure?',
-                    text: 'This item includes other associated items, removing it will also remove them from the quote.'
+            if (temp > product.stock) {
+                notyf.open({
+                    type: 'warning',
+                    message:
+                        'You can only add up to the number of units in stock. The quantity is automatically adjusted'
                 });
+                temp = product.stock ?? 0;
+            }
+            product.quantity = temp;
 
-                if (['cancel', 'backdrop'].includes(result.dismiss)) {
-                    proxyValue.value.quantity = oldQuantity;
-                    isDisabled.value = false;
-                    isBlocked.value = false;
+            let code = product.sku ?? product.code;
+            let item = quote.items.find((x) => x.product_code == code && x.data?.type == 'main_product');
+            let oldQuantity = item ? item.quantity : 0;
+
+            if (!item) {
+                if (temp == 0) {
                     return;
+                }
+
+                await createQuoteItem({
+                    quote_id: quote.id,
+                    product_code: code,
+                    quantity: temp,
+                    contract_length: product.contract_length,
+                    product_id: props.addInternalProduct ? product.id : null,
+                    name: product.name,
+                    raw_price: product.price ? product.price.net : 0,
+                    price: product.price ? product.price.net_spa : 0,
+                    price_plan_id: product.price_plan_id,
+                    data: { type: 'main_product' }
+                });
+            } else {
+                if (temp == 0) {
+                    let groupItems = quote.items.filter((x) => x.group == item.group);
+
+                    if (groupItems.length > 1) {
+                        let result = await swal.fire({
+                            width: '400px',
+                            title: 'Are you sure?',
+                            text: 'This item includes other associated items, removing it will also remove them from the quote.'
+                        });
+
+                        if (['cancel', 'backdrop'].includes(result.dismiss)) {
+                            proxyValue.value.quantity = oldQuantity;
+                            return;
+                        }
+                    }
+
+                    await removeQuoteItem(item.id);
+                } else {
+                    await updateQuoteItem(item.id, { quantity: temp });
                 }
             }
 
-            removeQuoteItem(item.id);
-        } else {
-            await updateQuoteItem(item.id, { quantity: temp });
+            await getQuote(quote.id);
+        } finally {
+            isDisabled.value = false;
+            isBlocked.value = false;
         }
-    }
-
-    isDisabled.value = false;
-    isBlocked.value = false;
-
-    await getQuote(quote.id);
+    }));
 }, 500);
 
 const select = () => {
