@@ -19,8 +19,8 @@ class QuoteItemService
 
         if (! empty($array['product_id']) && ($data['type'] ?? null) === 'main_product') {
             $product = Product::find($array['product_id']);
-            if ($product->bundles->count() > 0) {
-                $data['bundle_items'] = $product->bundles
+            if ($product->bundlesChildren->count() > 0) {
+                $data['bundle_items'] = $product->bundlesChildren
                     ->map(fn ($bundle) => ['product_id' => $bundle->id, 'name' => $bundle->name, 'quantity' => 1])
                     ->toArray();
             }
