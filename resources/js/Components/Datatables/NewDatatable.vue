@@ -163,10 +163,12 @@ const tooltipValues = reactive({
 const tooltipPosition = ref({ top: 0, left: 0 });
 
 const sendTooltipValues = (ev, object) => {
-    const rect = ev.target.getBoundingClientRect();
+    const indicator = ev.target.closest('.tooltip-indicator');
+    const rect = (indicator ?? ev.target).getBoundingClientRect();
+
     tooltipPosition.value = {
-        top: rect.bottom + window.scrollY, // Below the element
-        left: rect.left + window.scrollX // Aligned with element
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX + rect.width / 2 // 100 = half of 200px tooltip
     };
 
     showTooltip.value = true;
@@ -484,18 +486,23 @@ onMounted(() => {
                             :value="getValue(item, data.column)"
                             :id="`${data.column}-${index}`"
                         />
-                        <div v-else class="d-flex justify-content-between">
-                            <p class="small overflow-hidden text-truncate" :title="getValue(item, data.column)">
-                                {{ getValue(item, data.column) }}
-                            </p>
+                        <template v-else>
                             <div
+                                class="d-flex justify-content-between cursor-pointer position-relative tooltip-indicator"
                                 v-if="isArrayValue(item, data.column).items.length"
-                                class="badge badge-primary position-relative tooltip-indicator cursor-pointer"
                                 @click="(ev) => sendTooltipValues(ev, isArrayValue(item, data.column))"
                             >
-                                +{{ isArrayValue(item, data.column).items.length }}
+                                <p class="small overflow-hidden text-truncate" :title="getValue(item, data.column)">
+                                    {{ getValue(item, data.column) }}
+                                </p>
+                                <div class="badge badge-primary">
+                                    +{{ isArrayValue(item, data.column).items.length }}
+                                </div>
                             </div>
-                        </div>
+                            <p v-else class="small overflow-hidden text-truncate" :title="getValue(item, data.column)">
+                                {{ getValue(item, data.column) }}
+                            </p>
+                        </template>
                     </td>
                     <td
                         v-if="props.options.allow.update || props.options.allow.link || props.options.allow.destroy"

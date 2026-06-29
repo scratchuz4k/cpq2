@@ -73,21 +73,6 @@ const totalProducts = ref(0);
             <template #status="{ value }">
                 <span class="badge text-bg-secondary">{{ value }}</span>
             </template>
-            <template #steps.name="{ data, value }">
-                <span>
-                    {{
-                        data.steps
-                            .map((step) => step.name)
-                            .filter(Boolean)
-                            .join(', ')
-                    }}
-                </span>
-            </template>
-            <template #steps.solution_type.name="{ data, value }">
-                <span>
-                    {{ [...new Set(data.steps.map((step) => step.solution_type?.name).filter(Boolean))].join(', ') }}
-                </span>
-            </template>
             <template #updated_at="{ value }">
                 {{ format.date(value) }}
             </template>

@@ -47,15 +47,6 @@ describe('Manage Products Step relation', () => {
             //Add procuct to step
             cy.addProductToStep(steps[0].name, product.name);
             cy.addProductToStep(steps[1].name, product.name);
-
-            //check prod step relation
-            cy.get('#settings').click();
-            cy.get('#link-products').click();
-            cy.get('#products-table-datatable-search').type(product.sku);
-            cy.get('.p-datatable-table').contains(product.name);
-            cy.get('.p-datatable-table').contains(steps[0].name);
-            cy.get('.p-datatable-table').contains(steps[1].name);
-            cy.get('.p-datatable-table').contains('Mobile');
         });
     });
 
@@ -123,9 +114,9 @@ describe('Manage Products Step relation', () => {
             cy.get('#settings').click();
             cy.get('#link-products').click();
 
-            cy.get('#datatable-search').type(product.sku);
+            cy.get('#products-table-datatable-search').type(product.sku);
             cy.wait(1000);
-            cy.get('.p-datatable-table').should('not.contain', steps[0].name);
+            cy.get('#products-table').should('not.contain', steps[0].name);
         });
     });
 });
