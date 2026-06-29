@@ -46,7 +46,7 @@ describe('Creates a Mobile Quote', () => {
         cy.get('#settings').click();
         cy.get('#link-products').click();
 
-        cy.get('#datatable-search').type(product.sku);
+        cy.get('#products-table-datatable-search').type(product.sku);
         cy.wait(1000);
         cy.get('#products-table').then(($table) => {
             if ($table.text().includes('No records found')) {
@@ -242,7 +242,7 @@ describe('Creates a Mobile Quote', () => {
         cy.get('#settings').click();
         cy.get('#link-products').click();
 
-        cy.get('#datatable-search').type(addonProduct.sku);
+        cy.get('#products-table-datatable-search').type(addonProduct.sku);
         cy.wait(1000);
         cy.get('#products-table').then(($table) => {
             if ($table.text().includes('No records found')) {
@@ -259,12 +259,10 @@ describe('Creates a Mobile Quote', () => {
             }
         });
 
-        cy.get('#datatable-search').clear().type(product.sku);
-        cy.wait(1000);
-        cy.get('#datatable-btn-0-edit').click();
+        cy.newTableSearchAndEdit(product.sku, '#products-table-datatable-search');
         cy.get('#tabs-product-edit-2-2').click();
         cy.get('#btn-add-addons').click();
-        cy.get('#addons-search-global').type(addonProduct.sku);
+        cy.get('#addons-search-global').should('be.visible').click().type(addonProduct.sku);
         cy.get('#addons-table').should('not.contain', 'Loading');
         cy.get('#addons-table').contains(addonProduct.sku);
         cy.get('[id^="addons-checkbox-"]').first().click({ force: true });

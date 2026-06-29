@@ -190,6 +190,7 @@ watch(searchInput, () => {
             class="panel p-4 mb-3"
             :class="[!showAsColumn ? 'w-100 d-flex ' : 'p-3']"
             style="position: relative; top: 0; right: 0"
+            :data-sku="proxyValue.sku"
         >
             <div v-if="proxyValue.primary_image" :class="[!showAsColumn ? 'me-4' : '']">
                 <div class="d-flex justify-content-center align-items-middle">
@@ -222,7 +223,7 @@ watch(searchInput, () => {
                     </h3>
                     <p v-else class="truncate-2-lines bold">{{ proxyValue.name }}</p>
                     <div class="d-flex gap-2">
-                        <div v-if="proxyValue.bundles && proxyValue.bundles.length > 0">
+                        <div v-if="proxyValue.bundles_children && proxyValue.bundles_children.length > 0">
                             <p class="badge badge-bundle" style="white-space: nowrap">Bundle</p>
                         </div>
                         <div v-if="proxyValue.stock > 0">
@@ -298,9 +299,9 @@ watch(searchInput, () => {
                         />
                     </div>
                 </div>
-                <div v-if="proxyValue.bundles && proxyValue.bundles.length > 0" class="mt-3">
+                <div v-if="proxyValue.bundles_children && proxyValue.bundles_children.length > 0" class="mt-3">
                     <hr class="my-2" />
-                    <ProductCardBundlesList :bundles="proxyValue.bundles" />
+                    <ProductCardBundlesList :bundles="proxyValue.bundles_children" />
                 </div>
                 <div v-if="proxyValue.addons_children && proxyValue.addons_children.length > 0" class="mt-3">
                     <hr class="my-2" />

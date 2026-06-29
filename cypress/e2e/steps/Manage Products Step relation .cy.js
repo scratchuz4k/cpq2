@@ -51,7 +51,7 @@ describe('Manage Products Step relation', () => {
             //check prod step relation
             cy.get('#settings').click();
             cy.get('#link-products').click();
-            cy.get('#datatable-search').type(product.sku);
+            cy.get('#products-table-datatable-search').type(product.sku);
             cy.get('.p-datatable-table').contains(product.name);
             cy.get('.p-datatable-table').contains(steps[0].name);
             cy.get('.p-datatable-table').contains(steps[1].name);

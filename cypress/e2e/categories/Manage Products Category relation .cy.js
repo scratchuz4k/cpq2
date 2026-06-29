@@ -51,8 +51,8 @@ describe('Manage Products Category relation', () => {
             cy.get('#btn-save-product').click();
             cy.get('.notyf').contains('Created with Success');
 
-            cy.get('#datatable-search').type(product.sku);
-            cy.get('.p-datatable-table').contains(product.name);
+            cy.get('#products-table-datatable-search').type(product.sku);
+            cy.get('#products-table').contains(product.name);
         });
     });
 

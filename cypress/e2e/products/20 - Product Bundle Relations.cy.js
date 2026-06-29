@@ -17,36 +17,33 @@ describe('Product Bundle Relations', () => {
         cy.get('#link-products').click();
 
         // Create bundle item product
-        cy.get('#datatable-search').type(bundleItem.sku);
+        cy.get('#products-table-datatable-search').type(bundleItem.sku);
         cy.wait(1000);
-        cy.get('#products-table').then(($table) => {
-            if ($table.text().includes('No records found')) {
-                cy.get('#product-create-btn').click();
-                cy.get('#product-name').type(bundleItem.name);
-                cy.get('#product-sku').type(bundleItem.sku);
-                cy.get('#price_plan_1').click();
-                cy.get('#contract_term_value').type('3');
-                cy.selectOption('#contract_term_unit', 'Years');
-                cy.get('#btn-save-product').click();
-                cy.get('.notyf').contains('Created with Success');
-            }
-        });
+        cy.get('#products-table').contains('No records found');
+        cy.get('#product-create-btn').click();
+        cy.get('#product-name').type(bundleItem.name);
+        cy.get('#product-sku').type(bundleItem.sku);
+        cy.get('#price_plan_1').click();
+        cy.get('#contract_term_value').type('3');
+        cy.selectOption('#contract_term_unit', 'Years');
+        cy.get('#btn-save-product').click();
+        cy.get('.notyf').contains('Created with Success');
 
         // Create main (parent) product
-        cy.get('#datatable-search').clear().type(bundleParent.sku);
+        cy.get('#settings').click();
+        cy.get('#link-products').click();
+        cy.get('#products-table-datatable-search').type(bundleParent.sku);
         cy.wait(1000);
-        cy.get('#products-table').then(($table) => {
-            if ($table.text().includes('No records found')) {
-                cy.get('#product-create-btn').click();
-                cy.get('#product-name').type(bundleParent.name);
-                cy.get('#product-sku').type(bundleParent.sku);
-                cy.get('#price_plan_1').click();
-                cy.get('#contract_term_value').type('3');
-                cy.selectOption('#contract_term_unit', 'Years');
-                cy.get('#btn-save-product').click();
-                cy.get('.notyf').contains('Created with Success');
-            }
-        });
+
+        cy.get('#products-table').contains('No records found');
+        cy.get('#product-create-btn').click();
+        cy.get('#product-name').type(bundleParent.name);
+        cy.get('#product-sku').type(bundleParent.sku);
+        cy.get('#price_plan_1').click();
+        cy.get('#contract_term_value').type('3');
+        cy.selectOption('#contract_term_unit', 'Years');
+        cy.get('#btn-save-product').click();
+        cy.get('.notyf').contains('Created with Success');
     });
 
     it('Adds a bundle item to the parent product', () => {
@@ -54,9 +51,7 @@ describe('Product Bundle Relations', () => {
         cy.get('#settings').click();
         cy.get('#link-products').click();
 
-        cy.get('#datatable-search').type(bundleParent.sku);
-        cy.wait(1000);
-        cy.get('#datatable-btn-0-edit').click();
+        cy.newTableSearchAndEdit(bundleParent.sku, '#products-table-datatable-search');
 
         // Navigate to Bundles tab (tab index 3)
         cy.get('#tabs-product-edit-3-3').click();
@@ -65,7 +60,7 @@ describe('Product Bundle Relations', () => {
         cy.get('#btn-add-bundles').click();
 
         // Search for the bundle item and select it
-        cy.get('#bundles-search-global').type(bundleItem.sku);
+        cy.get('#bundles-search-global').should('be.visible').click().type(bundleItem.sku);
         cy.get('#bundles-table').should('not.contain', 'Loading');
         cy.get('#bundles-table').contains(bundleItem.sku);
         cy.get('[id^="bundles-checkbox-"]').first().click({ force: true });
@@ -103,8 +98,9 @@ describe('Product Bundle Relations', () => {
         cy.get('#btn-create-quote').click();
 
         // Search for the bundle parent product in the step
-        cy.get('#step-1-search-products').clear().type(bundleParent.sku);
+        cy.get('#step-1-search-products').should('be.visible').clear().type(bundleParent.sku);
         cy.wait(1000);
+        cy.get(`[data-sku="${bundleParent.sku}"]`).should('be.visible');
 
         // The product card for the bundle parent should show the "Bundle" badge
         cy.contains('.badge-bundle', 'Bundle').should('be.visible');
