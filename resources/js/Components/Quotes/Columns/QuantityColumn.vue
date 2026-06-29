@@ -2,7 +2,7 @@
 import { temp } from '@composables/useQuoteItem';
 import { integerOnly, checkValue } from '@/Composables/input.js';
 import queryString from 'qs';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 defineProps({
     code: String,
     column: Object,
@@ -49,7 +49,14 @@ const getProductStock = async () => {
     }
 };
 
-getProductStock();
+watch(
+    () => item.value.is_editing,
+    (isEditing) => {
+        if (isEditing && stock.value === null) {
+            getProductStock();
+        }
+    }
+);
 </script>
 <template>
     <template v-if="!isGroup">
