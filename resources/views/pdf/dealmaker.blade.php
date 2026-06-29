@@ -243,7 +243,7 @@
                                         @endif
                                         <td class="column-name-body">
                                             <p class="small semi-bold">
-                                                {{ $item['name'] }}
+                                                {{ $item['name'] }} teste
 
                                                 @if (isset($item['data']->additionalInfo->{'router'}))
                                                     <span
@@ -284,8 +284,9 @@
                                                         <i class="fa-solid fa-network-wired"></i>
                                                     </span>
                                                 @endif
+                                                teste
                                                 @if (isset($item['data']->bundle_items))
-                                                    <span class="badge badge-bundle float-end">
+                                                    <span class="badge badge-bundle">
                                                         Bundle
                                                     </span>
                                                 @endif
@@ -295,6 +296,7 @@
                                                     {{ getMainProductName($quote, $item) }}
                                                 </p>
                                             @endif
+                                            teste
                                         </td>
                                         <td class="column-contract_length-body">
                                             {{ $item['contract_length'] }}
@@ -437,7 +439,7 @@
                                                 </span>
                                             @endif
                                             @if (isset($item['data']->bundle_items))
-                                                <span class="badge badge-bundle float-end">
+                                                <span class="badge badge-bundle">
                                                         Bundle
                                                     </span>
                                             @endif
