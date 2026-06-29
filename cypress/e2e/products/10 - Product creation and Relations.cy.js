@@ -85,7 +85,7 @@ describe('Creates products and associates Category.cy', () => {
         cy.newTableSearchAndEdit(addonsProduct.sku, '#products-table-datatable-search');
         cy.get('#tabs-product-edit-1-1').click();
         cy.get('#btn-add-links').click();
-        cy.get('#links-search-global').type(product.sku);
+        cy.get('#links-search-global').should('be.visible').click().type(product.sku);
         cy.get('#links-table').contains(product.sku);
         cy.wait(1000);
         cy.get('[id^="links-checkbox-"]').first().click({ force: true });
