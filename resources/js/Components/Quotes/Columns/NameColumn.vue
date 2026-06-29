@@ -26,7 +26,8 @@ const itemNameTooltip = computed(() => {
     <div class="d-flex align-baseline">
         <p
             ref="element"
-            class="small semi-bold w-100 truncate-name-line"
+            class="small semi-bold w-100"
+            :class="!preview ? 'truncate-name-line' : '*:'"
             v-tooltip
             data-bs-toggle="tooltip"
             data-bs-placement="top"
@@ -69,7 +70,6 @@ const itemNameTooltip = computed(() => {
                 <font-awesome-icon :icon="['fas', 'network-wired']"></font-awesome-icon>
             </span>
         </p>
-
         <span v-if="item.data && item.data?.bundle_items?.length > 0" class="badge badge-bundle"> Bundle </span>
     </div>
     <p v-if="mainProduct" class="main-product-reference">{{ mainProduct.name }}</p>

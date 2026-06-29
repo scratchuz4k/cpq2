@@ -242,7 +242,8 @@
                                             </td>
                                         @endif
                                         <td class="column-name-body">
-                                            <p class="small semi-bold">
+                                            <div class="d-flex align-baseline justify-content-between">
+                                                <p class="small semi-bold">
                                                 {{ $item['name'] }}
 
                                                 @if (isset($item['data']->additionalInfo->{'router'}))
@@ -284,17 +285,18 @@
                                                         <i class="fa-solid fa-network-wired"></i>
                                                     </span>
                                                 @endif
+                                            </p>
                                                 @if (isset($item['data']->bundle_items))
                                                     <span class="badge badge-bundle">
-                                                        Bundle
-                                                    </span>
+                                                            Bundle
+                                                        </span>
                                                 @endif
-                                            </p>
-                                            @if (getMainProductName($quote, $item))
-                                                <p class="main-product-reference">
-                                                    {{ getMainProductName($quote, $item) }}
-                                                </p>
-                                            @endif
+                                                @if (getMainProductName($quote, $item))
+                                                    <p class="main-product-reference">
+                                                        {{ getMainProductName($quote, $item) }}
+                                                    </p>
+                                                @endif
+                                            </div>
                                         </td>
                                         <td class="column-contract_length-body">
                                             {{ $item['contract_length'] }}
@@ -405,42 +407,46 @@
                                             </td>
                                         @endif
                                         <td class="column-name-body">
-                                            {{ $item['name'] }}
-                                            @if ($item['data'] && $item['data']->type == 'addon_product')
-                                                ({{ collect($quote['items'])->first(fn($i) => $i['group'] == $item['group'] && $i['data'] && $i['data']->type == 'main_product')['name'] ?? '' }})
-                                            @endif
-                                            @if (isset($item['data']->additionalInfo->{'router'}))
-                                                <span
-                                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
-                                                    data-bs-toggle="tooltip" data-bs-placement="top"
-                                                    title="Primary Router Model" v-tooltip>
-                                                    <i class="fa-solid fa-plug"></i>
-                                                    {{ $item['data']->additionalInfo->{'router'} }}
-                                                </span>
-                                            @endif
-                                            {{-- @if (isset($item['data']->isContended) and $item['data']->isContended)
-                                                <span
-                                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
-                                                    data-bs-toggle="tooltip" data-bs-placement="top"
-                                                    title="Contended, wires only full fibre service with symmetrical upload and download speeds"
-                                                    v-tooltip>
-                                                    Contended Service
-                                                </span>
-                                            @endif --}}
-                                            @if (isset($item['data']->additionalInfo->{'Type'}) && $item['data']->additionalInfo->{'Type'} == 'Fibre Flex 200+')
-                                                <span
-                                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
-                                                    data-bs-toggle="tooltip" data-bs-placement="top"
-                                                    title="This service offers guaranteed upload and download speeds of 200Mbps and can burst up to a peak of 1Gbps"
-                                                    v-tooltip>
-                                                    Burstable Service
-                                                </span>
-                                            @endif
-                                            @if (isset($item['data']->bundle_items))
-                                                <span class="badge badge-bundle">
+                                            <div class="d-flex align-baseline justify-content-between">
+                                                <p class="small semi-bold">
+                                                    {{ $item['name'] }}
+                                                    @if ($item['data'] && $item['data']->type == 'addon_product')
+                                                        ({{ collect($quote['items'])->first(fn($i) => $i['group'] == $item['group'] && $i['data'] && $i['data']->type == 'main_product')['name'] ?? '' }})
+                                                    @endif
+                                                    @if (isset($item['data']->additionalInfo->{'router'}))
+                                                        <span
+                                                            class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="Primary Router Model" v-tooltip>
+                                                            <i class="fa-solid fa-plug"></i>
+                                                            {{ $item['data']->additionalInfo->{'router'} }}
+                                                        </span>
+                                                    @endif
+                                                    {{-- @if (isset($item['data']->isContended) and $item['data']->isContended)
+                                                        <span
+                                                            class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="Contended, wires only full fibre service with symmetrical upload and download speeds"
+                                                            v-tooltip>
+                                                            Contended Service
+                                                        </span>
+                                                    @endif --}}
+                                                    @if (isset($item['data']->additionalInfo->{'Type'}) && $item['data']->additionalInfo->{'Type'} == 'Fibre Flex 200+')
+                                                        <span
+                                                            class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="This service offers guaranteed upload and download speeds of 200Mbps and can burst up to a peak of 1Gbps"
+                                                            v-tooltip>
+                                                            Burstable Service
+                                                        </span>
+                                                    @endif
+                                                </p>
+                                                @if (isset($item['data']->bundle_items))
+                                                    <span class="badge badge-bundle">
                                                         Bundle
                                                     </span>
-                                            @endif
+                                                @endif
+                                            </div>
                                         </td>
                                         @if ($isConnectivity)
                                             <td class="column-speed-body">
