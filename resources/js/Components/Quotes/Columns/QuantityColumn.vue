@@ -13,6 +13,7 @@ defineProps({
 const item = defineModel();
 
 const stock = ref(null);
+const stockLoading = ref(false);
 
 const handleQuantityInput = (e) => {
     const target = e.target ? e.target : e.originalEvent.target;
@@ -32,6 +33,8 @@ const getProductStock = async () => {
         return;
     }
 
+    stockLoading.value = true;
+
     let query = queryString.stringify({
         filters: [
             {
@@ -46,6 +49,8 @@ const getProductStock = async () => {
         stock.value = res.data.data[0].stock;
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong');
+    } finally {
+        stockLoading.value = false;
     }
 };
 
@@ -72,6 +77,7 @@ watch(
             @keydown="integerOnly"
             @input="checkValue"
             @blur="handleQuantityInput"
+            :disabled="stockLoading"
         />
     </template>
 </template>
