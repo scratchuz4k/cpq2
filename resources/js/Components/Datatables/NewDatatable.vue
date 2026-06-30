@@ -378,10 +378,10 @@ onMounted(() => {
                     >
                         <Checkbox
                             @click="toggleUserHiddenColumn(column)"
-                            :checked="isUserHidden(column)"
+                            :checked="!isUserHidden(column)"
                             class="me-2"
                         />
-                        <p>{{ column.title }}</p>
+                        <p class="datatable-columns-dropdown-label">{{ column.title }}</p>
                     </div>
                 </div>
             </div>
@@ -454,14 +454,22 @@ onMounted(() => {
                                 v-model="form.filters[data.column]"
                                 :options="props.options"
                                 :index="key"
-                            ></DatatableFilter>
+                            >
+                            </DatatableFilter>
                         </div>
                     </th>
                     <th
                         v-if="props.options.allow.update || props.options.allow.link || props.options.allow.destroy"
-                        class="datatable-table-header"
+                        class="datatable-table-header datatable-col-actions-sticky"
                         :class="['datatable-col', 'p-0']"
-                        style="position: sticky; top: -1px; z-index: 2; min-width: 100px !important; width: 10px"
+                        style="
+                            position: sticky;
+                            top: -1px;
+                            right: 0;
+                            z-index: 3;
+                            min-width: 100px !important;
+                            width: 20px;
+                        "
                     ></th>
                 </tr>
             </thead>
@@ -506,8 +514,13 @@ onMounted(() => {
                     </td>
                     <td
                         v-if="props.options.allow.update || props.options.allow.link || props.options.allow.destroy"
-                        :class="['datatable-col', 'p-0']"
-                        style="width: 10px"
+                        :class="['datatable-col', 'p-0', 'datatable-col-actions-sticky']"
+                        :style="{
+                            width: '20px',
+                            position: 'sticky',
+                            right: 0,
+                            zIndex: activeMenuIndex === index ? 200 : 1
+                        }"
                     >
                         <div
                             class="d-flex justify-content-end align-items-center datatable-actions-menu"
@@ -650,16 +663,19 @@ onMounted(() => {
     width: 100%;
     table-layout: fixed;
 }
+
 .datatable-header {
     background-color: white;
     border-radius: 4px 4px 0 0;
 }
+
 .datatable-content {
     background-color: white;
     min-height: 20vh;
     max-height: 60vh;
     overflow: auto;
 }
+
 .datatable-table-header {
     background-color: #e8e8e8;
     border-top: 1px solid #dee2e6;
@@ -701,10 +717,12 @@ onMounted(() => {
     left: 0;
     z-index: 2;
 }
+
 .datatable-col-sticky-2 {
     position: sticky;
     z-index: 2;
 }
+
 .datatable-col-sticky-3 {
     position: sticky;
     z-index: 2;
@@ -724,6 +742,7 @@ onMounted(() => {
 .is-scrolled .datatable-col-last-sticky:after {
     box-shadow: inset 10px 0 8px -8px #0003;
 }
+
 .datatable-columns-dropdown {
     position: absolute;
     top: 100%;
@@ -734,17 +753,24 @@ onMounted(() => {
     padding: 0.5rem;
     z-index: 10;
     width: 250px;
-    font-size: 14px;
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.datatable-columns-dropdown-label {
+    font-size: 12px;
 }
 
 .datatable-actions-trigger {
     color: #6c757d;
     background: transparent;
 }
+
 .datatable-actions-trigger:hover {
     background-color: #f1f3f5;
     color: #343a40;
 }
+
 .datatable-actions-dropdown {
     position: absolute;
     top: 100%;
@@ -757,6 +783,7 @@ onMounted(() => {
     min-width: 160px;
     padding: 4px 0;
 }
+
 .datatable-actions-item {
     display: flex;
     align-items: center;
@@ -771,13 +798,16 @@ onMounted(() => {
     cursor: pointer;
     transition: background-color 0.15s;
 }
+
 .datatable-actions-item:hover {
     background-color: #f8f9fa;
     color: #343a40;
 }
+
 .datatable-actions-item-danger {
     color: #dc3545;
 }
+
 .datatable-actions-item-danger:hover {
     background-color: #fff5f5;
     color: #dc3545;
@@ -919,5 +949,14 @@ onMounted(() => {
     color: #6c757d;
     font-size: 13px;
     line-height: 30px;
+}
+
+.datatable-col-actions-sticky {
+    background-color: white;
+    box-shadow: -4px 0 8px -4px rgba(0, 0, 0, 0.12);
+}
+
+.datatable-table-header.datatable-col-actions-sticky {
+    background-color: #e8e8e8;
 }
 </style>

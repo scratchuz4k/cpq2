@@ -71,13 +71,15 @@ const totalProducts = ref(0);
         <p class="small text-muted mb-2">{{ totalProducts }} product{{ totalProducts !== 1 ? 's' : '' }}</p>
         <NewDatatable :options="options" @update:meta="(meta) => (totalProducts = meta.total)">
             <template #status="{ value }">
-                <span class="badge text-bg-secondary">{{ value }}</span>
+                <span class="small badge" :class="value == 'Active' ? 'badge-success' : 'badge-muted'">
+                    {{ value }}
+                </span>
             </template>
             <template #updated_at="{ value }">
-                {{ format.date(value) }}
+                <p class="small">{{ format.date(value) }}</p>
             </template>
             <template #created_at="{ value }">
-                {{ format.date(value) }}
+                <p class="small">{{ format.date(value) }}</p>
             </template>
             <template #is_active="{ data, value }">
                 <ToggleActive :data="data" :value="value" route="products" />
