@@ -165,8 +165,8 @@ describe('Validates same-step product link restriction', () => {
         cy.get('#tabs-product-edit-1-1').click();
         cy.get('#btn-add-links').click();
         cy.get('#links-search-global').should('be.visible').click().type(sameStepChild.sku);
-        cy.get('#links-table').contains(sameStepChild.sku);
         cy.wait(1000);
+        cy.get('#links-table').contains(sameStepChild.sku);
         cy.get('[id^="links-checkbox-"]').should('not.exist');
         cy.get('#btn-relation-cancel-links').click();
         cy.get('#product-links-datatable-search').clear().type(sameStepChild.sku);
