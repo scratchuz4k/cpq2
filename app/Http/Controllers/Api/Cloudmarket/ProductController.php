@@ -99,7 +99,7 @@ class ProductController extends BaseController
         string $jobClass,
         bool $requirePrimary = true,
         bool $appendFailover = false
-    ) {
+    ) {/**/
         $filters = $this->decodeFilters($request);
         $quote = $this->getQuote($request);
 

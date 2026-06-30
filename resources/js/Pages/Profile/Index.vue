@@ -63,7 +63,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Profile' }]);
                         </p>
                         <hr class="login-seperator" />
                         <div>
-                            <h5>Company Accounts</h5>
+                            <h5>Tenant Access</h5>
                             <ul class="nav flex-column">
                                 <li v-for="tenant in tenants">
                                     <Link

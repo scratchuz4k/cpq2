@@ -60,6 +60,7 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         Route::get('products', [ShopBlocksProductController::class, 'index']);
         Route::get('products/{article}', [ShopBlocksProductController::class, 'show']);
         Route::get('product-dimensions', [ProductDimensionController::class, 'index']);
+        Route::get('categories/tree', [ShopBlocksCategoryController::class, 'tree']);
         Route::get('categories', [ShopBlocksCategoryController::class, 'index']);
     });
 
@@ -89,6 +90,8 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         Route::get('/columns', [ReportController::class, 'getColumns']);
     });
     Route::post('/quotes/{quote}/complete', [QuoteController::class, 'complete']);
+
+    Route::get('categories/tree', [CategoryController::class, 'tree']);
 
     Route::apiResources([
         'apis' => ApiController::class,

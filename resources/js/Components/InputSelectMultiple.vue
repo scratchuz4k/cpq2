@@ -97,6 +97,8 @@ onMounted(() => {
     });
 });
 
+const isSelected = (option) => !!proxyValue.value.find((x) => x.id === option.id);
+
 const selectOption = (option) => {
     let index = proxyValue.value.findIndex((x) => x.id === option.id);
     if (index === -1) {
@@ -104,6 +106,11 @@ const selectOption = (option) => {
         return;
     }
     proxyValue.value.splice(index, 1);
+};
+
+const clear = (e) => {
+    e.stopPropagation();
+    proxyValue.value.splice(0, proxyValue.value.length);
 };
 
 watch(inputSearch, () => {
@@ -125,38 +132,29 @@ search();
 
 <template>
     <div :id="'input-select-' + props.id" class="position-relative">
-        <div class="form-select w-100 d-flex" role="button" @click="() => (showOptions = !showOptions)">
-            <template v-if="!proxyValue || Object.values(proxyValue).every((value) => !value)">
-                {{ props.placeholder }}
-            </template>
-            <template v-else-if="proxyValue.length == 1">
-                <p v-for="(items, index) in proxyValue" class="w-100 d-flex justify-content-between">
-                    <span>
-                        <template v-for="(field, index) in props.fields">
-                            {{ index !== 0 ? ` (${_.get(items, field, '')})` : _.get(items, field, '') }}
-                        </template>
-                    </span>
-
-                    <font-awesome-icon
-                        class="my-auto ms-1 text-muted"
-                        role="button"
-                        :icon="['fas', 'xmark']"
-                        @click="() => proxyValue.splice(index, 1)"
-                    />
-                </p>
-            </template>
-            <template v-else>
-                <p class="w-100 d-flex justify-content-between">
-                    <span>{{ proxyValue.length }} selected</span>
-
-                    <font-awesome-icon
-                        class="my-auto ms-1 text-muted"
-                        role="button"
-                        :icon="['fas', 'xmark']"
-                        @click="() => proxyValue.splice(0, proxyValue.length)"
-                    />
-                </p>
-            </template>
+        <div
+            class="trigger-select w-100 d-flex align-items-center cursor-pointer gap-2"
+            role="button"
+            @click="showOptions = !showOptions"
+        >
+            <span>{{ props.placeholder }}</span>
+            <font-awesome-icon :icon="['fas', 'chevron-down']" style="font-size: 0.65rem; opacity: 0.6" />
+            <span class="ms-auto d-flex align-items-center gap-2">
+                <span
+                    v-if="proxyValue.length"
+                    class="badge rounded-pill text-white"
+                    style="background-color: var(--color-purple); font-size: 0.7rem"
+                >
+                    {{ proxyValue.length }}
+                </span>
+                <font-awesome-icon
+                    v-if="proxyValue.length"
+                    role="button"
+                    style="font-size: 0.8rem"
+                    :icon="['fas', 'xmark']"
+                    @click.stop="clear"
+                />
+            </span>
         </div>
         <div
             class="form-control position-absolute mt-1 p-1"
@@ -189,14 +187,20 @@ search();
                 <div
                     v-else
                     v-for="option in options"
-                    class="option"
-                    :class="{ selected: proxyValue.find((x) => x.id === option.id) }"
-                    @click="selectOption(option)"
+                    class="option d-flex align-items-center gap-2"
+                    :class="{ selected: isSelected(option) }"
+                    @click.stop="selectOption(option)"
                     style="cursor: pointer"
                 >
-                    <template v-for="(field, index) in props.fields">
-                        {{ index !== 0 ? ` (${_.get(option, field, '')})` : _.get(option, field, '') }}
-                    </template>
+                    <span class="flex-shrink-0 option-checkbox">
+                        <font-awesome-icon v-if="isSelected(option)" :icon="['fas', 'square-check']" />
+                        <font-awesome-icon v-else :icon="['far', 'square']" />
+                    </span>
+                    <span class="flex-grow-1">
+                        <template v-for="(field, index) in props.fields">
+                            {{ index !== 0 ? ` (${_.get(option, field, '')})` : _.get(option, field, '') }}
+                        </template>
+                    </span>
                 </div>
                 <div class="m-auto" v-if="page < meta.total_pages">
                     <div class="spinner-border spinner-border-sm" role="status">
@@ -209,6 +213,15 @@ search();
 </template>
 
 <style scoped>
+.trigger-select {
+    padding: 0.375rem 0.75rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    background-color: #fff;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
 .options-container {
     display: flex;
     flex-direction: column;
@@ -220,13 +233,11 @@ search();
     border-radius: 4px;
 }
 
-.option.selected {
-    color: white;
-    background-color: var(--color-purple);
+.option-checkbox {
+    color: var(--color-purple);
 }
 
-.option:not(.selected):hover {
-    color: black;
+.option:hover {
     background-color: var(--color-purple-light);
 }
 </style>

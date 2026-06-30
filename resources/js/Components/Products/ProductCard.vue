@@ -27,75 +27,78 @@ const proxyValue = computed({
     set: (value) => emit('update:modelValue', value)
 });
 
+let currentPromise = Promise.resolve();
+
 const checkQuantity = _.throttle(async (product, temp) => {
     isDisabled.value = true;
     isBlocked.value = true;
-    if (temp < 0) {
-        product.quantity = 0;
-        isDisabled.value = false;
-        isBlocked.value = false;
-        return;
-    }
+    return (currentPromise = currentPromise.then(async () => {
+        try {
+            if (temp < 0) {
+                product.quantity = 0;
+                return;
+            }
 
-    if (temp > product.stock) {
-        notyf.open({
-            type: 'warning',
-            message: 'You can only add up to the number of units in stock. The quantity is automatically adjusted'
-        });
-        temp = product.stock ?? 0;
-    }
-    product.quantity = temp;
-
-    let code = product.sku ?? product.code;
-    let item = quote.items.find((x) => x.product_code == code && x.data?.type == 'main_product');
-    let oldQuantity = item ? item.quantity : 0;
-
-    if (!item) {
-        if (temp == 0) {
-            return;
-        }
-
-        await createQuoteItem({
-            quote_id: quote.id,
-            product_code: code,
-            quantity: temp,
-            contract_length: product.contract_length,
-            product_id: props.addInternalProduct ? product.id : null,
-            name: product.name,
-            raw_price: product.price ? product.price.net : 0,
-            price: product.price ? product.price.net_spa : 0,
-            price_plan_id: product.price_plan_id,
-            data: { type: 'main_product' }
-        });
-    } else {
-        if (temp == 0) {
-            let groupItems = quote.items.filter((x) => x.group == item.group);
-
-            if (groupItems.length > 1) {
-                let result = await swal.fire({
-                    width: '400px',
-                    title: 'Are you sure?',
-                    text: 'This item includes other associated items, removing it will also remove them from the quote.'
+            if (temp > product.stock) {
+                notyf.open({
+                    type: 'warning',
+                    message:
+                        'You can only add up to the number of units in stock. The quantity is automatically adjusted'
                 });
+                temp = product.stock ?? 0;
+            }
+            product.quantity = temp;
 
-                if (['cancel', 'backdrop'].includes(result.dismiss)) {
-                    proxyValue.value.quantity = oldQuantity;
-                    isDisabled.value = false;
-                    isBlocked.value = false;
+            let code = product.sku ?? product.code;
+            let item = quote.items.find((x) => x.product_code == code && x.data?.type == 'main_product');
+            let oldQuantity = item ? item.quantity : 0;
+
+            if (!item) {
+                if (temp == 0) {
                     return;
+                }
+
+                await createQuoteItem({
+                    quote_id: quote.id,
+                    product_code: code,
+                    quantity: temp,
+                    contract_length: product.contract_length,
+                    product_id: props.addInternalProduct ? product.id : null,
+                    name: product.name,
+                    raw_price: product.price ? product.price.net : 0,
+                    price: product.price ? product.price.net_spa : 0,
+                    price_plan_id: product.price_plan_id,
+                    data: { type: 'main_product' }
+                });
+            } else {
+                if (temp == 0) {
+                    let groupItems = quote.items.filter((x) => x.group == item.group);
+
+                    if (groupItems.length > 1) {
+                        let result = await swal.fire({
+                            width: '400px',
+                            title: 'Are you sure?',
+                            text: 'This item includes other associated items, removing it will also remove them from the quote.'
+                        });
+
+                        if (['cancel', 'backdrop'].includes(result.dismiss)) {
+                            proxyValue.value.quantity = oldQuantity;
+                            return;
+                        }
+                    }
+
+                    await removeQuoteItem(item.id);
+                } else {
+                    await updateQuoteItem(item.id, { quantity: temp });
                 }
             }
 
-            removeQuoteItem(item.id);
-        } else {
-            await updateQuoteItem(item.id, { quantity: temp });
+            await getQuote(quote.id);
+        } finally {
+            isDisabled.value = false;
+            isBlocked.value = false;
         }
-    }
-
-    isDisabled.value = false;
-    isBlocked.value = false;
-
-    await getQuote(quote.id);
+    }));
 }, 500);
 
 const select = () => {
@@ -221,13 +224,18 @@ watch(searchInput, () => {
                         {{ proxyValue.name }}
                     </h3>
                     <p v-else class="truncate-2-lines bold">{{ proxyValue.name }}</p>
-                    <div v-if="proxyValue.stock > 0">
-                        <p class="badge badge-success" style="white-space: nowrap">
-                            <span :id="'hardware-' + index + '-stock'">
-                                {{ proxyValue.stock }}
-                            </span>
-                            in stock
-                        </p>
+                    <div class="d-flex gap-2">
+                        <div v-if="proxyValue.bundles && proxyValue.bundles.length > 0">
+                            <p class="badge badge-bundle" style="white-space: nowrap">Bundle</p>
+                        </div>
+                        <div v-if="proxyValue.stock > 0">
+                            <p class="badge badge-success" style="white-space: nowrap">
+                                <span :id="'hardware-' + index + '-stock'">
+                                    {{ proxyValue.stock }}
+                                </span>
+                                in stock
+                            </p>
+                        </div>
                     </div>
                 </div>
                 <p class="product-description truncate-2-lines my-3" v-html="proxyValue.description"></p>
@@ -257,7 +265,7 @@ watch(searchInput, () => {
                             v-model="proxyValue.quantity"
                             @change="(val) => checkQuantity(proxyValue, val, true)"
                         />
-                        <p class="bold big ps-1 ms-4">
+                        <p class="price bold big ps-1 ms-3 text-end">
                             {{ format.GBP(proxyValue.price?.net_spa || 0) }}
                         </p>
                     </div>
@@ -292,6 +300,10 @@ watch(searchInput, () => {
                             @change="(val) => checkQuantity(proxyValue, val)"
                         />
                     </div>
+                </div>
+                <div v-if="proxyValue.bundles && proxyValue.bundles.length > 0" class="mt-3">
+                    <hr class="my-2" />
+                    <ProductCardBundlesList :bundles="proxyValue.bundles" />
                 </div>
                 <div v-if="proxyValue.addons && proxyValue.addons.length > 0" class="mt-3">
                     <hr class="my-2" />
@@ -521,5 +533,9 @@ h3 {
     background: #dee2e6;
     z-index: 1;
     overflow: hidden;
+}
+
+.price {
+    min-width: 90px;
 }
 </style>

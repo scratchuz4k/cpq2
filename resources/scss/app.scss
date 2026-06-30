@@ -107,6 +107,8 @@ body {
     .badge {
         line-height: 16px;
         border: 0;
+        font-size: 12px;
+        min-width: 24px;
     }
 
     .badge-primary {
@@ -165,6 +167,16 @@ body {
         &.rejected {
             background-color: var(--badge-status-rejected);
         }
+    }
+
+    .badge-bundle {
+        color: var(--badge-bundle);
+        border-radius: 16px;
+        padding: 4px 12px;
+        font-size: 12px;
+        background-color: var(--badge-soft-bundle);
+        min-width: auto;
+        margin-bottom: auto;
     }
 }
 
