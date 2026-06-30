@@ -9,6 +9,7 @@ import AccordionContent from 'primevue/accordioncontent';
 import InputMask from 'primevue/inputmask';
 import { reactive, ref } from 'vue';
 import ToggleSwitch from 'primevue/toggleswitch';
+import { checkLength, integerOnly } from '@/Composables/input.js';
 
 const account = reactive({
     name: null,
@@ -97,7 +98,7 @@ const items = ref([
                     <AccordionHeader>
                         <div class="d-flex justify-content-between align-items-center w-100 pe-3">
                             <p class="m-0">
-                                Contact #{{ contact.id }}
+                                Contact #{{ key + 1 }}
                                 {{ contact.primary_contact_name ? ' - ' + contact.primary_contact_name : '' }}
                             </p>
                             <PrimaryButton class="btn-sm btn-secondary" @click.stop="removeContact(key)"
@@ -127,11 +128,12 @@ const items = ref([
                             </div>
                             <div class="col-6 mb-3">
                                 <label :for="'contact-phone-' + key" class="form-label"> Phone: </label>
-                                <InputMask
-                                    id="uk-phone"
-                                    class="form-control"
+                                <input
+                                    type="tel"
                                     v-model="contact.phone"
-                                    mask="09999 999999"
+                                    class="form-control input-phone"
+                                    maxlength="12"
+                                    @keydown="integerOnly"
                                 />
                             </div>
                             <div class="col-6 mb-3">
