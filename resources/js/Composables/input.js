@@ -15,5 +15,16 @@ export const checkValue = (e) => {
 };
 
 export const integerOnly = (e) => {
-    if (['e', 'E', '+', '-', '.', ','].includes(e.key)) e.preventDefault();
+    const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'];
+    if (!/^\d$/.test(e.key) && !allowedKeys.includes(e.key)) {
+        e.preventDefault();
+    }
+};
+
+export const checkLength = (e) => {
+    if (e.target.maxLength < 0) return;
+
+    if (e.target.value.length > e.target.maxLength) {
+        e.target.value = e.target.value.slice(0, e.target.maxLength);
+    }
 };

@@ -137,6 +137,13 @@ Cypress.Commands.add('addProductAndVerifySummary', (selector, quoteItemsSelector
     });
 });
 
+Cypress.Commands.add('newTableSearchAndEdit', (searchValue, searchSelector = '#datatable-search') => {
+    cy.get(searchSelector).type(searchValue);
+    cy.wait(1000);
+    cy.get('.datatable-actions-trigger').first().click();
+    cy.get('#datatable-btn-0-edit').click();
+});
+
 Cypress.Commands.add('addProductToStep', (stepName, productName) => {
     cy.get('#settings').click();
     cy.get('#link-steps').click();

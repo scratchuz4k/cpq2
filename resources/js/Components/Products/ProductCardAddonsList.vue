@@ -21,7 +21,7 @@ const loaded = ref(false);
 
 const api = new Api('product-addons');
 api.meta.limit = 10;
-api.meta.total = props.modelValue.addons?.length || 0;
+api.meta.total = props.modelValue.addons_children?.length || 0;
 
 const addons = ref([]);
 
@@ -222,7 +222,9 @@ onMounted(async () => {
     <div>
         <div class="d-flex justify-content-between align-items-center mb-2">
             <p class="small bold text-muted mb-0">
-                {{ modelValue.addons.length }} add-on<span v-if="modelValue.addons.length !== 1">s</span>
+                {{ modelValue.addons_children.length }} add-on<span v-if="modelValue.addons_children.length !== 1"
+                    >s</span
+                >
                 available
             </p>
             <span v-if="selectedCount > 0" class="badge badge-muted">{{ selectedCount }} selected</span>

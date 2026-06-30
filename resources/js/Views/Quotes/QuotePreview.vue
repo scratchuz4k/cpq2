@@ -48,9 +48,7 @@ let view = component && Object.keys(solutionsViews).includes(component) ? soluti
                         <br />
                         {{ quote.address_data?.label }}
                     </p>
-                    <p v-if="quote.account?.main_contact?.phone">
-                        Tel: {{ format.formatUKPhone(quote.account.main_contact.phone) }}
-                    </p>
+                    <p v-if="quote.account?.main_contact?.phone">Tel: {{ quote.account.main_contact.phone }}</p>
                     <p v-if="quote.account?.main_contact?.email">Email: {{ quote.account.main_contact.email }}</p>
                 </div>
             </div>

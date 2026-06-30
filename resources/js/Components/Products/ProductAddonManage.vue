@@ -19,25 +19,24 @@ const proxyValue = computed({
     }
 });
 
-const totals = ref(proxyValue.value.addons?.length ?? 0);
+const totals = ref(proxyValue.value.addons_children?.length ?? 0);
 const optionAddons = new DatatableOptions('product-addons', 'product-addons');
-optionAddons.addColumn('addon.sku', 'SKU', null, { isSticky: true });
-optionAddons.addColumn('addon.name', 'Name', null, { isSticky: true });
-optionAddons.addColumn('addon.description', 'Description', null, {});
-optionAddons.addColumn('addon.categories.name', 'Categories', {}, {});
-optionAddons.addColumn('addon.status', 'Status', null, {});
-optionAddons.addColumn('addon.price.cost', 'Cost Price', { width: '150px' }, { isSearchable: false });
-optionAddons.addColumn('addon.price.net', 'Net Price', { width: '150px' }, { isSearchable: false });
-optionAddons.addColumn('addon.price.net_spa', 'Net SPA', { width: '150px' }, { isSearchable: false });
-optionAddons.addColumn(
-    'addon.price.active_spas',
-    'Active SPAs',
-    { width: '350px' },
-    { isSearchable: false, isSortable: false }
-);
-optionAddons.addColumn('addon.price_plan.name', 'Contract Term', {}, {});
-optionAddons.addColumn('addon.steps.name', 'Steps', { width: '150px' }, {});
-optionAddons.addColumn('addon.steps.solution_type.name', 'Solution Type', { width: '250px' }, {});
+optionAddons.addColumn('addon.sku', 'SKU', { isSticky: true });
+optionAddons.addColumn('addon.name', 'Name', { isSticky: true });
+optionAddons.addColumn('addon.description', 'Description');
+optionAddons.addColumn('addon.categories.name', 'Categories');
+optionAddons.addColumn('addon.status', 'Status');
+optionAddons.addColumn('addon.price.cost', 'Cost Price', { style: { width: '150px' }, isSearchable: false });
+optionAddons.addColumn('addon.price.net', 'Net Price', { style: { width: '150px' }, isSearchable: false });
+optionAddons.addColumn('addon.price.net_spa', 'Net SPA', { style: { width: '150px' }, isSearchable: false });
+optionAddons.addColumn('addon.price.active_spas', 'Active SPAs', {
+    style: { width: '350px' },
+    isSearchable: false,
+    isSortable: false
+});
+optionAddons.addColumn('addon.price_plan.name', 'Contract Term');
+optionAddons.addColumn('addon.steps.name', 'Steps', { style: { width: '150px' } });
+optionAddons.addColumn('addon.steps.solution_type.name', 'Solution Type', { style: { width: '250px' } });
 
 optionAddons.addQuery('product_id', FilterOperators.EQUALS, proxyValue.value.id);
 optionAddons.setAllowedActions({
@@ -45,7 +44,7 @@ optionAddons.setAllowedActions({
     allowExport: can(`export product`) || hasRole('Super Admin')
 });
 const addonProductQueries = () => {
-    const existingAddonIds = (proxyValue.value.addons ?? []).map((addon) => addon.id);
+    const existingAddonIds = (proxyValue.value.addons_children ?? []).map((addon) => addon.id);
 
     if (existingAddonIds.length === 0) {
         return [];
@@ -63,7 +62,7 @@ const addonProductQueries = () => {
 
 const getProductAddons = async () => {
     const res = await axios.get(`/api/products/${proxyValue.value.id}`);
-    proxyValue.value.addons = res.data.data.addons;
+    proxyValue.value.addons_children = res.data.data.addons_children;
 };
 const setMeta = (newTotals) => {
     totals.value = newTotals;

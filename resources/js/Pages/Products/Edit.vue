@@ -244,18 +244,18 @@ watch(
                     </div>
                 </tab>
                 <tab
-                    :title="`Linked Products <span class='badge badge-primary rounded-pill ms-2'>${product.children.length}</span>`"
+                    :title="`Linked Products <span class='badge badge-primary rounded-pill ms-2'>${product.linked_children.length}</span>`"
                 >
                     <ProductLinkedManage v-model="product" />
                 </tab>
                 <tab
-                    :title="`Addons <span class='badge badge-primary rounded-pill ms-2'>${product.addons.length}</span>`"
+                    :title="`Addons <span class='badge badge-primary rounded-pill ms-2'>${product.addons_children.length}</span>`"
                 >
                     <ProductAddonManage v-model="product" />
                 </tab>
 
                 <tab
-                    :title="`Bundle <span class='badge badge-primary rounded-pill ms-2'>${product.bundles.length}</span>`"
+                    :title="`Bundle <span class='badge badge-primary rounded-pill ms-2'>${product.bundles_children.length}</span>`"
                 >
                     <ProductBundleManage v-model="product" />
                 </tab>

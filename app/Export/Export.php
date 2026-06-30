@@ -22,9 +22,15 @@ class Export implements FromCollection, ShouldAutoSize, WithHeadings
 
     public function headings(): array
     {
-        return array_map(
-            fn ($col) => Str::title(str_replace('_', ' ', $col)),
-            collect($this->collection->first())->keys()->all()
-        );
+        $first = collect($this->collection->first())->keys()->all();
+
+        return array_map(function ($col) {
+            // if the key already contains spaces or uppercase it came from column_titles — use as-is
+            if (str_contains($col, ' ') || preg_match('/[A-Z]/', $col)) {
+                return $col;
+            }
+
+            return Str::title(str_replace('_', ' ', $col));
+        }, $first);
     }
 }
