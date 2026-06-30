@@ -475,7 +475,7 @@ onMounted(() => {
                             right: 0;
                             z-index: 3;
                             min-width: 100px !important;
-                            width: 20px;
+                            width: 35px;
                         "
                     ></th>
                 </tr>
@@ -523,7 +523,7 @@ onMounted(() => {
                         v-if="props.options.allow.update || props.options.allow.link || props.options.allow.destroy"
                         :class="['datatable-col', 'p-0', 'datatable-col-actions-sticky']"
                         :style="{
-                            width: '20px',
+                            width: '35px',
                             position: 'sticky',
                             right: 0,
                             zIndex: activeMenuIndex === index ? 200 : 1
@@ -535,7 +535,7 @@ onMounted(() => {
                         >
                             <button
                                 type="button"
-                                class="btn p-2 border-0 datatable-actions-trigger"
+                                class="btn py-2 px-3 border-0 datatable-actions-trigger"
                                 @click.stop="activeMenuIndex = activeMenuIndex === index ? null : index"
                             >
                                 <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" />
