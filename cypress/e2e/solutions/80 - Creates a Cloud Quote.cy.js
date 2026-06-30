@@ -44,7 +44,7 @@ describe('Creates a Cloud Quote', () => {
         cy.get('#settings').click();
         cy.get('#link-products').click();
 
-        cy.get('#datatable-search').type(product.sku);
+        cy.get('#products-table-datatable-search').type(product.sku);
         cy.wait(1000);
         cy.get('#products-table').then(($table) => {
             if ($table.text().includes('No records found')) {

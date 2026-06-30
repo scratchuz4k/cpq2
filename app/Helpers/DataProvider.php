@@ -113,9 +113,19 @@ class DataProvider
             $hidden = $this->builder->getModel()->getHidden();
 
             $columns = array_filter($columns, function ($column) use ($hidden) {
-                $firstPart = explode('.', $column)[0];
+                $parts = explode('.', $column);
+                $firstPart = $parts[0];
 
-                return ! in_array($firstPart, $hidden);
+                if (in_array($firstPart, $hidden)) {
+                    return false;
+                }
+
+                // Skip dot-notation columns where the first segment is not a real relationship
+                if (count($parts) > 1 && ! $this->checkModelRelationships($firstPart)) {
+                    return false;
+                }
+
+                return true;
             });
 
             $this->builder = $this->builder->where(fn ($query) => $this->searchModel($query, $columns, $search));

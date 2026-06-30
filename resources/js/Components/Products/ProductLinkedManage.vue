@@ -49,28 +49,27 @@ const linkedProductQueries = () => {
 const sharesStep = (item) => {
     return (
         item.steps.some((s) => proxyValue.value.steps?.some((ps) => ps.id === s.id)) ||
-        proxyValue.value.children.some((c) => c.id == item.id)
+        proxyValue.value.linked_children.some((c) => c.id == item.id)
     );
 };
 
 const optionLinks = new DatatableOptions('product-links', 'product-links');
-optionLinks.addColumn('child.sku', 'SKU', null, { isSticky: true });
-optionLinks.addColumn('child.name', 'Name', null, { isSticky: true });
-optionLinks.addColumn('child.description', 'Description', null, {});
-optionLinks.addColumn('child.categories.name', 'Categories', {}, {});
-optionLinks.addColumn('child.status', 'Status', null, {});
-optionLinks.addColumn('child.price.cost', 'Cost Price', { width: '150px' }, { isSearchable: false });
-optionLinks.addColumn('child.price.net', 'Net Price', { width: '150px' }, { isSearchable: false });
-optionLinks.addColumn('child.price.net_spa', 'Net SPA', { width: '150px' }, { isSearchable: false });
-optionLinks.addColumn(
-    'child.price.active_spas',
-    'Active SPAs',
-    { width: '350px' },
-    { isSearchable: false, isSortable: false }
-);
-optionLinks.addColumn('child.price_plan.name', 'Contract Term', {}, {});
-optionLinks.addColumn('child.steps.name', 'Steps', { width: '150px' }, {});
-optionLinks.addColumn('child.steps.solution_type.name', 'Solution Type', {}, {});
+optionLinks.addColumn('child.sku', 'SKU', { isSticky: true });
+optionLinks.addColumn('child.name', 'Name', { isSticky: true });
+optionLinks.addColumn('child.description', 'Description');
+optionLinks.addColumn('child.categories.name', 'Categories');
+optionLinks.addColumn('child.status', 'Status');
+optionLinks.addColumn('child.price.cost', 'Cost Price', { style: { width: '150px' }, isSearchable: false });
+optionLinks.addColumn('child.price.net', 'Net Price', { style: { width: '150px' }, isSearchable: false });
+optionLinks.addColumn('child.price.net_spa', 'Net SPA', { style: { width: '150px' }, isSearchable: false });
+optionLinks.addColumn('child.price.active_spas', 'Active SPAs', {
+    style: { width: '350px' },
+    isSearchable: false,
+    isSortable: false
+});
+optionLinks.addColumn('child.price_plan.name', 'Contract Term');
+optionLinks.addColumn('child.steps.name', 'Steps', { style: { width: '150px' } });
+optionLinks.addColumn('child.steps.solution_type.name', 'Solution Type');
 
 optionLinks.addQuery('product_id', FilterOperators.EQUALS, proxyValue.value.id);
 optionLinks.setAllowedActions({

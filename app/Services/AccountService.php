@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Account;
+use App\Models\Contact;
 use App\Repositories\AccountRepository;
 use Illuminate\Support\Facades\Auth;
 
@@ -41,7 +42,17 @@ class AccountService
     {
         $account->update($array);
 
+        $contactModel = new Contact;
+        $formValues = array_diff($contactModel->getFillable(), ['tenant_id', 'account_id']);
+
         if (isset($array['contacts']) && is_array($array['contacts'])) {
+            foreach ($array['contacts'] as $key => $contact) {
+                $isEmpty = collect($contact)->only($formValues)->filter()->isEmpty();
+                if ($isEmpty) {
+                    unset($array['contacts'][$key]);
+                }
+            }
+
             $this->accountRepository->syncContacts($account, $array['contacts']);
         }
 
