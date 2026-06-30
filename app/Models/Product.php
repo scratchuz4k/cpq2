@@ -57,7 +57,7 @@ class Product extends Model
         return $this->prices()->first();
     }
 
-    public function parents()
+    public function linkedParents()
     {
         return $this->belongsToMany(
             Product::class,
@@ -67,7 +67,7 @@ class Product extends Model
         );
     }
 
-    public function children()
+    public function linkedChildren()
     {
         return $this->belongsToMany(
             Product::class,
@@ -77,7 +77,7 @@ class Product extends Model
         );
     }
 
-    public function related()
+    public function addonsParents()
     {
         return $this->belongsToMany(
             Product::class,
@@ -87,7 +87,7 @@ class Product extends Model
         );
     }
 
-    public function addons()
+    public function addonsChildren()
     {
         return $this->belongsToMany(
             Product::class,
@@ -97,7 +97,7 @@ class Product extends Model
         );
     }
 
-    public function main()
+    public function bundlesParents()
     {
         return $this->belongsToMany(
             Product::class,
@@ -107,7 +107,7 @@ class Product extends Model
         );
     }
 
-    public function bundles()
+    public function bundlesChildren()
     {
         return $this->belongsToMany(
             Product::class,
@@ -158,7 +158,7 @@ class Product extends Model
         $product = Product::find($product_id);
         $descendants = collect();
 
-        foreach ($product->children as $child) {
+        foreach ($product->linkedChildren as $child) {
             $descendants->push($child);
             $descendants = $descendants->merge($child->descendants($child->id));
         }

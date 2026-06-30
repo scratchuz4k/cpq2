@@ -91,8 +91,8 @@ class ProductUpdateRequest extends FormRequest
     {
         $linkedProductIds = collect();
         if ($product) {
-            $linkedProductIds = $product->children()->pluck('products.id')
-                ->merge($product->parents()->pluck('products.id'));
+            $linkedProductIds = $product->linkedChildren->pluck('products.id')
+                ->merge($product->linkedParents->pluck('products.id'));
         }
 
         if ($linkedProductIds->isEmpty()) {

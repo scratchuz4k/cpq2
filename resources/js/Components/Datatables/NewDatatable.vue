@@ -1,11 +1,10 @@
 <script setup>
-import _ from 'lodash';
+import _, { chain } from 'lodash';
 import { Link } from '@inertiajs/vue3';
 
-import Paginator from 'primevue/paginator';
 import { IconField, InputIcon, InputText } from 'primevue';
 
-import { reactive, ref, useSlots, watch, markRaw, onMounted } from 'vue';
+import { computed, reactive, ref, useSlots, watch, onMounted } from 'vue';
 import axios from 'axios';
 import { exportData } from '@/Composables/export.js';
 import { DatatableOptions } from './DatatableOptions';
@@ -17,9 +16,11 @@ const usedSlots = Object.keys(slots);
 
 const tableContainer = ref(null);
 const isScrolled = ref(false);
+const activeColumnsDropdown = ref(false);
 
 const onScroll = () => {
     isScrolled.value = tableContainer.value?.scrollLeft > 0;
+    showTooltip.value = false;
 };
 
 const props = defineProps({
@@ -34,6 +35,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:meta']);
 const activeFilters = ref(false);
+const activeMenuIndex = ref(null);
 const api = reactive(new Api(props.options.route));
 
 const form = reactive({
@@ -129,16 +131,60 @@ const getValue = (item, key) => {
     return result;
 };
 
+const isArrayValue = (item, key) => {
+    let items = key.split('.');
+    let result = item;
+
+    for (let i = 0; i < items.length; i++) {
+        const prop = items[i];
+
+        // Check if the current property exists in the current object
+        if (result && typeof result === 'object' && prop in result) {
+            result = result[prop];
+            // Access the nested object using the current property
+            if (Array.isArray(result) && i < items.length - 1) {
+                return Array.isArray(result)
+                    ? { items: result.slice(1), key: items.slice(i + 1, item.length) }
+                    : { items: [], keys: [] };
+            }
+        } else {
+            // Property not found, return undefined
+            return { items: [], keys: [] };
+        }
+    }
+
+    return { items: [], keys: [] };
+};
+const showTooltip = ref(false);
+const tooltipValues = reactive({
+    items: [],
+    keys: []
+});
+const tooltipPosition = ref({ top: 0, left: 0 });
+
+const sendTooltipValues = (ev, object) => {
+    const indicator = ev.target.closest('.tooltip-indicator');
+    const rect = (indicator ?? ev.target).getBoundingClientRect();
+
+    tooltipPosition.value = {
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX + rect.width / 2 // 100 = half of 200px tooltip
+    };
+
+    showTooltip.value = true;
+    tooltipValues.items = object.items.slice(0, 10);
+    tooltipValues.keys = object.key.join('.');
+};
+
 const exportDisabled = ref(false);
 
 const getExportData = async () => {
     if (exportDisabled.value) return;
     exportDisabled.value = true;
 
-    let columns = props.options.columns
-        .filter((column) => column.data !== 'actions')
-        .map((x) => x.data)
-        .join(',');
+    const exportColumns = columnOrder.value.filter(
+        (col) => !col.isHidden && !isUserHidden(col) && col.column !== 'actions'
+    );
 
     let filters = {
         filters: JSON.stringify([
@@ -146,7 +192,8 @@ const getExportData = async () => {
             ...props.options.query
         ]),
         search: form.search,
-        columns: columns
+        columns: exportColumns.map((x) => x.column).join(','),
+        column_titles: exportColumns.map((x) => x.title).join(',')
     };
 
     exportData(filters, '/' + props.options.route);
@@ -154,6 +201,73 @@ const getExportData = async () => {
     setTimeout(() => {
         exportDisabled.value = false;
     }, 5000);
+};
+
+const userHiddenColumns = ref(
+    JSON.parse(localStorage.getItem('datatable_user_hidden_columns_' + props.options.id) || '[]')
+);
+const isUserHidden = (column) => {
+    return userHiddenColumns.value.includes(column.column);
+};
+
+const savedOrder = JSON.parse(localStorage.getItem('datatable_column_order_' + props.options.id) || 'null');
+const columnOrder = ref(
+    savedOrder
+        ? props.options.columns.slice().sort((a, b) => {
+              const ai = savedOrder.indexOf(a.column);
+              const bi = savedOrder.indexOf(b.column);
+              return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
+          })
+        : props.options.columns.slice()
+);
+
+const saveColumnOrder = () => {
+    localStorage.setItem(
+        'datatable_column_order_' + props.options.id,
+        JSON.stringify(columnOrder.value.map((c) => c.column))
+    );
+};
+
+const dragState = reactive({ fromIndex: null });
+
+const onDragStart = (index) => {
+    dragState.fromIndex = index;
+};
+
+const onDragOver = (e, index) => {
+    e.preventDefault();
+    if (dragState.fromIndex === null || dragState.fromIndex === index) return;
+    const col = columnOrder.value[dragState.fromIndex];
+    if (col.isSticky) return;
+    const target = columnOrder.value[index];
+    if (target.isSticky) return;
+    columnOrder.value.splice(dragState.fromIndex, 1);
+    columnOrder.value.splice(index, 0, col);
+    dragState.fromIndex = index;
+};
+
+const onDrop = () => {
+    dragState.fromIndex = null;
+    saveColumnOrder();
+};
+
+const visibleColumns = computed(() => columnOrder.value.filter((x) => !x.isHidden && !isUserHidden(x)));
+
+const stickyCount = computed(() => columnOrder.value.filter((x) => x.isSticky).length);
+const stickyLeft = (col, visIndex) => {
+    if (!col.isSticky) return 0;
+    const stickyBefore = visibleColumns.value.slice(0, visIndex).filter((c) => c.isSticky);
+    return stickyBefore.length * 150;
+};
+
+const toggleUserHiddenColumn = (column) => {
+    const index = userHiddenColumns.value.indexOf(column.column);
+    if (index > -1) {
+        userHiddenColumns.value.splice(index, 1);
+    } else {
+        userHiddenColumns.value.push(column.column);
+    }
+    localStorage.setItem('datatable_user_hidden_columns_' + props.options.id, JSON.stringify(userHiddenColumns.value));
 };
 
 emitter.on('datatable-refresh' + (props.options.id ? ':' + props.options.id : ''), () => {
@@ -184,53 +298,111 @@ watch(
 
 onMounted(() => {
     debouncedSearch();
+    window.addEventListener(
+        'scroll',
+        () => {
+            showTooltip.value = false;
+        },
+        { passive: true }
+    );
+    var select = document.getElementById(props.options.id + '-tooltip');
+    var selectColumns = document.getElementById(props.options.id + '-column-select');
+    document.addEventListener('click', (ev) => {
+        const isTooltipClick = Array.from(document.getElementsByClassName('tooltip-indicator')).some((x) =>
+            x.contains(ev.target)
+        );
+        if (!select.contains(ev.target) && !isTooltipClick) {
+            showTooltip.value = false;
+        }
+
+        if (!selectColumns.contains(ev.target)) {
+            activeColumnsDropdown.value = false;
+        }
+
+        const isMenuClick = Array.from(document.getElementsByClassName('datatable-actions-menu')).some((x) =>
+            x.contains(ev.target)
+        );
+        if (!isMenuClick) {
+            activeMenuIndex.value = null;
+        }
+    });
 });
 </script>
 <template>
-    <div class="datatable-header d-flex justify-content-between py-3">
-        <IconField class="ps-2">
-            <InputIcon>
-                <font-awesome-icon :icon="['fas', 'search']" />
-            </InputIcon>
-            <InputText
-                :id="props.options.id + '-datatable-search'"
-                v-model="form.search"
-                type="search"
-                placeholder="Search"
-                size="small"
-            />
-        </IconField>
+    <div class="datatable-header d-flex justify-content-between p-2">
+        <div>
+            <IconField>
+                <InputIcon>
+                    <font-awesome-icon :icon="['fas', 'search']" />
+                </InputIcon>
+                <InputText
+                    :id="props.options.id + '-datatable-search'"
+                    v-model="form.search"
+                    type="search"
+                    placeholder="Search"
+                    size="small"
+                />
+            </IconField>
+        </div>
         <div class="d-flex">
-            <button
-                type="button"
-                class="btn btn-sm d-flex justify-content-center align-items-center p-0 px-2 me-2"
-                :class="[activeFilters ? 'btn-primary' : 'btn-outline-primary']"
-                @click="() => (activeFilters = !activeFilters)"
-            >
-                <font-awesome-icon :icon="['fas', 'filter']" class="me-1" />
-                <p class="small">Filter</p>
-            </button>
-            <button
-                v-if="activeFilters"
-                type="button"
-                class="btn btn-outline-primary btn-sm d-flex justify-content-center align-items-center p-0 px-2 me-2"
-                :severity="Object.values(form.filters).find((x) => x.value) ? 'primary' : 'secondary'"
-                @click="clearFilters()"
-            >
-                <font-awesome-icon :icon="['fas', 'eraser']" class="me-1" />
-                <p class="small">Clear</p>
-            </button>
-            <button
-                v-if="props.options.allow.export"
-                :disabled="!api.items.length || exportDisabled"
-                :severity="'secondary'"
-                class="btn btn-outline-primary btn-sm d-flex justify-content-center align-items-center p-0 px-2 me-2"
-                @click="getExportData()"
-                type="button"
-            >
-                <font-awesome-icon :icon="['fas', 'file-export']" class="me-1" />
-                <p class="small">Export</p>
-            </button>
+            <div class="me-2">
+                <button
+                    type="button"
+                    class="btn d-flex justify-content-center align-items-center"
+                    :class="[activeFilters ? 'btn-primary' : 'btn-outline-primary']"
+                    @click="() => (activeFilters = !activeFilters)"
+                >
+                    <font-awesome-icon :icon="['fas', 'filter']" class="me-1" />
+                    <p class="small">Filter</p>
+                </button>
+            </div>
+            <div v-if="activeFilters" class="me-2">
+                <button
+                    type="button"
+                    class="btn btn-outline-primary d-flex justify-content-center align-items-center"
+                    :severity="Object.values(form.filters).find((x) => x.value) ? 'primary' : 'secondary'"
+                    @click="clearFilters()"
+                >
+                    <font-awesome-icon :icon="['fas', 'eraser']" class="me-1" />
+                    <p class="small">Clear</p>
+                </button>
+            </div>
+            <div class="me-2 position-relative" :id="props.options.id + '-column-select'">
+                <button
+                    @click="activeColumnsDropdown = !activeColumnsDropdown"
+                    class="btn btn-outline-primary d-flex justify-content-center align-items-center"
+                >
+                    <p class="small">Columns</p>
+                    <font-awesome-icon :icon="['fas', 'chevron-down']" class="ms-1" />
+                </button>
+                <div v-show="activeColumnsDropdown" class="datatable-columns-dropdown p-2">
+                    <div
+                        v-for="column in columnOrder.filter((x) => !x.isHidden)"
+                        :key="column.key"
+                        class="d-flex align-items-center justify-content-start"
+                    >
+                        <Checkbox
+                            @click="toggleUserHiddenColumn(column)"
+                            :checked="!isUserHidden(column)"
+                            class="me-2"
+                        />
+                        <p class="datatable-columns-dropdown-label">{{ column.title }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="me-2">
+                <button
+                    v-if="props.options.allow.export"
+                    :disabled="!api.items.length || exportDisabled"
+                    :severity="'secondary'"
+                    class="btn btn-outline-primary d-flex justify-content-center align-items-center"
+                    @click="getExportData()"
+                    type="button"
+                >
+                    <font-awesome-icon :icon="['fas', 'file-export']" class="me-1" />
+                    <p class="small">Export</p>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -239,23 +411,28 @@ onMounted(() => {
             <thead>
                 <tr>
                     <th
-                        v-for="(data, key) in props.options.columns.filter((x) => !x.isHidden)"
-                        :key="key"
+                        v-for="(data, key) in visibleColumns"
+                        :key="data.column"
                         class="datatable-table-header"
+                        :draggable="!data.isSticky"
                         :style="{
                             ...data.style,
                             position: 'sticky',
                             top: '-1px',
+                            left: data.isSticky ? stickyLeft(data, key) + 'px' : 0,
                             zIndex: data.isSticky ? 3 : 2,
-                            cursor: data.isSearchable ? 'pointer' : 'default'
+                            cursor: data.isSticky ? 'default' : 'grab',
+                            opacity: dragState.fromIndex === key ? 0.5 : 1
                         }"
                         :class="[
                             'datatable-col',
                             data.isSticky ? `datatable-col-sticky datatable-col-sticky-${key + 1}` : '',
-                            key === props.options.columns.filter((x) => x.isSticky).length - 1
-                                ? 'datatable-col-last-sticky'
-                                : ''
+                            key === stickyCount - 1 ? 'datatable-col-last-sticky' : ''
                         ]"
+                        @dragstart="onDragStart(key)"
+                        @dragover="onDragOver($event, key)"
+                        @drop="onDrop"
+                        @dragend="onDrop"
                     >
                         <div
                             v-if="data.column != 'actions'"
@@ -284,129 +461,228 @@ onMounted(() => {
                                 v-model="form.filters[data.column]"
                                 :options="props.options"
                                 :index="key"
-                            ></DatatableFilter>
+                            >
+                            </DatatableFilter>
                         </div>
                     </th>
                     <th
                         v-if="props.options.allow.update || props.options.allow.link || props.options.allow.destroy"
-                        class="datatable-table-header"
+                        class="datatable-table-header datatable-col-actions-sticky"
                         :class="['datatable-col', 'p-0']"
-                        style="position: sticky; top: -1px; z-index: 2"
+                        style="
+                            position: sticky;
+                            top: -1px;
+                            right: 0;
+                            z-index: 3;
+                            min-width: 100px !important;
+                            width: 20px;
+                        "
                     ></th>
                 </tr>
             </thead>
-            <template v-if="!api.isLoading">
-                <tbody>
-                    <tr v-for="(item, index) in api.items" :key="index">
-                        <td
-                            v-for="(data, key) in props.options.columns.filter((x) => !x.isHidden)"
-                            :key="key"
-                            class="datatable-table-column"
-                            :class="[
-                                'datatable-col',
-                                data.isSticky ? `datatable-col-sticky datatable-col-sticky-${key + 1}` : '',
-                                key === props.options.columns.filter((x) => x.isSticky).length - 1
-                                    ? 'datatable-col-last-sticky'
-                                    : ''
-                            ]"
-                            :style="data.style"
-                        >
-                            <slot
-                                v-if="usedSlots.includes(data.column)"
-                                :index="index"
-                                :data="item"
-                                :name="data.column"
-                                :value="getValue(item, data.column)"
-                                :id="`${data.column}-${index}`"
-                            />
-                            <p class="small overflow-hidden text-truncate" v-else :title="getValue(item, data.column)">
+            <tbody v-if="api.items.length">
+                <tr v-for="(item, index) in api.items" :key="index">
+                    <td
+                        v-for="(data, key) in visibleColumns"
+                        :key="data.column"
+                        class="datatable-table-column"
+                        :class="[
+                            'datatable-col',
+                            data.isSticky ? `datatable-col-sticky datatable-col-sticky-${key + 1}` : '',
+                            key === stickyCount - 1 ? 'datatable-col-last-sticky' : ''
+                        ]"
+                        :style="{ ...data.style, left: data.isSticky ? stickyLeft(data, key) + 'px' : 0 }"
+                    >
+                        <slot
+                            v-if="usedSlots.includes(data.column)"
+                            :index="index"
+                            :data="item"
+                            :name="data.column"
+                            :value="getValue(item, data.column)"
+                            :id="`${data.column}-${index}`"
+                        />
+                        <template v-else>
+                            <div
+                                class="d-flex justify-content-between cursor-pointer position-relative tooltip-indicator"
+                                v-if="isArrayValue(item, data.column).items.length"
+                                @click="(ev) => sendTooltipValues(ev, isArrayValue(item, data.column))"
+                            >
+                                <p class="small overflow-hidden text-truncate" :title="getValue(item, data.column)">
+                                    {{ getValue(item, data.column) }}
+                                </p>
+                                <div class="badge badge-primary">
+                                    +{{ isArrayValue(item, data.column).items.length }}
+                                </div>
+                            </div>
+                            <p v-else class="small overflow-hidden text-truncate" :title="getValue(item, data.column)">
                                 {{ getValue(item, data.column) }}
                             </p>
-                        </td>
-                        <td
-                            v-if="props.options.allow.update || props.options.allow.link || props.options.allow.destroy"
-                            :class="['datatable-col', 'p-0']"
+                        </template>
+                    </td>
+                    <td
+                        v-if="props.options.allow.update || props.options.allow.link || props.options.allow.destroy"
+                        :class="['datatable-col', 'p-0', 'datatable-col-actions-sticky']"
+                        :style="{
+                            width: '20px',
+                            position: 'sticky',
+                            right: 0,
+                            zIndex: activeMenuIndex === index ? 200 : 1
+                        }"
+                    >
+                        <div
+                            class="d-flex justify-content-end align-items-center datatable-actions-menu"
+                            style="position: relative"
                         >
-                            <div class="d-flex justify-content-center">
+                            <button
+                                type="button"
+                                class="btn p-2 border-0 datatable-actions-trigger"
+                                @click.stop="activeMenuIndex = activeMenuIndex === index ? null : index"
+                            >
+                                <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" />
+                            </button>
+                            <div v-if="activeMenuIndex === index" class="datatable-actions-dropdown">
                                 <template v-if="props.options.allow.update">
                                     <Link
                                         :id="'datatable-btn-' + index + '-edit'"
                                         :href="props.options.route + '/' + item.id + '/edit'"
-                                        class="btn p-2 mx-1 border-0"
+                                        class="datatable-actions-item"
                                     >
-                                        <font-awesome-icon :icon="['fas', 'edit']" />
+                                        <font-awesome-icon :icon="['fas', 'pen-to-square']" class="me-2" />
+                                        Edit
                                     </Link>
                                 </template>
-
                                 <template v-if="props.options.allow.link">
                                     <Link
                                         :id="'datatable-btn-' + index + '-show'"
                                         :href="props.options.route + '/' + item.id"
-                                        class="btn p-2 mx-1 border-0"
+                                        class="datatable-actions-item"
                                     >
-                                        <font-awesome-icon :icon="['fas', 'eye']" />
+                                        <font-awesome-icon :icon="['fas', 'eye']" class="me-2" />
+                                        View
                                     </Link>
                                 </template>
-
                                 <template v-if="props.options.allow.destroy">
                                     <button
                                         type="button"
                                         :id="'datatable-btn-' + index + '-delete'"
-                                        class="btn p-2 mx-1 border-0"
-                                        @click="deleteRecord(item.id)"
+                                        class="datatable-actions-item datatable-actions-item-danger"
+                                        @click="
+                                            () => {
+                                                deleteRecord(item.id);
+                                                activeMenuIndex = null;
+                                            }
+                                        "
                                     >
-                                        <font-awesome-icon :icon="['fas', 'trash-alt']" />
+                                        <font-awesome-icon :icon="['fas', 'trash']" class="me-2" />
+                                        Delete
                                     </button>
                                 </template>
                             </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </template>
-            <tbody v-else>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody v-else-if="api.isLoading">
                 <tr>
-                    <td colspan="100%" class="text-center">
+                    <td :colspan="visibleColumns.length + 1" class="text-center">
                         <font-awesome-icon :icon="['fas', 'spinner']" spin size="2x" class="mt-3" />
                     </td>
                 </tr>
             </tbody>
             <tbody v-if="!api.items.length && !api.isLoading">
                 <tr>
-                    <td colspan="100%">
+                    <td :colspan="visibleColumns.length + 1">
                         <p class="w-full text-center py-2">No records found</p>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
-    <Paginator
-        v-model:first="api.meta.first"
-        :rows="api.meta.limit"
-        :totalRecords="api.meta.total"
-        :rowsPerPageOptions="[10, 20, 50]"
-        @page="api.handlePaginator"
-        :pt="{
-            root: {
-                style: 'background: none'
-            }
-        }"
+    <div
+        :id="props.options.id + '-tooltip'"
+        v-show="showTooltip"
+        class="datatable-tooltip"
+        :style="{ top: tooltipPosition.top + 'px', left: 'calc(' + tooltipPosition.left + 'px - 125px) ' }"
     >
-    </Paginator>
+        <p
+            class="small overflow-hidden text-truncate"
+            v-for="item in tooltipValues.items"
+            :title="getValue(item, tooltipValues.keys)"
+        >
+            {{ getValue(item, tooltipValues.keys) }}
+        </p>
+    </div>
+    <div class="datatable-footer">
+        <div class="datatable-footer-left">
+            <span class="datatable-footer-label">Items per page</span>
+            <div class="datatable-limit-select">
+                <select
+                    :value="api.meta.limit"
+                    @change="(e) => api.handlePaginator({ rows: +e.target.value, page: 0 })"
+                >
+                    <option v-for="n in [10, 20, 50]" :key="n" :value="n">{{ n }}</option>
+                </select>
+                <font-awesome-icon :icon="['fas', 'chevron-down']" class="datatable-limit-chevron" />
+            </div>
+            <span class="datatable-footer-divider"></span>
+            <span class="datatable-footer-label">
+                {{ (api.meta.page - 1) * api.meta.limit + 1 }}–{{
+                    Math.min(api.meta.page * api.meta.limit, api.meta.total)
+                }}
+                <span class="datatable-footer-total">of {{ api.meta.total }}</span>
+            </span>
+        </div>
+
+        <div class="datatable-footer-right">
+            <button
+                class="datatable-page-btn datatable-page-btn-arrow"
+                :disabled="api.meta.page <= 1"
+                @click="() => api.handlePaginator({ rows: api.meta.limit, page: api.meta.page - 2 })"
+            >
+                <font-awesome-icon :icon="['fas', 'chevron-left']" />
+            </button>
+
+            <template v-for="link in api.meta.links.slice(1, -1)" :key="link.label">
+                <span v-if="link.label === '...'" class="datatable-page-ellipsis">…</span>
+                <button
+                    v-else
+                    class="datatable-page-btn"
+                    :class="{ 'datatable-page-btn-active': link.active }"
+                    :disabled="!link.url"
+                    @click="() => api.handlePaginator({ rows: api.meta.limit, page: +link.label - 1 })"
+                >
+                    {{ link.label }}
+                </button>
+            </template>
+
+            <button
+                class="datatable-page-btn datatable-page-btn-arrow"
+                :disabled="api.meta.page >= api.meta.last_page"
+                @click="() => api.handlePaginator({ rows: api.meta.limit, page: api.meta.page })"
+            >
+                <font-awesome-icon :icon="['fas', 'chevron-right']" />
+            </button>
+        </div>
+    </div>
 </template>
 <style scoped>
 .relation-table {
     width: 100%;
     table-layout: fixed;
 }
+
 .datatable-header {
     background-color: white;
+    border-radius: 4px 4px 0 0;
 }
+
 .datatable-content {
     background-color: white;
     min-height: 20vh;
     max-height: 60vh;
     overflow: auto;
 }
+
 .datatable-table-header {
     background-color: #e8e8e8;
     border-top: 1px solid #dee2e6;
@@ -448,16 +724,17 @@ onMounted(() => {
     left: 0;
     z-index: 2;
 }
+
 .datatable-col-sticky-2 {
     position: sticky;
-    left: 150px;
     z-index: 2;
 }
+
 .datatable-col-sticky-3 {
     position: sticky;
-    left: 300px;
     z-index: 2;
 }
+
 .datatable-col-last-sticky:after {
     content: '';
     position: absolute;
@@ -471,5 +748,221 @@ onMounted(() => {
 
 .is-scrolled .datatable-col-last-sticky:after {
     box-shadow: inset 10px 0 8px -8px #0003;
+}
+
+.datatable-columns-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 0.5rem;
+    z-index: 10;
+    width: 250px;
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.datatable-columns-dropdown-label {
+    font-size: 12px;
+}
+
+.datatable-actions-trigger {
+    color: #6c757d;
+    background: transparent;
+}
+
+.datatable-actions-trigger:hover {
+    background-color: #f1f3f5;
+    color: #343a40;
+}
+
+.datatable-actions-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    z-index: 100;
+    min-width: 160px;
+    padding: 4px 0;
+}
+
+.datatable-actions-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 8px 16px;
+    font-size: 14px;
+    color: #343a40;
+    background: transparent;
+    border: none;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.datatable-actions-item:hover {
+    background-color: #f8f9fa;
+    color: #343a40;
+}
+
+.datatable-actions-item-danger {
+    color: #dc3545;
+}
+
+.datatable-actions-item-danger:hover {
+    background-color: #fff5f5;
+    color: #dc3545;
+}
+
+.datatable-tooltip {
+    position: fixed;
+    width: 200px;
+    background-color: #101828;
+    z-index: 1000;
+    padding: 0.5rem;
+    border-radius: 4px;
+    color: white;
+    font-size: 12px;
+}
+
+.datatable-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-top: 1px solid #dee2e6;
+    border-radius: 0 0 4px 4px;
+    font-size: 13px;
+}
+
+.datatable-footer-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #6c757d;
+}
+
+.datatable-footer-label {
+    font-size: 13px;
+    color: #6c757d;
+}
+
+.datatable-limit-select {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.datatable-limit-select select {
+    appearance: none;
+    -webkit-appearance: none;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 3px 28px 3px 10px;
+    font-size: 13px;
+    color: #343a40;
+    background: white;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.datatable-limit-select select:hover,
+.datatable-limit-select select:focus {
+    border-color: var(--color-primary);
+}
+
+.datatable-limit-chevron {
+    position: absolute;
+    right: 8px;
+    font-size: 10px;
+    color: #6c757d;
+    pointer-events: none;
+}
+
+.datatable-footer-divider {
+    width: 1px;
+    height: 16px;
+    background-color: #dee2e6;
+}
+
+.datatable-footer-total {
+    color: #adb5bd;
+}
+
+.datatable-footer-right {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.datatable-page-btn {
+    min-width: 30px;
+    height: 30px;
+    padding: 0 6px;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: #343a40;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.15s;
+}
+
+.datatable-page-btn:hover:not(:disabled) {
+    background-color: var(--color-purple-light);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.datatable-page-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.datatable-page-btn-active {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+}
+
+.datatable-page-btn-active:hover:not(:disabled) {
+    background-color: var(--color-purple-dark);
+    border-color: var(--color-purple-dark);
+}
+
+.datatable-page-btn-arrow {
+    border: none;
+    background: transparent;
+}
+
+.datatable-page-btn-arrow:hover:not(:disabled) {
+    background-color: var(--color-purple-light);
+    border: none;
+}
+
+.datatable-page-ellipsis {
+    padding: 0 4px;
+    color: #6c757d;
+    font-size: 13px;
+    line-height: 30px;
+}
+
+.datatable-col-actions-sticky {
+    background-color: white;
+    box-shadow: -4px 0 8px -4px rgba(0, 0, 0, 0.12);
+}
+
+.datatable-table-header.datatable-col-actions-sticky {
+    background-color: #e8e8e8;
 }
 </style>
