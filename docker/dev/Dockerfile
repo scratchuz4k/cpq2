@@ -11,7 +11,6 @@ WORKDIR /var/www/html
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV TZ=UTC
-ENV SUPERVISOR_PHP_COMMAND="/usr/bin/php -d variables_order=EGPCS /var/www/html/artisan serve --host=0.0.0.0 --port=80"
 ENV SUPERVISOR_PHP_USER="sail"
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -22,7 +21,7 @@ RUN apt-get update \
     && curl -sS 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x14aa40ec0831756756d7f66c4f4ea0aae5267a6c' | gpg --dearmor | tee /etc/apt/keyrings/ppa_ondrej_php.gpg > /dev/null \
     && echo "deb [signed-by=/etc/apt/keyrings/ppa_ondrej_php.gpg] https://ppa.launchpadcontent.net/ondrej/php/ubuntu jammy main" > /etc/apt/sources.list.d/ppa_ondrej_php.list \
     && apt-get update \
-    && apt-get install -y php8.4-cli php8.4-dev \
+    && apt-get install -y php8.4-cli php8.4-dev php8.4-fpm nginx \
     php8.4-pgsql php8.4-sqlite3 php8.4-gd \
     php8.4-curl \
     php8.4-imap php8.4-mysql php8.4-mbstring \
@@ -51,16 +50,22 @@ RUN useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 sail
 COPY start-container /usr/local/bin/start-container
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY php.ini /etc/php/8.4/cli/conf.d/99-sail.ini
+COPY php.ini /etc/php/8.4/fpm/conf.d/99-sail.ini
+COPY nginx.conf /etc/nginx/sites-available/default
 RUN chmod +x /usr/local/bin/start-container
 
-RUN npx puppeteer browsers install chrome
-RUN mkdir /home/sail/.cache \
-    && mv /root/.cache/puppeteer /home/sail/.cache \
+RUN curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/keyrings/google-chrome.gpg \
+    && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
     && apt-get update \
-    && apt-get install -y ca-certificates fonts-liberation libappindicator3-1 libasound2 libatk-bridge2.0-0 libatk1.0-0 \
-    libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgbm1 libgcc1 libglib2.0-0 libgtk-3-0 libnspr4 libnss3 libpango-1.0-0 \
-    libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 \
-    libxrender1 libxss1 libxtst6 lsb-release wget xdg-utils
+    && apt-get install -y google-chrome-stable
+
+RUN sed -i 's/^user = www-data/user = sail/' /etc/php/8.4/fpm/pool.d/www.conf \
+    && sed -i 's/^group = www-data/group = sail/' /etc/php/8.4/fpm/pool.d/www.conf \
+    && sed -i 's/^listen.owner = www-data/listen.owner = sail/' /etc/php/8.4/fpm/pool.d/www.conf \
+    && sed -i 's/^listen.group = www-data/listen.group = sail/' /etc/php/8.4/fpm/pool.d/www.conf \
+    && sed -i 's/^user www-data;/user sail;/' /etc/nginx/nginx.conf \
+    && sed -i 's/^pm = dynamic/pm = static/' /etc/php/8.4/fpm/pool.d/www.conf \
+    && sed -i 's/^pm.max_children = .*/pm.max_children = 20/' /etc/php/8.4/fpm/pool.d/www.conf
 
 EXPOSE 80/tcp
 

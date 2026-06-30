@@ -35,5 +35,14 @@ export default defineConfig({
         minify: true,
         cssCodeSplit: true,
         modulePreload: false
-    }
+    },
+    server: {
+        host: '0.0.0.0',
+        port: 5299,
+        strictPort: true,
+        hmr: {
+            host: '127.0.0.1',
+            port: 5299,
+        },
+    },
 });

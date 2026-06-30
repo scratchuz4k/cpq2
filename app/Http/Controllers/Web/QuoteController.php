@@ -12,10 +12,12 @@ use App\Http\Requests\QuoteCreateRequest;
 use App\Http\Requests\QuoteUpdateRequest;
 use App\Http\Resources\QuoteResource;
 use App\Http\Resources\SolutionTypeResource;
+use App\Http\Resources\TenantResource;
 use App\Models\Account;
 use App\Models\PricePlan;
 use App\Models\Quote;
 use App\Models\SolutionType;
+use App\Models\Tenant;
 use App\Models\User;
 use App\Services\QuoteService;
 use Exception;
@@ -24,6 +26,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
+use Spatie\Browsershot\Browsershot;
+
+use function Spatie\LaravelPdf\Support\pdf;
 
 class QuoteController extends BaseController
 {
@@ -49,7 +54,7 @@ class QuoteController extends BaseController
         return Inertia::render('Quotes/Index', [
             'users' => $users->values(),
             'solutions' => $solutionTypes,
-            'status' => array_map(fn ($status) => $status->name, QuoteStatusesEnum::cases()),
+            'status' => array_map(fn($status) => $status->name, QuoteStatusesEnum::cases()),
         ]);
     }
 
@@ -58,7 +63,7 @@ class QuoteController extends BaseController
      */
     public function create()
     {
-        $solutionTypes = Auth::user()->currentTenant->solutionTypes->filter(fn ($solutionType) => $solutionType->pivot->is_active === 1);
+        $solutionTypes = Auth::user()->currentTenant->solutionTypes->filter(fn($solutionType) => $solutionType->pivot->is_active === 1);
 
         return Inertia::render('Quotes/Create', [
             'accounts' => Account::all(),
@@ -114,7 +119,7 @@ class QuoteController extends BaseController
     public function update(QuoteUpdateRequest $request, Quote $quote)
     {
         try {
-            $quote = DB::transaction(fn () => $this->quoteService->update($quote, $request->all()));
+            $quote = DB::transaction(fn() => $this->quoteService->update($quote, $request->all()));
         } catch (Exception $e) {
             return handleWebException($e);
         }
@@ -142,6 +147,7 @@ class QuoteController extends BaseController
         ]);
     }
 
+
     public function preview(Quote $quote)
     {
         $t = new QuoteResource($quote->load(['items']));
@@ -152,16 +158,35 @@ class QuoteController extends BaseController
         ]);
     }
 
+    public function pdf(Request $request, Quote $quote)
+    {
+        $expected = hash_hmac('sha256', $quote->id, config('app.key'));
+        if ($request->query('token') !== $expected) {
+            abort(403);
+        }
+
+        $temp = Tenant::findOrFail($quote->tenant_id);
+        $temp->makeCurrent();
+
+        Inertia::share('tenant', (new TenantResource($temp))->resolve());
+
+        return Inertia::render('Quotes/Pdf', [
+            'pricePlans' => PricePlan::all(),
+            'quote' => new QuoteResource($quote->load(['items'])),
+        ]);
+    }
+
     /**
      * Remove the specified resource from storage.
      */
     public function download(Request $request, $uuid)
     {
+
         $user = Auth::user();
         $quote = Quote::query()
             ->withoutGlobalScopes()
             ->with([
-                'account' => fn ($query) => $query->withoutGlobalScopes(),
+                'account' => fn($query) => $query->withoutGlobalScopes(),
                 'tenant',
             ])
             ->where('uuid', $uuid)
@@ -175,20 +200,31 @@ class QuoteController extends BaseController
             return response()->json(['message' => 'Quote not available or not shared.'], 404);
         }
 
-        $quote->tenant?->makeCurrent();
+        $token = hash_hmac('sha256', $quote->id, config('app.key'));
+        $internalUrl = 'http://127.0.0.1:80/quotes/' . $quote->id . '/pdf?token=' . $token;
+        $rawCookieHeader = $request->header('Cookie', '');
 
-        $pdf = $this->quoteService->generatePdf($request, $quote);
+        $pdf = Browsershot::url($internalUrl)
+            ->setChromePath(env('CHROMIUM_PATH', '/usr/bin/google-chrome-stable'))
+            ->noSandbox()
+            ->setExtraHttpHeaders(['Cookie' => $rawCookieHeader])
+            ->setOption('waitUntil', 'load')
+            ->waitForSelector('#header_left')
+            ->margins(15, 15, 15, 15)
+            ->format('A4')
+            ->timeout(60000)
+            ->pdf();
 
-        return $pdf
-            ->name('quote-'.$quote['id'].'.pdf')
-            ->download();
-
+        return response($pdf, 200, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="quote-' . $quote['id'] . '.pdf"',
+        ]);
     }
 
     public function email(EmailSendRequest $request, Quote $quote)
     {
         $pdf = $this->quoteService->generatePdf($request, $quote);
-        $pdf->save(storage_path('app/temp/quote-'.$quote['id'].'.pdf'));
+        $pdf->save(storage_path('app/temp/quote-' . $quote['id'] . '.pdf'));
 
         Mail::queue(
             new DynamicEmail(
@@ -207,8 +243,8 @@ class QuoteController extends BaseController
                 files: [
                     [
                         'disk' => 'temp',
-                        'path' => 'quote-'.$quote['id'].'.pdf',
-                        'title' => 'quote-'.$quote['id'].'.pdf',
+                        'path' => 'quote-' . $quote['id'] . '.pdf',
+                        'title' => 'quote-' . $quote['id'] . '.pdf',
                         'mimetype' => 'application/pdf',
                     ],
                 ],

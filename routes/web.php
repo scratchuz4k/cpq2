@@ -61,6 +61,7 @@ Route::get('/s/{token}', [SharedLinkController::class, 'show'])->name('share_lin
 Route::post('/s/{token}', [SharedLinkController::class, 'verifyPassword']);
 
 Route::post('/quotes/{quote}/download', [QuoteController::class, 'download'])->name('quotes.download');
+Route::get('/quotes/{quote}/pdf', [QuoteController::class, 'pdf'])->name('quotes.pdf');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('index');
