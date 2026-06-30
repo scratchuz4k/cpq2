@@ -23,6 +23,7 @@ const getPdf = () => {
 };
 </script>
 <template>
+
     <Head title="Share" />
     <ShareLayout>
         <div class="row mb-3">
@@ -34,6 +35,11 @@ const getPdf = () => {
                 </button>
             </div>
         </div>
-        <QuotePreview v-model="props.model" :pricePlans="pricePlans"></QuotePreview>
+        <div class="panel d-flex justify-content-center">
+
+            <div id="print" class="page">
+                <QuotePreview v-model="props.model" :pricePlans="pricePlans"></QuotePreview>
+            </div>
+        </div>
     </ShareLayout>
 </template>

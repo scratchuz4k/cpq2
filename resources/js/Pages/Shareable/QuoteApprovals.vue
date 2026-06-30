@@ -26,6 +26,7 @@ const getPdf = () => {
 };
 </script>
 <template>
+
     <Head title="Share" />
     <ShareLayout>
         <div class="row mb-3">
@@ -38,12 +39,14 @@ const getPdf = () => {
         </div>
         <div class="row">
             <div class="col mb-5 price-summary">
-                <QuotePreview v-model="props.model" :pricePlans="pricePlans"></QuotePreview>
+                <div class="panel d-flex justify-content-center">
+                    <div id="print" class="page">
+                        <QuotePreview v-model="props.model" :pricePlans="pricePlans"></QuotePreview>
+                    </div>
+                </div>
             </div>
-            <div
-                class="col-4 ps-xl-5"
-                v-if="quote.approvals.find((x) => x.status == 'PENDING' && x.flow == 'Client review')"
-            >
+            <div class="col-4 ps-xl-5"
+                v-if="quote.approvals.find((x) => x.status == 'PENDING' && x.flow == 'Client review')">
                 <QuoteApprovalsClientPanel></QuoteApprovalsClientPanel>
             </div>
         </div>
