@@ -330,44 +330,49 @@ onMounted(() => {
 </script>
 <template>
     <div class="datatable-header d-flex justify-content-between p-2">
-        <IconField>
-            <InputIcon>
-                <font-awesome-icon :icon="['fas', 'search']" />
-            </InputIcon>
-            <InputText
-                :id="props.options.id + '-datatable-search'"
-                v-model="form.search"
-                type="search"
-                placeholder="Search"
-                size="small"
-            />
-        </IconField>
+        <div>
+            <IconField>
+                <InputIcon>
+                    <font-awesome-icon :icon="['fas', 'search']" />
+                </InputIcon>
+                <InputText
+                    :id="props.options.id + '-datatable-search'"
+                    v-model="form.search"
+                    type="search"
+                    placeholder="Search"
+                    size="small"
+                />
+            </IconField>
+        </div>
         <div class="d-flex">
-            <button
-                type="button"
-                class="btn btn-sm d-flex justify-content-center align-items-center p-0 px-2 me-2"
-                :class="[activeFilters ? 'btn-primary' : 'btn-outline-primary']"
-                @click="() => (activeFilters = !activeFilters)"
-            >
-                <font-awesome-icon :icon="['fas', 'filter']" class="me-1" />
-                <p class="small">Filter</p>
-            </button>
-            <button
-                v-if="activeFilters"
-                type="button"
-                class="btn btn-outline-primary btn-sm d-flex justify-content-center align-items-center p-0 px-2 me-2"
-                :severity="Object.values(form.filters).find((x) => x.value) ? 'primary' : 'secondary'"
-                @click="clearFilters()"
-            >
-                <font-awesome-icon :icon="['fas', 'eraser']" class="me-1" />
-                <p class="small">Clear</p>
-            </button>
+            <div class="me-2">
+                <button
+                    type="button"
+                    class="btn d-flex justify-content-center align-items-center"
+                    :class="[activeFilters ? 'btn-primary' : 'btn-outline-primary']"
+                    @click="() => (activeFilters = !activeFilters)"
+                >
+                    <font-awesome-icon :icon="['fas', 'filter']" class="me-1" />
+                    <p class="small">Filter</p>
+                </button>
+            </div>
+            <div v-if="activeFilters" class="me-2">
+                <button
+                    type="button"
+                    class="btn btn-outline-primary d-flex justify-content-center align-items-center"
+                    :severity="Object.values(form.filters).find((x) => x.value) ? 'primary' : 'secondary'"
+                    @click="clearFilters()"
+                >
+                    <font-awesome-icon :icon="['fas', 'eraser']" class="me-1" />
+                    <p class="small">Clear</p>
+                </button>
+            </div>
             <div class="me-2 position-relative" :id="props.options.id + '-column-select'">
                 <button
                     @click="activeColumnsDropdown = !activeColumnsDropdown"
                     class="btn btn-outline-primary d-flex justify-content-center align-items-center"
                 >
-                    <p>Columns</p>
+                    <p class="small">Columns</p>
                     <font-awesome-icon :icon="['fas', 'chevron-down']" class="ms-1" />
                 </button>
                 <div v-show="activeColumnsDropdown" class="datatable-columns-dropdown p-2">
@@ -385,17 +390,19 @@ onMounted(() => {
                     </div>
                 </div>
             </div>
-            <button
-                v-if="props.options.allow.export"
-                :disabled="!api.items.length || exportDisabled"
-                :severity="'secondary'"
-                class="btn btn-outline-primary btn-sm d-flex justify-content-center align-items-center p-0 px-2 me-2"
-                @click="getExportData()"
-                type="button"
-            >
-                <font-awesome-icon :icon="['fas', 'file-export']" class="me-1" />
-                <p class="small">Export</p>
-            </button>
+            <div class="me-2">
+                <button
+                    v-if="props.options.allow.export"
+                    :disabled="!api.items.length || exportDisabled"
+                    :severity="'secondary'"
+                    class="btn btn-outline-primary d-flex justify-content-center align-items-center"
+                    @click="getExportData()"
+                    type="button"
+                >
+                    <font-awesome-icon :icon="['fas', 'file-export']" class="me-1" />
+                    <p class="small">Export</p>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -829,7 +836,6 @@ onMounted(() => {
     align-items: center;
     justify-content: space-between;
     padding: 8px 12px;
-    background-color: white;
     border-top: 1px solid #dee2e6;
     border-radius: 0 0 4px 4px;
     font-size: 13px;
@@ -900,9 +906,9 @@ onMounted(() => {
     min-width: 30px;
     height: 30px;
     padding: 0 6px;
-    border: 1px solid #dee2e6;
+    border: 0;
     border-radius: 4px;
-    background: white;
+    background: transparent;
     color: #343a40;
     font-size: 13px;
     cursor: pointer;
