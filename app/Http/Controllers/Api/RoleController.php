@@ -10,7 +10,6 @@ use App\Http\Requests\RoleUpdateRequest;
 use App\Http\Resources\RoleResource;
 use App\Models\Role;
 use App\Services\RoleService;
-use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -48,7 +47,6 @@ class RoleController extends BaseController
     /**
      * Store a new role
      */
-    #[ExcludeRouteFromDocs]
     public function store(RoleCreateRequest $request)
     {
         try {
@@ -63,7 +61,6 @@ class RoleController extends BaseController
     /**
      * Show role
      */
-    #[ExcludeRouteFromDocs]
     public function show(Role $role)
     {
         return new RoleResource($role);
@@ -72,7 +69,6 @@ class RoleController extends BaseController
     /**
      * Update role
      */
-    #[ExcludeRouteFromDocs]
     public function update(RoleUpdateRequest $request, Role $role)
     {
         try {

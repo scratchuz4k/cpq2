@@ -38,6 +38,10 @@ class BlacklistController extends BaseController
         return BlacklistResource::collection($data);
     }
 
+    /**
+     * Create a new Blacklist
+     */
+    #[ExcludeRouteFromDocs]
     public function update(Request $request, Blacklist $blacklist)
     {
         try {
@@ -52,6 +56,7 @@ class BlacklistController extends BaseController
     /**
      * Remove the specified resource from storage.
      */
+    #[ExcludeRouteFromDocs]
     public function destroy(Blacklist $blacklist)
     {
         $blacklist->delete();

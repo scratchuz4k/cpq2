@@ -7,6 +7,7 @@ use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
 use App\Http\Resources\EmailHistoryResource;
 use App\Models\EmailHistory;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -15,10 +16,11 @@ class EmailHistoryController extends BaseController
     protected $model = EmailHistory::class;
 
     /**
-     * Index
+     * List of Email History
      *
      * @response AnonymousResourceCollection<LengthAwarePaginator<AccountResource>>
      */
+    #[ExcludeRouteFromDocs]
     public function index(IndexRequest $request)
     {
 
@@ -33,32 +35,36 @@ class EmailHistoryController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new Email History
      */
+    #[ExcludeRouteFromDocs]
     public function store(Request $request)
     {
         //
     }
 
     /**
-     * Display the specified resource.
+     * Show Email History
      */
+    #[ExcludeRouteFromDocs]
     public function show(EmailHistory $emailHistory)
     {
         //
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Email History
      */
+    #[ExcludeRouteFromDocs]
     public function update(Request $request, EmailHistory $emailHistory)
     {
         //
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Email History
      */
+    #[ExcludeRouteFromDocs]
     public function destroy(EmailHistory $emailHistory)
     {
         //

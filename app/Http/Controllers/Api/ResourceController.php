@@ -17,6 +17,7 @@ class ResourceController extends Controller
     /**
      * List of Resources
      */
+    #[ExcludeRouteFromDocs]
     public function index(IndexRequest $request)
     {
         $dataProvider = new DataProvider(Resource::class);
@@ -33,6 +34,7 @@ class ResourceController extends Controller
     /**
      * Store a new Resource
      */
+    #[ExcludeRouteFromDocs]
     public function store(Request $request)
     {
         try {
@@ -93,6 +95,7 @@ class ResourceController extends Controller
     /**
      * Update Resource
      */
+    #[ExcludeRouteFromDocs]
     public function update(Request $request, Resource $resource)
     {
         try {
@@ -108,6 +111,7 @@ class ResourceController extends Controller
     /**
      * Remove Resource
      */
+    #[ExcludeRouteFromDocs]
     public function destroy(Resource $resource)
     {
         $resource->delete();

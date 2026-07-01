@@ -27,6 +27,7 @@ class TenantController extends BaseController
     /**
      * List of Tenants
      */
+    #[ExcludeRouteFromDocs]
     public function index(IndexRequest $request)
     {
 
@@ -67,6 +68,7 @@ class TenantController extends BaseController
     /**
      * Update Tenant
      */
+    #[ExcludeRouteFromDocs]
     public function update(TenantUpdateRequest $request, Tenant $tenant)
     {
         try {

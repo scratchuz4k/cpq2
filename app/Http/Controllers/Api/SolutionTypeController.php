@@ -11,7 +11,6 @@ use App\Http\Resources\SolutionTypeTenantResource;
 use App\Models\SolutionType;
 use App\Models\SolutionTypeTenant;
 use App\Services\SolutionTypeService;
-use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -46,25 +45,28 @@ class SolutionTypeController extends BaseController
     /**
      * Store a new Solution Type
      */
-    #[ExcludeRouteFromDocs]
     public function store(SolutionTypeCreateRequest $request)
     {
-        //
+        try {
+            $solutionType = DB::transaction(fn () => $this->service->store($request->all()));
+        } catch (Exception $e) {
+            return handleException($e);
+        }
+
+        return new SolutionTypeTenantResource($solutionType);
     }
 
     /**
      * Show Solution Type
      */
-    #[ExcludeRouteFromDocs]
     public function show(SolutionType $solutionType)
     {
-        //
+        return new SolutionTypeTenantResource($solutionType);
     }
 
     /**
      * Update Solution Type
      */
-    #[ExcludeRouteFromDocs]
     public function update(SolutionTypeUpdateRequest $request, SolutionType $solutionType)
     {
         try {

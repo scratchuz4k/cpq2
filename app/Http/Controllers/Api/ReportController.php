@@ -9,6 +9,7 @@ use App\Models\Supplier;
 use App\Models\User;
 use App\Policies\ReportPolicy;
 use App\Services\ReportService;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
@@ -16,8 +17,9 @@ use Maatwebsite\Excel\Facades\Excel;
 class ReportController extends BaseController
 {
     /**
-     * Display a listing of the resource.
+     * List of Reports
      */
+    #[ExcludeRouteFromDocs]
     public function index(Request $request)
     {
         $this->authorize('viewAny report', ReportPolicy::class);
@@ -31,6 +33,10 @@ class ReportController extends BaseController
         return response()->json($data);
     }
 
+    /**
+     * Get Columns for Export
+     */
+    #[ExcludeRouteFromDocs]
     public function getColumns(Request $request)
     {
         $this->authorize('viewAny report', ReportPolicy::class);
@@ -53,6 +59,10 @@ class ReportController extends BaseController
         ]);
     }
 
+    /**
+     * Export Report
+     */
+    #[ExcludeRouteFromDocs]
     public function export(Request $request)
     {
         $this->authorize('viewAny report', ReportPolicy::class);

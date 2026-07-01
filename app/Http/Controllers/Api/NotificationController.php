@@ -8,6 +8,7 @@ use App\Http\Requests\NotificationUpdateRequest;
 use App\Http\Resources\NotificationResource;
 use App\Models\Notification;
 use App\Services\NotificationService;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,7 +24,7 @@ class NotificationController extends BaseController
     }
 
     /**
-     * Display a listing of the resource.
+     * List Notifications
      */
     public function index()
     {
@@ -36,24 +37,27 @@ class NotificationController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new Notification
      */
+    #[ExcludeRouteFromDocs]
     public function store(Request $request)
     {
         //
     }
 
     /**
-     * Display the specified resource.
+     * Show Notification
      */
+    #[ExcludeRouteFromDocs]
     public function show(Notification $notification)
     {
         //
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Notification
      */
+    #[ExcludeRouteFromDocs]
     public function update(NotificationUpdateRequest $request, Notification $notification)
     {
 
@@ -67,8 +71,9 @@ class NotificationController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Notification
      */
+    #[ExcludeRouteFromDocs]
     public function destroy(Notification $notification)
     {
         //
