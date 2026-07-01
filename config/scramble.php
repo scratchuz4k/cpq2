@@ -1,7 +1,5 @@
 <?php
 
-use App\Http\Middleware\ApiDocsAccess;
-
 return [
     /*
      * Your API path. By default, all routes starting with this path will be added to the docs.
@@ -80,7 +78,6 @@ return [
 
     'middleware' => [
         'web',
-        ApiDocsAccess::class,
     ],
 
     'extensions' => [],

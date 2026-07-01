@@ -4,14 +4,11 @@ namespace App\Providers;
 
 use App\Helpers\Routing\ResourceRegistrar;
 use App\Models\Token;
-use Dedoc\Scramble\Scramble;
 use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 
 class AppServiceProvider extends ServiceProvider
@@ -48,28 +45,6 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->app->bind(\Illuminate\Routing\ResourceRegistrar::class, fn () => new ResourceRegistrar($this->app['router']));
-
-        Scramble::routes(function (Route $route) {
-            if (! isset($route->action['as'])) {
-                return false;
-            }
-
-            $action = explode('.', (string) $route->action['as']);
-
-            if (! Str::startsWith($route->uri, 'api/') || count($action) < 3) {
-                return false;
-            }
-
-            $model = str_replace('-', '_', Str::singular($action[1]));
-
-            if (! array_key_exists($action[2], $this->abilities)) {
-                return false;
-            }
-
-            $ability = $this->abilities[$action[2]];
-
-            return auth()->user()->can("$ability $model");
-        });
 
         Sanctum::usePersonalAccessTokenModel(Token::class);
 
