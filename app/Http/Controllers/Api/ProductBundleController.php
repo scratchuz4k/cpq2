@@ -7,6 +7,7 @@ use App\Http\Controllers\BaseController;
 use App\Http\Resources\ProductBundleResource;
 use App\Models\ProductBundle;
 use App\Services\ProductBundleService;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -22,7 +23,7 @@ class ProductBundleController extends BaseController
     }
 
     /**
-     * Display a listing of the resource.
+     * List of Product Bundles
      */
     public function index()
     {
@@ -38,8 +39,9 @@ class ProductBundleController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new Product Bundle
      */
+    #[ExcludeRouteFromDocs]
     public function store(Request $request)
     {
 
@@ -53,16 +55,18 @@ class ProductBundleController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show Product Bundle
      */
+    #[ExcludeRouteFromDocs]
     public function show(ProductBundle $productBundle)
     {
         //
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Product Bundle
      */
+    #[ExcludeRouteFromDocs]
     public function update(Request $request, ProductBundle $productBundle)
     {
 
@@ -76,8 +80,9 @@ class ProductBundleController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Product Bundle
      */
+    #[ExcludeRouteFromDocs]
     public function destroy(ProductBundle $productBundle)
     {
         $productBundle->delete();

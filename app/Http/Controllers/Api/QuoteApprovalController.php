@@ -13,6 +13,7 @@ use App\Models\QuoteApproval;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Services\QuoteApprovalService;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
@@ -26,7 +27,7 @@ class QuoteApprovalController extends BaseController
     }
 
     /**
-     * Display a listing of the resource.
+     * List of Quote Approvals
      */
     public function index()
     {
@@ -42,8 +43,9 @@ class QuoteApprovalController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new Quote Approval
      */
+    #[ExcludeRouteFromDocs]
     public function store(QuoteApprovalCreateRequest $request)
     {
         $error = $this->service->validateStore(Quote::find($request->quote_id));
@@ -71,16 +73,18 @@ class QuoteApprovalController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show Quote Approval
      */
+    #[ExcludeRouteFromDocs]
     public function show(QuoteApproval $quoteApproval)
     {
         return response()->json(new QuoteApprovalResource($quoteApproval));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Quote Approval
      */
+    #[ExcludeRouteFromDocs]
     public function update(QuoteApprovalUpdateRequest $request, QuoteApproval $quoteApproval)
     {
         $error = $this->service->validateUpdate($quoteApproval);
@@ -98,8 +102,9 @@ class QuoteApprovalController extends BaseController
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Quote Approval by Client
      */
+    #[ExcludeRouteFromDocs]
     public function clientApprove(QuoteApprovalUpdateRequest $request, string $uuid)
     {
 
@@ -128,8 +133,9 @@ class QuoteApprovalController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Quote Approval
      */
+    #[ExcludeRouteFromDocs]
     public function destroy(QuoteApproval $quoteApproval)
     {
         //

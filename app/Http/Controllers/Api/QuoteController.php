@@ -11,6 +11,7 @@ use App\Http\Resources\QuoteResource;
 use App\Models\Quote;
 use App\Models\User;
 use App\Services\QuoteService;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -110,6 +111,7 @@ class QuoteController extends BaseController
     /**
      * Complete Quote
      */
+    #[ExcludeRouteFromDocs]
     public function complete(Quote $quote)
     {
         try {

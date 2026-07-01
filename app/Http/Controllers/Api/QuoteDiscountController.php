@@ -10,6 +10,7 @@ use App\Http\Requests\QuoteDiscountUpdateRequest;
 use App\Http\Resources\StepResource;
 use App\Models\QuoteDiscount;
 use App\Services\QuoteDiscountService;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
@@ -24,9 +25,9 @@ class QuoteDiscountController extends BaseController
     }
 
     /**
-     * List Steps
+     * List of Quote Discounts
      *
-     * @response AnonymousResourceCollection<LengthAwarePaginator<StepResource>>
+     * @response AnonymousResourceCollection<LengthAwarePaginator<QuoteDiscountResource>>
      */
     public function index(IndexRequest $request)
     {
@@ -41,8 +42,9 @@ class QuoteDiscountController extends BaseController
     }
 
     /**
-     * Store a new Step
+     * Store a new Quote Discount
      */
+    #[ExcludeRouteFromDocs]
     public function store(QuoteDiscountCreateRequest $request)
     {
         try {
@@ -55,13 +57,15 @@ class QuoteDiscountController extends BaseController
     }
 
     /**
-     * Show Step
+     * Show Quote Discount
      */
+    #[ExcludeRouteFromDocs]
     public function show(QuoteDiscount $quoteDiscount) {}
 
     /**
-     * Update Step
+     * Update Quote Discount
      */
+    #[ExcludeRouteFromDocs]
     public function update(QuoteDiscountUpdateRequest $request, QuoteDiscount $quoteDiscount)
     {
         try {
@@ -74,8 +78,9 @@ class QuoteDiscountController extends BaseController
     }
 
     /**
-     * Remove Step
+     * Remove Quote Discount
      */
+    #[ExcludeRouteFromDocs]
     public function destroy(QuoteDiscount $quoteDiscount)
     {
         $quoteDiscount->delete();

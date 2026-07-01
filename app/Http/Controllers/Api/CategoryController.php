@@ -10,7 +10,6 @@ use App\Http\Requests\IndexRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use App\Services\CategoryService;
-use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -101,14 +100,26 @@ class CategoryController extends BaseController
     /**
      * Store a new Category
      */
-    #[ExcludeRouteFromDocs]
-    public function store(CategoryCreateRequest $request) {}
+    public function store(CategoryCreateRequest $request)
+    {
+
+        try {
+            $category = DB::transaction(fn () => $this->categoryService->store($request->all()));
+        } catch (\Exception $e) {
+            return handleException($e);
+        }
+
+        return new CategoryResource($category);
+    }
 
     /**
      * Show Category
      */
-    #[ExcludeRouteFromDocs]
-    public function show(Category $category) {}
+    public function show(Category $category)
+    {
+
+        return new CategoryResource($category);
+    }
 
     /**
      * Update Category

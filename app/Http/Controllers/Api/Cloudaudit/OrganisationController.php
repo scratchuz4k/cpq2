@@ -22,7 +22,7 @@ class OrganisationController extends BaseController
     }
 
     /**
-     * Display a listing of the resource.
+     * List Organisations
      */
     #[ExcludeRouteFromDocs]
     public function index()
@@ -47,8 +47,9 @@ class OrganisationController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new Organisation
      */
+    #[ExcludeRouteFromDocs]
     public function store(OrganisationCreateRequest $request)
     {
         try {
@@ -61,31 +62,34 @@ class OrganisationController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show Organisation
      */
+    #[ExcludeRouteFromDocs]
     public function show(Organisation $organisation)
     {
         //
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Organisation
      */
+    #[ExcludeRouteFromDocs]
     public function update(OrganisationUpdateRequest $request, Organisation $organisation)
     {
         //
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Organisation
      */
+    #[ExcludeRouteFromDocs]
     public function destroy(Organisation $organisation)
     {
         //
     }
 
     /**
-     * Display a listing of the resource.
+     * Sync Organisations
      */
     #[ExcludeRouteFromDocs]
     public function sync()

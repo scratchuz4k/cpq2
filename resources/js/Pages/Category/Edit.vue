@@ -43,7 +43,11 @@ const setProductCategory = async (product_id, category_id) => {
         return;
     }
     try {
-        await axios.put('/api/products/' + product_id, { categories: category_id });
+        if (category_id) {
+            await axios.put('/api/products/' + product_id, { categories: category_id });
+        } else {
+            await axios.put('/api/products/' + product_id, { detach_categories: category.id });
+        }
         product.value = null;
 
         notyf.success(category_id ? 'Product added with Success' : 'Product removed with success');
@@ -126,17 +130,7 @@ const items = ref([
                                 :fields="['name']"
                                 placeholder="Select a Product"
                                 :query="[
-                                    {
-                                        group: [
-                                            { column: 'categories.id', operator: 'is_null', value: null },
-                                            {
-                                                column: 'categories.id',
-                                                operator: 'not_equals',
-                                                value: category.id,
-                                                function: 'orWhere'
-                                            }
-                                        ]
-                                    },
+                                    { column: 'categories.id', operator: 'not_in', value: [category.id] },
                                     { column: 'is_active', operator: 'equals', value: 1 }
                                 ]"
                                 url="/products"

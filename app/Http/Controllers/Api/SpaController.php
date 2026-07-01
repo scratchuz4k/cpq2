@@ -25,7 +25,7 @@ class SpaController extends BaseController
     }
 
     /**
-     * List of Spas
+     * List of SPAs
      *
      * @response AnonymousResourceCollection<LengthAwarePaginator<SpaResource>>
      */
@@ -42,7 +42,7 @@ class SpaController extends BaseController
     }
 
     /**
-     * Store a new Spa
+     * Store a new SPA
      */
     #[ExcludeRouteFromDocs]
     public function store(SpaCreateRequest $request)
@@ -57,7 +57,7 @@ class SpaController extends BaseController
     }
 
     /**
-     * Show Spa
+     * Show SPA
      */
     #[ExcludeRouteFromDocs]
     public function show(Spa $spa)
@@ -66,7 +66,7 @@ class SpaController extends BaseController
     }
 
     /**
-     * Update Spa
+     * Update SPA
      */
     #[ExcludeRouteFromDocs]
     public function update(SpaUpdateRequest $request, Spa $spa)
@@ -81,8 +81,9 @@ class SpaController extends BaseController
     }
 
     /**
-     * Remove Spa
+     * Remove SPA
      */
+    #[ExcludeRouteFromDocs]
     public function destroy(Spa $spa)
     {
         $spa->delete();

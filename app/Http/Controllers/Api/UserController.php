@@ -9,7 +9,6 @@ use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\UsersService;
-use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -42,19 +41,23 @@ class UserController extends BaseController
     /**
      * Store a new User
      */
-    #[ExcludeRouteFromDocs]
     public function store(Request $request)
     {
-        //
+        try {
+            $user = DB::transaction(fn () => $this->usersService->store($request->all()));
+        } catch (\Exception $e) {
+            return handleException($e);
+        }
+
+        return new UserResource($user);
     }
 
     /**
      * Show User
      */
-    #[ExcludeRouteFromDocs]
     public function show(User $user)
     {
-        //
+        return new UserResource($user);
     }
 
     /**

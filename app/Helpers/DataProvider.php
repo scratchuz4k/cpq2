@@ -262,6 +262,10 @@ class DataProvider
 
         return match ($operator) {
             'is_null' => $query->{$tempDoesntHave}($relation),
+            'not_in' => $query->{$tempDoesntHave}($relation, function ($query) use ($column, $value) {
+                $table = $query->getModel()->getTable();
+                $query->whereIn($table.'.'.$column, $value);
+            }),
             default => $query->{$temp}($relation, function ($query) use ($column, $operator, $value) {
                 $this->basicQuery($query, $column, $operator, $value, 'where');
             }),
