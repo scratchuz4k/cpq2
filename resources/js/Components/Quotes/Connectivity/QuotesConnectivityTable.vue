@@ -1,7 +1,8 @@
 <script setup>
 import _ from 'lodash';
 import axios from 'axios';
-import Paginator from 'primevue/paginator';
+import { DatatableOptions } from '@/Components/Datatables/DatatableOptions.js';
+import { FilterOperators } from '@composables/useApi';
 import { ref, reactive, watch, onMounted } from 'vue';
 import MultiSelect from 'primevue/multiselect';
 import Dialog from 'primevue/dialog';
@@ -14,6 +15,7 @@ import queryString from 'qs';
 import { remove, add } from '@/Composables/useConnectivityItem';
 import { quote, getQuote } from '@/Composables/useQuote';
 import SvgIcon from '@/Components/Custom/SvgIcon.vue';
+import NewDatatable from '@/Components/Datatables/NewDatatable.vue';
 
 const props = defineProps({
     modelValue: Object,
@@ -251,13 +253,6 @@ const sort = reactive({
     order: 'asc'
 });
 
-const orderBy = (column) => {
-    let changeSort = sort.order == 'asc' ? 'desc' : 'asc';
-    sort.order = sort.field === column ? changeSort : ['speed', 'bearer'].includes(column) ? 'desc' : sort.order;
-    sort.field = column;
-    getArticles();
-};
-
 const resetFilters = () => {
     Object.keys(filters)
         .filter((key) => key !== 'productName')
@@ -296,11 +291,23 @@ const removeFilter = (selectedFilter, value) => {
     }
 };
 
-const handlePaginator = (ev) => {
-    meta.limit = ev.rows;
-    meta.page = ev.page + 1;
-    getArticles();
-};
+const options = new DatatableOptions('cloudmarket/products', 'cloudmarket-products')
+    .addColumn('productName', 'Name', {
+        isSticky: true,
+        style: { width: '350px!important', minWidth: '350px!important' }
+    })
+    .addColumn('isManaged', 'Managed')
+    .addColumn('providerName', 'Provider')
+    .addColumn('connectivitySupplierGroup', 'Subprovider')
+    .addColumn('bearer', 'Bearer')
+    .addColumn('speed', 'Speed')
+    .addColumn('priceInstall_spa', 'Set Up')
+    .addColumn('priceMonthly_spa', 'Monthly')
+    .addColumn('priceECC', 'ECC')
+    .addColumn('contractTermMonths', 'Contract Term')
+    .addColumn('isContended', 'Contended')
+    .addColumn('connectivityType', 'Connectivity')
+    .addColumn('technologyType', 'Technology');
 
 watch(
     [filters, showQuoted, showLowestCost, showContended],
@@ -668,482 +675,152 @@ onMounted(() => {
                     </div>
                 </div>
                 <div v-if="articles.length" class="table-wrapper">
-                    <table class="table-connectivity table table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th
-                                    id="table-header-product"
-                                    class="ps-3"
-                                    :style="{
-                                        whiteSpace: 'nowrap',
-                                        width: '380px'
-                                    }"
-                                    @click="orderBy('productName')"
+                    <NewDatatable :options="options">
+                        <template #productName="{ value, data }">
+                            <p class="small" :title="value">
+                                {{ value }}
+                                <span
+                                    v-if="data?.additionalInfo?.['router']"
+                                    v-tooltip
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    data-bs-html="true"
+                                    :data-bs-original-title="
+                                        '<b>Primary Router Model:</b> ' + data.additionalInfo['router']
+                                    "
+                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
                                 >
-                                    Product
-                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'productName'">
-                                            <font-awesome-icon
-                                                v-if="sort.order == 'desc'"
-                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                        </template>
-                                        <template v-else>
-                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
-                                        </template>
-                                    </span>
-                                </th>
-                                <th
-                                    id="table-header-managed"
-                                    class="text-center"
-                                    :style="{
-                                        whiteSpace: 'nowrap'
-                                    }"
-                                    @click="orderBy('isManaged')"
+                                    <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
+                                </span>
+                                <span
+                                    v-if="data?.isContended"
+                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    data-bs-html="true"
+                                    data-bs-original-title="Contended Service"
+                                    v-tooltip
                                 >
-                                    Managed
-                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'isManaged'">
-                                            <font-awesome-icon
-                                                v-if="sort.order == 'desc'"
-                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                        </template>
-                                        <template v-else>
-                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
-                                        </template>
-                                    </span>
-                                </th>
-                                <th
-                                    id="table-header-provider"
-                                    class="text-center"
-                                    :style="{ whiteSpace: 'nowrap' }"
-                                    @click="orderBy('providerName')"
+                                    <font-awesome-icon :icon="['fas', 'server']"></font-awesome-icon>
+                                </span>
+                                <span
+                                    v-if="data?.additionalInfo?.['Type'] == 'Fibre Flex 200+'"
+                                    v-tooltip
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    data-bs-html="true"
+                                    data-bs-original-title="<b>Burstable Service:</b> This service offers guaranteed upload and download speeds of 200Mbps and can burst up to a peak of 1Gbps"
+                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-burstable"
                                 >
-                                    Provider
-                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'providerName'">
-                                            <font-awesome-icon
-                                                v-if="sort.order == 'desc'"
-                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                        </template>
-                                        <template v-else>
-                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
-                                        </template>
-                                    </span>
-                                </th>
-                                <th
-                                    id="table-header-subprovider"
-                                    class="text-center"
-                                    :style="{ whiteSpace: 'nowrap' }"
-                                    @click="orderBy('connectivitySupplierName')"
+                                    <font-awesome-icon :icon="['fas', 'bolt']"></font-awesome-icon>
+                                </span>
+                                <span
+                                    v-if="data?.additionalInfo?.['addon_ipv4']"
+                                    v-tooltip
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    :data-bs-original-title="data?.additionalInfo?.['addon_ipv4']"
+                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm addon-ipv4"
                                 >
-                                    Subprovider
-                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'connectivitySupplierName'">
-                                            <font-awesome-icon
-                                                v-if="sort.order == 'desc'"
-                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                        </template>
-                                        <template v-else>
-                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
-                                        </template>
-                                    </span>
-                                </th>
-                                <th
-                                    id="table-header-bearer"
-                                    class="text-center"
-                                    :style="{
-                                        whiteSpace: 'nowrap'
-                                    }"
-                                    @click="orderBy('bearer')"
-                                >
-                                    Bearer
-                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'bearer'">
-                                            <font-awesome-icon
-                                                v-if="sort.order == 'desc'"
-                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                        </template>
-                                        <template v-else>
-                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
-                                        </template>
-                                    </span>
-                                </th>
-                                <th
-                                    id="table-header-speed"
-                                    class="text-center"
-                                    :style="{
-                                        whiteSpace: 'nowrap'
-                                    }"
-                                    @click="orderBy('speed')"
-                                >
-                                    Speed
-                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'speed'">
-                                            <font-awesome-icon
-                                                v-if="sort.order == 'desc'"
-                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                        </template>
-                                        <template v-else>
-                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
-                                        </template>
-                                    </span>
-                                </th>
-                                <th
-                                    id="table-header-setup"
-                                    class="text-center"
-                                    :style="{
-                                        whiteSpace: 'nowrap'
-                                    }"
-                                    @click="orderBy('priceInstall_spa')"
-                                >
-                                    Set Up
-                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'priceInstall_spa'">
-                                            <font-awesome-icon
-                                                v-if="sort.order == 'desc'"
-                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                        </template>
-                                        <template v-else>
-                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
-                                        </template>
-                                    </span>
-                                </th>
-                                <th
-                                    id="table-header-monthly"
-                                    class="text-center"
-                                    :style="{
-                                        whiteSpace: 'nowrap'
-                                    }"
-                                    @click="orderBy('priceMonthly_spa')"
-                                >
-                                    Monthly
-                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'priceMonthly_spa'">
-                                            <font-awesome-icon
-                                                v-if="sort.order == 'desc'"
-                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                        </template>
-                                        <template v-else>
-                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
-                                        </template>
-                                    </span>
-                                </th>
-                                <th
-                                    id="table-header-ecc"
-                                    class="text-center"
-                                    :style="{
-                                        whiteSpace: 'nowrap'
-                                    }"
-                                    @click="orderBy('priceECC')"
-                                >
-                                    ECC
-                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'priceECC'">
-                                            <font-awesome-icon
-                                                v-if="sort.order == 'desc'"
-                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                        </template>
-                                        <template v-else>
-                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
-                                        </template>
-                                    </span>
-                                </th>
-                                <th
-                                    id="table-header-contract-term"
-                                    class="text-center"
-                                    :style="{
-                                        whiteSpace: 'nowrap'
-                                    }"
-                                    @click="orderBy('contractTermMonths')"
-                                >
-                                    Contract Term
-                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'contractTermMonths'">
-                                            <font-awesome-icon
-                                                v-if="sort.order == 'desc'"
-                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                        </template>
-                                        <template v-else>
-                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
-                                        </template>
-                                    </span>
-                                </th>
-                                <th
-                                    id="table-header-connectivity-type"
-                                    class="text-center"
-                                    :style="{
-                                        whiteSpace: 'nowrap'
-                                    }"
-                                    @click="orderBy('connectivityType')"
-                                >
-                                    Connectivity
-                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'connectivityType'">
-                                            <font-awesome-icon
-                                                v-if="sort.order == 'desc'"
-                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                        </template>
-                                        <template v-else>
-                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
-                                        </template>
-                                    </span>
-                                </th>
-                                <th
-                                    id="table-header-technology-type"
-                                    class="text-center"
-                                    :style="{
-                                        whiteSpace: 'nowrap'
-                                    }"
-                                    @click="orderBy('technologyType')"
-                                >
-                                    Technology
-                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'technologyType'">
-                                            <font-awesome-icon
-                                                v-if="sort.order == 'desc'"
-                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                        </template>
-                                        <template v-else>
-                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
-                                        </template>
-                                    </span>
-                                </th>
-                                <th
-                                    v-if="!hasPrimaryProduct()"
-                                    :style="{
-                                        width: '130px'
-                                    }"
-                                ></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr
-                                class="connectivity-table-item"
-                                v-for="(article, index) in articles"
-                                style="text-align: center"
+                                    <font-awesome-icon :icon="['fas', 'network-wired']"></font-awesome-icon>
+                                </span>
+                            </p>
+                        </template>
+                        <template #isManaged="{ value, data }">
+                            <span
+                                v-if="
+                                    data.isManaged === null && data.providerKey === 'pxc' && data.isContended === false
+                                "
+                                title="This product is unmanaged and will become managed once a router is selected. For PXC Ethernet circuits routers are free of charge on 3 or 5 year terms."
+                                data-bs-original-title="This product is unmanaged and will become managed once a router is selected. For PXC Ethernet circuits routers are free of charge on 3 or 5 year terms."
+                                v-tooltip
                             >
-                                <td class="lh-sm text-left ps-3">
-                                    {{ article.productName }}
-                                    <span
-                                        v-if="article?.additionalInfo?.['router']"
-                                        v-tooltip
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="top"
-                                        data-bs-html="true"
-                                        :data-bs-original-title="
-                                            '<b>Primary Router Model:</b> ' + article.additionalInfo['router']
-                                        "
-                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
-                                    >
-                                        <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
-                                    </span>
-                                    <span
-                                        v-if="article?.isContended"
-                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="top"
-                                        data-bs-html="true"
-                                        data-bs-original-title="Contended Service"
-                                        v-tooltip
-                                    >
-                                        <font-awesome-icon :icon="['fas', 'server']"></font-awesome-icon>
-                                    </span>
-                                    <span
-                                        v-if="article?.additionalInfo?.['Type'] == 'Fibre Flex 200+'"
-                                        v-tooltip
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="top"
-                                        data-bs-html="true"
-                                        data-bs-original-title="<b>Burstable Service:</b> This service offers guaranteed upload and download speeds of 200Mbps and can burst up to a peak of 1Gbps"
-                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-burstable"
-                                    >
-                                        <font-awesome-icon :icon="['fas', 'bolt']"></font-awesome-icon>
-                                    </span>
-                                    <span
-                                        v-if="article?.additionalInfo?.['addon_ipv4']"
-                                        v-tooltip
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="top"
-                                        :data-bs-original-title="article?.additionalInfo?.['addon_ipv4']"
-                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm addon-ipv4"
-                                    >
-                                        <font-awesome-icon :icon="['fas', 'network-wired']"></font-awesome-icon>
-                                    </span>
-                                </td>
-                                <td>
-                                    <span
-                                        v-if="
-                                            article.isManaged === null &&
-                                            article.providerKey === 'pxc' &&
-                                            article.isContended === false
-                                        "
-                                        title="This product is unmanaged and will become managed once a router is selected. For PXC Ethernet circuits routers are free of charge on 3 or 5 year terms."
-                                        data-bs-original-title="This product is unmanaged and will become managed once a router is selected. For PXC Ethernet circuits routers are free of charge on 3 or 5 year terms."
-                                        v-tooltip
-                                    >
-                                        {{
-                                            article.isManaged == true
-                                                ? 'Yes'
-                                                : article.isManaged === false
-                                                  ? 'No'
-                                                  : 'N/A'
-                                        }}
-                                        <SvgIcon class="h6 mt-1" width="20" height="20" name="info" />
-                                    </span>
-                                    <span
-                                        v-else-if="
-                                            article.isManaged === true &&
-                                            article.providerKey === 'its' &&
-                                            article.isContended === false
-                                        "
-                                        title="ITS managed service includes 24/7 monitoring and a 6-hour fix SLA, however no router is included. Instead, ITS-provided fibre includes an ONT (optical network terminal) while third-party fibre (e.g. Openreach) uses the carrier's own Network Termination Equipment (NTE)."
-                                        data-bs-original-title="ITS managed service includes 24/7 monitoring and a 6-hour fix SLA, however no router is included. Instead, ITS-provided fibre includes an ONT (optical network terminal) while third-party fibre (e.g. Openreach) uses the carrier's own Network Termination Equipment (NTE)"
-                                        v-tooltip
-                                    >
-                                        {{
-                                            article.isManaged == true
-                                                ? 'Yes'
-                                                : article.isManaged === false
-                                                  ? 'No'
-                                                  : 'N/A'
-                                        }}
-                                        <SvgIcon class="h6 mt-1" width="20" height="20" name="info" />
-                                    </span>
-                                    <span v-else>
-                                        {{
-                                            article.isManaged == true
-                                                ? 'Yes'
-                                                : article.isManaged === false
-                                                  ? 'No'
-                                                  : 'N/A'
-                                        }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <img
-                                        class="img-provider"
-                                        @error="setAltImg"
-                                        :src="`/images/providers/${format.toLowerCase(article.providerKey)}.png`"
-                                        :alt="article.providerName"
-                                        :title="article.providerName"
-                                        :data-bs-original-title="article.providerName"
-                                        v-tooltip
-                                    />
-                                </td>
-                                <td>
-                                    <img
-                                        class="img-subprovider"
-                                        @error="setAltImg"
-                                        :src="`/images/providers/${format.toLowerCase(
-                                            article.connectivitySupplierGroup
-                                        )}.png`"
-                                        :alt="article.connectivitySupplierName"
-                                        :title="article.connectivitySupplierName"
-                                        :data-bs-original-title="article.connectivitySupplierName"
-                                        v-tooltip
-                                    />
-                                </td>
-                                <td>{{ format.speed(article.bearer) }}</td>
-                                <td>{{ format.speed(article.speed) }}</td>
-                                <td :id="'line-' + index + '-price-install'">
-                                    {{ format.GBP(article.priceInstall_spa) }}
-                                    <span
-                                        v-if="article?.additionalInfo?.['addon_install'] && !article.amortisation"
-                                        :data-bs-original-title="article?.additionalInfo?.['addon_install']"
-                                        data-bs-html="true"
-                                        v-tooltip
-                                    >
-                                        <SvgIcon width="20" height="20" name="info" />
-                                    </span>
-                                </td>
-                                <td :id="'line-' + index + '-price-monthly'">
-                                    <template v-if="!article.amortisation">
-                                        {{ format.GBP(article.priceMonthly_spa) }}
-                                    </template>
-                                    <span
-                                        v-else
-                                        :data-bs-original-title="
-                                            '<b>Initial Setup Cost:</b> ' +
-                                            format.GBP(article.amortisation_install) +
-                                            (article?.additionalInfo?.['addon_install'] && article.amortisation
-                                                ? '<br/>' + article?.additionalInfo?.['addon_install']
-                                                : '') +
-                                            '<br/><b>Monthly Amortisation:</b> ' +
-                                            format.GBP(article.amortisation)
-                                        "
-                                        data-bs-html="true"
-                                        v-tooltip
-                                    >
-                                        {{ format.GBP(article.priceMonthly_spa) }}
-                                        <font-awesome-icon class="ms-1" :icon="['fas', 'coins']"></font-awesome-icon>
-                                    </span>
-                                </td>
-                                <td>
-                                    <template v-if="article.priceECC">
-                                        {{ format.GBP(article.priceECC) }}
-                                    </template>
-                                    <span
-                                        v-else
-                                        title="Subject to Survey"
-                                        class="h6"
-                                        data-bs-original-title="Subject to Survey"
-                                        v-tooltip
-                                    >
-                                        <font-awesome-icon :icon="['far', 'circle-question']"></font-awesome-icon>
-                                    </span>
-                                </td>
-                                <td>
-                                    {{ article.contractTermMonths ? article.contractTermMonths + ' Months' : 'N/A' }}
-                                </td>
-                                <td>{{ article.connectivityType ?? 'N/A' }}</td>
-                                <td>{{ article.technologyType ?? 'N/A' }}</td>
-                                <td class="text-end" v-if="!hasPrimaryProduct()">
-                                    <button
-                                        class="btn btn-outline-primary me-2 py-1"
-                                        @click="checkProduct(article)"
-                                        style="white-space: nowrap"
-                                    >
-                                        <font-awesome-icon :icon="['fas', 'plus']" />
-                                        Add
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <Paginator
-                        v-model:first="meta.first"
-                        :rows="meta.limit"
-                        :pageLinkSize="5"
-                        :totalRecords="meta.total"
-                        :rowsPerPageOptions="[10, 25, 50]"
-                        @page="handlePaginator"
-                        class="custom-paginator"
-                    >
-                    </Paginator>
+                                {{ data.isManaged == true ? 'Yes' : data.isManaged === false ? 'No' : 'N/A' }}
+                                <SvgIcon class="h6 mt-1" width="20" height="20" name="info" />
+                            </span>
+                            <span
+                                v-else-if="
+                                    data.isManaged === true && data.providerKey === 'its' && data.isContended === false
+                                "
+                                title="ITS managed service includes 24/7 monitoring and a 6-hour fix SLA, however no router is included. Instead, ITS-provided fibre includes an ONT (optical network terminal) while third-party fibre (e.g. Openreach) uses the carrier's own Network Termination Equipment (NTE)."
+                                data-bs-original-title="ITS managed service includes 24/7 monitoring and a 6-hour fix SLA, however no router is included. Instead, ITS-provided fibre includes an ONT (optical network terminal) while third-party fibre (e.g. Openreach) uses the carrier's own Network Termination Equipment (NTE)"
+                                v-tooltip
+                            >
+                                {{ data.isManaged == true ? 'Yes' : data.isManaged === false ? 'No' : 'N/A' }}
+                                <SvgIcon class="h6 mt-1" width="20" height="20" name="info" />
+                            </span>
+                            <span v-else>
+                                {{ data.isManaged == true ? 'Yes' : data.isManaged === false ? 'No' : 'N/A' }}
+                            </span>
+                        </template>
+                        <template #providerName="{ value, data }">
+                            <img
+                                class="img-provider"
+                                @error="setAltImg"
+                                :src="`/images/providers/${format.toLowerCase(data.providerKey)}.png`"
+                                :alt="value"
+                                :title="value"
+                                :data-bs-original-title="value"
+                                v-tooltip
+                            />
+                        </template>
+                        <template #connectivitySupplierGroup="{ value, data }">
+                            <img
+                                class="img-subprovider"
+                                @error="setAltImg"
+                                :src="`/images/providers/${format.toLowerCase(value)}.png`"
+                                :alt="data.connectivitySupplierName"
+                                :title="data.connectivitySupplierName"
+                                :data-bs-original-title="data.connectivitySupplierName"
+                                v-tooltip
+                            />
+                        </template>
+                        <!--<td>{{ format.speed(article.bearer) }}</td>
+                        <td>{{ format.speed(article.speed) }}</td>
+                        <td :id="'line-' + index + '-price-install'">
+                            {{ format.GBP(article.priceInstall_spa) }}
+                            <span v-if="article?.additionalInfo?.['addon_install'] && !article.amortisation"
+                                :data-bs-original-title="article?.additionalInfo?.['addon_install']" data-bs-html="true"
+                                v-tooltip>
+                                <SvgIcon width="20" height="20" name="info" />
+                            </span>
+                        </td>
+                        <td :id="'line-' + index + '-price-monthly'">
+                            <template v-if="!article.amortisation">
+                                {{ format.GBP(article.priceMonthly_spa) }}
+                            </template>
+                            <span v-else :data-bs-original-title="'<b>Initial Setup Cost:</b> ' +
+                                format.GBP(article.amortisation_install) +
+                                (article?.additionalInfo?.['addon_install'] && article.amortisation
+                                    ? '<br/>' + article?.additionalInfo?.['addon_install']
+                                    : '') +
+                                '<br/><b>Monthly Amortisation:</b> ' +
+                                format.GBP(article.amortisation)
+                                " data-bs-html="true" v-tooltip>
+                                {{ format.GBP(article.priceMonthly_spa) }}
+                                <font-awesome-icon class="ms-1" :icon="['fas', 'coins']"></font-awesome-icon>
+                            </span>
+                        </td>
+                        <td>
+                            <template v-if="article.priceECC">
+                                {{ format.GBP(article.priceECC) }}
+                            </template>
+                            <span v-else title="Subject to Survey" class="h6" data-bs-original-title="Subject to Survey"
+                                v-tooltip>
+                                <font-awesome-icon :icon="['far', 'circle-question']"></font-awesome-icon>
+                            </span>
+                        </td>
+                        <td>{{ article.contractTermMonths }} Months</td>
+                        <td>{{ article.connectivityType ?? 'N/A' }}</td>
+                        <td>{{ article.technologyType ?? 'N/A' }}</td>
+                        <td class="text-end" v-if="!hasPrimaryProduct()">
+                            <button class="btn btn-outline-primary me-2 py-1" @click="checkProduct(article)">
+                                <font-awesome-icon :icon="['fas', 'plus']" />
+                                Add
+                            </button>
+                        </td>
+                        </tr> -->
+                    </NewDatatable>
                 </div>
             </div>
         </div>
@@ -1184,7 +861,8 @@ onMounted(() => {
         v-model="props.modelValue"
         productType="Primary Hardware Product"
         :currentStep="props.currentStep"
-    ></QuoteConnectivityHardwareTable>
+    >
+    </QuoteConnectivityHardwareTable>
 </template>
 
 <style scoped>

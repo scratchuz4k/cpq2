@@ -416,13 +416,13 @@ onMounted(() => {
                         class="datatable-table-header"
                         :draggable="!data.isSticky"
                         :style="{
-                            ...data.style,
                             position: 'sticky',
                             top: '-1px',
                             left: data.isSticky ? stickyLeft(data, key) + 'px' : 0,
                             zIndex: data.isSticky ? 3 : 2,
                             cursor: data.isSticky ? 'default' : 'grab',
-                            opacity: dragState.fromIndex === key ? 0.5 : 1
+                            opacity: dragState.fromIndex === key ? 0.5 : 1,
+                            ...data.style
                         }"
                         :class="[
                             'datatable-col',
@@ -491,7 +491,7 @@ onMounted(() => {
                             data.isSticky ? `datatable-col-sticky datatable-col-sticky-${key + 1}` : '',
                             key === stickyCount - 1 ? 'datatable-col-last-sticky' : ''
                         ]"
-                        :style="{ ...data.style, left: data.isSticky ? stickyLeft(data, key) + 'px' : 0 }"
+                        :style="{ left: data.isSticky ? stickyLeft(data, key) + 'px' : 0, ...data.style }"
                     >
                         <slot
                             v-if="usedSlots.includes(data.column)"
