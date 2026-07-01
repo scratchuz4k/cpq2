@@ -8,6 +8,7 @@ use App\Http\Requests\IndexRequest;
 use App\Http\Resources\EmailTemplateResource;
 use App\Models\EmailTemplate;
 use App\Services\EmailService;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -22,10 +23,11 @@ class EmailTemplateController extends BaseController
     }
 
     /**
-     * Index
+     * List Email Templates
      *
      * @response AnonymousResourceCollection<LengthAwarePaginator<AccountResource>>
      */
+    #[ExcludeRouteFromDocs]
     public function index(IndexRequest $request)
     {
 
@@ -40,24 +42,27 @@ class EmailTemplateController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new Email Template
      */
+    #[ExcludeRouteFromDocs]
     public function store(Request $request)
     {
         //
     }
 
     /**
-     * Display the specified resource.
+     * Show Email Template
      */
+    #[ExcludeRouteFromDocs]
     public function show(EmailTemplate $emailTemplate)
     {
         //
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Email Template
      */
+    #[ExcludeRouteFromDocs]
     public function update(Request $request, EmailTemplate $emailTemplate)
     {
         try {
@@ -70,8 +75,9 @@ class EmailTemplateController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Email Template
      */
+    #[ExcludeRouteFromDocs]
     public function destroy(EmailTemplate $emailTemplate)
     {
         //

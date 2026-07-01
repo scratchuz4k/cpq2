@@ -8,7 +8,6 @@ use App\Http\Requests\IndexRequest;
 use App\Http\Resources\SupplierResource;
 use App\Models\Supplier;
 use App\Services\SuppliersService;
-use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -42,25 +41,28 @@ class SupplierController extends BaseController
     /**
      * Store a new Supplier
      */
-    #[ExcludeRouteFromDocs]
     public function store(Request $request)
     {
-        //
+        try {
+            $supplier = DB::transaction(fn () => $this->service->store($request->all()));
+        } catch (Exception $e) {
+            return handleException($e);
+        }
+
+        return new SupplierResource($supplier);
     }
 
     /**
      * Show Supplier
      */
-    #[ExcludeRouteFromDocs]
     public function show(Supplier $supplier)
     {
-        //
+        return new SupplierResource($supplier);
     }
 
     /**
      * Update Supplier
      */
-    #[ExcludeRouteFromDocs]
     public function update(Request $request, Supplier $supplier)
     {
         try {

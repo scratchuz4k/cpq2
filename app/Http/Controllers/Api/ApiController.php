@@ -25,6 +25,7 @@ class ApiController extends BaseController
     /**
      * List APIs
      */
+    #[ExcludeRouteFromDocs]
     public function index(IndexRequest $request)
     {
         $dataProvider = new DataProvider(Api::class);
@@ -58,6 +59,7 @@ class ApiController extends BaseController
     /**
      * Update API
      */
+    #[ExcludeRouteFromDocs]
     public function update(Request $request, Api $api)
     {
         try {
@@ -72,6 +74,7 @@ class ApiController extends BaseController
     /**
      * Remove API
      */
+    #[ExcludeRouteFromDocs]
     public function destroy(Api $api)
     {
         $api->delete();

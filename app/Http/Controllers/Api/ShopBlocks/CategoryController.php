@@ -65,6 +65,7 @@ class CategoryController extends BaseController
         // return new LengthAwarePaginator($items, $items->count(), 1000, 1);
     }
 
+    #[ExcludeRouteFromDocs]
     public function tree(): JsonResponse
     {
         $all = Category::where('active', true)->get(['id', 'name', 'parent_id']);
@@ -98,6 +99,7 @@ class CategoryController extends BaseController
         return response()->json($roots);
     }
 
+    #[ExcludeRouteFromDocs]
     private function pruneTree(array &$node, array $matchingIds): ?array
     {
         $node['children'] = array_values(array_filter(array_map(

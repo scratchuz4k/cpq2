@@ -1,5 +1,7 @@
 <?php
 
+$appUrl = rtrim(env('APP_URL', 'http://localhost'), '/');
+
 return [
     /*
      * Your API path. By default, all routes starting with this path will be added to the docs.
@@ -27,7 +29,26 @@ return [
         /*
          * Description rendered on the home page of the API documentation (`/docs/api`).
          */
-        'description' => '',
+        'description' => <<<MARKDOWN
+## Authentication
+
+In order to interact with the CPQ API, you must authenticate.
+
+To do this you will need a bearer token, which could be provided by a administrator from your organization with the appropriate permissions.
+
+**Because of this, it is absolutely essential that you keep your token secure.**
+
+### Authenticate with a Bearer Authorization Header
+
+Include a bearer-type `Authorization` header on every request. All requests must be made over HTTPS.
+
+```bash
+curl -X GET \
+  -H "Authorization: Bearer \$TOKEN" \
+  "{$appUrl}/api/quotes"
+```
+
+MARKDOWN,
     ],
 
     /*
@@ -37,7 +58,7 @@ return [
         /*
          * Define the title of the documentation's website. App name is used when this config is `null`.
          */
-        'title' => null,
+        'title' => 'CPQ API Documentation',
 
         /*
          * Define the theme of the documentation. Available options are `light` and `dark`.

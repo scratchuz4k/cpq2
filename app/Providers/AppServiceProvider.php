@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use App\Helpers\Routing\ResourceRegistrar;
 use App\Models\Token;
+use Dedoc\Scramble\Scramble;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
@@ -47,6 +49,13 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(\Illuminate\Routing\ResourceRegistrar::class, fn () => new ResourceRegistrar($this->app['router']));
 
         Sanctum::usePersonalAccessTokenModel(Token::class);
+
+        Scramble::routes(function (Route $route) {
+            $uri = $route->uri();
+
+            // Exclude all routes that do not start with 'apis' from the documentation
+            return ! str_starts_with($uri, 'apis');
+        });
 
         RateLimiter::for('shopblocks-api', function () {
             return Limit::perMinute(50); // max API limit is 300

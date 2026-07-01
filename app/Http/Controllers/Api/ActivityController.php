@@ -7,6 +7,7 @@ use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
 use App\Http\Resources\ActivityResource;
 use App\Models\Activity;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -15,10 +16,11 @@ class ActivityController extends BaseController
     protected $model = Activity::class;
 
     /**
-     * Index
+     * List of Activities
      *
      * @response AnonymousResourceCollection<LengthAwarePaginator<ActivityResource>>
      */
+    #[ExcludeRouteFromDocs]
     public function index(IndexRequest $request)
     {
         $dataProvider = new DataProvider(Activity::class);
@@ -32,32 +34,36 @@ class ActivityController extends BaseController
     }
 
     /**
-     * Store
+     * Create Activity
      */
+    #[ExcludeRouteFromDocs]
     public function store(Request $request)
     {
         //
     }
 
     /**
-     * Show.
+     * Show Activity
      */
+    #[ExcludeRouteFromDocs]
     public function show(Activity $Activity)
     {
         //
     }
 
     /**
-     * Update
+     * Update Activity
      */
+    #[ExcludeRouteFromDocs]
     public function update(Request $request, Activity $Activity)
     {
         //
     }
 
     /**
-     * Remove
+     * Remove Activity
      */
+    #[ExcludeRouteFromDocs]
     public function destroy(Activity $Activity)
     {
         //

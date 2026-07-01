@@ -10,6 +10,7 @@ use App\Http\Resources\ProductAddonResource;
 use App\Models\Account;
 use App\Models\ProductAddon;
 use App\Services\ProductAddonService;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +25,7 @@ class ProductAddonController extends BaseController
     }
 
     /**
-     * Display a listing of the resource.
+     * List of Product Addons
      */
     public function index()
     {
@@ -64,8 +65,9 @@ class ProductAddonController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new Product Addon
      */
+    #[ExcludeRouteFromDocs]
     public function store(Request $request)
     {
 
@@ -79,16 +81,18 @@ class ProductAddonController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show Product Addon
      */
+    #[ExcludeRouteFromDocs]
     public function show(ProductAddon $productAddon)
     {
         //
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Product Addon
      */
+    #[ExcludeRouteFromDocs]
     public function update(Request $request, ProductAddon $productAddon)
     {
 
@@ -102,8 +106,9 @@ class ProductAddonController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Product Addon
      */
+    #[ExcludeRouteFromDocs]
     public function destroy(ProductAddon $productAddon)
     {
         $productAddon->delete();
