@@ -43,7 +43,11 @@ const setProductCategory = async (product_id, category_id) => {
         return;
     }
     try {
-        await axios.put('/api/products/' + product_id, { categories: category_id });
+        if (category_id) {
+            await axios.put('/api/products/' + product_id, { categories: category_id });
+        } else {
+            await axios.put('/api/products/' + product_id, { detach_categories: category_id });
+        }
         product.value = null;
 
         notyf.success(category_id ? 'Product added with Success' : 'Product removed with success');
