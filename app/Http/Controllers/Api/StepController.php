@@ -10,7 +10,6 @@ use App\Http\Requests\StepUpdateRequest;
 use App\Http\Resources\StepResource;
 use App\Models\Step;
 use App\Services\StepService;
-use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
@@ -43,14 +42,26 @@ class StepController extends BaseController
     /**
      * Store a new Step
      */
-    #[ExcludeRouteFromDocs]
-    public function store(StepCreateRequest $request) {}
+    public function store(StepCreateRequest $request)
+    {
+
+        try {
+            $step = DB::transaction(fn () => $this->stepService->store($request->all()));
+        } catch (Exception $e) {
+            return handleException($e);
+        }
+
+        return new StepResource($step);
+    }
 
     /**
      * Show Step
      */
-    #[ExcludeRouteFromDocs]
-    public function show(Step $step) {}
+    public function show(Step $step)
+    {
+
+        return new StepResource($step);
+    }
 
     /**
      * Update Step

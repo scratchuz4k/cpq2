@@ -12,6 +12,7 @@ use App\Http\Resources\ProductLinkResource;
 use App\Models\Account;
 use App\Models\ProductLink;
 use App\Services\ProductLinkService;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
@@ -25,7 +26,7 @@ class ProductLinkController extends BaseController
     }
 
     /**
-     * Display a listing of the resource.
+     * List of Product Links
      */
     public function index()
     {
@@ -65,8 +66,9 @@ class ProductLinkController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new Product Link
      */
+    #[ExcludeRouteFromDocs]
     public function store(ProductLinkCreateRequest $request)
     {
         try {
@@ -79,16 +81,18 @@ class ProductLinkController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show Product Link
      */
+    #[ExcludeRouteFromDocs]
     public function show(ProductLink $productLink)
     {
         //
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Product Link
      */
+    #[ExcludeRouteFromDocs]
     public function update(ProductLinkUpdateRequest $request, ProductLink $productLink)
     {
         try {
@@ -101,8 +105,9 @@ class ProductLinkController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Product Link
      */
+    #[ExcludeRouteFromDocs]
     public function destroy(ProductLink $productLink)
     {
         $productLink->delete();

@@ -108,7 +108,7 @@ class QuoteItemController extends BaseController
         if (! is_null($productId)) {
             $product = Product::find($productId);
             if (! is_null($product)) {
-                $cascadeProductIds = $cascadeProductIds->merge($product->addons->pluck('id'));
+                $cascadeProductIds = $cascadeProductIds->merge($product->addonsChildren->pluck('id'));
             }
         }
 

@@ -70,7 +70,7 @@ const proxyValue = computed({
 
 const lastColumn = computed(() => {
     let nrColumns = props.options.columns.filter((x) => !x.hide);
-    let threshold = nrColumns > 5 ? props.options.columns.length - 1 : nrColumns.length - 3;
+    let threshold = nrColumns.length > 5 ? props.options.columns.length - 1 : nrColumns.length - 3;
     return threshold;
 });
 

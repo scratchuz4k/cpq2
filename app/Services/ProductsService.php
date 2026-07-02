@@ -46,7 +46,11 @@ class ProductsService
         ]);
 
         if (array_key_exists('categories', $array)) {
-            $product->categories()->sync($array['categories']);
+            $product->categories()->syncWithoutDetaching($array['categories']);
+        }
+
+        if (array_key_exists('detach_categories', $array) && ! is_null($array['detach_categories'])) {
+            $product->categories()->detach($array['detach_categories']);
         }
 
         if (array_key_exists('steps', $array) && ! is_null($array['steps'])) {

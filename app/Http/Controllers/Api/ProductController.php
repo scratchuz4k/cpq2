@@ -13,7 +13,6 @@ use App\Http\Resources\ProductResource;
 use App\Models\Account;
 use App\Models\Product;
 use App\Services\ProductsService;
-use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
@@ -62,7 +61,7 @@ class ProductController extends BaseController
             return $product;
         });
 
-        $data = ProductResource::collection($data->load(['prices', 'categories', 'steps', 'bundles.pricePlan']))->toArray(request());
+        $data = ProductResource::collection($data->load(['prices', 'categories', 'steps', 'bundlesChildren.pricePlan']))->toArray(request());
 
         return FilterProvider::paginate(collect($data));
     }
@@ -70,7 +69,6 @@ class ProductController extends BaseController
     /**
      * Store a new Product
      */
-    #[ExcludeRouteFromDocs]
     public function store(ProductCreateRequest $request)
     {
         try {
@@ -85,7 +83,6 @@ class ProductController extends BaseController
     /**
      * Show Product
      */
-    #[ExcludeRouteFromDocs]
     public function show(Product $product)
     {
         return ProductResource::make($product->load(['prices', 'categories', 'steps']));
@@ -94,7 +91,6 @@ class ProductController extends BaseController
     /**
      * Update Product
      */
-    #[ExcludeRouteFromDocs]
     public function update(ProductUpdateRequest $request, Product $product)
     {
         try {

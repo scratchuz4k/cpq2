@@ -17,7 +17,7 @@ class GroupController extends BaseController
     public function __construct(protected GroupService $groupService) {}
 
     /**
-     * Display a listing of the resource.
+     * List of User Groups
      */
     public function index(IndexRequest $request)
     {
@@ -33,7 +33,7 @@ class GroupController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new User Group
      */
     public function store(Request $request)
     {
@@ -47,7 +47,7 @@ class GroupController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show User Group
      */
     public function show(Group $group)
     {
@@ -55,7 +55,7 @@ class GroupController extends BaseController
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update User Group
      */
     public function update(Request $request, Group $group)
     {
@@ -69,7 +69,7 @@ class GroupController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove User Group
      */
     public function destroy(Group $group)
     {

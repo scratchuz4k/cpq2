@@ -40,6 +40,27 @@ class AccountCreateRequest extends FormRequest
             ],
             'contacts.*.name' => 'nullable',
             'contacts.*.email' => 'nullable|email',
+            'contacts.*.phone' => 'nullable|max_digits:12',
+        ];
+    }
+
+    public function attributes(): array
+    {
+        $attributes = [];
+
+        foreach ($this->input('contacts', []) as $index => $contact) {
+            $attributes["contacts.{$index}.phone"] = $index + 1;
+            $attributes["contacts.{$index}.email"] = $index + 1;
+        }
+
+        return $attributes;
+    }
+
+    public function messages(): array
+    {
+        return [
+            'contacts.*.phone.max_digits' => 'The contact #:attribute phone number must not exceed :max digits.',
+            'contacts.*.email.email' => 'The contact #:attribute email must be a valid email address',
         ];
     }
 }

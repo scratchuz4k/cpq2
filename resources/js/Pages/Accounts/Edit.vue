@@ -8,7 +8,7 @@ import AccordionHeader from 'primevue/accordionheader';
 import AccordionContent from 'primevue/accordioncontent';
 import { ref, reactive } from 'vue';
 import ToggleSwitch from 'primevue/toggleswitch';
-import InputMask from 'primevue/inputmask';
+import { integerOnly } from '@/Composables/input.js';
 
 const props = defineProps({
     account: Object
@@ -18,9 +18,11 @@ const activePanel = reactive({
     value: 0
 });
 
+const contacts = ref([...props.account.contacts]);
+
 const addContact = () => {
-    props.account.contacts.push({});
-    activePanel.value = props.account.contacts.length - 1;
+    contacts.value.push({});
+    activePanel.value = contacts.value.length - 1;
 };
 const removeContact = (key) => {
     swal.fire({
@@ -30,24 +32,29 @@ const removeContact = (key) => {
             //bulkOperation.value = ''
             return;
         }
-        props.account.contacts.splice(key, 1);
+        contacts.value.splice(key, 1);
     });
 };
 
 const saveAccount = () => {
-    router.put(`/accounts/${props.account.id}`, props.account, {
-        onSuccess: (page) => {
-            notyf.success('Updated with Success');
-        },
-        onError: (errors) => {
-            let string = '';
-            Object.keys(errors).forEach((key) => {
-                string += errors[key] + '<br>';
-            });
-            notyf.error(string);
+    router.put(
+        `/accounts/${props.account.id}`,
+        { ...props.account, contacts: contacts.value },
+        {
+            onSuccess: (page) => {
+                notyf.success('Updated with Success');
+            },
+            onError: (errors) => {
+                let string = '';
+                Object.keys(errors).forEach((key) => {
+                    string += errors[key] + '<br>';
+                });
+                notyf.error(string);
+            }
         }
-    });
+    );
 };
+
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'Settings', url: '/settings' },
@@ -91,11 +98,11 @@ const items = ref([
             </div>
             <h2>Contacts</h2>
             <Accordion v-model:value="activePanel.value">
-                <AccordionPanel v-for="(contact, key) in account.contacts" :key="'account-' + key" :value="key">
+                <AccordionPanel v-for="(contact, key) in contacts" :key="'account-' + key" :value="key">
                     <AccordionHeader>
                         <div class="d-flex justify-content-between align-items-center w-100 pe-3">
                             <p class="m-0">
-                                Contact #{{ contact.id }}
+                                Contact #{{ key + 1 }}
                                 {{ contact.primary_contact_name ? ' - ' + contact.primary_contact_name : '' }}
                             </p>
                             <PrimaryButton class="btn-sm btn-secondary" @click.stop="removeContact(key)"
@@ -125,11 +132,12 @@ const items = ref([
                             </div>
                             <div class="col-6 mb-3">
                                 <label :for="'contact-phone-' + key" class="form-label"> Phone: </label>
-                                <InputMask
-                                    id="uk-phone"
-                                    class="form-control"
+                                <input
+                                    type="tel"
                                     v-model="contact.phone"
-                                    mask="09999 999999"
+                                    class="form-control input-phone"
+                                    maxlength="12"
+                                    @keydown="integerOnly"
                                 />
                             </div>
                             <div class="col-6 mb-3">

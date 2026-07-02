@@ -40,7 +40,7 @@ describe('Creates products and associates Category.cy', () => {
         cy.get('#settings').click();
         cy.get('#link-products').click();
 
-        cy.get('#datatable-search').type(product.sku);
+        cy.get('#products-table-datatable-search').type(product.sku);
         cy.wait(3000);
         cy.get('#products-table').then(($table) => {
             if ($table.text().includes('No records found')) {
@@ -82,12 +82,10 @@ describe('Creates products and associates Category.cy', () => {
             }
         });
 
-        cy.get('#datatable-search').type(addonsProduct.sku);
-        cy.wait(1000);
-        cy.get('#datatable-btn-0-edit').click();
+        cy.newTableSearchAndEdit(addonsProduct.sku, '#products-table-datatable-search');
         cy.get('#tabs-product-edit-1-1').click();
         cy.get('#btn-add-links').click();
-        cy.get('#links-search-global').type(product.sku);
+        cy.get('#links-search-global').should('be.visible').click().type(product.sku);
         cy.get('#links-table').contains(product.sku);
         cy.wait(1000);
         cy.get('[id^="links-checkbox-"]').first().click({ force: true });
@@ -163,12 +161,10 @@ describe('Validates same-step product link restriction', () => {
         cy.visit('/');
         cy.get('#settings').click();
         cy.get('#link-products').click();
-        cy.get('#datatable-search').type(sameStepParent.sku);
-        cy.wait(1000);
-        cy.get('#datatable-btn-0-edit').click();
+        cy.newTableSearchAndEdit(sameStepParent.sku, '#products-table-datatable-search');
         cy.get('#tabs-product-edit-1-1').click();
         cy.get('#btn-add-links').click();
-        cy.get('#links-search-global').type(sameStepChild.sku);
+        cy.get('#links-search-global').should('be.visible').click().type(sameStepChild.sku);
         cy.wait(1000);
         cy.get('#links-table').contains(sameStepChild.sku);
         cy.get('[id^="links-checkbox-"]').should('not.exist');

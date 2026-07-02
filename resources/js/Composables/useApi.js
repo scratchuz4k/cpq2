@@ -155,6 +155,8 @@ export class Api {
                 signal: this._abortController.signal
             });
             this.meta.total = res.data.meta?.total ?? res.data.total;
+            this.meta.last_page = res.data.meta?.last_page ?? res.data.last_page ?? 1;
+            this.meta.links = res.data.meta?.links ?? res.data.links ?? [];
             this.meta.first = (this.meta.page - 1) * this.meta.limit;
             this.items.value = res.data.data;
             this.isLoading.value = false;
@@ -180,5 +182,7 @@ class ApiMeta {
         this.page = 1;
         this.total = 0;
         this.first = 1;
+        this.last_page = 1;
+        this.links = [];
     }
 }

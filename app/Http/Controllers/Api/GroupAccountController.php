@@ -9,6 +9,7 @@ use App\Http\Requests\IndexRequest;
 use App\Http\Resources\GroupAccountResource;
 use App\Http\Resources\GroupResource;
 use App\Models\GroupAccount;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,8 +17,9 @@ use Illuminate\Support\Facades\DB;
 class GroupAccountController extends BaseController
 {
     /**
-     * Display a listing of the resource.
+     * List of Group Accounts
      */
+    #[ExcludeRouteFromDocs]
     public function index(IndexRequest $request)
     {
 
@@ -32,8 +34,9 @@ class GroupAccountController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new Group Account
      */
+    #[ExcludeRouteFromDocs]
     public function store(GroupAccountCreateRequest $request)
     {
         try {
@@ -46,16 +49,18 @@ class GroupAccountController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show Group Account
      */
+    #[ExcludeRouteFromDocs]
     public function show(GroupAccount $groupAccount)
     {
         return new GroupResource($groupAccount);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Group Account
      */
+    #[ExcludeRouteFromDocs]
     public function update(Request $request, GroupAccount $groupAccount)
     {
         try {
@@ -68,8 +73,9 @@ class GroupAccountController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Group Account
      */
+    #[ExcludeRouteFromDocs]
     public function destroy(GroupAccount $groupAccount)
     {
         $groupAccount->delete();
