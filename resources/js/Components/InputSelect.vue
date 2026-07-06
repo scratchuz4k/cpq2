@@ -26,10 +26,6 @@ const props = defineProps({
     filter: {
         type: Boolean,
         default: true
-    },
-    disabled: {
-        type: Boolean,
-        default: false
     }
 });
 
@@ -149,12 +145,8 @@ emitter.on('input-select-refresh' + (props.id ? ':' + props.id : ''), () => {
 </script>
 
 <template>
-    <div :id="'input-select-' + props.id" class="position-relative" :class="{ disabled: props.disabled }">
-        <div
-            class="form-select w-100 d-flex"
-            :class="[props.disabled ? 'cursor-block' : 'cursor-pointer']"
-            @click="() => !props.disabled && (showOptions = !showOptions)"
-        >
+    <div :id="'input-select-' + props.id" class="position-relative">
+        <div class="form-select w-100 d-flex cursor-pointer" @click="() => (showOptions = !showOptions)">
             <template v-if="!proxyValue || Object.values(proxyValue).every((value) => !value)">
                 {{ props.placeholder }}
             </template>
@@ -248,8 +240,5 @@ emitter.on('input-select-refresh' + (props.id ? ':' + props.id : ''), () => {
 .option:not(.selected):hover {
     color: black;
     background-color: var(--color-purple-light);
-}
-.disabled {
-    opacity: 0.4;
 }
 </style>

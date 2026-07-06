@@ -11,8 +11,6 @@ const props = defineProps({
     role: Object
 });
 
-const roleHasParent = !!props.role.parent_id;
-
 const form = reactive({
     name: props.role.name,
     temp_permissions: props.role.permissions,
@@ -102,7 +100,6 @@ const items = ref([
                         <div class="mb-3">
                             <label for="user-role" class="form-label">Parent:</label>
                             <InputSelect
-                                :disabled="!roleHasParent"
                                 id="account_id"
                                 v-model="form.parent"
                                 url="/roles"
