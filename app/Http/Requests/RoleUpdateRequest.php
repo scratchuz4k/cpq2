@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\TenantExistsRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -22,13 +23,19 @@ class RoleUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        $role = $this->route('role');
+        $roleHasParent = (bool) $this->route('role')->parent_id;
 
         return [
             'name' => 'string',
             'permissions' => 'array',
             'permissions.*' => 'integer|exists:permissions,id',
-            'parent_id' => Rule::requiredIf(fn () => ! is_null($role->parent_id)),
+            'parent_id' => [
+                Rule::requiredIf($roleHasParent),
+                Rule::when(
+                    $roleHasParent,
+                    [new TenantExistsRule('roles')]
+                ),
+            ],
         ];
     }
 }
