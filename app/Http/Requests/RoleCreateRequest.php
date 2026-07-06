@@ -26,7 +26,7 @@ class RoleCreateRequest extends FormRequest
         return [
             'name' => ['required', 'string',
                 Rule::unique('roles')->where('tenant_id', Auth::user()->tenant_id)->where('guard_name', 'web')],
-            'parent_id' => ['exists:roles,id'],
+            'parent_id' => ['required', 'exists:roles,id'],
             'permissions' => 'array',
             'permissions.*' => 'integer|exists:permissions,id',
         ];
