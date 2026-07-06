@@ -291,14 +291,83 @@ const removeFilter = (selectedFilter, value) => {
     }
 };
 
+const setMeta = (tempMeta) => {
+    const previousOverallTotal = meta.overallTotal;
+    showLoadingModal.value = false;
+    meta.isRequestCompleted = false;
+    meta.total = tempMeta.total;
+    meta.overallTotal = tempMeta.overall_total;
+    meta.isRequestCompleted = tempMeta.is_request_completed;
+
+    if (previousOverallTotal > 0 && previousOverallTotal !== meta.overallTotal) {
+        notyf.success('New products added!');
+    }
+
+    Object.assign(filterList, tempMeta.filters);
+
+    const configFormattedSpeed = quote.configs?.formattedSpeed;
+    if (
+        configFormattedSpeed &&
+        !Object.prototype.hasOwnProperty.call(filterList.formattedSpeed, configFormattedSpeed)
+    ) {
+        filterList.formattedSpeed[configFormattedSpeed] = 0;
+    }
+
+    const configBearer = quote.configs?.bearer;
+    if (configBearer && !Object.prototype.hasOwnProperty.call(filterList.bearer, configBearer)) {
+        filterList.bearer[configBearer] = 0;
+    }
+
+    const contractLengths = quote.configs?.contract_length ? quote.configs.contract_length.split(',') : [];
+    contractLengths.forEach((length) => {
+        if (length && !Object.prototype.hasOwnProperty.call(filterList.contractTermMonths, length)) {
+            filterList.contractTermMonths[length] = 0;
+        }
+    });
+
+    let bearerFilters = [];
+    Object.keys(filterList.bearer).forEach((key) => {
+        if (key !== 'null') {
+            bearerFilters.push({
+                label: format.speed(key),
+                value: key
+            });
+        }
+    });
+    filterList.bearer = bearerFilters;
+
+    let speedFilters = [];
+    Object.keys(filterList.formattedSpeed).forEach((key) => {
+        if (key !== 'null') {
+            speedFilters.push({
+                label: format.speed(key),
+                value: key
+            });
+        }
+    });
+    filterList.formattedSpeed = speedFilters;
+
+    let contractLengthsFilters = [];
+    Object.keys(filterList.contractTermMonths).forEach((key) => {
+        if (key !== 'null') {
+            contractLengthsFilters.push({
+                label: key + ' Months',
+                value: key
+            });
+        }
+    });
+    filterList.contractTermMonths = contractLengthsFilters;
+
+    selectedFilters.value = Object.fromEntries(
+        Object.entries(filters).filter(([key, filter]) => filter.value !== null)
+    );
+};
+
 const options = new DatatableOptions('cloudmarket/products', 'cloudmarket-products')
-    .addColumn('productName', 'Name', {
-        isSticky: true,
-        style: { width: '350px!important', minWidth: '350px!important' }
-    })
-    .addColumn('isManaged', 'Managed')
+    .addColumn('productName', 'Name', { isSticky: true })
     .addColumn('providerName', 'Provider')
     .addColumn('connectivitySupplierGroup', 'Subprovider')
+    .addColumn('isManaged', 'Managed')
     .addColumn('bearer', 'Bearer')
     .addColumn('speed', 'Speed')
     .addColumn('priceInstall_spa', 'Set Up')
@@ -307,7 +376,8 @@ const options = new DatatableOptions('cloudmarket/products', 'cloudmarket-produc
     .addColumn('contractTermMonths', 'Contract Term')
     .addColumn('isContended', 'Contended')
     .addColumn('connectivityType', 'Connectivity')
-    .addColumn('technologyType', 'Technology');
+    .addColumn('technologyType', 'Technology')
+    .addColumn('actions', '', { style: { position: 'sticky', right: 0, width: '60px' } });
 
 watch(
     [filters, showQuoted, showLowestCost, showContended],
@@ -322,9 +392,9 @@ window.addEventListener('beforeunload', () => {
     clearTimeout(timeoutId); // Cancel timeout on page navigation or refresh
 });
 
-onMounted(() => {
-    getArticles(false, true);
-});
+// onMounted(() => {
+//     getArticles(false, true);
+// });
 </script>
 <template>
     <div v-if="!hasPrimaryProduct()">
@@ -363,7 +433,7 @@ onMounted(() => {
                                         :icon="['fas', 'refresh']"
                                         class="fa-spin me-2"
                                     ></font-awesome-icon
-                                    >Filters
+                                    >Products
                                     <span class="fw-normal">({{ meta.total }})</span>
                                 </p>
                             </div>
@@ -666,16 +736,8 @@ onMounted(() => {
                         <div class="cpq-bar"></div>
                     </div>
                 </div>
-                <div id="no-results" v-if="!articles.length">
-                    <div class="alert alert-secondary mt-3">
-                        No results match your filters.
-                        <button @click="resetFilters" class="btn btn-primary btn-sm js-clear-filters ms-3">
-                            Clear filters
-                        </button>
-                    </div>
-                </div>
-                <div v-if="articles.length" class="table-wrapper">
-                    <NewDatatable :options="options">
+                <div class="table-wrapper">
+                    <NewDatatable :options="options" :poll-interval="15000" @update:meta="(meta) => setMeta(meta)">
                         <template #productName="{ value, data }">
                             <p class="small" :title="value">
                                 {{ value }}
@@ -775,51 +837,80 @@ onMounted(() => {
                                 v-tooltip
                             />
                         </template>
-                        <!--<td>{{ format.speed(article.bearer) }}</td>
-                        <td>{{ format.speed(article.speed) }}</td>
-                        <td :id="'line-' + index + '-price-install'">
-                            {{ format.GBP(article.priceInstall_spa) }}
-                            <span v-if="article?.additionalInfo?.['addon_install'] && !article.amortisation"
-                                :data-bs-original-title="article?.additionalInfo?.['addon_install']" data-bs-html="true"
-                                v-tooltip>
-                                <SvgIcon width="20" height="20" name="info" />
-                            </span>
-                        </td>
-                        <td :id="'line-' + index + '-price-monthly'">
-                            <template v-if="!article.amortisation">
-                                {{ format.GBP(article.priceMonthly_spa) }}
-                            </template>
-                            <span v-else :data-bs-original-title="'<b>Initial Setup Cost:</b> ' +
-                                format.GBP(article.amortisation_install) +
-                                (article?.additionalInfo?.['addon_install'] && article.amortisation
-                                    ? '<br/>' + article?.additionalInfo?.['addon_install']
-                                    : '') +
-                                '<br/><b>Monthly Amortisation:</b> ' +
-                                format.GBP(article.amortisation)
-                                " data-bs-html="true" v-tooltip>
-                                {{ format.GBP(article.priceMonthly_spa) }}
-                                <font-awesome-icon class="ms-1" :icon="['fas', 'coins']"></font-awesome-icon>
-                            </span>
-                        </td>
-                        <td>
-                            <template v-if="article.priceECC">
-                                {{ format.GBP(article.priceECC) }}
-                            </template>
-                            <span v-else title="Subject to Survey" class="h6" data-bs-original-title="Subject to Survey"
-                                v-tooltip>
+                        <template #bearer="{ value, data }">
+                            <p class="small">{{ format.speed(value) }}</p>
+                        </template>
+                        <template #speed="{ value, data }">
+                            <p class="small">{{ format.speed(value) }}</p>
+                        </template>
+                        <template #priceInstall_spa="{ value, data, index }">
+                            <p class="small" :id="'line-' + index + '-price-install'">
+                                {{ format.GBP(value) }}
+                                <span
+                                    v-if="data?.additionalInfo?.['addon_install'] && !data.amortisation"
+                                    :data-bs-original-title="data?.additionalInfo?.['addon_install']"
+                                    data-bs-html="true"
+                                    v-tooltip
+                                >
+                                    <SvgIcon width="20" height="20" name="info" />
+                                </span>
+                            </p>
+                        </template>
+                        <template #priceMonthly_spa="{ value, data, index }">
+                            <p :id="'line-' + index + '-price-monthly'" class="small">
+                                <template v-if="!data.amortisation">
+                                    {{ format.GBP(value) }}
+                                </template>
+                                <span
+                                    v-else
+                                    :data-bs-original-title="
+                                        '<b>Initial Setup Cost:</b> ' +
+                                        format.GBP(data.amortisation_install) +
+                                        (article?.additionalInfo?.['addon_install'] && data.amortisation
+                                            ? '<br/>' + article?.additionalInfo?.['addon_install']
+                                            : '') +
+                                        '<br/><b>Monthly Amortisation:</b> ' +
+                                        format.GBP(data.amortisation)
+                                    "
+                                    data-bs-html="true"
+                                    v-tooltip
+                                >
+                                    {{ format.GBP(value) }}
+                                    <font-awesome-icon class="ms-1" :icon="['fas', 'coins']"></font-awesome-icon>
+                                </span>
+                            </p>
+                        </template>
+                        <template #priceECC="{ value, data, index }">
+                            <p class="small" v-if="value">
+                                {{ format.GBP(value) }}
+                            </p>
+                            <p
+                                v-else
+                                title="Subject to Survey"
+                                class="h6"
+                                data-bs-original-title="Subject to Survey"
+                                v-tooltip
+                            >
                                 <font-awesome-icon :icon="['far', 'circle-question']"></font-awesome-icon>
-                            </span>
-                        </td>
-                        <td>{{ article.contractTermMonths }} Months</td>
-                        <td>{{ article.connectivityType ?? 'N/A' }}</td>
-                        <td>{{ article.technologyType ?? 'N/A' }}</td>
-                        <td class="text-end" v-if="!hasPrimaryProduct()">
-                            <button class="btn btn-outline-primary me-2 py-1" @click="checkProduct(article)">
-                                <font-awesome-icon :icon="['fas', 'plus']" />
-                                Add
-                            </button>
-                        </td>
-                        </tr> -->
+                            </p>
+                        </template>
+                        <template #contractTermMonths="{ value, data, index }">
+                            <p class="small">{{ value }} Months</p>
+                        </template>
+                        <template #connectivityType="{ value, data, index }">
+                            <p class="small">{{ value ?? 'N/A' }}</p>
+                        </template>
+                        <template #technologyType="{ value, data, index }">
+                            <p class="small">{{ value ?? 'N/A' }}</p>
+                        </template>
+                        <template #actions="{ value, data, index }">
+                            <div class="text-end">
+                                <button class="btn btn-outline-primary btn-connectivity" @click="checkProduct(data)">
+                                    <font-awesome-icon :icon="['fas', 'plus']" />
+                                    Add
+                                </button>
+                            </div>
+                        </template>
                     </NewDatatable>
                 </div>
             </div>
@@ -917,5 +1008,18 @@ tr.active td {
     width: 0%;
     background-color: var(--purple);
     animation: progressBar 240s linear forwards;
+}
+
+.btn-connectivity {
+    border: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.btn-connectivity:hover {
+    background: none !important;
+    background-color: none !important;
+    color: var(--color-primary) !important;
+    border: 0 !important;
 }
 </style>

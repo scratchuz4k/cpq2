@@ -154,10 +154,14 @@ export class Api {
             let res = await axios.get('/api/' + this.route + '?' + qs.stringify(object), {
                 signal: this._abortController.signal
             });
+
             this.meta.total = res.data.meta?.total ?? res.data.total;
+            this.meta.overall_total = res.data.meta?.overall_total ?? res.data.overall_total;
             this.meta.last_page = res.data.meta?.last_page ?? res.data.last_page ?? 1;
             this.meta.links = res.data.meta?.links ?? res.data.links ?? [];
             this.meta.first = (this.meta.page - 1) * this.meta.limit;
+            this.meta.filters = res.data.meta?.filters ?? res.data.filters ?? {};
+            this.meta.is_request_completed = !!res.data.finished_at;
             this.items.value = res.data.data;
             this.isLoading.value = false;
         } catch (ex) {
@@ -181,8 +185,11 @@ class ApiMeta {
         this.limit = 10;
         this.page = 1;
         this.total = 0;
+        this.overall_total = 0;
         this.first = 1;
         this.last_page = 1;
         this.links = [];
+        this.filters = {};
+        this.is_request_completed = false;
     }
 }

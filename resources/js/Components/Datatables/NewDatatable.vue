@@ -4,12 +4,52 @@ import { Link } from '@inertiajs/vue3';
 
 import { IconField, InputIcon, InputText } from 'primevue';
 
-import { computed, reactive, ref, useSlots, watch, onMounted } from 'vue';
+import { reactive, ref, useSlots, watch, onMounted, onUnmounted } from 'vue';
 import axios from 'axios';
 import { exportData } from '@/Composables/export.js';
+import { useDatatableColumns } from '@composables/useDatatableColumns.js';
+import { useDatatableTooltip } from '@composables/useDatatableTooltip.js';
 import { DatatableOptions } from './DatatableOptions';
 import { Api } from '../../Composables/useApi';
 import { v4 as uuidv4 } from 'uuid';
+
+const props = defineProps({
+    id: {
+        required: false,
+        default: () => {
+            return `${uuidv4()}`;
+        }
+    },
+    options: DatatableOptions,
+    pollInterval: {
+        type: Number,
+        default: null
+    }
+});
+
+const {
+    hiddenColumns: userHiddenColumns,
+    isUserHidden,
+    toggleHidden: toggleUserHiddenColumn,
+    colWidths: columnWidths,
+    getColWidth,
+    startResize,
+    columnOrder,
+    dragState,
+    onDragStart,
+    onDragOver,
+    onDrop,
+    visibleColumns,
+    stickyCount,
+    stickyLeft
+} = useDatatableColumns(props.options.id, props.options.columns);
+const {
+    showTooltip,
+    tooltipValues,
+    tooltipPosition,
+    openTooltip: sendTooltipValues,
+    hideTooltip
+} = useDatatableTooltip();
 
 const slots = useSlots();
 const usedSlots = Object.keys(slots);
@@ -20,18 +60,8 @@ const activeColumnsDropdown = ref(false);
 
 const onScroll = () => {
     isScrolled.value = tableContainer.value?.scrollLeft > 0;
-    showTooltip.value = false;
+    hideTooltip();
 };
-
-const props = defineProps({
-    id: {
-        required: false,
-        default: () => {
-            return `${uuidv4()}`;
-        }
-    },
-    options: DatatableOptions
-});
 
 const emit = defineEmits(['update:meta']);
 const activeFilters = ref(false);
@@ -53,7 +83,10 @@ const setFilters = () => {
 };
 setFilters();
 
+let pollTimeoutId = null;
+
 const getData = async () => {
+    clearTimeout(pollTimeoutId);
     api.clearFilters();
     api.setColumns(
         props.options.columns
@@ -76,6 +109,10 @@ const getData = async () => {
     api.setSearch(form.search);
     await api.getData();
     emit('update:meta', api.meta);
+
+    if (props.pollInterval && !api.meta.is_request_completed) {
+        pollTimeoutId = setTimeout(getData, props.pollInterval);
+    }
 };
 
 const sortBy = (data) => {
@@ -155,26 +192,6 @@ const isArrayValue = (item, key) => {
 
     return { items: [], keys: [] };
 };
-const showTooltip = ref(false);
-const tooltipValues = reactive({
-    items: [],
-    keys: []
-});
-const tooltipPosition = ref({ top: 0, left: 0 });
-
-const sendTooltipValues = (ev, object) => {
-    const indicator = ev.target.closest('.tooltip-indicator');
-    const rect = (indicator ?? ev.target).getBoundingClientRect();
-
-    tooltipPosition.value = {
-        top: rect.bottom + window.scrollY,
-        left: rect.left + window.scrollX + rect.width / 2 // 100 = half of 200px tooltip
-    };
-
-    showTooltip.value = true;
-    tooltipValues.items = object.items.slice(0, 10);
-    tooltipValues.keys = object.key.join('.');
-};
 
 const exportDisabled = ref(false);
 
@@ -201,73 +218,6 @@ const getExportData = async () => {
     setTimeout(() => {
         exportDisabled.value = false;
     }, 5000);
-};
-
-const userHiddenColumns = ref(
-    JSON.parse(localStorage.getItem('datatable_user_hidden_columns_' + props.options.id) || '[]')
-);
-const isUserHidden = (column) => {
-    return userHiddenColumns.value.includes(column.column);
-};
-
-const savedOrder = JSON.parse(localStorage.getItem('datatable_column_order_' + props.options.id) || 'null');
-const columnOrder = ref(
-    savedOrder
-        ? props.options.columns.slice().sort((a, b) => {
-              const ai = savedOrder.indexOf(a.column);
-              const bi = savedOrder.indexOf(b.column);
-              return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
-          })
-        : props.options.columns.slice()
-);
-
-const saveColumnOrder = () => {
-    localStorage.setItem(
-        'datatable_column_order_' + props.options.id,
-        JSON.stringify(columnOrder.value.map((c) => c.column))
-    );
-};
-
-const dragState = reactive({ fromIndex: null });
-
-const onDragStart = (index) => {
-    dragState.fromIndex = index;
-};
-
-const onDragOver = (e, index) => {
-    e.preventDefault();
-    if (dragState.fromIndex === null || dragState.fromIndex === index) return;
-    const col = columnOrder.value[dragState.fromIndex];
-    if (col.isSticky) return;
-    const target = columnOrder.value[index];
-    if (target.isSticky) return;
-    columnOrder.value.splice(dragState.fromIndex, 1);
-    columnOrder.value.splice(index, 0, col);
-    dragState.fromIndex = index;
-};
-
-const onDrop = () => {
-    dragState.fromIndex = null;
-    saveColumnOrder();
-};
-
-const visibleColumns = computed(() => columnOrder.value.filter((x) => !x.isHidden && !isUserHidden(x)));
-
-const stickyCount = computed(() => columnOrder.value.filter((x) => x.isSticky).length);
-const stickyLeft = (col, visIndex) => {
-    if (!col.isSticky) return 0;
-    const stickyBefore = visibleColumns.value.slice(0, visIndex).filter((c) => c.isSticky);
-    return stickyBefore.length * 150;
-};
-
-const toggleUserHiddenColumn = (column) => {
-    const index = userHiddenColumns.value.indexOf(column.column);
-    if (index > -1) {
-        userHiddenColumns.value.splice(index, 1);
-    } else {
-        userHiddenColumns.value.push(column.column);
-    }
-    localStorage.setItem('datatable_user_hidden_columns_' + props.options.id, JSON.stringify(userHiddenColumns.value));
 };
 
 emitter.on('datatable-refresh' + (props.options.id ? ':' + props.options.id : ''), () => {
@@ -301,7 +251,7 @@ onMounted(() => {
     window.addEventListener(
         'scroll',
         () => {
-            showTooltip.value = false;
+            hideTooltip();
         },
         { passive: true }
     );
@@ -312,7 +262,7 @@ onMounted(() => {
             x.contains(ev.target)
         );
         if (!select.contains(ev.target) && !isTooltipClick) {
-            showTooltip.value = false;
+            hideTooltip();
         }
 
         if (!selectColumns.contains(ev.target)) {
@@ -326,6 +276,10 @@ onMounted(() => {
             activeMenuIndex.value = null;
         }
     });
+});
+
+onUnmounted(() => {
+    clearTimeout(pollTimeoutId);
 });
 </script>
 <template>
@@ -422,6 +376,7 @@ onMounted(() => {
                             zIndex: data.isSticky ? 3 : 2,
                             cursor: data.isSticky ? 'default' : 'grab',
                             opacity: dragState.fromIndex === key ? 0.5 : 1,
+                            width: getColWidth(data) + 'px',
                             ...data.style
                         }"
                         :class="[
@@ -464,6 +419,12 @@ onMounted(() => {
                             >
                             </DatatableFilter>
                         </div>
+                        <div
+                            class="col-resize-handle"
+                            draggable="false"
+                            @mousedown="startResize($event, data)"
+                            @dragstart.prevent
+                        ></div>
                     </th>
                     <th
                         v-if="props.options.allow.update || props.options.allow.link || props.options.allow.destroy"
@@ -491,7 +452,11 @@ onMounted(() => {
                             data.isSticky ? `datatable-col-sticky datatable-col-sticky-${key + 1}` : '',
                             key === stickyCount - 1 ? 'datatable-col-last-sticky' : ''
                         ]"
-                        :style="{ left: data.isSticky ? stickyLeft(data, key) + 'px' : 0, ...data.style }"
+                        :style="{
+                            left: data.isSticky ? stickyLeft(data, key) + 'px' : 0,
+                            width: getColWidth(data) + 'px',
+                            ...data.style
+                        }"
                     >
                         <slot
                             v-if="usedSlots.includes(data.column)"
@@ -710,13 +675,26 @@ onMounted(() => {
     padding: 0.5rem;
     vertical-align: top;
     border-bottom: 1px solid #dee2e6;
-    width: 150px;
 }
 
 .datatable-col-sticky {
     vertical-align: top;
-    min-width: 150px !important;
-    max-width: 150px !important;
+}
+
+.col-resize-handle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 5px;
+    height: 100%;
+    cursor: col-resize;
+    z-index: 10;
+    user-select: none;
+}
+
+.col-resize-handle:hover {
+    background-color: var(--color-primary, #6366f1);
+    opacity: 0.4;
 }
 
 .datatable-col-sticky-1 {
