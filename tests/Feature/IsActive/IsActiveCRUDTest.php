@@ -41,6 +41,8 @@ it('Create active Account ', function () {
     expect($accounts[0]['is_active'])->toBe(true);
 
     $data = [
+        'name' => $account->name,
+        'reference' => $account->reference,
         'is_active' => false,
     ];
 
