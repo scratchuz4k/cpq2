@@ -3,9 +3,49 @@
         <div v-if="modelValue" class="datatable-filter-panel">
             <div class="filter-panel-header">
                 <p class="filter-panel-title">Filters</p>
-                <button type="button" class="filter-panel-close" @click="$emit('update:modelValue', false)">
-                    <font-awesome-icon :icon="['fas', 'x']" />
-                </button>
+                <div class="d-flex align-items-center">
+                    <div class="position-relative" :id="id + '-filter-picker'">
+                        <button
+                            type="button"
+                            class="filter-panel-icon-btn"
+                            title="Add filter"
+                            @click="filterPickerOpen = !filterPickerOpen"
+                        >
+                            <font-awesome-icon :icon="['fas', 'plus']" />
+                        </button>
+                        <div v-if="filterPickerOpen" class="filter-picker-dropdown">
+                            <button
+                                v-for="column in availableFilterColumns"
+                                :key="column.column"
+                                type="button"
+                                class="filter-picker-item"
+                                @click="addFilterColumn(column.column)"
+                            >
+                                {{ column.title }}
+                            </button>
+                            <p v-if="!availableFilterColumns.length" class="filter-picker-empty small mb-0">
+                                All filterable columns are added
+                            </p>
+                        </div>
+                    </div>
+                    <button
+                        v-if="addedColumnConfigs.length"
+                        type="button"
+                        class="filter-panel-icon-btn"
+                        title="Clear all"
+                        @click="clearAll"
+                    >
+                        <font-awesome-icon :icon="['fas', 'eraser']" />
+                    </button>
+                    <button
+                        type="button"
+                        class="filter-panel-icon-btn"
+                        title="Close"
+                        @click="$emit('update:modelValue', false)"
+                    >
+                        <font-awesome-icon :icon="['fas', 'x']" />
+                    </button>
+                </div>
             </div>
             <div class="filter-panel-body">
                 <div v-for="column in addedColumnConfigs" :key="column.column" class="filter-panel-row">
@@ -76,40 +116,6 @@
                     </div>
                 </div>
                 <p v-if="!addedColumnConfigs.length" class="filter-panel-empty small">No filters added yet</p>
-            </div>
-            <div class="filter-panel-footer">
-                <div class="position-relative" :id="id + '-filter-picker'">
-                    <button
-                        type="button"
-                        class="btn btn-sm btn-outline-primary w-100"
-                        @click="filterPickerOpen = !filterPickerOpen"
-                    >
-                        <font-awesome-icon :icon="['fas', 'plus']" class="me-1" />
-                        Add filter
-                    </button>
-                    <div v-if="filterPickerOpen" class="filter-picker-dropdown filter-picker-dropdown-up">
-                        <button
-                            v-for="column in availableFilterColumns"
-                            :key="column.column"
-                            type="button"
-                            class="filter-picker-item"
-                            @click="addFilterColumn(column.column)"
-                        >
-                            {{ column.title }}
-                        </button>
-                        <p v-if="!availableFilterColumns.length" class="filter-picker-empty small mb-0">
-                            All filterable columns are added
-                        </p>
-                    </div>
-                </div>
-                <button
-                    v-if="addedColumnConfigs.length"
-                    type="button"
-                    class="btn btn-sm btn-outline-secondary w-100 mt-2"
-                    @click="clearAll"
-                >
-                    Clear all
-                </button>
             </div>
         </div>
     </transition>
@@ -268,14 +274,23 @@ onUnmounted(() => {
     margin: 0;
 }
 
-.filter-panel-close {
+.filter-panel-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin-left: 4px;
+    padding: 0;
     border: none;
+    border-radius: 4px;
     background: transparent;
     color: #6c757d;
     font-size: 12px;
 }
 
-.filter-panel-close:hover {
+.filter-panel-icon-btn:hover {
+    background-color: #f1f3f5;
     color: #343a40;
 }
 
@@ -329,11 +344,6 @@ onUnmounted(() => {
     flex: 1;
 }
 
-.filter-panel-footer {
-    padding: 12px 16px;
-    border-top: 1px solid #dee2e6;
-}
-
 .filter-chip-remove {
     display: flex;
     align-items: center;
@@ -356,7 +366,6 @@ onUnmounted(() => {
 .filter-picker-dropdown {
     position: absolute;
     top: 100%;
-    left: 0;
     right: 0;
     margin-top: 4px;
     background-color: white;
@@ -364,15 +373,9 @@ onUnmounted(() => {
     border-radius: 4px;
     padding: 4px;
     z-index: 10;
+    min-width: 180px;
     max-height: 200px;
     overflow-y: auto;
-}
-
-.filter-picker-dropdown-up {
-    top: auto;
-    bottom: 100%;
-    margin-top: 0;
-    margin-bottom: 4px;
 }
 
 .filter-picker-item {
