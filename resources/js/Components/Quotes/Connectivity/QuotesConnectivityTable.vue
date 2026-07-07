@@ -207,6 +207,10 @@ const setMeta = (tempMeta) => {
     meta.overallTotal = tempMeta.overall_total;
     meta.isRequestCompleted = tempMeta.is_request_completed;
 
+    if (meta.isRequestCompleted) {
+        showLoadingModal.value = false;
+    }
+
     if (previousOverallTotal > 0 && previousOverallTotal !== meta.overallTotal) {
         notyf.success('New products added!');
     }
