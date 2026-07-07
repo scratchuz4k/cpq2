@@ -57,6 +57,15 @@ export class DatatableOptions {
     }
 
     /**
+     * Clears all filters previously added via addQuery
+     * @returns {DatatableOptions}
+     */
+    clearQuery() {
+        this.query = [];
+        return this;
+    }
+
+    /**
      * Adds a grouped filter to querystring in the url as a parameter
      * @param {string} key
      * @param {string} column

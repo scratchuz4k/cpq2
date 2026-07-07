@@ -1,9 +1,7 @@
 <script setup>
 import _ from 'lodash';
-import axios from 'axios';
 import { DatatableOptions } from '@/Components/Datatables/DatatableOptions.js';
-import { FilterOperators } from '@composables/useApi';
-import { ref, reactive, watch, onMounted } from 'vue';
+import { ref, reactive, computed, watch } from 'vue';
 import MultiSelect from 'primevue/multiselect';
 import Dialog from 'primevue/dialog';
 import format from '@/Composables/format.js';
@@ -11,7 +9,6 @@ import Spinner from '@/Components/Spinner.vue';
 import Select from 'primevue/select';
 import ToggleSwitch from 'primevue/toggleswitch';
 import TriStateToggle from '@/Components/TriStateToggle.vue';
-import queryString from 'qs';
 import { remove, add } from '@/Composables/useConnectivityItem';
 import { quote, getQuote } from '@/Composables/useQuote';
 import SvgIcon from '@/Components/Custom/SvgIcon.vue';
@@ -23,16 +20,15 @@ const props = defineProps({
     currentStep: Number
 });
 
-let timeoutId = null;
-const isLoading = ref(true);
 const showLoadingModal = ref(true);
 const showLowestCost = ref(true);
 const showQuoted = ref(false);
 const showFilters = ref(true);
 const showContended = ref(null);
-const articles = ref([]);
 const errors = ref([]);
 const selectedFilters = ref([]);
+const clearCache = ref(false);
+const tableRef = ref(null);
 
 const filters = reactive({
     providerName: {
@@ -88,170 +84,14 @@ const filterList = reactive({
 });
 
 const meta = reactive({
-    page: 1,
     total: 0,
     overallTotal: 0,
-    first: 1,
-    limit: 10,
     isRequestCompleted: false
 });
-
-const getArticles = async (clearCache = false, runTimeout = false) => {
-    isLoading.value = true;
-    let temp = [];
-    Object.keys(filters).forEach((key) => {
-        temp.push({
-            column: key,
-            operator: filters[key].operator,
-            value: filters[key].value ?? null
-        });
-    });
-    if (showQuoted.value) {
-        let items = quote.items.length
-            ? quote.items.filter((item) => item.product_code).map((item) => item.product_code)
-            : ['#'];
-        temp.push({ column: 'code', operator: 'in', value: items });
-    }
-    if (showLowestCost.value) {
-        temp.push({ column: '*', operator: 'lowest-cost', value: 1 });
-    }
-
-    if (showContended.value !== null) {
-        temp.push({ column: 'isContended', operator: 'equals', value: showContended.value ? 1 : 0 });
-    }
-
-    if (clearCache) {
-        showLoadingModal.value = true;
-    }
-
-    let query = queryString.stringify({
-        quote_id: props.modelValue.id,
-        filters: temp,
-        page: meta.page,
-        limit: meta.limit,
-        order: sort.order,
-        orderBy: sort.field,
-        account_id: props.modelValue.account_id,
-        clear_cache: clearCache ? 1 : 0
-    });
-
-    try {
-        let res = await axios.get('/api/cloudmarket/products?' + query);
-
-        errors.value = res.data.errors ?? [];
-        articles.value = res.data.data ?? [];
-        articles.value = articles.value.map((article) => {
-            if (article.productName.includes('with router:')) {
-                const productInfo = article.productName.split('with router:');
-                article.productName = productInfo[0].trim();
-                if (productInfo.length > 1 && productInfo[1].trim() !== 'n/a') {
-                    article.additionalInfo = article.additionalInfo || {};
-                    article.additionalInfo['router'] = productInfo[1].trim();
-                }
-            }
-
-            return article;
-        });
-
-        isLoading.value = false;
-        if (!showLoadingModal.value && meta.overallTotal !== res.data.overall_total && meta.overallTotal > 0) {
-            notyf.success('New products added!');
-        }
-        meta.first = (meta.page - 1) * meta.limit;
-        meta.total = res.data.total;
-        meta.overallTotal = res.data.overall_total;
-        meta.isRequestCompleted = !!res.data.finished_at;
-
-        Object.assign(filterList, res.data.filters);
-
-        const configFormattedSpeed = quote.configs?.formattedSpeed;
-        if (
-            configFormattedSpeed &&
-            !Object.prototype.hasOwnProperty.call(filterList.formattedSpeed, configFormattedSpeed)
-        ) {
-            filterList.formattedSpeed[configFormattedSpeed] = 0;
-        }
-
-        const configBearer = quote.configs?.bearer;
-        if (configBearer && !Object.prototype.hasOwnProperty.call(filterList.bearer, configBearer)) {
-            filterList.bearer[configBearer] = 0;
-        }
-
-        const contractLengths = quote.configs?.contract_length ? quote.configs.contract_length.split(',') : [];
-        contractLengths.forEach((length) => {
-            if (length && !Object.prototype.hasOwnProperty.call(filterList.contractTermMonths, length)) {
-                filterList.contractTermMonths[length] = 0;
-            }
-        });
-
-        let bearerFilters = [];
-        Object.keys(filterList.bearer).forEach((key) => {
-            if (key !== 'null') {
-                bearerFilters.push({
-                    label: format.speed(key),
-                    value: key
-                });
-            }
-        });
-        filterList.bearer = bearerFilters;
-
-        let speedFilters = [];
-        Object.keys(filterList.formattedSpeed).forEach((key) => {
-            if (key !== 'null') {
-                speedFilters.push({
-                    label: format.speed(key),
-                    value: key
-                });
-            }
-        });
-        filterList.formattedSpeed = speedFilters;
-
-        let contractLengthsFilters = [];
-        Object.keys(filterList.contractTermMonths).forEach((key) => {
-            if (key !== 'null') {
-                contractLengthsFilters.push({
-                    label: key + ' Months',
-                    value: key
-                });
-            }
-        });
-        filterList.contractTermMonths = contractLengthsFilters;
-
-        selectedFilters.value = Object.fromEntries(
-            Object.entries(filters).filter(([key, filter]) => filter.value !== null)
-        );
-
-        if (!meta.isRequestCompleted && runTimeout) {
-            timeoutId = setTimeout(() => {
-                if (hasPrimaryProduct()) {
-                    isLoading.value = false;
-                    showLoadingModal.value = false;
-                    meta.isRequestCompleted = true;
-                    return;
-                }
-                getArticles(false, true);
-            }, 15000);
-            return;
-        } else {
-            showLoadingModal.value = false;
-        }
-    } catch (error) {
-        console.error(error);
-        notyf.error(error.message);
-        isLoading.value = false;
-        meta.isRequestCompleted = true;
-        showLoadingModal.value = false;
-    }
-};
 
 const setAltImg = (event) => {
     event.target.src = '/images/no_image.png';
 };
-
-const sort = reactive({
-    field: 'priceMonthly_spa',
-    order: 'asc'
-});
 
 const resetFilters = () => {
     Object.keys(filters)
@@ -272,7 +112,6 @@ const checkProduct = (article) => {
 
     if (index == -1) {
         add(article);
-        clearTimeout(timeoutId);
     } else {
         remove(item);
     }
@@ -280,6 +119,19 @@ const checkProduct = (article) => {
 
 const hasPrimaryProduct = () => {
     return quote.items && quote.items.find((x) => x.data.type == 'Primary Product');
+};
+
+const formatBadgeLabel = (column, value) => {
+    if (column === 'isManaged') {
+        return 'Managed: ' + (value === '1' ? 'Yes' : value === '0' ? 'No' : 'N/A');
+    }
+    if (['formattedSpeed', 'bearer'].includes(column)) {
+        return 'Min. ' + (column === 'formattedSpeed' ? 'Speed' : _.capitalize(column)) + ': ' + format.speed(value);
+    }
+    if (column === 'contractTermMonths') {
+        return value + ' Months';
+    }
+    return value;
 };
 
 const removeFilter = (selectedFilter, value) => {
@@ -291,10 +143,42 @@ const removeFilter = (selectedFilter, value) => {
     }
 };
 
+// Facets whose options must always include the quote's preselected config value
+// (even if the current result set has no products at that value), so the user can see why it's filtered.
+const rangeFacets = [
+    {
+        key: 'formattedSpeed',
+        configValues: () => (quote.configs?.formattedSpeed ? [quote.configs.formattedSpeed] : []),
+        label: format.speed
+    },
+    {
+        key: 'bearer',
+        configValues: () => (quote.configs?.bearer ? [quote.configs.bearer] : []),
+        label: format.speed
+    },
+    {
+        key: 'contractTermMonths',
+        configValues: () => (quote.configs?.contract_length ? quote.configs.contract_length.split(',') : []),
+        label: (value) => value + ' Months'
+    }
+];
+
+const buildFacetOptions = ({ key, configValues, label }) => {
+    configValues().forEach((value) => {
+        if (value && !Object.prototype.hasOwnProperty.call(filterList[key], value)) {
+            filterList[key][value] = 0;
+        }
+    });
+
+    filterList[key] = Object.keys(filterList[key])
+        .filter((value) => value !== 'null')
+        .map((value) => ({ label: label(value), value }));
+};
+
 const setMeta = (tempMeta) => {
     const previousOverallTotal = meta.overallTotal;
-    showLoadingModal.value = false;
-    meta.isRequestCompleted = false;
+    showLoadingModal.value = tempMeta.is_request_completed;
+    errors.value = tempMeta.errors ?? [];
     meta.total = tempMeta.total;
     meta.overallTotal = tempMeta.overall_total;
     meta.isRequestCompleted = tempMeta.is_request_completed;
@@ -304,97 +188,67 @@ const setMeta = (tempMeta) => {
     }
 
     Object.assign(filterList, tempMeta.filters);
-
-    const configFormattedSpeed = quote.configs?.formattedSpeed;
-    if (
-        configFormattedSpeed &&
-        !Object.prototype.hasOwnProperty.call(filterList.formattedSpeed, configFormattedSpeed)
-    ) {
-        filterList.formattedSpeed[configFormattedSpeed] = 0;
-    }
-
-    const configBearer = quote.configs?.bearer;
-    if (configBearer && !Object.prototype.hasOwnProperty.call(filterList.bearer, configBearer)) {
-        filterList.bearer[configBearer] = 0;
-    }
-
-    const contractLengths = quote.configs?.contract_length ? quote.configs.contract_length.split(',') : [];
-    contractLengths.forEach((length) => {
-        if (length && !Object.prototype.hasOwnProperty.call(filterList.contractTermMonths, length)) {
-            filterList.contractTermMonths[length] = 0;
-        }
-    });
-
-    let bearerFilters = [];
-    Object.keys(filterList.bearer).forEach((key) => {
-        if (key !== 'null') {
-            bearerFilters.push({
-                label: format.speed(key),
-                value: key
-            });
-        }
-    });
-    filterList.bearer = bearerFilters;
-
-    let speedFilters = [];
-    Object.keys(filterList.formattedSpeed).forEach((key) => {
-        if (key !== 'null') {
-            speedFilters.push({
-                label: format.speed(key),
-                value: key
-            });
-        }
-    });
-    filterList.formattedSpeed = speedFilters;
-
-    let contractLengthsFilters = [];
-    Object.keys(filterList.contractTermMonths).forEach((key) => {
-        if (key !== 'null') {
-            contractLengthsFilters.push({
-                label: key + ' Months',
-                value: key
-            });
-        }
-    });
-    filterList.contractTermMonths = contractLengthsFilters;
+    rangeFacets.forEach(buildFacetOptions);
 
     selectedFilters.value = Object.fromEntries(
         Object.entries(filters).filter(([key, filter]) => filter.value !== null)
     );
 };
 
-const options = new DatatableOptions('cloudmarket/products', 'cloudmarket-products')
-    .addColumn('productName', 'Name', { isSticky: true })
-    .addColumn('providerName', 'Provider')
-    .addColumn('connectivitySupplierGroup', 'Subprovider')
-    .addColumn('isManaged', 'Managed')
-    .addColumn('bearer', 'Bearer')
-    .addColumn('speed', 'Speed')
-    .addColumn('priceInstall_spa', 'Set Up')
-    .addColumn('priceMonthly_spa', 'Monthly')
-    .addColumn('priceECC', 'ECC')
-    .addColumn('contractTermMonths', 'Contract Term')
-    .addColumn('isContended', 'Contended')
-    .addColumn('connectivityType', 'Connectivity')
-    .addColumn('technologyType', 'Technology')
-    .addColumn('actions', '', { style: { position: 'sticky', right: 0, width: '60px' } });
-
-watch(
-    [filters, showQuoted, showLowestCost, showContended],
-    _.debounce(function () {
-        meta.page = 1;
-        getArticles();
-    }, 500)
+const options = reactive(
+    new DatatableOptions('cloudmarket/products', 'cloudmarket-products')
+        .setSort('asc', 'priceMonthly_spa')
+        .addColumn('productName', 'Name', { isSticky: true })
+        .addColumn('providerName', 'Provider')
+        .addColumn('connectivitySupplierGroup', 'Subprovider')
+        .addColumn('isManaged', 'Managed')
+        .addColumn('bearer', 'Bearer')
+        .addColumn('speed', 'Speed')
+        .addColumn('priceInstall_spa', 'Set Up')
+        .addColumn('priceMonthly_spa', 'Monthly')
+        .addColumn('priceECC', 'ECC')
+        .addColumn('contractTermMonths', 'Contract Term')
+        .addColumn('isContended', 'Contended')
+        .addColumn('connectivityType', 'Connectivity')
+        .addColumn('technologyType', 'Technology')
+        .addColumn('actions', '', { style: { position: 'sticky', right: 0, width: '60px' } })
 );
 
-emitter.on('primary-product:removed', () => getArticles(false, true));
-window.addEventListener('beforeunload', () => {
-    clearTimeout(timeoutId); // Cancel timeout on page navigation or refresh
-});
+const params = computed(() => ({
+    quote_id: props.modelValue.id,
+    account_id: props.modelValue.account_id,
+    clear_cache: clearCache.value ? 1 : 0
+}));
 
-// onMounted(() => {
-//     getArticles(false, true);
-// });
+const rebuildQuery = () => {
+    options.clearQuery();
+    Object.keys(filters).forEach((key) => {
+        options.addQuery(key, filters[key].operator, filters[key].value ?? null);
+    });
+    if (showQuoted.value) {
+        let items = quote.items.length
+            ? quote.items.filter((item) => item.product_code).map((item) => item.product_code)
+            : ['#'];
+        options.addQuery('code', 'in', items);
+    }
+    if (showLowestCost.value) {
+        options.addQuery('*', 'lowest-cost', 1);
+    }
+    if (showContended.value !== null) {
+        options.addQuery('isContended', 'equals', showContended.value ? 1 : 0);
+    }
+};
+
+watch([filters, showQuoted, showLowestCost, showContended], rebuildQuery, { deep: true, immediate: true });
+
+const getFreshData = async () => {
+    showLoadingModal.value = true;
+    clearCache.value = true;
+    await tableRef.value?.getData();
+    clearCache.value = false;
+};
+
+emitter.on('primary-product:removed', () => tableRef.value?.getData());
 </script>
 <template>
     <div v-if="!hasPrimaryProduct()">
@@ -414,7 +268,7 @@ window.addEventListener('beforeunload', () => {
                                     </div>
                                 </div>
                                 <div v-if="meta.isRequestCompleted" class="small d-flex align-items-center">
-                                    <button class="btn btn-sm btn-outline-primary" @click="getArticles(true, true)">
+                                    <button class="btn btn-sm btn-outline-primary" @click="getFreshData()">
                                         Get fresh data
                                         <font-awesome-icon :icon="['fas', 'refresh']" class="ps-2"></font-awesome-icon>
                                     </button>
@@ -447,19 +301,7 @@ window.addEventListener('beforeunload', () => {
                                                       ? selectedFilter.value
                                                       : [selectedFilter.value]
                                                   ).filter((v) => v !== null)"
-                                            :value="
-                                                column === 'isManaged'
-                                                    ? 'Managed: ' +
-                                                      (value === '1' ? 'Yes' : value === '0' ? 'No' : 'N/A')
-                                                    : ['formattedSpeed', 'bearer'].includes(column)
-                                                      ? 'Min. ' +
-                                                        (column === 'formattedSpeed' ? 'Speed' : _.capitalize(column)) +
-                                                        ': ' +
-                                                        format.speed(value)
-                                                      : ['contractTermMonths'].includes(column)
-                                                        ? value + ' Months'
-                                                        : value
-                                            "
+                                            :value="formatBadgeLabel(column, value)"
                                             class="px-3 py-1"
                                             :title="selectedFilter.name"
                                         >
@@ -690,21 +532,6 @@ window.addEventListener('beforeunload', () => {
                                                     Show only lowest cost products
                                                 </label>
                                             </div>
-                                            <!-- <div class="checkbox d-flex py-1 px-2">
-                                        <ToggleSwitch class="me-2" id="filter-show-quoted" v-model="showQuoted">
-                                            <template #handle>
-                                                <font-awesome-icon
-                                                    :icon="
-                                                        showQuoted ? ['fas', 'circle-check'] : ['far', 'circle-xmark']
-                                                    "
-                                                    class="text-primary"
-                                                />
-                                            </template>
-                                        </ToggleSwitch>
-                                        <label class="form-check-label" for="filter-show-quoted">
-                                            Show only quoted items
-                                        </label>
-                                    </div> -->
                                             <div class="checkbox d-flex py-1 px-2">
                                                 <TriStateToggle v-model="showContended" id="filter-show-contended">
                                                     <template #handle>
@@ -737,7 +564,13 @@ window.addEventListener('beforeunload', () => {
                     </div>
                 </div>
                 <div class="table-wrapper">
-                    <NewDatatable :options="options" :poll-interval="15000" @update:meta="(meta) => setMeta(meta)">
+                    <NewDatatable
+                        ref="tableRef"
+                        :options="options"
+                        :params="params"
+                        :poll-interval="hasPrimaryProduct() ? null : 15000"
+                        @update:meta="(meta) => setMeta(meta)"
+                    >
                         <template #productName="{ value, data }">
                             <p class="small" :title="value">
                                 {{ value }}
@@ -789,31 +622,37 @@ window.addEventListener('beforeunload', () => {
                             </p>
                         </template>
                         <template #isManaged="{ value, data }">
-                            <span
-                                v-if="
-                                    data.isManaged === null && data.providerKey === 'pxc' && data.isContended === false
-                                "
-                                title="This product is unmanaged and will become managed once a router is selected. For PXC Ethernet circuits routers are free of charge on 3 or 5 year terms."
-                                data-bs-original-title="This product is unmanaged and will become managed once a router is selected. For PXC Ethernet circuits routers are free of charge on 3 or 5 year terms."
-                                v-tooltip
-                            >
-                                {{ data.isManaged == true ? 'Yes' : data.isManaged === false ? 'No' : 'N/A' }}
-                                <SvgIcon class="h6 mt-1" width="20" height="20" name="info" />
-                            </span>
-                            <span
-                                v-else-if="
-                                    data.isManaged === true && data.providerKey === 'its' && data.isContended === false
-                                "
-                                title="ITS managed service includes 24/7 monitoring and a 6-hour fix SLA, however no router is included. Instead, ITS-provided fibre includes an ONT (optical network terminal) while third-party fibre (e.g. Openreach) uses the carrier's own Network Termination Equipment (NTE)."
-                                data-bs-original-title="ITS managed service includes 24/7 monitoring and a 6-hour fix SLA, however no router is included. Instead, ITS-provided fibre includes an ONT (optical network terminal) while third-party fibre (e.g. Openreach) uses the carrier's own Network Termination Equipment (NTE)"
-                                v-tooltip
-                            >
-                                {{ data.isManaged == true ? 'Yes' : data.isManaged === false ? 'No' : 'N/A' }}
-                                <SvgIcon class="h6 mt-1" width="20" height="20" name="info" />
-                            </span>
-                            <span v-else>
-                                {{ data.isManaged == true ? 'Yes' : data.isManaged === false ? 'No' : 'N/A' }}
-                            </span>
+                            <p class="small">
+                                <span
+                                    v-if="
+                                        data.isManaged === null &&
+                                        data.providerKey === 'pxc' &&
+                                        data.isContended === false
+                                    "
+                                    title="This product is unmanaged and will become managed once a router is selected. For PXC Ethernet circuits routers are free of charge on 3 or 5 year terms."
+                                    data-bs-original-title="This product is unmanaged and will become managed once a router is selected. For PXC Ethernet circuits routers are free of charge on 3 or 5 year terms."
+                                    v-tooltip
+                                >
+                                    {{ data.isManaged == true ? 'Yes' : data.isManaged === false ? 'No' : 'N/A' }}
+                                    <SvgIcon class="h6 mt-1" width="20" height="20" name="info" />
+                                </span>
+                                <span
+                                    v-else-if="
+                                        data.isManaged === true &&
+                                        data.providerKey === 'its' &&
+                                        data.isContended === false
+                                    "
+                                    title="ITS managed service includes 24/7 monitoring and a 6-hour fix SLA, however no router is included. Instead, ITS-provided fibre includes an ONT (optical network terminal) while third-party fibre (e.g. Openreach) uses the carrier's own Network Termination Equipment (NTE)."
+                                    data-bs-original-title="ITS managed service includes 24/7 monitoring and a 6-hour fix SLA, however no router is included. Instead, ITS-provided fibre includes an ONT (optical network terminal) while third-party fibre (e.g. Openreach) uses the carrier's own Network Termination Equipment (NTE)"
+                                    v-tooltip
+                                >
+                                    {{ data.isManaged == true ? 'Yes' : data.isManaged === false ? 'No' : 'N/A' }}
+                                    <SvgIcon class="h6 mt-1" width="20" height="20" name="info" />
+                                </span>
+                                <span v-else>
+                                    {{ data.isManaged == true ? 'Yes' : data.isManaged === false ? 'No' : 'N/A' }}
+                                </span>
+                            </p>
                         </template>
                         <template #providerName="{ value, data }">
                             <img
@@ -843,6 +682,12 @@ window.addEventListener('beforeunload', () => {
                         <template #speed="{ value, data }">
                             <p class="small">{{ format.speed(value) }}</p>
                         </template>
+                        <template #isContended="{ value, data }">
+                            <p class="small">
+                                {{ data.isContended == true ? 'Yes' : data.isContended === false ? 'No' : 'N/A' }}
+                            </p>
+                        </template>
+
                         <template #priceInstall_spa="{ value, data, index }">
                             <p class="small" :id="'line-' + index + '-price-install'">
                                 {{ format.GBP(value) }}

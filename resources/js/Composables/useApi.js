@@ -30,6 +30,7 @@ export class Api {
     search = null;
     route = null;
     meta = null;
+    params = {};
 
     /**
      *
@@ -88,6 +89,15 @@ export class Api {
     }
 
     /**
+     * Sets extra top-level request params that aren't part of the generic filters array
+     * (e.g. quote_id, account_id, clear_cache)
+     * @param {object} params
+     */
+    setParams(params) {
+        this.params = params ?? {};
+    }
+
+    /**
      * Adds columns to the columns array to be sent to the backend as a searchable column
      * @param {array} columns
      */
@@ -131,6 +141,7 @@ export class Api {
 
         this.isLoading.value = true;
         let object = {
+            ...this.params,
             order: this.order,
             orderBy: this.orderBy,
             limit: this.meta.limit,
@@ -161,6 +172,7 @@ export class Api {
             this.meta.links = res.data.meta?.links ?? res.data.links ?? [];
             this.meta.first = (this.meta.page - 1) * this.meta.limit;
             this.meta.filters = res.data.meta?.filters ?? res.data.filters ?? {};
+            this.meta.errors = res.data.meta?.errors ?? res.data.errors ?? [];
             this.meta.is_request_completed = !!res.data.finished_at;
             this.items.value = res.data.data;
             this.isLoading.value = false;
@@ -190,6 +202,7 @@ class ApiMeta {
         this.last_page = 1;
         this.links = [];
         this.filters = {};
+        this.errors = [];
         this.is_request_completed = false;
     }
 }

@@ -24,6 +24,10 @@ const props = defineProps({
     pollInterval: {
         type: Number,
         default: null
+    },
+    params: {
+        type: Object,
+        default: () => ({})
     }
 });
 
@@ -107,6 +111,7 @@ const getData = async () => {
 
     api.setOrder(form.orderBy, form.order);
     api.setSearch(form.search);
+    api.setParams(props.params);
     await api.getData();
     emit('update:meta', api.meta);
 
@@ -238,13 +243,15 @@ const debouncedSearch = _.debounce(function () {
 }, 500);
 
 watch(
-    () => [form.filters, form.search],
+    () => [form.filters, form.search, props.options.query, props.params],
     () => {
         api.isLoading = true;
         debouncedSearch();
     },
     { deep: true }
 );
+
+defineExpose({ getData });
 
 onMounted(() => {
     debouncedSearch();
