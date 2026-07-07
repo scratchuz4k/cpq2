@@ -228,21 +228,26 @@ const options = reactive(
             .addColumn('providerName', 'Provider')
             .addColumn('connectivitySupplierGroup', 'Subprovider')
             .addColumn('isManaged', 'Managed')
+            // .addColumnFilter('isManaged', 'checkbox')
             .addColumn('bearer', 'Bearer')
             .addColumn('speed', 'Speed')
-            .addColumn('priceInstall_spa', 'Set Up')
-            .addColumn('priceMonthly_spa', 'Monthly')
+            .addColumn('priceInstall_spa', 'Set Up', { isSearchable: false })
+            .addColumn('priceMonthly_spa', 'Monthly', { isSearchable: false })
             .addColumn('priceECC', 'ECC')
             .addColumn('contractTermMonths', 'Contract Term');
 
         if (props.productType === 'Primary Product') {
             builder.addColumn('isContended', 'Contended');
+            // builder.addColumnFilter('isContended', 'checkbox')
         }
 
-        return builder
-            .addColumn('connectivityType', 'Connectivity')
-            .addColumn('technologyType', 'Technology')
-            .addColumn('actions', '', { style: { position: 'sticky', right: 0, width: '60px' } });
+        return (
+            builder
+                .addColumn('connectivityType', 'Connectivity')
+                .addColumn('technologyType', 'Technology')
+                // .addColumnFilter('technologyType', 'multiselect', ['Fibre', 'Copper', 'Wireless'])
+                .addColumn('actions', '', { style: { position: 'sticky', right: 0, width: '60px' } })
+        );
     })()
 );
 
@@ -750,11 +755,6 @@ emitter.on(`${props.productType.split(' ')[0].toLowerCase()}-product:removed`, (
 <style scoped>
 tr.active td {
     background-color: var(--light-teal);
-}
-
-.table-wrapper {
-    position: relative;
-    overflow-x: auto;
 }
 
 .table-blocker {

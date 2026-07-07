@@ -91,14 +91,17 @@ export class DatatableOptions {
     }
 
     /**
-     * Adds a filter to columns in the datatable
+     * Configures a custom widget for a column's filter-panel row, instead of the default text input.
      * @param {string} column - The column name to add the filter to
-     * @param {('text'|'select'|'checkbox')} type - The type of filter: 'text', 'select', or 'checkbox'
-     * @param {array} options - Options for the filter (used for 'select' type)
+     * @param {('text'|'select'|'multiselect'|'checkbox')} type
+     * @param {array} [options] - Static `{label, value}` (or plain value) options. Omit for
+     *  'select'/'multiselect' to source live options from the response's facet counts instead.
+     * @param {FilterOperators} [operator] - Defaults to 'contains' for text, 'in' for multiselect, 'equals' otherwise.
      * @returns {DatatableOptions}
      */
-    addColumnFilter(column, type, options = []) {
-        this.columnFilters[column] = { type: type, options: options };
+    addColumnFilter(column, type, options = [], operator = null) {
+        const defaultOperator = type === 'text' ? 'contains' : type === 'multiselect' ? 'in' : 'equals';
+        this.columnFilters[column] = { type: type, options: options, operator: operator ?? defaultOperator };
         return this;
     }
 
