@@ -731,13 +731,20 @@ emitter.on(`${props.productType.split(' ')[0].toLowerCase()}-product:removed`, (
         </div>
     </Dialog>
 
-    <QuoteConnectivityHardwareTable
+    <QuoteConnectivityAddonsTable
         v-if="props.needsAddons && hasProduct()"
         v-model="props.modelValue"
-        :productType="props.hardwareProductType"
         :currentStep="props.currentStep"
+        :productType="props.hardwareProductType"
+        route="cloudmarket/products/addons"
+        title="Hardware"
+        :pollInterval="4000"
+        :showCategoryBadge="false"
+        filterPrimaryCircuitHardware
+        showRequiredIndicator
+        elementId="pcx-its-hardware"
     >
-    </QuoteConnectivityHardwareTable>
+    </QuoteConnectivityAddonsTable>
 </template>
 
 <style scoped>
