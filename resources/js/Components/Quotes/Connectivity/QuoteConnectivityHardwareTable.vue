@@ -48,7 +48,7 @@
 </template>
 <script setup>
 import { removeAddon, addAddon, addons, isLoading, checks } from '@/Composables/useConnectivityItem';
-import { onMounted, reactive } from 'vue';
+import { onMounted, onUnmounted, reactive } from 'vue';
 import { quote, getQuote } from '@/Composables/useQuote';
 import queryString from 'qs';
 import _ from 'lodash';
@@ -57,7 +57,7 @@ const props = defineProps({
     modelValue: Object,
     currentStep: Number,
     productType: {
-        defaul: 'Primary Hardware Product',
+        default: 'Primary Hardware Product',
         type: String
     }
 });
@@ -128,6 +128,9 @@ window.addEventListener('beforeunload', () => {
 });
 onMounted(() => {
     getAddons();
+});
+onUnmounted(() => {
+    clearTimeout(timeoutId);
 });
 </script>
 <style scoped>

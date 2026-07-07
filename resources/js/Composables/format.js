@@ -182,6 +182,19 @@ const format = {
         const digits = number.replace(/\D/g, '');
         const withoutLeadingZero = digits.startsWith('0') ? digits.slice(1) : digits;
         return `+44 (0)${withoutLeadingZero}`;
+    },
+    productName: (rawName) => {
+        if (!rawName?.includes('with router:')) {
+            return { name: rawName, router: null };
+        }
+
+        const [name, routerPart] = rawName.split('with router:');
+        const router = routerPart?.trim();
+
+        return {
+            name: name.trim(),
+            router: router && router !== 'n/a' ? router : null
+        };
     }
 };
 

@@ -2,9 +2,9 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex justify-content-between align-items-center">
             <p class="fs-4 me-3 mb-0">
-                <b>{{ getTitle() }}</b>
+                <b>{{ currentStepConfig.title }}</b>
             </p>
-            <p class="mb-0 text-primary bold fs-5 pt-1">STEP {{ currentStep + 1 }}/{{ connectivitySteps.length }}</p>
+            <p class="mb-0 text-primary bold fs-5 pt-1">STEP {{ currentStep + 1 }}/{{ activeSteps.length }}</p>
         </div>
     </div>
 
@@ -75,16 +75,18 @@
         </div>
     </div>
     <component
-        :is="connectivitySteps[currentStep]"
+        :is="currentStepConfig.component"
+        :key="currentStep"
         v-bind="{
             modelValue: props.modelValue,
             needsAddons: needsAddons,
-            currentStep: currentStep
+            currentStep: currentStep,
+            ...(currentStepConfig.props ?? {})
         }"
     ></component>
 </template>
 <script setup>
-import { computed, ref, watch, watchEffect } from 'vue';
+import { computed, ref, watchEffect } from 'vue';
 import { getQuote, quote } from '@/Composables/useQuote';
 import { remove, addons, isLoading, checks } from '@/Composables/useConnectivityItem';
 import axios from 'axios';
@@ -94,21 +96,7 @@ const props = defineProps({
     modelValue: Object
 });
 
-const needsAddons = ref(false);
-const result = ref([]);
 const currentStep = ref(0);
-const connectivitySteps = ref(['QuotesConnectivityTable']);
-
-const showConditionalContent = computed(() => {
-    const primary = getPrimary();
-    const hasFailover = quote.items?.some((x) => x.data?.type === 'Failover Product');
-
-    return (
-        primary?.data?.providerKey === 'its' &&
-        connectivitySteps.value[currentStep.value] === 'QuoteConnectivityFailOverTable' &&
-        !hasFailover
-    );
-});
 
 const setAltImg = (event) => {
     event.target.src = '/images/no_image.png';
@@ -126,41 +114,47 @@ const removeItem = (article) => {
     getQuote(props.modelValue.id);
 };
 
+const primaryStepProps = {
+    productType: 'Primary Product',
+    route: 'cloudmarket/products',
+    hardwareProductType: 'Primary Hardware Product'
+};
+
+const failoverStepProps = {
+    productType: 'Failover Product',
+    route: 'cloudmarket/products/failover',
+    hardwareProductType: 'Failover Hardware Product'
+};
+
+// pxc and its currently follow the exact same step flow; kept as separate provider keys
+// so a provider-specific flow can diverge later without reshaping this structure.
+const defaultSteps = [
+    {
+        title: 'Select a Primary Product',
+        component: 'QuotesConnectivityTable',
+        needAddons: true,
+        props: primaryStepProps
+    },
+    {
+        title: 'Failover Service',
+        component: 'QuotesConnectivityTable',
+        needAddons: true,
+        props: failoverStepProps
+    },
+    {
+        title: 'Addons',
+        component: 'QuoteConnectivityExtrasTable',
+        needAddons: false
+    }
+];
+
+const fallbackSteps = [
+    { title: 'Select Product', component: 'QuotesConnectivityTable', needAddons: false, props: primaryStepProps }
+];
+
 const steps = {
-    pxc: [
-        {
-            title: 'Select a Primary Product',
-            component: 'QuotesConnectivityTable',
-            needAddons: true
-        },
-        {
-            title: 'Failover Service',
-            component: 'QuoteConnectivityFailOverTable',
-            needAddons: true
-        },
-        {
-            title: 'Addons',
-            component: 'QuoteConnectivityExtrasTable',
-            needAddons: false
-        }
-    ],
-    its: [
-        {
-            title: 'Select a Primary Product',
-            component: 'QuotesConnectivityTable',
-            needAddons: true
-        },
-        {
-            title: 'Failover Service',
-            component: 'QuoteConnectivityFailOverTable',
-            needAddons: true
-        },
-        {
-            title: 'Addons',
-            component: 'QuoteConnectivityExtrasTable',
-            needAddons: false
-        }
-    ]
+    pxc: defaultSteps,
+    its: defaultSteps
 };
 
 const getPrimary = () => {
@@ -170,66 +164,52 @@ const getPrimary = () => {
     return quote.items.find((x) => x.data?.type == 'Primary Product');
 };
 
-const getTitle = () => {
-    let primary = getPrimary();
-    if (Object.keys(steps).includes(primary?.data?.providerKey)) {
-        return steps[getPrimary().data?.providerKey][currentStep.value].title;
-    } else {
-        return 'Select Product';
+const activeSteps = computed(() => {
+    const primary = getPrimary();
+    if (primary && Object.keys(steps).includes(primary.data?.providerKey)) {
+        return steps[primary.data.providerKey];
     }
-};
+    return fallbackSteps;
+});
 
-const getComponent = () => {
+const currentStepConfig = computed(() => activeSteps.value[currentStep.value] ?? activeSteps.value[0]);
+const needsAddons = computed(() => currentStepConfig.value.needAddons ?? false);
+
+const showConditionalContent = computed(() => {
+    const primary = getPrimary();
+    const hasFailover = quote.items?.some((x) => x.data?.type === 'Failover Product');
+
+    return (
+        primary?.data?.providerKey === 'its' &&
+        currentStepConfig.value.props?.productType === 'Failover Product' &&
+        !hasFailover
+    );
+});
+
+const result = computed(() => {
     if (!quote.items) {
-        connectivitySteps.value = ['QuotesConnectivityTable'];
-    }
-    let item = getPrimary();
-
-    if (item && Object.keys(steps).includes(item.data?.providerKey)) {
-        connectivitySteps.value = steps[item.data?.providerKey].map((x) => x.component);
-    } else {
-        connectivitySteps.value = ['QuotesConnectivityTable'];
-    }
-};
-
-const checkAddons = () => {
-    if (!quote.items) {
-        return;
-    }
-    let item = getPrimary();
-
-    if (item && Object.keys(steps).includes(item.data?.providerKey)) {
-        needsAddons.value = steps[item.data?.providerKey][currentStep.value].needAddons;
-    } else {
-        needsAddons.value = false;
-    }
-};
-
-const getbyGroup = () => {
-    if (!quote.items) {
-        return;
+        return [];
     }
     const seenGroups = new Set();
-    result.value = [];
+    const grouped = [];
     quote.items
         .filter((x) => ['Primary Product', 'Failover Product'].includes(x.data?.type))
         .forEach((item) => {
             if (!seenGroups.has(item.group)) {
                 seenGroups.add(item.group);
-                result.value.push(item);
+                grouped.push(item);
             }
         });
-};
+    return grouped;
+});
 
 const checkGoPrevious = () => {
     currentStep.value--;
-    checkAddons();
 };
 
 const checkGoNext = () => {
     let check = currentStep.value == 0 ? checks.primaryHardwareRequired : checks.failoverHardwareRequired;
     let productType = currentStep.value == 0 ? 'Primary Hardware Product' : 'Failover Hardware Product';
-    checkAddons();
     if (check && !quote.items.find((x) => x.data.type == productType) && addons.value.length != 0) {
         scrollToDiv();
     } else {
@@ -259,15 +239,6 @@ const saveQuote = async () => {
     }
 };
 
-watch(
-    () => [quote.items],
-    () => {
-        getComponent();
-        checkAddons();
-        getbyGroup();
-    }
-);
-
 watchEffect(() => {
     actionBarButtons.value = [
         currentStep.value !== 0
@@ -279,7 +250,7 @@ watchEffect(() => {
               }
             : null,
 
-        connectivitySteps.value.length === currentStep.value + 1
+        activeSteps.value.length === currentStep.value + 1
             ? {
                   btn: 'next',
                   id: 'btn-continue',
@@ -295,8 +266,4 @@ watchEffect(() => {
               }
     ].filter(Boolean);
 });
-
-getComponent();
-checkAddons();
-getbyGroup();
 </script>

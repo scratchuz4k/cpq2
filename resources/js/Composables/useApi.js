@@ -181,7 +181,8 @@ export class Api {
                 return;
             }
             this.isLoading.value = false;
-            notyf.error(ex.response.data.message);
+            this.meta.is_request_completed = true;
+            notyf.error(ex.response?.data?.message ?? 'Something went wrong while loading data.');
         }
     };
 

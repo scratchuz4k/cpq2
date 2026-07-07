@@ -1,7 +1,7 @@
 <script setup>
 import _ from 'lodash';
 import { DatatableOptions } from '@/Components/Datatables/DatatableOptions.js';
-import { ref, reactive, computed, watch } from 'vue';
+import { ref, reactive, computed, watch, onMounted } from 'vue';
 import MultiSelect from 'primevue/multiselect';
 import Dialog from 'primevue/dialog';
 import format from '@/Composables/format.js';
@@ -10,17 +10,33 @@ import Select from 'primevue/select';
 import ToggleSwitch from 'primevue/toggleswitch';
 import TriStateToggle from '@/Components/TriStateToggle.vue';
 import { remove, add } from '@/Composables/useConnectivityItem';
-import { quote, getQuote } from '@/Composables/useQuote';
+import { quote } from '@/Composables/useQuote';
 import SvgIcon from '@/Components/Custom/SvgIcon.vue';
 import NewDatatable from '@/Components/Datatables/NewDatatable.vue';
 
 const props = defineProps({
     modelValue: Object,
     needsAddons: Boolean,
-    currentStep: Number
+    currentStep: Number,
+    productType: {
+        type: String,
+        default: 'Primary Product'
+    },
+    route: {
+        type: String,
+        default: 'cloudmarket/products'
+    },
+    hardwareProductType: {
+        type: String,
+        default: 'Primary Hardware Product'
+    }
 });
 
-const showLoadingModal = ref(true);
+const hasProduct = () => {
+    return quote.items && quote.items.find((x) => x.data.type == props.productType);
+};
+
+const showLoadingModal = ref(false);
 const showLowestCost = ref(true);
 const showQuoted = ref(false);
 const showFilters = ref(true);
@@ -108,7 +124,12 @@ const resetFilters = () => {
 const checkProduct = (article) => {
     let item = quote.items.find((item) => item.product_code == article.code);
     let index = quote.items.findIndex((item) => item.product_code == article.code);
-    article.type = 'Primary Product';
+    article.type = props.productType;
+
+    if (props.productType !== 'Primary Product') {
+        const primaryProduct = quote.items.find((x) => x.data.type == 'Primary Product');
+        article.contractTermMonths = article.contractTermMonths ?? primaryProduct?.contract_length;
+    }
 
     if (index == -1) {
         add(article);
@@ -117,8 +138,12 @@ const checkProduct = (article) => {
     }
 };
 
-const hasPrimaryProduct = () => {
-    return quote.items && quote.items.find((x) => x.data.type == 'Primary Product');
+const productDisplay = (value, data) => {
+    const parsed = format.productName(value);
+    return {
+        name: parsed.name,
+        router: data?.additionalInfo?.['router'] ?? parsed.router
+    };
 };
 
 const formatBadgeLabel = (column, value) => {
@@ -177,7 +202,6 @@ const buildFacetOptions = ({ key, configValues, label }) => {
 
 const setMeta = (tempMeta) => {
     const previousOverallTotal = meta.overallTotal;
-    showLoadingModal.value = tempMeta.is_request_completed;
     errors.value = tempMeta.errors ?? [];
     meta.total = tempMeta.total;
     meta.overallTotal = tempMeta.overall_total;
@@ -196,22 +220,30 @@ const setMeta = (tempMeta) => {
 };
 
 const options = reactive(
-    new DatatableOptions('cloudmarket/products', 'cloudmarket-products')
-        .setSort('asc', 'priceMonthly_spa')
-        .addColumn('productName', 'Name', { isSticky: true })
-        .addColumn('providerName', 'Provider')
-        .addColumn('connectivitySupplierGroup', 'Subprovider')
-        .addColumn('isManaged', 'Managed')
-        .addColumn('bearer', 'Bearer')
-        .addColumn('speed', 'Speed')
-        .addColumn('priceInstall_spa', 'Set Up')
-        .addColumn('priceMonthly_spa', 'Monthly')
-        .addColumn('priceECC', 'ECC')
-        .addColumn('contractTermMonths', 'Contract Term')
-        .addColumn('isContended', 'Contended')
-        .addColumn('connectivityType', 'Connectivity')
-        .addColumn('technologyType', 'Technology')
-        .addColumn('actions', '', { style: { position: 'sticky', right: 0, width: '60px' } })
+    (() => {
+        const tableId = `cloudmarket-products-${props.productType.split(' ')[0].toLowerCase()}`;
+        const builder = new DatatableOptions(props.route, tableId)
+            .setSort('asc', 'priceMonthly_spa')
+            .addColumn('productName', 'Name', { isSticky: true })
+            .addColumn('providerName', 'Provider')
+            .addColumn('connectivitySupplierGroup', 'Subprovider')
+            .addColumn('isManaged', 'Managed')
+            .addColumn('bearer', 'Bearer')
+            .addColumn('speed', 'Speed')
+            .addColumn('priceInstall_spa', 'Set Up')
+            .addColumn('priceMonthly_spa', 'Monthly')
+            .addColumn('priceECC', 'ECC')
+            .addColumn('contractTermMonths', 'Contract Term');
+
+        if (props.productType === 'Primary Product') {
+            builder.addColumn('isContended', 'Contended');
+        }
+
+        return builder
+            .addColumn('connectivityType', 'Connectivity')
+            .addColumn('technologyType', 'Technology')
+            .addColumn('actions', '', { style: { position: 'sticky', right: 0, width: '60px' } });
+    })()
 );
 
 const params = computed(() => ({
@@ -241,17 +273,54 @@ const rebuildQuery = () => {
 
 watch([filters, showQuoted, showLowestCost, showContended], rebuildQuery, { deep: true, immediate: true });
 
+// Drives the generic filter-picker loop in the template. `counted` fields render their raw
+// facet keys with a result count per option; the rest render pre-labelled {label, value} options
+// (either static, like Managed, or built server-side, like the min. bearer/speed/contract-length lists).
+const filterFields = [
+    {
+        key: 'isManaged',
+        label: 'Managed',
+        control: MultiSelect,
+        options: [
+            { label: 'Yes', value: '1' },
+            { label: 'No', value: '0' },
+            { label: 'N/A', value: 'null' }
+        ]
+    },
+    { key: 'providerName', label: 'Provider', control: MultiSelect, counted: true },
+    { key: 'connectivitySupplierGroup', label: 'Subprovider', control: MultiSelect, counted: true },
+    { key: 'bearer', label: 'Min. Bearer', control: Select },
+    { key: 'formattedSpeed', label: 'Min. Speed', control: Select },
+    { key: 'contractTermMonths', label: 'Contract Length', control: MultiSelect },
+    { key: 'connectivityType', label: 'Connectivity', control: MultiSelect, counted: true, excludeNull: true },
+    { key: 'technologyType', label: 'Technology', control: MultiSelect, counted: true, excludeNull: true }
+];
+
+const filterOptions = (field) => {
+    if (field.options) {
+        return field.options;
+    }
+    if (field.counted) {
+        const keys = Object.keys(filterList[field.key]);
+        return field.excludeNull ? keys.filter((key) => key !== 'null') : keys;
+    }
+    return filterList[field.key];
+};
+
 const getFreshData = async () => {
-    showLoadingModal.value = true;
     clearCache.value = true;
     await tableRef.value?.getData();
     clearCache.value = false;
 };
 
-emitter.on('primary-product:removed', () => tableRef.value?.getData());
+onMounted(() => {
+    showLoadingModal.value = hasProduct() ? false : true;
+});
+
+emitter.on(`${props.productType.split(' ')[0].toLowerCase()}-product:removed`, () => tableRef.value?.getData());
 </script>
 <template>
-    <div v-if="!hasPrimaryProduct()">
+    <div v-if="!hasProduct()">
         <div class="row mb-2">
             <div class="col position-relative">
                 <div class="row mb-3" v-if="errors.length">
@@ -332,163 +401,29 @@ emitter.on('primary-product:removed', () => tableRef.value?.getData());
                 <div id="filters" v-if="showFilters" class="p-0 m-0 mt-2 mb-3 row">
                     <div class="col-lg-10 col-12 px-1">
                         <div class="row">
-                            <div class="col-lg-3 col-12 px-2 mb-2">
-                                <label for="filter-managed" class="form-label mb-0">Managed</label>
-                                <MultiSelect
-                                    id="managed-multiselect"
-                                    v-model="filters['isManaged'].value"
+                            <div v-for="field in filterFields" :key="field.key" class="col-lg-3 col-12 px-2 mb-2">
+                                <label :for="field.key + '-filter'" class="form-label mb-0">{{ field.label }}</label>
+                                <component
+                                    :is="field.control"
+                                    :id="field.key + '-filter'"
+                                    v-model="filters[field.key].value"
                                     style="width: 100%"
-                                    :options="[
-                                        { label: 'Yes', value: '1' },
-                                        { label: 'No', value: '0' },
-                                        { label: 'N/A', value: 'null' }
-                                    ]"
-                                    optionLabel="label"
-                                    optionValue="value"
+                                    :options="filterOptions(field)"
+                                    :optionLabel="field.counted ? undefined : 'label'"
+                                    :optionValue="field.counted ? undefined : 'value'"
                                     placeholder="All"
                                     size="small"
                                     class="me-3 custom-multiselect"
                                 >
                                     <template #option="slotProps">
                                         <div style="font-size: 14px; line-height: 1.5rem">
-                                            {{ slotProps.option.label }}
+                                            {{ field.counted ? slotProps.option : slotProps.option.label }}
+                                            <template v-if="field.counted">
+                                                ( {{ filterList[field.key][slotProps.option] }} )
+                                            </template>
                                         </div>
                                     </template>
-                                </MultiSelect>
-                            </div>
-                            <div class="col-lg-3 col-12 px-2 mb-2">
-                                <label for="filter-provider" class="form-label mb-0">Provider</label>
-                                <MultiSelect
-                                    id="provider-multiselect"
-                                    v-model="filters['providerName'].value"
-                                    style="width: 100%"
-                                    :options="Object.keys(filterList.providerName)"
-                                    placeholder="All"
-                                    size="small"
-                                    class="custom-multiselect"
-                                >
-                                    <template #option="slotProps">
-                                        <div style="font-size: 14px; line-height: 1.5rem">
-                                            {{ slotProps.option }} ( {{ filterList.providerName[slotProps.option] }} )
-                                        </div>
-                                    </template>
-                                </MultiSelect>
-                            </div>
-                            <div class="col-lg-3 col-12 px-2 mb-2">
-                                <label for="filter-subprovider" class="form-label mb-0">Subprovider</label>
-                                <MultiSelect
-                                    id="subprovider-multiselect"
-                                    v-model="filters['connectivitySupplierGroup'].value"
-                                    style="width: 100%"
-                                    :options="Object.keys(filterList.connectivitySupplierGroup)"
-                                    placeholder="All"
-                                    size="small"
-                                    class="me-3 custom-multiselect"
-                                >
-                                    <template #option="slotProps">
-                                        <div style="font-size: 14px; line-height: 1.5rem">
-                                            {{ slotProps.option }} (
-                                            {{ filterList.connectivitySupplierGroup[slotProps.option] }} )
-                                        </div>
-                                    </template>
-                                </MultiSelect>
-                            </div>
-                            <div class="col-lg-3 col-12 px-2 mb-2">
-                                <label for="filter-contract" class="form-label mb-0">Min. Bearer</label>
-                                <Select
-                                    id="bearer-multiselect"
-                                    v-model="filters['bearer'].value"
-                                    style="width: 100%"
-                                    :options="filterList.bearer"
-                                    optionLabel="label"
-                                    optionValue="value"
-                                    placeholder="All"
-                                    size="small"
-                                    class="me-3 custom-select"
-                                >
-                                    <template #option="slotProps">
-                                        <div style="font-size: 14px; line-height: 1.5rem">
-                                            {{ slotProps.option.label }}
-                                        </div>
-                                    </template>
-                                </Select>
-                            </div>
-                            <div class="col-lg-3 col-12 px-2 mb-2">
-                                <label for="filter-contract" class="form-label mb-0">Min. Speed</label>
-                                <Select
-                                    id="speed-multiselect"
-                                    v-model="filters['formattedSpeed'].value"
-                                    style="width: 100%"
-                                    :options="filterList.formattedSpeed"
-                                    optionLabel="label"
-                                    optionValue="value"
-                                    placeholder="All"
-                                    size="small"
-                                    class="me-3 custom-select"
-                                >
-                                    <template #option="slotProps">
-                                        <div style="font-size: 14px; line-height: 1.5rem">
-                                            {{ slotProps.option.label }}
-                                        </div>
-                                    </template>
-                                </Select>
-                            </div>
-                            <div class="col-lg-3 col-12 px-2 mb-2">
-                                <label for="filter-contract" class="form-label mb-0">Contract Length</label>
-                                <MultiSelect
-                                    id="contract-length-multiselect"
-                                    v-model="filters['contractTermMonths'].value"
-                                    style="width: 100%"
-                                    :options="filterList.contractTermMonths"
-                                    optionLabel="label"
-                                    optionValue="value"
-                                    placeholder="All"
-                                    size="small"
-                                    class="me-3 custom-multiselect"
-                                >
-                                    <template #option="slotProps">
-                                        <div style="font-size: 14px; line-height: 1.5rem">
-                                            {{ slotProps.option.label }}
-                                        </div>
-                                    </template>
-                                </MultiSelect>
-                            </div>
-                            <div class="col-lg-3 col-12 px-2 mb-2">
-                                <label for="filter-connectivityType" class="form-label mb-0">Connectivity</label>
-                                <MultiSelect
-                                    id="connectivityType-multiselect"
-                                    v-model="filters['connectivityType'].value"
-                                    style="width: 100%"
-                                    :options="Object.keys(filterList.connectivityType).filter((key) => key !== 'null')"
-                                    placeholder="All"
-                                    size="small"
-                                    class="me-3 custom-multiselect"
-                                >
-                                    <template #option="slotProps">
-                                        <div style="font-size: 14px; line-height: 1.5rem">
-                                            {{ slotProps.option }} (
-                                            {{ filterList.connectivityType[slotProps.option] }} )
-                                        </div>
-                                    </template>
-                                </MultiSelect>
-                            </div>
-                            <div class="col-lg-3 col-12 px-2 mb-2">
-                                <label for="filter-technologyType" class="form-label mb-0">Technology</label>
-                                <MultiSelect
-                                    id="technologyType-multiselect"
-                                    v-model="filters['technologyType'].value"
-                                    style="width: 100%"
-                                    :options="Object.keys(filterList.technologyType).filter((key) => key !== 'null')"
-                                    placeholder="All"
-                                    size="small"
-                                    class="me-3 custom-multiselect"
-                                >
-                                    <template #option="slotProps">
-                                        <div style="font-size: 14px; line-height: 1.5rem">
-                                            {{ slotProps.option }} ( {{ filterList.technologyType[slotProps.option] }} )
-                                        </div>
-                                    </template>
-                                </MultiSelect>
+                                </component>
                             </div>
                         </div>
                     </div>
@@ -568,58 +503,58 @@ emitter.on('primary-product:removed', () => tableRef.value?.getData());
                         ref="tableRef"
                         :options="options"
                         :params="params"
-                        :poll-interval="hasPrimaryProduct() ? null : 15000"
+                        :poll-interval="hasProduct() ? null : 15000"
                         @update:meta="(meta) => setMeta(meta)"
                     >
                         <template #productName="{ value, data }">
-                            <p class="small" :title="value">
-                                {{ value }}
-                                <span
-                                    v-if="data?.additionalInfo?.['router']"
-                                    v-tooltip
-                                    data-bs-toggle="tooltip"
-                                    data-bs-placement="top"
-                                    data-bs-html="true"
-                                    :data-bs-original-title="
-                                        '<b>Primary Router Model:</b> ' + data.additionalInfo['router']
-                                    "
-                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
-                                >
-                                    <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
-                                </span>
-                                <span
-                                    v-if="data?.isContended"
-                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
-                                    data-bs-toggle="tooltip"
-                                    data-bs-placement="top"
-                                    data-bs-html="true"
-                                    data-bs-original-title="Contended Service"
-                                    v-tooltip
-                                >
-                                    <font-awesome-icon :icon="['fas', 'server']"></font-awesome-icon>
-                                </span>
-                                <span
-                                    v-if="data?.additionalInfo?.['Type'] == 'Fibre Flex 200+'"
-                                    v-tooltip
-                                    data-bs-toggle="tooltip"
-                                    data-bs-placement="top"
-                                    data-bs-html="true"
-                                    data-bs-original-title="<b>Burstable Service:</b> This service offers guaranteed upload and download speeds of 200Mbps and can burst up to a peak of 1Gbps"
-                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-burstable"
-                                >
-                                    <font-awesome-icon :icon="['fas', 'bolt']"></font-awesome-icon>
-                                </span>
-                                <span
-                                    v-if="data?.additionalInfo?.['addon_ipv4']"
-                                    v-tooltip
-                                    data-bs-toggle="tooltip"
-                                    data-bs-placement="top"
-                                    :data-bs-original-title="data?.additionalInfo?.['addon_ipv4']"
-                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm addon-ipv4"
-                                >
-                                    <font-awesome-icon :icon="['fas', 'network-wired']"></font-awesome-icon>
-                                </span>
-                            </p>
+                            <template v-for="display in [productDisplay(value, data)]" :key="data.code">
+                                <p class="small" :title="display.name">
+                                    {{ display.name }}
+                                    <span
+                                        v-if="display.router"
+                                        v-tooltip
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="top"
+                                        data-bs-html="true"
+                                        :data-bs-original-title="'<b>Primary Router Model:</b> ' + display.router"
+                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
+                                    >
+                                        <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
+                                    </span>
+                                    <span
+                                        v-if="data?.isContended"
+                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="top"
+                                        data-bs-html="true"
+                                        data-bs-original-title="Contended Service"
+                                        v-tooltip
+                                    >
+                                        <font-awesome-icon :icon="['fas', 'server']"></font-awesome-icon>
+                                    </span>
+                                    <span
+                                        v-if="data?.additionalInfo?.['Type'] == 'Fibre Flex 200+'"
+                                        v-tooltip
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="top"
+                                        data-bs-html="true"
+                                        data-bs-original-title="<b>Burstable Service:</b> This service offers guaranteed upload and download speeds of 200Mbps and can burst up to a peak of 1Gbps"
+                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-burstable"
+                                    >
+                                        <font-awesome-icon :icon="['fas', 'bolt']"></font-awesome-icon>
+                                    </span>
+                                    <span
+                                        v-if="data?.additionalInfo?.['addon_ipv4']"
+                                        v-tooltip
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="top"
+                                        :data-bs-original-title="data?.additionalInfo?.['addon_ipv4']"
+                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm addon-ipv4"
+                                    >
+                                        <font-awesome-icon :icon="['fas', 'network-wired']"></font-awesome-icon>
+                                    </span>
+                                </p>
+                            </template>
                         </template>
                         <template #isManaged="{ value, data }">
                             <p class="small">
@@ -711,8 +646,8 @@ emitter.on('primary-product:removed', () => tableRef.value?.getData());
                                     :data-bs-original-title="
                                         '<b>Initial Setup Cost:</b> ' +
                                         format.GBP(data.amortisation_install) +
-                                        (article?.additionalInfo?.['addon_install'] && data.amortisation
-                                            ? '<br/>' + article?.additionalInfo?.['addon_install']
+                                        (data?.additionalInfo?.['addon_install'] && data.amortisation
+                                            ? '<br/>' + data?.additionalInfo?.['addon_install']
                                             : '') +
                                         '<br/><b>Monthly Amortisation:</b> ' +
                                         format.GBP(data.amortisation)
@@ -740,7 +675,7 @@ emitter.on('primary-product:removed', () => tableRef.value?.getData());
                             </p>
                         </template>
                         <template #contractTermMonths="{ value, data, index }">
-                            <p class="small">{{ value }} Months</p>
+                            <p class="small">{{ value ? value + ' Months' : 'N/A' }}</p>
                         </template>
                         <template #connectivityType="{ value, data, index }">
                             <p class="small">{{ value ?? 'N/A' }}</p>
@@ -750,7 +685,11 @@ emitter.on('primary-product:removed', () => tableRef.value?.getData());
                         </template>
                         <template #actions="{ value, data, index }">
                             <div class="text-end">
-                                <button class="btn btn-outline-primary btn-connectivity" @click="checkProduct(data)">
+                                <button
+                                    v-if="!quote.items.find((x) => x.product_code == data.code)"
+                                    class="btn btn-outline-primary btn-connectivity"
+                                    @click="checkProduct(data)"
+                                >
                                     <font-awesome-icon :icon="['fas', 'plus']" />
                                     Add
                                 </button>
@@ -793,9 +732,9 @@ emitter.on('primary-product:removed', () => tableRef.value?.getData());
     </Dialog>
 
     <QuoteConnectivityHardwareTable
-        v-if="props.needsAddons && quote.items?.find((x) => x.data.type == 'Primary Product')"
+        v-if="props.needsAddons && hasProduct()"
         v-model="props.modelValue"
-        productType="Primary Hardware Product"
+        :productType="props.hardwareProductType"
         :currentStep="props.currentStep"
     >
     </QuoteConnectivityHardwareTable>
