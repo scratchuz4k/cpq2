@@ -40,13 +40,13 @@ class CloudMarketService
     {
         $items = FilterProvider::get($content['data'] ?? [], []);
 
-        $blacklist = new Blacklist;
-        $blacklist_items = $blacklist->getBlacklistedData($items);
+        if (in_array($content['key'], ['live_prices', 'fail_over'])) {
+            $blacklist = new Blacklist;
+            $blacklist_items = $blacklist->getBlacklistedData($items);
+            $diff_codes = $items->pluck('code')->diff($blacklist_items->pluck('code'));
 
-        $diff_codes = $items->pluck('code')->diff($blacklist_items->pluck('code'));
-
-        $items = $items->filter(fn ($item) => $diff_codes->contains($item['code']));
-
+            $items = $items->filter(fn ($item) => $diff_codes->contains($item['code']));
+        }
         $items = FilterProvider::get($items->toArray(), $filters);
 
         foreach ($items as $key => $value) {
