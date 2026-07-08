@@ -40,7 +40,7 @@ class CloudMarketService
     {
         $items = FilterProvider::get($content['data'] ?? [], []);
 
-        if (in_array($content['key'], ['live_prices', 'fail_over'])) {
+        if (array_key_exists('key', $content) && in_array($content['key'], ['live_prices', 'fail_over'])) {
             $blacklist = new Blacklist;
             $blacklist_items = $blacklist->getBlacklistedData($items);
             $diff_codes = $items->pluck('code')->diff($blacklist_items->pluck('code'));
