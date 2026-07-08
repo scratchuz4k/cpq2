@@ -118,7 +118,7 @@ const items = ref([
                                 v-model="user"
                                 placeholder="Select a User"
                                 :query="[
-                                    { column: 'groups.id', operator: 'is_null', value: '' },
+                                    { column: 'groups.id', operator: 'is_null', value: 'null' },
                                     { column: 'is_active', operator: 'equals', value: 1 }
                                 ]"
                             >
@@ -172,7 +172,7 @@ const items = ref([
                                 v-model="account"
                                 placeholder="Select an Account"
                                 :query="[
-                                    { column: 'groups.id', operator: 'is_null', value: '' },
+                                    { column: 'groups.id', operator: 'is_null', value: 'null' },
                                     { column: 'is_active', operator: 'equals', value: 1 }
                                 ]"
                             >
