@@ -18,6 +18,7 @@ const activePanel = reactive({
     value: 0
 });
 
+const form = reactive({ ...props.account });
 const contacts = ref([...props.account.contacts]);
 
 const addContact = () => {
@@ -39,7 +40,7 @@ const removeContact = (key) => {
 const saveAccount = () => {
     router.put(
         `/accounts/${props.account.id}`,
-        { ...props.account, contacts: contacts.value },
+        { ...form, contacts: contacts.value },
         {
             onSuccess: (page) => {
                 notyf.success('Updated with Success');
@@ -89,11 +90,11 @@ const items = ref([
                 </div>
                 <div class="col">
                     <label for="account-name" class="form-label">Name:</label>
-                    <input id="account-name" class="form-control" v-model="account.name" />
+                    <input id="account-name" class="form-control" v-model="form.name" />
                 </div>
                 <div class="col">
                     <label for="account-reference" class="form-label">Reference:</label>
-                    <input id="account-reference" class="form-control" v-model="account.reference" />
+                    <input id="account-reference" class="form-control" v-model="form.reference" />
                 </div>
             </div>
             <h2>Contacts</h2>
