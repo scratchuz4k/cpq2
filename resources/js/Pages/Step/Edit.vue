@@ -122,7 +122,7 @@ const items = ref([
                                 :query="[
                                     {
                                         group: [
-                                            { column: 'steps.id', operator: 'is_null', value: null },
+                                            { column: 'steps.id', operator: 'is_null', value: 'null' },
                                             {
                                                 column: 'steps.id',
                                                 operator: 'not_equals',
