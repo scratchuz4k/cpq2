@@ -290,6 +290,14 @@ onUnmounted(() => {
 
 .filter-panel-row {
     margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.filter-panel-row:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
 }
 
 .filter-panel-label {
