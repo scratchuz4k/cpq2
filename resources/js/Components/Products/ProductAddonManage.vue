@@ -21,7 +21,7 @@ const proxyValue = computed({
 
 const totals = ref(proxyValue.value.addons_children?.length ?? 0);
 const optionAddons = new DatatableOptions('product-addons', 'product-addons');
-optionAddons.addColumn('addon.sku', 'SKU', { isSticky: true });
+optionAddons.addColumn('addon.sku', 'SKU');
 optionAddons.addColumn('addon.name', 'Name', { isSticky: true });
 optionAddons.addColumn('addon.description', 'Description');
 optionAddons.addColumn('addon.categories.name', 'Categories');

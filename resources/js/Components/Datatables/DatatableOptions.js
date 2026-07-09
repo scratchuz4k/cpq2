@@ -30,6 +30,15 @@ export class DatatableOptions {
         title,
         { style = {}, isHidden = false, isSticky = false, isSearchable = true, isSortable = true } = {}
     ) {
+        // Only one sticky column is supported - the sticky-offset math (and the CSS backing it)
+        // assumes a single fixed-left column, so the first one wins and later ones are ignored.
+        if (isSticky && this.columns.some((c) => c.isSticky)) {
+            console.warn(
+                `DatatableOptions: column "${column}" requested isSticky, but "${this.columns.find((c) => c.isSticky).column}" is already sticky. Ignoring.`
+            );
+            isSticky = false;
+        }
+
         this.columns.push({
             column: column,
             title: title,

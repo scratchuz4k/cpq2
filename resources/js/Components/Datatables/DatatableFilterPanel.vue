@@ -60,22 +60,8 @@
                         </button>
                     </div>
                     <div>
-                        <label v-if="filterType(column.column) === 'checkbox'" class="filter-panel-checkbox">
-                            <input
-                                type="checkbox"
-                                :checked="filters[column.column].value === trueValue(column.column)"
-                                :ref="(el) => setInputRef(column.column, el)"
-                                @change="
-                                    (e) =>
-                                        (filters[column.column].value = e.target.checked
-                                            ? trueValue(column.column)
-                                            : null)
-                                "
-                            />
-                            <span class="small">{{ column.title }}</span>
-                        </label>
                         <select
-                            v-else-if="filterType(column.column) === 'select'"
+                            v-if="['select', 'checkbox'].includes(filterType(column.column))"
                             v-model="filters[column.column].value"
                             :ref="(el) => setInputRef(column.column, el)"
                             class="filter-panel-input"
@@ -192,15 +178,17 @@ const filterOptions = (column) => {
         return staticOptions;
     }
 
+    if (filterType(column) === 'checkbox') {
+        return [
+            { label: 'True', value: true },
+            { label: 'False', value: false }
+        ];
+    }
+
     const facetCounts = props.facets[column] ?? {};
     return Object.keys(facetCounts)
         .filter((key) => key !== 'null')
         .map((key) => ({ value: key, label: facetCounts[key] ? `${key} (${facetCounts[key]})` : key }));
-};
-
-const trueValue = (column) => {
-    const options = props.columnFilters[column]?.options ?? [];
-    return options.length ? optionValue(options[0]) : '1';
 };
 
 const toggleMultiValue = (column, value) => {

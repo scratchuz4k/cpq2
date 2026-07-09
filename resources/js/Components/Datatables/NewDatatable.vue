@@ -4,7 +4,7 @@ import { Link } from '@inertiajs/vue3';
 
 import { IconField, InputIcon, InputText } from 'primevue';
 
-import { reactive, ref, useSlots, watch, onMounted, onUnmounted } from 'vue';
+import { computed, reactive, ref, useSlots, watch, onMounted, onUnmounted } from 'vue';
 import axios from 'axios';
 import { exportData } from '@/Composables/export.js';
 import { useDatatableColumns } from '@composables/useDatatableColumns.js';
@@ -87,6 +87,10 @@ const setFilters = () => {
     });
 };
 setFilters();
+
+const activeFilterCount = computed(
+    () => Object.values(form.filters).filter((x) => x.value != null && x.value !== '').length
+);
 
 let pollTimeoutId = null;
 
@@ -312,6 +316,7 @@ onUnmounted(() => {
                 >
                     <font-awesome-icon :icon="['fas', 'filter']" class="me-1" />
                     <p class="small">Filter</p>
+                    <span v-if="activeFilterCount" class="datatable-filter-count">{{ activeFilterCount }}</span>
                 </button>
             </div>
             <div class="me-2 position-relative" :id="props.options.id + '-column-select'">
@@ -638,6 +643,22 @@ onUnmounted(() => {
 .datatable-header {
     background-color: white;
     border-radius: 4px 4px 0 0;
+}
+
+.datatable-filter-count {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 16px;
+    height: 16px;
+    margin-left: 6px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background-color: var(--color-primary, #6366f1);
+    border: 1px solid white;
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
 }
 
 .datatable-body-wrapper {

@@ -38,7 +38,6 @@ const hasProduct = () => {
 
 const showLoadingModal = ref(false);
 const showLowestCost = ref(true);
-const showQuoted = ref(false);
 const showFilters = ref(true);
 const showContended = ref(null);
 const errors = ref([]);
@@ -117,7 +116,6 @@ const resetFilters = () => {
         });
 
     showLowestCost.value = true;
-    showQuoted.value = false;
     showContended.value = null;
 };
 
@@ -228,11 +226,11 @@ const options = reactive(
         const tableId = `cloudmarket-products-${props.productType.split(' ')[0].toLowerCase()}`;
         const builder = new DatatableOptions(props.route, tableId)
             .setSort('asc', 'priceMonthly_spa')
-            .addColumn('productName', 'Name', { isSticky: true })
+            .addColumn('productName', 'Name', { isSticky: true, style: { width: '300px' } })
             .addColumn('providerName', 'Provider')
             .addColumn('connectivitySupplierGroup', 'Subprovider')
             .addColumn('isManaged', 'Managed')
-            // .addColumnFilter('isManaged', 'checkbox')
+            .addColumnFilter('isManaged', 'checkbox')
             .addColumn('bearer', 'Bearer')
             .addColumn('speed', 'Speed')
             .addColumn('priceInstall_spa', 'Set Up', { isSearchable: false })
@@ -242,16 +240,14 @@ const options = reactive(
 
         if (props.productType === 'Primary Product') {
             builder.addColumn('isContended', 'Contended');
-            // builder.addColumnFilter('isContended', 'checkbox')
+            builder.addColumnFilter('isContended', 'checkbox');
         }
 
-        return (
-            builder
-                .addColumn('connectivityType', 'Connectivity')
-                .addColumn('technologyType', 'Technology')
-                // .addColumnFilter('technologyType', 'multiselect', ['Fibre', 'Copper', 'Wireless'])
-                .addColumn('actions', '', { style: { position: 'sticky', right: 0, width: '60px' } })
-        );
+        return builder
+            .addColumn('connectivityType', 'Connectivity')
+            .addColumn('technologyType', 'Technology')
+            .addColumnFilter('technologyType', 'multiselect', ['Fibre', 'Copper', 'Wireless'])
+            .addColumn('actions', '', { style: { position: 'sticky', right: 0, width: '60px' } });
     })()
 );
 
@@ -266,12 +262,6 @@ const rebuildQuery = () => {
     Object.keys(filters).forEach((key) => {
         options.addQuery(key, filters[key].operator, filters[key].value ?? null);
     });
-    if (showQuoted.value) {
-        let items = quote.items.length
-            ? quote.items.filter((item) => item.product_code).map((item) => item.product_code)
-            : ['#'];
-        options.addQuery('code', 'in', items);
-    }
     if (showLowestCost.value) {
         options.addQuery('*', 'lowest-cost', 1);
     }
@@ -280,7 +270,7 @@ const rebuildQuery = () => {
     }
 };
 
-watch([filters, showQuoted, showLowestCost, showContended], rebuildQuery, { deep: true, immediate: true });
+watch([filters, showLowestCost, showContended], rebuildQuery, { deep: true, immediate: true });
 
 // Drives the generic filter-picker loop in the template. `counted` fields render their raw
 // facet keys with a result count per option; the rest render pre-labelled {label, value} options
@@ -806,8 +796,7 @@ tr.active td {
 }
 
 .btn-connectivity {
-    border: 0 !important;
-    padding: 0 !important;
+    padding: 0 5px !important;
     margin: 0 !important;
 }
 
