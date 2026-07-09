@@ -4,7 +4,7 @@ import { Link } from '@inertiajs/vue3';
 
 import { IconField, InputIcon, InputText } from 'primevue';
 
-import { computed, reactive, ref, useSlots, watch, onMounted, onUnmounted } from 'vue';
+import { computed, nextTick, reactive, ref, useSlots, watch, onMounted, onUnmounted } from 'vue';
 import axios from 'axios';
 import { exportData } from '@/Composables/export.js';
 import { useDatatableColumns } from '@composables/useDatatableColumns.js';
@@ -36,7 +36,9 @@ const {
     isUserHidden,
     toggleHidden: toggleUserHiddenColumn,
     colWidths: columnWidths,
+    hasCustomWidths,
     getColWidth,
+    applyMeasuredWidths,
     startResize,
     columnOrder,
     dragState,
@@ -61,6 +63,17 @@ const usedSlots = Object.keys(slots);
 const tableContainer = ref(null);
 const isScrolled = ref(false);
 const activeColumnsDropdown = ref(false);
+
+// First-load auto-sizing: while true, columns render at natural content width (table-layout:
+// auto, no forced width) instead of the resizable fixed-width mode, just long enough to measure
+// each header's rendered width and bake it into colWidths - see maybeAutoSizeColumns() below.
+const isAutoSizing = ref(false);
+const thRefs = ref({});
+const setThRef = (column, el) => {
+    if (el) {
+        thRefs.value[column] = el;
+    }
+};
 
 const onScroll = () => {
     isScrolled.value = tableContainer.value?.scrollLeft > 0;
@@ -124,6 +137,35 @@ const getData = async () => {
         pollTimeoutId = setTimeout(getData, props.pollInterval);
     }
 };
+
+let autoSizeAttempted = false;
+
+const maybeAutoSizeColumns = async () => {
+    if (autoSizeAttempted || hasCustomWidths.value || !api.items.length) {
+        return;
+    }
+    autoSizeAttempted = true;
+
+    isAutoSizing.value = true;
+    await nextTick();
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+
+    const measurements = {};
+    props.options.columns.forEach((col) => {
+        const el = thRefs.value[col.column];
+        if (el) {
+            measurements[col.column] = el.offsetWidth;
+        }
+    });
+
+    applyMeasuredWidths(measurements);
+    isAutoSizing.value = false;
+};
+
+watch(
+    () => api.items.length,
+    () => maybeAutoSizeColumns()
+);
 
 const sortBy = (data) => {
     if (!data.isSortable) {
@@ -360,12 +402,13 @@ onUnmounted(() => {
 
     <div class="datatable-body-wrapper">
         <div ref="tableContainer" class="datatable-content" :class="{ 'is-scrolled': isScrolled }" @scroll="onScroll">
-            <table class="relation-table" :id="props.options.id">
+            <table class="relation-table" :class="{ 'auto-layout': isAutoSizing }" :id="props.options.id">
                 <thead>
                     <tr>
                         <th
                             v-for="(data, key) in visibleColumns"
                             :key="data.column"
+                            :ref="(el) => setThRef(data.column, el)"
                             class="datatable-table-header"
                             :draggable="!data.isSticky"
                             :style="{
@@ -375,7 +418,7 @@ onUnmounted(() => {
                                 zIndex: data.isSticky ? 3 : 2,
                                 cursor: data.isSticky ? 'default' : 'grab',
                                 opacity: dragState.fromIndex === key ? 0.5 : 1,
-                                width: getColWidth(data) + 'px',
+                                width: isAutoSizing ? undefined : getColWidth(data) + 'px',
                                 ...data.style
                             }"
                             :class="[
@@ -445,7 +488,7 @@ onUnmounted(() => {
                             ]"
                             :style="{
                                 left: data.isSticky ? stickyLeft(data, key) + 'px' : 0,
-                                width: getColWidth(data) + 'px',
+                                width: isAutoSizing ? undefined : getColWidth(data) + 'px',
                                 ...data.style
                             }"
                         >
@@ -638,6 +681,10 @@ onUnmounted(() => {
 .relation-table {
     width: 100%;
     table-layout: fixed;
+}
+
+.relation-table.auto-layout {
+    table-layout: auto;
 }
 
 .datatable-header {

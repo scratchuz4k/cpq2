@@ -226,7 +226,7 @@ const options = reactive(
         const tableId = `cloudmarket-products-${props.productType.split(' ')[0].toLowerCase()}`;
         const builder = new DatatableOptions(props.route, tableId)
             .setSort('asc', 'priceMonthly_spa')
-            .addColumn('productName', 'Name', { isSticky: true, style: { width: '300px' } })
+            .addColumn('productName', 'Name', { isSticky: true })
             .addColumn('providerName', 'Provider')
             .addColumn('connectivitySupplierGroup', 'Subprovider')
             .addColumn('isManaged', 'Managed')
@@ -507,7 +507,7 @@ emitter.on(`${props.productType.split(' ')[0].toLowerCase()}-product:removed`, (
                     >
                         <template #productName="{ value, data }">
                             <template v-for="display in [productDisplay(value, data)]" :key="data.code">
-                                <p class="small" :title="display.name">
+                                <p class="small overflow-hidden text-truncate" :title="display.name">
                                     {{ display.name }}
                                     <span
                                         v-if="display.router"

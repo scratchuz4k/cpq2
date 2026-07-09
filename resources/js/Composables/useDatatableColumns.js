@@ -1,6 +1,8 @@
 import { computed, reactive, ref } from 'vue';
 
 const DEFAULT_COL_WIDTH = 150;
+const MIN_AUTO_WIDTH = 80;
+const MAX_AUTO_WIDTH = 400;
 
 export function useDatatableColumns(tableId, columns) {
     const STORAGE_KEY = 'datatable_' + tableId;
@@ -29,8 +31,22 @@ export function useDatatableColumns(tableId, columns) {
     // ── Column widths & resize ────────────────────────────────────────────────
 
     const colWidths = ref(saved.colWidths ?? {});
+    const hasCustomWidths = computed(() => Object.keys(colWidths.value).length > 0);
 
     const getColWidth = (col) => colWidths.value[col.column] ?? DEFAULT_COL_WIDTH;
+
+    // One-time initial layout: only runs while colWidths is completely empty (this table has
+    // never been resized or auto-sized before), so it never fights a user's manual resize later.
+    const applyMeasuredWidths = (measurements) => {
+        if (hasCustomWidths.value) return;
+
+        const clamped = {};
+        Object.entries(measurements).forEach(([column, width]) => {
+            clamped[column] = Math.min(MAX_AUTO_WIDTH, Math.max(MIN_AUTO_WIDTH, Math.round(width)));
+        });
+        colWidths.value = clamped;
+        saveState({ colWidths: colWidths.value });
+    };
 
     let resizing = null;
 
@@ -112,7 +128,9 @@ export function useDatatableColumns(tableId, columns) {
         toggleHidden,
         // widths & resize
         colWidths,
+        hasCustomWidths,
         getColWidth,
+        applyMeasuredWidths,
         startResize,
         // ordering & drag
         columnOrder,
