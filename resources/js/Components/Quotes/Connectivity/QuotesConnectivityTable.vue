@@ -331,7 +331,7 @@ emitter.on(`${props.productType.split(' ')[0].toLowerCase()}-product:removed`, (
                     <div class="d-flex justify-content-between">
                         <div class="filters d-flex">
                             <div class="d-flex mb-2">
-                                <p class="fs-5 bold me-2">
+                                <p class="fs-5 bold me-2 mb-2">
                                     <font-awesome-icon
                                         v-if="!meta.isRequestCompleted"
                                         :icon="['fas', 'refresh']"
@@ -353,14 +353,11 @@ emitter.on(`${props.productType.split(' ')[0].toLowerCase()}-product:removed`, (
                         </div>
                     </div>
                 </div>
-                <div class="mb-3">
+                <div class="filters-card rounded bg-white p-3 mb-3">
                     <div id="filters" class="p-0 m-0 row">
                         <div class="col-lg-10 col-12 px-1">
                             <div class="row">
-                                <div v-for="field in filterFields" :key="field.key" class="col-lg-3 col-12 mb-1">
-                                    <label :for="field.key + '-filter'" class="form-label mb-0">
-                                        {{ field.label }}
-                                    </label>
+                                <div v-for="field in filterFields" :key="field.key" class="col-lg-3 col-12 mb-2">
                                     <component
                                         :is="field.control"
                                         :id="field.key + '-filter'"
@@ -368,11 +365,11 @@ emitter.on(`${props.productType.split(' ')[0].toLowerCase()}-product:removed`, (
                                         :options="filterOptions(field)"
                                         optionLabel="label"
                                         optionValue="value"
-                                        placeholder="All"
+                                        :placeholder="field.label"
                                     >
                                     </component>
                                 </div>
-                                <div class="col-lg-3 col-12 mb-1 d-flex align-items-center">
+                                <div class="col-lg-4 col-12 mb-2 d-flex align-items-center">
                                     <div class="d-flex align-items-center">
                                         <ToggleSwitch class="me-2" id="filter-lower-cost" v-model="showLowestCost">
                                             <template #handle>
@@ -393,8 +390,8 @@ emitter.on(`${props.productType.split(' ')[0].toLowerCase()}-product:removed`, (
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-2 col-12 d-flex flex-column align-items-start gap-2">
-                            <button class="btn btn-sm text-primary mt-4" @click="resetFilters()">
+                        <div class="col-lg-2 col-12 d-flex flex-column gap-2">
+                            <button class="btn btn-sm text-primary" @click="resetFilters()">
                                 <font-awesome-icon :icon="['fas', 'arrow-rotate-left']"></font-awesome-icon>
                                 Reset
                             </button>
@@ -412,6 +409,7 @@ emitter.on(`${props.productType.split(' ')[0].toLowerCase()}-product:removed`, (
                         :options="options"
                         :params="params"
                         :poll-interval="hasProduct() ? null : 15000"
+                        :filterable="false"
                         @update:meta="(meta) => setMeta(meta)"
                     >
                         <template #productName="{ value, data }">

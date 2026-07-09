@@ -28,6 +28,10 @@ const props = defineProps({
     params: {
         type: Object,
         default: () => ({})
+    },
+    filterable: {
+        type: Boolean,
+        default: true
     }
 });
 
@@ -349,7 +353,7 @@ onUnmounted(() => {
             </IconField>
         </div>
         <div class="d-flex">
-            <div class="me-2">
+            <div v-if="props.filterable" class="me-2">
                 <button
                     type="button"
                     class="btn d-flex justify-content-center align-items-center"
@@ -602,6 +606,7 @@ onUnmounted(() => {
             </table>
         </div>
         <DatatableFilterPanel
+            v-if="props.filterable"
             v-model="activeFilters"
             :id="props.options.id"
             :columns="props.options.columns"

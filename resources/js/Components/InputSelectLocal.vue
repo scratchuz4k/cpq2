@@ -158,7 +158,7 @@ onMounted(() => {
     border: 1px solid #dee2e6;
     border-radius: 0.375rem;
     background-color: #fff;
-    font-size: 1rem;
+    font-size: 0.875rem;
     line-height: 1.5;
 }
 
@@ -171,6 +171,7 @@ onMounted(() => {
 .option {
     padding: 0.25rem 0.75rem;
     border-radius: 4px;
+    font-size: 0.875rem;
 }
 
 .option-checkbox {
