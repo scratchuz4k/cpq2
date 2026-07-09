@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -15,6 +16,7 @@ use Inertia\Controller;
 
 class IntegrateAuthController extends Controller
 {
+    #[ExcludeRouteFromDocs]
     public function login(Request $request, string $token)
     {
         Auth::guard('web')->logout();
@@ -46,6 +48,7 @@ class IntegrateAuthController extends Controller
     }
 
     // Google Callback
+    #[ExcludeRouteFromDocs]
     public function createToken(Request $request)
     {
         // Validate credentials

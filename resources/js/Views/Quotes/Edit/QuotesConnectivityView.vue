@@ -58,18 +58,26 @@
             <div>
                 <small>
                     A fully managed and automated backup service for your primary FibreBright or Leased Line connection
-                    over a Broadband connection (SoGEA or FTTP).
+                    over a Broadband connection (SoGEA or FTTP).<br />
                     <i class="bold text-primary">
-                        Prior to order, availability of the broadband service must be checked by
-                        <a href="https://www.zen.co.uk/business" target="_blank"> clicking here </a>
-                        or
+                        Prior to order, availability of the broadband service must be checked on
                         <a href="https://www.zen.co.uk/business" target="_blank"> https://www.zen.co.uk/business </a>
                     </i>
                     <br />
-                    If Business Pro, Business Essentials, Unlimited Fibre 1 or Unlimited Fibre 2 are the options
-                    returned, then SoGEA Broadband Backup is available for ordering. If the following "Full Fibre, 100,
-                    300, 500 and 900" are shown as available on the Zen portal then ITS Broadband FTTP Back up service
-                    will be available (All FTTP speeds/bandwidths will be available).
+                    <template v-if="showFullResilienceText">
+                        If Business Pro, Business Essentials, Unlimited Fibre 1 or Unlimited Fibre 2 are the options
+                        returned, then SoGEA Broadband Backup is available for ordering. If the following "Full Fibre,
+                        100, 300, 500 and 900" are shown as available on the Zen portal then ITS Broadband FTTP Back up
+                        service will be available (All FTTP speeds/bandwidths will be available).
+                    </template>
+                    <a
+                        v-else
+                        href="#"
+                        class="text-muted text-decoration-underline d-inline-block"
+                        @click.prevent="toggleResilienceText"
+                    >
+                        Read more
+                    </a>
                 </small>
             </div>
         </div>

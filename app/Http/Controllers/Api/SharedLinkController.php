@@ -31,6 +31,7 @@ class SharedLinkController extends BaseController
     /**
      * List of Shared Links
      */
+    #[ExcludeRouteFromDocs]
     public function store(ShareLinkCreateRequest $request)
     {
 
@@ -64,6 +65,7 @@ class SharedLinkController extends BaseController
     /**
      * Remove Shared Link
      */
+    #[ExcludeRouteFromDocs]
     public function destroy(SharedLink $sharedLink)
     {
         $sharedLink->delete();

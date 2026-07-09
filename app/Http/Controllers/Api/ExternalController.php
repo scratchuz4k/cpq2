@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Cloudmarket\Address;
 use App\Services\External\CloudMarketService;
 use App\Services\External\ShopBlocksService;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -20,6 +21,7 @@ class ExternalController extends Controller
     /**
      * Request Openreach Api to get all address with a Postal Code.
      */
+    #[ExcludeRouteFromDocs]
     public function getAddressesByPostCode(Request $request)
     {
         $request->validate([
@@ -56,6 +58,7 @@ class ExternalController extends Controller
     /**
      * Request TomTom Api to get adress information.
      */
+    #[ExcludeRouteFromDocs]
     public function getPositionByAddress(Request $request)
     {
         $request->validate([
