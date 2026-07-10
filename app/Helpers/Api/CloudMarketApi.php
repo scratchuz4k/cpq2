@@ -139,8 +139,8 @@ class CloudMarketApi
             'productId' => $product->data?->productCode,
             'quoteId' => $product->data?->quoteId,
             'addOns' => self::saveAddons($quote),
-            'customerName' => $quote->account->name,
-            'customReference' => $quote->account->reference,
+            'customerName' => str_pad($quote->account->name, 5, '_'),
+            'customReference' => str_pad($quote->account->reference, 5, '_'),
         ];
 
         if (is_array($quote->data) && isset($quote->data['quoteReference'])) {

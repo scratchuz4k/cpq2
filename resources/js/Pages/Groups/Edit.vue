@@ -110,7 +110,7 @@ const items = ref([
                 <tab title="Users">
                     <form @submit.prevent="setUserGroup(user?.id, group.id)" class="mt-3 d-flex">
                         <div class="me-3" style="width: 100%">
-                            <label class="form-label">Add Users without group:</label>
+                            <label class="form-label">Add Users without a group:</label>
                             <InputSelect
                                 id="select-user"
                                 url="/users"
@@ -118,7 +118,7 @@ const items = ref([
                                 v-model="user"
                                 placeholder="Select a User"
                                 :query="[
-                                    { column: 'groups.id', operator: 'is_null', value: '' },
+                                    { column: 'groups.id', operator: 'is_null', value: 'null' },
                                     { column: 'is_active', operator: 'equals', value: 1 }
                                 ]"
                             >
