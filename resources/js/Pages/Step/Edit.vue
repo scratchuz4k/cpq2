@@ -120,17 +120,7 @@ const items = ref([
                                 v-model="product"
                                 placeholder="Select an Product"
                                 :query="[
-                                    {
-                                        group: [
-                                            { column: 'steps.id', operator: 'is_null', value: 'null' },
-                                            {
-                                                column: 'steps.id',
-                                                operator: 'not_equals',
-                                                value: step.id,
-                                                function: 'orWhere'
-                                            }
-                                        ]
-                                    },
+                                    { column: 'steps.id', operator: 'not_in', value: step.id },
                                     { column: 'is_active', operator: 'equals', value: 1 }
                                 ]"
                             >
