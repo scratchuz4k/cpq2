@@ -32,10 +32,12 @@ class AccountUpdateRequest extends FormRequest
 
         return [
             'name' => [
+                'required',
                 Rule::unique('accounts')->where(fn ($query) => $query->where('tenant_id', $user->tenant_id)
                     ->where('reference', request('reference')))->ignore($account_id),
             ],
             'reference' => [
+                'required',
                 Rule::unique('accounts')->where(fn ($query) => $query->where('tenant_id', $user->tenant_id)
                     ->where('name', request('name')))->ignore($account_id),
             ],
