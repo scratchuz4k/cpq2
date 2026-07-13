@@ -196,11 +196,7 @@ onMounted(() => {
             <span>{{ placeholder }}</span>
             <font-awesome-icon :icon="['fas', 'chevron-down']" style="font-size: 0.65rem; opacity: 0.6" />
             <span class="ms-auto d-flex align-items-center gap-2">
-                <span
-                    v-if="proxyValue.length"
-                    class="badge rounded-pill text-white"
-                    style="background-color: var(--color-purple); font-size: 0.7rem"
-                >
+                <span v-if="proxyValue.length" class="badge rounded-pill text-white">
                     {{ proxyValue.length }}
                 </span>
                 <font-awesome-icon
@@ -228,12 +224,12 @@ onMounted(() => {
                 <InputIcon v-else>
                     <font-awesome-icon :icon="['fas', 'search']" />
                 </InputIcon>
-                <InputText class="w-100" v-model="searchQuery" placeholder="Search" type="search" />
+                <InputText class="w-100" size="small" v-model="searchQuery" placeholder="Search" type="search" />
             </IconField>
 
             <div class="options-container mt-2" style="max-height: 300px; overflow-y: auto">
-                <div class="p-2" v-if="!filteredOptions.length">
-                    <p class="ps-1">No available options</p>
+                <div class="px-2 py-1" v-if="!filteredOptions.length">
+                    <p class="ps-1 small">No available options</p>
                 </div>
                 <div
                     v-else
@@ -315,5 +311,13 @@ onMounted(() => {
 
 .option:hover {
     background-color: var(--color-purple-light);
+}
+
+.badge {
+    background-color: var(--color-purple);
+    min-width: 20px;
+    height: 20px;
+    font-size: 10px;
+    line-height: 14px;
 }
 </style>

@@ -213,7 +213,7 @@ const options = reactive(
             .addColumn('isContended', 'Contended')
             .addColumn('connectivityType', 'Connectivity')
             .addColumn('technologyType', 'Technology')
-            .addColumn('actions', '', { style: { position: 'sticky', right: 0, width: '80px' } });
+            .addColumn('actions', '', { style: { position: 'sticky', right: 0, width: '100px', padding: '0 0.5rem' } });
     })()
 );
 
@@ -562,7 +562,7 @@ emitter.on(`${props.productType.split(' ')[0].toLowerCase()}-product:removed`, (
                             <p
                                 v-else
                                 title="Subject to Survey"
-                                class="h6"
+                                class="h6 m-0 mt-1 d-inline-block"
                                 data-bs-original-title="Subject to Survey"
                                 v-tooltip
                             >
@@ -579,7 +579,7 @@ emitter.on(`${props.productType.split(' ')[0].toLowerCase()}-product:removed`, (
                             <p class="small">{{ value ?? 'N/A' }}</p>
                         </template>
                         <template #actions="{ value, data, index }">
-                            <div class="text-end">
+                            <div class="text-end p-1">
                                 <button
                                     v-if="!quote.items.find((x) => x.product_code == data.code)"
                                     class="btn btn-outline-primary btn-connectivity"
@@ -692,7 +692,6 @@ tr.active td {
 }
 
 .btn-connectivity {
-    padding: 0 5px !important;
     margin: 0 !important;
 }
 </style>

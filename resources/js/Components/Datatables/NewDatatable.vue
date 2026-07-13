@@ -719,7 +719,7 @@ onUnmounted(() => {
 
 .datatable-content {
     background-color: white;
-    min-height: 55vh;
+    min-height: 53vh;
     overflow: auto;
 }
 
@@ -991,6 +991,7 @@ onUnmounted(() => {
 .datatable-page-btn-active:hover:not(:disabled) {
     background-color: var(--color-purple-dark);
     border-color: var(--color-purple-dark);
+    color: white;
 }
 
 .datatable-page-btn-arrow {
