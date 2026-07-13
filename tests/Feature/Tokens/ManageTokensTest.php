@@ -63,6 +63,7 @@ it('Create Token for second Tenant', function () {
         'name' => 'Support Agent',
         'guard_name' => 'web',
         'permissions' => $perms->map(fn ($permission) => (int) $permission->id)->values()->toarray(),
+        'parent_id' => 6,
     ];
 
     $response = $this->post('/roles', $data);

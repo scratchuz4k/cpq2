@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\TenantExistsRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -26,7 +27,10 @@ class RoleCreateRequest extends FormRequest
         return [
             'name' => ['required', 'string',
                 Rule::unique('roles')->where('tenant_id', Auth::user()->tenant_id)->where('guard_name', 'web')],
-            'parent_id' => ['exists:roles,id'],
+            'parent_id' => [
+                'required',
+                new TenantExistsRule('roles'),
+            ],
             'permissions' => 'array',
             'permissions.*' => 'integer|exists:permissions,id',
         ];
