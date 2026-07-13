@@ -32,40 +32,35 @@ describe('Creates a Mobile Quote', () => {
         cy.selectOption('#select_address', 1);
         cy.get('.step-action-bar #btn-next-step').click();
         cy.get('#btn-create-quote').should('not.be.disabled').click();
+        cy.dismissLoadingModal();
 
         //Managed filter
-        cy.get('#managed-multiselect').click();
+        cy.get('#input-select-isManaged-filter .trigger-select').click();
         cy.wait(500);
-        cy.get('.p-multiselect-list-container')
-            .eq(0)
-            .within(() => {
-                cy.get('.p-multiselect-option').contains('No').click();
-            });
+        cy.get('#input-select-isManaged-filter .options-container').within(() => {
+            cy.get('.option').contains('No').click();
+        });
 
         //Provider filter
-        cy.get('#provider-multiselect').click();
+        cy.get('#input-select-providerName-filter .trigger-select').click();
         cy.wait(500);
-        cy.get('.p-multiselect-list-container')
-            .eq(0)
-            .within(() => {
-                cy.get('.p-multiselect-option').contains(provider).click();
-            });
+        cy.get('#input-select-providerName-filter .options-container').within(() => {
+            cy.get('.option').contains(provider).click();
+        });
 
         //SubProvider filter
-        cy.get('#subprovider-multiselect').click();
+        cy.get('#input-select-connectivitySupplierGroup-filter .trigger-select').click();
         cy.wait(500);
-        cy.get('.p-multiselect-list-container')
-            .eq(0)
-            .within(() => {
-                cy.get('.p-multiselect-option').contains(subprovider).click();
-            });
-        cy.get('#subprovider-multiselect').click();
+        cy.get('#input-select-connectivitySupplierGroup-filter .options-container').within(() => {
+            cy.get('.option').contains(subprovider).click();
+        });
+        cy.get('#input-select-connectivitySupplierGroup-filter .trigger-select').click();
 
         // Scroll back to top
         cy.scrollTo('top');
-        cy.get('#table-header-setup').click();
+        cy.contains('.datatable-table-header-text', 'Set Up').click();
         cy.wait(1000);
-        cy.get('#table-header-setup').click();
+        cy.contains('.datatable-table-header-text', 'Set Up').click();
         cy.wait(1000);
 
         //Add products to quote

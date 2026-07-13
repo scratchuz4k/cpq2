@@ -95,7 +95,7 @@ const getProducts = async () => {
         {
             group: [
                 { column: 'linked_parents.id', operator: 'in', value: quote.items.map((x) => x.product_id) },
-                { column: 'linked_parents.id', operator: 'is_null', value: '', function: 'orWhere' }
+                { column: 'linked_parents.id', operator: 'is_null', value: 'null', function: 'orWhere' }
             ]
         }
     ];
