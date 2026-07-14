@@ -1,36 +1,45 @@
 <script setup>
 import _ from 'lodash';
-import axios from 'axios';
-import Paginator from 'primevue/paginator';
-import { ref, reactive, watch, onMounted } from 'vue';
-import MultiSelect from 'primevue/multiselect';
+import { DatatableOptions } from '@/Components/Datatables/DatatableOptions.js';
+import { ref, reactive, computed, watch, onMounted } from 'vue';
+import InputSelectMultipleLocal from '@/Components/InputSelectMultipleLocal.vue';
+import InputSelectLocal from '@/Components/InputSelectLocal.vue';
 import Dialog from 'primevue/dialog';
 import format from '@/Composables/format.js';
 import Spinner from '@/Components/Spinner.vue';
-import Select from 'primevue/select';
 import ToggleSwitch from 'primevue/toggleswitch';
-import TriStateToggle from '@/Components/TriStateToggle.vue';
-import queryString from 'qs';
 import { remove, add } from '@/Composables/useConnectivityItem';
-import { quote, getQuote } from '@/Composables/useQuote';
+import { quote } from '@/Composables/useQuote';
 import SvgIcon from '@/Components/Custom/SvgIcon.vue';
+import NewDatatable from '@/Components/Datatables/NewDatatable.vue';
 
 const props = defineProps({
     modelValue: Object,
     needsAddons: Boolean,
-    currentStep: Number
+    currentStep: Number,
+    productType: {
+        type: String,
+        default: 'Primary Product'
+    },
+    route: {
+        type: String,
+        default: 'cloudmarket/products'
+    },
+    hardwareProductType: {
+        type: String,
+        default: 'Primary Hardware Product'
+    }
 });
 
-let timeoutId = null;
-const isLoading = ref(true);
-const showLoadingModal = ref(true);
+const hasProduct = () => {
+    return quote.items && quote.items.find((x) => x.data.type == props.productType);
+};
+
+const showLoadingModal = ref(false);
 const showLowestCost = ref(true);
-const showQuoted = ref(false);
-const showFilters = ref(true);
-const showContended = ref(null);
-const articles = ref([]);
 const errors = ref([]);
-const selectedFilters = ref([]);
+const clearCache = ref(false);
+const tableRef = ref(null);
 
 const filters = reactive({
     providerName: {
@@ -72,6 +81,11 @@ const filters = reactive({
         operator: 'in',
         value: null,
         name: 'Technology'
+    },
+    isContended: {
+        operator: 'in',
+        value: null,
+        name: 'Contended'
     }
 });
 
@@ -86,176 +100,13 @@ const filterList = reactive({
 });
 
 const meta = reactive({
-    page: 1,
     total: 0,
     overallTotal: 0,
-    first: 1,
-    limit: 10,
     isRequestCompleted: false
 });
 
-const getArticles = async (clearCache = false, runTimeout = false) => {
-    isLoading.value = true;
-    let temp = [];
-    Object.keys(filters).forEach((key) => {
-        temp.push({
-            column: key,
-            operator: filters[key].operator,
-            value: filters[key].value ?? null
-        });
-    });
-    if (showQuoted.value) {
-        let items = quote.items.length
-            ? quote.items.filter((item) => item.product_code).map((item) => item.product_code)
-            : ['#'];
-        temp.push({ column: 'code', operator: 'in', value: items });
-    }
-    if (showLowestCost.value) {
-        temp.push({ column: '*', operator: 'lowest-cost', value: 1 });
-    }
-
-    if (showContended.value !== null) {
-        temp.push({ column: 'isContended', operator: 'equals', value: showContended.value ? 1 : 0 });
-    }
-
-    if (clearCache) {
-        showLoadingModal.value = true;
-    }
-
-    let query = queryString.stringify({
-        quote_id: props.modelValue.id,
-        filters: temp,
-        page: meta.page,
-        limit: meta.limit,
-        order: sort.order,
-        orderBy: sort.field,
-        account_id: props.modelValue.account_id,
-        clear_cache: clearCache ? 1 : 0
-    });
-
-    try {
-        let res = await axios.get('/api/cloudmarket/products?' + query);
-
-        errors.value = res.data.errors ?? [];
-        articles.value = res.data.data ?? [];
-        articles.value = articles.value.map((article) => {
-            if (article.productName.includes('with router:')) {
-                const productInfo = article.productName.split('with router:');
-                article.productName = productInfo[0].trim();
-                if (productInfo.length > 1 && productInfo[1].trim() !== 'n/a') {
-                    article.additionalInfo = article.additionalInfo || {};
-                    article.additionalInfo['router'] = productInfo[1].trim();
-                }
-            }
-
-            return article;
-        });
-
-        isLoading.value = false;
-        if (!showLoadingModal.value && meta.overallTotal !== res.data.overall_total && meta.overallTotal > 0) {
-            notyf.success('New products added!');
-        }
-        meta.first = (meta.page - 1) * meta.limit;
-        meta.total = res.data.total;
-        meta.overallTotal = res.data.overall_total;
-        meta.isRequestCompleted = !!res.data.finished_at;
-
-        Object.assign(filterList, res.data.filters);
-
-        const configFormattedSpeed = quote.configs?.formattedSpeed;
-        if (
-            configFormattedSpeed &&
-            !Object.prototype.hasOwnProperty.call(filterList.formattedSpeed, configFormattedSpeed)
-        ) {
-            filterList.formattedSpeed[configFormattedSpeed] = 0;
-        }
-
-        const configBearer = quote.configs?.bearer;
-        if (configBearer && !Object.prototype.hasOwnProperty.call(filterList.bearer, configBearer)) {
-            filterList.bearer[configBearer] = 0;
-        }
-
-        const contractLengths = quote.configs?.contract_length ? quote.configs.contract_length.split(',') : [];
-        contractLengths.forEach((length) => {
-            if (length && !Object.prototype.hasOwnProperty.call(filterList.contractTermMonths, length)) {
-                filterList.contractTermMonths[length] = 0;
-            }
-        });
-
-        let bearerFilters = [];
-        Object.keys(filterList.bearer).forEach((key) => {
-            if (key !== 'null') {
-                bearerFilters.push({
-                    label: format.speed(key),
-                    value: key
-                });
-            }
-        });
-        filterList.bearer = bearerFilters;
-
-        let speedFilters = [];
-        Object.keys(filterList.formattedSpeed).forEach((key) => {
-            if (key !== 'null') {
-                speedFilters.push({
-                    label: format.speed(key),
-                    value: key
-                });
-            }
-        });
-        filterList.formattedSpeed = speedFilters;
-
-        let contractLengthsFilters = [];
-        Object.keys(filterList.contractTermMonths).forEach((key) => {
-            if (key !== 'null') {
-                contractLengthsFilters.push({
-                    label: key + ' Months',
-                    value: key
-                });
-            }
-        });
-        filterList.contractTermMonths = contractLengthsFilters;
-
-        selectedFilters.value = Object.fromEntries(
-            Object.entries(filters).filter(([key, filter]) => filter.value !== null)
-        );
-
-        if (!meta.isRequestCompleted && runTimeout) {
-            timeoutId = setTimeout(() => {
-                if (hasPrimaryProduct()) {
-                    isLoading.value = false;
-                    showLoadingModal.value = false;
-                    meta.isRequestCompleted = true;
-                    return;
-                }
-                getArticles(false, true);
-            }, 15000);
-            return;
-        } else {
-            showLoadingModal.value = false;
-        }
-    } catch (error) {
-        console.error(error);
-        notyf.error(error.message);
-        isLoading.value = false;
-        meta.isRequestCompleted = true;
-        showLoadingModal.value = false;
-    }
-};
-
 const setAltImg = (event) => {
     event.target.src = '/images/no_image.png';
-};
-
-const sort = reactive({
-    field: 'priceMonthly_spa',
-    order: 'asc'
-});
-
-const orderBy = (column) => {
-    let changeSort = sort.order == 'asc' ? 'desc' : 'asc';
-    sort.order = sort.field === column ? changeSort : ['speed', 'bearer'].includes(column) ? 'desc' : sort.order;
-    sort.field = column;
-    getArticles();
 };
 
 const resetFilters = () => {
@@ -266,61 +117,193 @@ const resetFilters = () => {
         });
 
     showLowestCost.value = true;
-    showQuoted.value = false;
-    showContended.value = null;
 };
 
 const checkProduct = (article) => {
     let item = quote.items.find((item) => item.product_code == article.code);
     let index = quote.items.findIndex((item) => item.product_code == article.code);
-    article.type = 'Primary Product';
+    article.type = props.productType;
+
+    if (props.productType !== 'Primary Product') {
+        const primaryProduct = quote.items.find((x) => x.data.type == 'Primary Product');
+        article.contractTermMonths = article.contractTermMonths ?? primaryProduct?.contract_length;
+    }
 
     if (index == -1) {
         add(article);
-        clearTimeout(timeoutId);
     } else {
         remove(item);
     }
 };
 
-const hasPrimaryProduct = () => {
-    return quote.items && quote.items.find((x) => x.data.type == 'Primary Product');
+const productDisplay = (value, data) => {
+    const parsed = format.productName(value);
+    return {
+        name: parsed.name,
+        router: data?.additionalInfo?.['router'] ?? parsed.router
+    };
 };
 
-const removeFilter = (selectedFilter, value) => {
-    if (Array.isArray(selectedFilter.value)) {
-        let index = selectedFilter.value.findIndex((x) => x === value);
-        selectedFilter.value.splice(index, 1);
-    } else {
-        selectedFilter.value = null;
+// Facets whose options must always include the quote's preselected config value
+// (even if the current result set has no products at that value), so the user can see why it's filtered.
+const rangeFacets = [
+    {
+        key: 'formattedSpeed',
+        configValues: () => (quote.configs?.formattedSpeed ? [quote.configs.formattedSpeed] : []),
+        label: format.speed
+    },
+    {
+        key: 'bearer',
+        configValues: () => (quote.configs?.bearer ? [quote.configs.bearer] : []),
+        label: format.speed
+    },
+    {
+        key: 'contractTermMonths',
+        configValues: () => (quote.configs?.contract_length ? quote.configs.contract_length.split(',') : []),
+        label: (value) => value + ' Months'
+    }
+];
+
+const buildFacetOptions = ({ key, configValues, label }) => {
+    configValues().forEach((value) => {
+        if (value && !Object.prototype.hasOwnProperty.call(filterList[key], value)) {
+            filterList[key][value] = 0;
+        }
+    });
+
+    filterList[key] = Object.keys(filterList[key])
+        .filter((value) => value !== 'null')
+        .map((value) => ({ label: label(value), value }));
+};
+
+const setMeta = (tempMeta) => {
+    const previousOverallTotal = meta.overallTotal;
+    errors.value = tempMeta.errors ?? [];
+    meta.total = tempMeta.total;
+    meta.overallTotal = tempMeta.overall_total;
+    meta.isRequestCompleted = tempMeta.is_request_completed;
+
+    if (meta.isRequestCompleted) {
+        showLoadingModal.value = false;
+    }
+
+    if (previousOverallTotal > 0 && previousOverallTotal !== meta.overallTotal) {
+        notyf.success('New products added!');
+    }
+
+    Object.assign(filterList, tempMeta.filters);
+    rangeFacets.forEach(buildFacetOptions);
+};
+
+const options = reactive(
+    (() => {
+        const tableId = `cloudmarket-products-${props.productType.split(' ')[0].toLowerCase()}`;
+        return new DatatableOptions(props.route, tableId)
+            .setSort('asc', 'priceMonthly_spa')
+            .addColumn('productName', 'Name', { isSticky: true })
+            .addColumn('isManaged', 'Managed')
+            .addColumn('providerName', 'Provider')
+            .addColumn('connectivitySupplierGroup', 'Subprovider')
+            .addColumn('bearer', 'Bearer')
+            .addColumn('speed', 'Speed')
+            .addColumn('priceInstall_spa', 'Set Up', { isSearchable: false })
+            .addColumn('priceMonthly_spa', 'Monthly', { isSearchable: false })
+            .addColumn('priceECC', 'ECC')
+            .addColumn('contractTermMonths', 'Contract Term')
+            .addColumn('isContended', 'Contended')
+            .addColumn('connectivityType', 'Connectivity')
+            .addColumn('technologyType', 'Technology')
+            .addColumn('actions', '', {
+                style: { position: 'sticky', right: 0, width: '100px', padding: '0 0.25rem' }
+            });
+    })()
+);
+
+const params = computed(() => ({
+    quote_id: props.modelValue.id,
+    account_id: props.modelValue.account_id,
+    clear_cache: clearCache.value ? 1 : 0
+}));
+
+const rebuildQuery = () => {
+    options.clearQuery();
+    Object.keys(filters).forEach((key) => {
+        options.addQuery(key, filters[key].operator, filters[key].value ?? null);
+    });
+    if (showLowestCost.value) {
+        options.addQuery('*', 'lowest-cost', 1);
     }
 };
 
-const handlePaginator = (ev) => {
-    meta.limit = ev.rows;
-    meta.page = ev.page + 1;
-    getArticles();
+watch([filters, showLowestCost], rebuildQuery, { deep: true, immediate: true });
+
+// Drives the generic filter-picker loop in the template. `counted` fields render each facet
+// key with its result count baked into the label; the rest render pre-labelled {label, value}
+// options (either static, like Managed, or built server-side, like the min. bearer/speed/
+// contract-length lists). Every field always resolves to a {label, value} option list so the
+// template can bind optionLabel/optionValue uniformly.
+const filterFields = [
+    {
+        key: 'isManaged',
+        label: 'Managed',
+        control: InputSelectMultipleLocal,
+        options: [
+            { label: 'Yes', value: '1' },
+            { label: 'No', value: '0' },
+            { label: 'N/A', value: 'null' }
+        ]
+    },
+    { key: 'providerName', label: 'Provider', control: InputSelectMultipleLocal, counted: true },
+    { key: 'connectivitySupplierGroup', label: 'Subprovider', control: InputSelectMultipleLocal, counted: true },
+    { key: 'bearer', label: 'Min. Bearer', control: InputSelectLocal },
+    { key: 'formattedSpeed', label: 'Min. Speed', control: InputSelectLocal },
+    { key: 'contractTermMonths', label: 'Contract Length', control: InputSelectMultipleLocal },
+    {
+        key: 'connectivityType',
+        label: 'Connectivity',
+        control: InputSelectMultipleLocal,
+        counted: true,
+        excludeNull: true
+    },
+    { key: 'technologyType', label: 'Technology', control: InputSelectMultipleLocal, counted: true, excludeNull: true },
+    {
+        key: 'isContended',
+        label: 'Contended',
+        control: InputSelectMultipleLocal,
+        options: [
+            { label: 'Yes', value: '1' },
+            { label: 'No', value: '0' },
+            { label: 'N/A', value: 'null' }
+        ]
+    }
+];
+
+const filterOptions = (field) => {
+    if (field.options) {
+        return field.options;
+    }
+    if (field.counted) {
+        return Object.entries(filterList[field.key])
+            .filter(([value]) => !field.excludeNull || value !== 'null')
+            .map(([value, count]) => ({ label: `${value} (${count})`, value }));
+    }
+    return filterList[field.key];
 };
 
-watch(
-    [filters, showQuoted, showLowestCost, showContended],
-    _.debounce(function () {
-        meta.page = 1;
-        getArticles();
-    }, 500)
-);
-
-emitter.on('primary-product:removed', () => getArticles(false, true));
-window.addEventListener('beforeunload', () => {
-    clearTimeout(timeoutId); // Cancel timeout on page navigation or refresh
-});
+const getFreshData = async () => {
+    clearCache.value = true;
+    await tableRef.value?.getData();
+    clearCache.value = false;
+};
 
 onMounted(() => {
-    getArticles(false, true);
+    showLoadingModal.value = hasProduct() ? false : true;
 });
+
+emitter.on(`${props.productType.split(' ')[0].toLowerCase()}-product:removed`, () => tableRef.value?.getData());
 </script>
 <template>
-    <div v-if="!hasPrimaryProduct()">
+    <div v-if="!hasProduct()">
         <div class="row mb-2">
             <div class="col position-relative">
                 <div class="row mb-3" v-if="errors.length">
@@ -337,7 +320,7 @@ onMounted(() => {
                                     </div>
                                 </div>
                                 <div v-if="meta.isRequestCompleted" class="small d-flex align-items-center">
-                                    <button class="btn btn-sm btn-outline-primary" @click="getArticles(true, true)">
+                                    <button class="btn btn-sm btn-outline-primary" @click="getFreshData()">
                                         Get fresh data
                                         <font-awesome-icon :icon="['fas', 'refresh']" class="ps-2"></font-awesome-icon>
                                     </button>
@@ -350,54 +333,16 @@ onMounted(() => {
                     <div class="d-flex justify-content-between">
                         <div class="filters d-flex">
                             <div class="d-flex mb-2">
-                                <p class="fs-5 bold me-2">
+                                <p class="fs-5 bold me-2 mb-2">
                                     <font-awesome-icon
                                         v-if="!meta.isRequestCompleted"
                                         :icon="['fas', 'refresh']"
                                         class="fa-spin me-2"
                                     ></font-awesome-icon
-                                    >Filters
+                                    >Products
                                     <span class="fw-normal">({{ meta.total }})</span>
                                 </p>
                             </div>
-                            <ul class="d-flex list-unstyled ms-2 mb-0">
-                                <li>
-                                    <template v-for="(selectedFilter, column) in selectedFilters">
-                                        <Badge
-                                            v-for="value in column === 'productName'
-                                                ? []
-                                                : (Array.isArray(selectedFilter.value)
-                                                      ? selectedFilter.value
-                                                      : [selectedFilter.value]
-                                                  ).filter((v) => v !== null)"
-                                            :value="
-                                                column === 'isManaged'
-                                                    ? 'Managed: ' +
-                                                      (value === '1' ? 'Yes' : value === '0' ? 'No' : 'N/A')
-                                                    : ['formattedSpeed', 'bearer'].includes(column)
-                                                      ? 'Min. ' +
-                                                        (column === 'formattedSpeed' ? 'Speed' : _.capitalize(column)) +
-                                                        ': ' +
-                                                        format.speed(value)
-                                                      : ['contractTermMonths'].includes(column)
-                                                        ? value + ' Months'
-                                                        : value
-                                            "
-                                            class="px-3 py-1"
-                                            :title="selectedFilter.name"
-                                        >
-                                            <template #close-button>
-                                                <font-awesome-icon
-                                                    :icon="['fas', 'x']"
-                                                    role="button"
-                                                    class="ms-1 fs-7"
-                                                    @click="removeFilter(selectedFilter, value)"
-                                                />
-                                            </template>
-                                        </Badge>
-                                    </template>
-                                </li>
-                            </ul>
                             <div
                                 v-if="quote.configs?.speed || quote.configs?.bearer || quote.configs?.contract_length"
                                 class="d-flex align-self-end justify-content-around mb-2"
@@ -410,247 +355,48 @@ onMounted(() => {
                         </div>
                     </div>
                 </div>
-                <div id="filters" v-if="showFilters" class="p-0 m-0 mt-2 mb-3 row">
-                    <div class="col-lg-10 col-12 px-1">
-                        <div class="row">
-                            <div class="col-lg-3 col-12 px-2 mb-2">
-                                <label for="filter-managed" class="form-label mb-0">Managed</label>
-                                <MultiSelect
-                                    id="managed-multiselect"
-                                    v-model="filters['isManaged'].value"
-                                    style="width: 100%"
-                                    :options="[
-                                        { label: 'Yes', value: '1' },
-                                        { label: 'No', value: '0' },
-                                        { label: 'N/A', value: 'null' }
-                                    ]"
-                                    optionLabel="label"
-                                    optionValue="value"
-                                    placeholder="All"
-                                    size="small"
-                                    class="me-3 custom-multiselect"
-                                >
-                                    <template #option="slotProps">
-                                        <div style="font-size: 14px; line-height: 1.5rem">
-                                            {{ slotProps.option.label }}
-                                        </div>
-                                    </template>
-                                </MultiSelect>
-                            </div>
-                            <div class="col-lg-3 col-12 px-2 mb-2">
-                                <label for="filter-provider" class="form-label mb-0">Provider</label>
-                                <MultiSelect
-                                    id="provider-multiselect"
-                                    v-model="filters['providerName'].value"
-                                    style="width: 100%"
-                                    :options="Object.keys(filterList.providerName)"
-                                    placeholder="All"
-                                    size="small"
-                                    class="custom-multiselect"
-                                >
-                                    <template #option="slotProps">
-                                        <div style="font-size: 14px; line-height: 1.5rem">
-                                            {{ slotProps.option }} ( {{ filterList.providerName[slotProps.option] }} )
-                                        </div>
-                                    </template>
-                                </MultiSelect>
-                            </div>
-                            <div class="col-lg-3 col-12 px-2 mb-2">
-                                <label for="filter-subprovider" class="form-label mb-0">Subprovider</label>
-                                <MultiSelect
-                                    id="subprovider-multiselect"
-                                    v-model="filters['connectivitySupplierGroup'].value"
-                                    style="width: 100%"
-                                    :options="Object.keys(filterList.connectivitySupplierGroup)"
-                                    placeholder="All"
-                                    size="small"
-                                    class="me-3 custom-multiselect"
-                                >
-                                    <template #option="slotProps">
-                                        <div style="font-size: 14px; line-height: 1.5rem">
-                                            {{ slotProps.option }} (
-                                            {{ filterList.connectivitySupplierGroup[slotProps.option] }} )
-                                        </div>
-                                    </template>
-                                </MultiSelect>
-                            </div>
-                            <div class="col-lg-3 col-12 px-2 mb-2">
-                                <label for="filter-contract" class="form-label mb-0">Min. Bearer</label>
-                                <Select
-                                    id="bearer-multiselect"
-                                    v-model="filters['bearer'].value"
-                                    style="width: 100%"
-                                    :options="filterList.bearer"
-                                    optionLabel="label"
-                                    optionValue="value"
-                                    placeholder="All"
-                                    size="small"
-                                    class="me-3 custom-select"
-                                >
-                                    <template #option="slotProps">
-                                        <div style="font-size: 14px; line-height: 1.5rem">
-                                            {{ slotProps.option.label }}
-                                        </div>
-                                    </template>
-                                </Select>
-                            </div>
-                            <div class="col-lg-3 col-12 px-2 mb-2">
-                                <label for="filter-contract" class="form-label mb-0">Min. Speed</label>
-                                <Select
-                                    id="speed-multiselect"
-                                    v-model="filters['formattedSpeed'].value"
-                                    style="width: 100%"
-                                    :options="filterList.formattedSpeed"
-                                    optionLabel="label"
-                                    optionValue="value"
-                                    placeholder="All"
-                                    size="small"
-                                    class="me-3 custom-select"
-                                >
-                                    <template #option="slotProps">
-                                        <div style="font-size: 14px; line-height: 1.5rem">
-                                            {{ slotProps.option.label }}
-                                        </div>
-                                    </template>
-                                </Select>
-                            </div>
-                            <div class="col-lg-3 col-12 px-2 mb-2">
-                                <label for="filter-contract" class="form-label mb-0">Contract Length</label>
-                                <MultiSelect
-                                    id="contract-length-multiselect"
-                                    v-model="filters['contractTermMonths'].value"
-                                    style="width: 100%"
-                                    :options="filterList.contractTermMonths"
-                                    optionLabel="label"
-                                    optionValue="value"
-                                    placeholder="All"
-                                    size="small"
-                                    class="me-3 custom-multiselect"
-                                >
-                                    <template #option="slotProps">
-                                        <div style="font-size: 14px; line-height: 1.5rem">
-                                            {{ slotProps.option.label }}
-                                        </div>
-                                    </template>
-                                </MultiSelect>
-                            </div>
-                            <div class="col-lg-3 col-12 px-2 mb-2">
-                                <label for="filter-connectivityType" class="form-label mb-0">Connectivity</label>
-                                <MultiSelect
-                                    id="connectivityType-multiselect"
-                                    v-model="filters['connectivityType'].value"
-                                    style="width: 100%"
-                                    :options="Object.keys(filterList.connectivityType).filter((key) => key !== 'null')"
-                                    placeholder="All"
-                                    size="small"
-                                    class="me-3 custom-multiselect"
-                                >
-                                    <template #option="slotProps">
-                                        <div style="font-size: 14px; line-height: 1.5rem">
-                                            {{ slotProps.option }} (
-                                            {{ filterList.connectivityType[slotProps.option] }} )
-                                        </div>
-                                    </template>
-                                </MultiSelect>
-                            </div>
-                            <div class="col-lg-3 col-12 px-2 mb-2">
-                                <label for="filter-technologyType" class="form-label mb-0">Technology</label>
-                                <MultiSelect
-                                    id="technologyType-multiselect"
-                                    v-model="filters['technologyType'].value"
-                                    style="width: 100%"
-                                    :options="Object.keys(filterList.technologyType).filter((key) => key !== 'null')"
-                                    placeholder="All"
-                                    size="small"
-                                    class="me-3 custom-multiselect"
-                                >
-                                    <template #option="slotProps">
-                                        <div style="font-size: 14px; line-height: 1.5rem">
-                                            {{ slotProps.option }} ( {{ filterList.technologyType[slotProps.option] }} )
-                                        </div>
-                                    </template>
-                                </MultiSelect>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-12 align-self-start justify-content-around mt-3 mb-2">
-                        <div class="row">
-                            <div class="col-12 d-flex align-self-end justify-content-around" style="margin-bottom: 2px">
-                                <button class="btn btn-secondary btn-sm mt-2 me-2 w-100" @click="resetFilters()">
-                                    Reset
-                                </button>
-                                <div class="advanced-settings pt-2 w-100">
-                                    <button
-                                        id="btn-more-filters"
-                                        class="btn btn-secondary dropdown-toggle lh-1 w-100"
-                                        type="button"
-                                        data-bs-toggle="dropdown"
-                                        aria-expanded="false"
-                                        data-bs-auto-close="outside"
+                <div class="filters-card rounded bg-white p-3 mb-3">
+                    <div id="filters" class="p-0 m-0 row">
+                        <div class="col-lg-10 col-12 px-1">
+                            <div class="row">
+                                <div v-for="field in filterFields" :key="field.key" class="col-lg-3 col-12 mb-2">
+                                    <component
+                                        :is="field.control"
+                                        :id="field.key + '-filter'"
+                                        v-model="filters[field.key].value"
+                                        :options="filterOptions(field)"
+                                        optionLabel="label"
+                                        optionValue="value"
+                                        :placeholder="field.label"
                                     >
-                                        <font-awesome-icon :icon="['fas', 'gear']"></font-awesome-icon>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end mt-1 p-1">
-                                        <li>
-                                            <div class="checkbox d-flex py-1 px-2">
-                                                <ToggleSwitch
-                                                    class="me-2"
-                                                    id="filter-lower-cost"
-                                                    v-model="showLowestCost"
-                                                >
-                                                    <template #handle>
-                                                        <font-awesome-icon
-                                                            :icon="
-                                                                showLowestCost
-                                                                    ? ['fas', 'circle-check']
-                                                                    : ['far', 'circle-xmark']
-                                                            "
-                                                            class="text-primary"
-                                                        />
-                                                    </template>
-                                                </ToggleSwitch>
-                                                <label class="form-check-label" for="filter-lower-cost">
-                                                    Show only lowest cost products
-                                                </label>
-                                            </div>
-                                            <!-- <div class="checkbox d-flex py-1 px-2">
-                                        <ToggleSwitch class="me-2" id="filter-show-quoted" v-model="showQuoted">
+                                    </component>
+                                </div>
+                                <div class="col-lg-4 col-12 mb-2 d-flex align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <ToggleSwitch class="me-2" id="filter-lower-cost" v-model="showLowestCost">
                                             <template #handle>
                                                 <font-awesome-icon
                                                     :icon="
-                                                        showQuoted ? ['fas', 'circle-check'] : ['far', 'circle-xmark']
+                                                        showLowestCost
+                                                            ? ['fas', 'circle-check']
+                                                            : ['far', 'circle-xmark']
                                                     "
                                                     class="text-primary"
                                                 />
                                             </template>
                                         </ToggleSwitch>
-                                        <label class="form-check-label" for="filter-show-quoted">
-                                            Show only quoted items
+                                        <label class="form-check-label mb-0" for="filter-lower-cost">
+                                            Show only lowest cost products
                                         </label>
-                                    </div> -->
-                                            <div class="checkbox d-flex py-1 px-2">
-                                                <TriStateToggle v-model="showContended" id="filter-show-contended">
-                                                    <template #handle>
-                                                        <font-awesome-icon
-                                                            :icon="
-                                                                showContended === true
-                                                                    ? ['fas', 'circle-check']
-                                                                    : showContended === false
-                                                                      ? ['far', 'circle-xmark']
-                                                                      : ['far', 'circle']
-                                                            "
-                                                            class="text-primary"
-                                                        />
-                                                    </template>
-                                                </TriStateToggle>
-                                                <label class="form-check-label" for="filter-show-contended">
-                                                    Show contended products
-                                                </label>
-                                            </div>
-                                        </li>
-                                    </ul>
+                                    </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="col-lg-2 col-12 d-flex flex-column gap-2">
+                            <button class="btn btn-sm text-primary" @click="resetFilters()">
+                                <font-awesome-icon :icon="['fas', 'arrow-rotate-left']"></font-awesome-icon>
+                                Reset
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -659,321 +405,32 @@ onMounted(() => {
                         <div class="cpq-bar"></div>
                     </div>
                 </div>
-                <div id="no-results" v-if="!articles.length">
-                    <div class="alert alert-secondary mt-3">
-                        No results match your filters.
-                        <button @click="resetFilters" class="btn btn-primary btn-sm js-clear-filters ms-3">
-                            Clear filters
-                        </button>
-                    </div>
-                </div>
-                <div v-if="articles.length" class="table-wrapper">
-                    <table class="table-connectivity table table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th
-                                    id="table-header-product"
-                                    class="ps-3"
-                                    :style="{
-                                        whiteSpace: 'nowrap',
-                                        width: '380px'
-                                    }"
-                                    @click="orderBy('productName')"
-                                >
-                                    Product
-                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'productName'">
-                                            <font-awesome-icon
-                                                v-if="sort.order == 'desc'"
-                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                        </template>
-                                        <template v-else>
-                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
-                                        </template>
-                                    </span>
-                                </th>
-                                <th
-                                    id="table-header-managed"
-                                    class="text-center"
-                                    :style="{
-                                        whiteSpace: 'nowrap'
-                                    }"
-                                    @click="orderBy('isManaged')"
-                                >
-                                    Managed
-                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'isManaged'">
-                                            <font-awesome-icon
-                                                v-if="sort.order == 'desc'"
-                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                        </template>
-                                        <template v-else>
-                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
-                                        </template>
-                                    </span>
-                                </th>
-                                <th
-                                    id="table-header-provider"
-                                    class="text-center"
-                                    :style="{ whiteSpace: 'nowrap' }"
-                                    @click="orderBy('providerName')"
-                                >
-                                    Provider
-                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'providerName'">
-                                            <font-awesome-icon
-                                                v-if="sort.order == 'desc'"
-                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                        </template>
-                                        <template v-else>
-                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
-                                        </template>
-                                    </span>
-                                </th>
-                                <th
-                                    id="table-header-subprovider"
-                                    class="text-center"
-                                    :style="{ whiteSpace: 'nowrap' }"
-                                    @click="orderBy('connectivitySupplierName')"
-                                >
-                                    Subprovider
-                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'connectivitySupplierName'">
-                                            <font-awesome-icon
-                                                v-if="sort.order == 'desc'"
-                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                        </template>
-                                        <template v-else>
-                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
-                                        </template>
-                                    </span>
-                                </th>
-                                <th
-                                    id="table-header-bearer"
-                                    class="text-center"
-                                    :style="{
-                                        whiteSpace: 'nowrap'
-                                    }"
-                                    @click="orderBy('bearer')"
-                                >
-                                    Bearer
-                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'bearer'">
-                                            <font-awesome-icon
-                                                v-if="sort.order == 'desc'"
-                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                        </template>
-                                        <template v-else>
-                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
-                                        </template>
-                                    </span>
-                                </th>
-                                <th
-                                    id="table-header-speed"
-                                    class="text-center"
-                                    :style="{
-                                        whiteSpace: 'nowrap'
-                                    }"
-                                    @click="orderBy('speed')"
-                                >
-                                    Speed
-                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'speed'">
-                                            <font-awesome-icon
-                                                v-if="sort.order == 'desc'"
-                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                        </template>
-                                        <template v-else>
-                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
-                                        </template>
-                                    </span>
-                                </th>
-                                <th
-                                    id="table-header-setup"
-                                    class="text-center"
-                                    :style="{
-                                        whiteSpace: 'nowrap'
-                                    }"
-                                    @click="orderBy('priceInstall_spa')"
-                                >
-                                    Set Up
-                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'priceInstall_spa'">
-                                            <font-awesome-icon
-                                                v-if="sort.order == 'desc'"
-                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                        </template>
-                                        <template v-else>
-                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
-                                        </template>
-                                    </span>
-                                </th>
-                                <th
-                                    id="table-header-monthly"
-                                    class="text-center"
-                                    :style="{
-                                        whiteSpace: 'nowrap'
-                                    }"
-                                    @click="orderBy('priceMonthly_spa')"
-                                >
-                                    Monthly
-                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'priceMonthly_spa'">
-                                            <font-awesome-icon
-                                                v-if="sort.order == 'desc'"
-                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                        </template>
-                                        <template v-else>
-                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
-                                        </template>
-                                    </span>
-                                </th>
-                                <th
-                                    id="table-header-ecc"
-                                    class="text-center"
-                                    :style="{
-                                        whiteSpace: 'nowrap'
-                                    }"
-                                    @click="orderBy('priceECC')"
-                                >
-                                    ECC
-                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'priceECC'">
-                                            <font-awesome-icon
-                                                v-if="sort.order == 'desc'"
-                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                        </template>
-                                        <template v-else>
-                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
-                                        </template>
-                                    </span>
-                                </th>
-                                <th
-                                    id="table-header-contract-term"
-                                    class="text-center"
-                                    :style="{
-                                        whiteSpace: 'nowrap'
-                                    }"
-                                    @click="orderBy('contractTermMonths')"
-                                >
-                                    Contract Term
-                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'contractTermMonths'">
-                                            <font-awesome-icon
-                                                v-if="sort.order == 'desc'"
-                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                        </template>
-                                        <template v-else>
-                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
-                                        </template>
-                                    </span>
-                                </th>
-                                <th
-                                    id="table-header-connectivity-type"
-                                    class="text-center"
-                                    :style="{
-                                        whiteSpace: 'nowrap'
-                                    }"
-                                    @click="orderBy('connectivityType')"
-                                >
-                                    Connectivity
-                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'connectivityType'">
-                                            <font-awesome-icon
-                                                v-if="sort.order == 'desc'"
-                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                        </template>
-                                        <template v-else>
-                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
-                                        </template>
-                                    </span>
-                                </th>
-                                <th
-                                    id="table-header-technology-type"
-                                    class="text-center"
-                                    :style="{
-                                        whiteSpace: 'nowrap'
-                                    }"
-                                    @click="orderBy('technologyType')"
-                                >
-                                    Technology
-                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'technologyType'">
-                                            <font-awesome-icon
-                                                v-if="sort.order == 'desc'"
-                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                        </template>
-                                        <template v-else>
-                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
-                                        </template>
-                                    </span>
-                                </th>
-                                <th
-                                    v-if="!hasPrimaryProduct()"
-                                    :style="{
-                                        width: '130px'
-                                    }"
-                                ></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr
-                                class="connectivity-table-item"
-                                v-for="(article, index) in articles"
-                                style="text-align: center"
-                            >
-                                <td class="lh-sm text-left ps-3">
-                                    {{ article.productName }}
+                <div class="table-wrapper">
+                    <NewDatatable
+                        ref="tableRef"
+                        :options="options"
+                        :params="params"
+                        :poll-interval="hasProduct() ? null : 15000"
+                        :filterable="false"
+                        @update:meta="(meta) => setMeta(meta)"
+                    >
+                        <template #productName="{ value, data }">
+                            <template v-for="display in [productDisplay(value, data)]" :key="data.code">
+                                <p class="small overflow-hidden text-truncate" :title="display.name">
+                                    {{ display.name }}
                                     <span
-                                        v-if="article?.additionalInfo?.['router']"
+                                        v-if="display.router"
                                         v-tooltip
                                         data-bs-toggle="tooltip"
                                         data-bs-placement="top"
                                         data-bs-html="true"
-                                        :data-bs-original-title="
-                                            '<b>Primary Router Model:</b> ' + article.additionalInfo['router']
-                                        "
+                                        :data-bs-original-title="'<b>Primary Router Model:</b> ' + display.router"
                                         class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
                                     >
                                         <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
                                     </span>
                                     <span
-                                        v-if="article?.isContended"
-                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="top"
-                                        data-bs-html="true"
-                                        data-bs-original-title="Contended Service"
-                                        v-tooltip
-                                    >
-                                        <font-awesome-icon :icon="['fas', 'server']"></font-awesome-icon>
-                                    </span>
-                                    <span
-                                        v-if="article?.additionalInfo?.['Type'] == 'Fibre Flex 200+'"
+                                        v-if="data?.additionalInfo?.['Type'] == 'Fibre Flex 200+'"
                                         v-tooltip
                                         data-bs-toggle="tooltip"
                                         data-bs-placement="top"
@@ -984,166 +441,158 @@ onMounted(() => {
                                         <font-awesome-icon :icon="['fas', 'bolt']"></font-awesome-icon>
                                     </span>
                                     <span
-                                        v-if="article?.additionalInfo?.['addon_ipv4']"
+                                        v-if="data?.additionalInfo?.['addon_ipv4']"
                                         v-tooltip
                                         data-bs-toggle="tooltip"
                                         data-bs-placement="top"
-                                        :data-bs-original-title="article?.additionalInfo?.['addon_ipv4']"
+                                        :data-bs-original-title="data?.additionalInfo?.['addon_ipv4']"
                                         class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm addon-ipv4"
                                     >
                                         <font-awesome-icon :icon="['fas', 'network-wired']"></font-awesome-icon>
                                     </span>
-                                </td>
-                                <td>
-                                    <span
-                                        v-if="
-                                            article.isManaged === null &&
-                                            article.providerKey === 'pxc' &&
-                                            article.isContended === false
-                                        "
-                                        title="This product is unmanaged and will become managed once a router is selected. For PXC Ethernet circuits routers are free of charge on 3 or 5 year terms."
-                                        data-bs-original-title="This product is unmanaged and will become managed once a router is selected. For PXC Ethernet circuits routers are free of charge on 3 or 5 year terms."
-                                        v-tooltip
-                                    >
-                                        {{
-                                            article.isManaged == true
-                                                ? 'Yes'
-                                                : article.isManaged === false
-                                                  ? 'No'
-                                                  : 'N/A'
-                                        }}
-                                        <SvgIcon class="h6 mt-1" width="20" height="20" name="info" />
-                                    </span>
-                                    <span
-                                        v-else-if="
-                                            article.isManaged === true &&
-                                            article.providerKey === 'its' &&
-                                            article.isContended === false
-                                        "
-                                        title="ITS managed service includes 24/7 monitoring and a 6-hour fix SLA, however no router is included. Instead, ITS-provided fibre includes an ONT (optical network terminal) while third-party fibre (e.g. Openreach) uses the carrier's own Network Termination Equipment (NTE)."
-                                        data-bs-original-title="ITS managed service includes 24/7 monitoring and a 6-hour fix SLA, however no router is included. Instead, ITS-provided fibre includes an ONT (optical network terminal) while third-party fibre (e.g. Openreach) uses the carrier's own Network Termination Equipment (NTE)"
-                                        v-tooltip
-                                    >
-                                        {{
-                                            article.isManaged == true
-                                                ? 'Yes'
-                                                : article.isManaged === false
-                                                  ? 'No'
-                                                  : 'N/A'
-                                        }}
-                                        <SvgIcon class="h6 mt-1" width="20" height="20" name="info" />
-                                    </span>
-                                    <span v-else>
-                                        {{
-                                            article.isManaged == true
-                                                ? 'Yes'
-                                                : article.isManaged === false
-                                                  ? 'No'
-                                                  : 'N/A'
-                                        }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <img
-                                        class="img-provider"
-                                        @error="setAltImg"
-                                        :src="`/images/providers/${format.toLowerCase(article.providerKey)}.png`"
-                                        :alt="article.providerName"
-                                        :title="article.providerName"
-                                        :data-bs-original-title="article.providerName"
-                                        v-tooltip
-                                    />
-                                </td>
-                                <td>
-                                    <img
-                                        class="img-subprovider"
-                                        @error="setAltImg"
-                                        :src="`/images/providers/${format.toLowerCase(
-                                            article.connectivitySupplierGroup
-                                        )}.png`"
-                                        :alt="article.connectivitySupplierName"
-                                        :title="article.connectivitySupplierName"
-                                        :data-bs-original-title="article.connectivitySupplierName"
-                                        v-tooltip
-                                    />
-                                </td>
-                                <td>{{ format.speed(article.bearer) }}</td>
-                                <td>{{ format.speed(article.speed) }}</td>
-                                <td :id="'line-' + index + '-price-install'">
-                                    {{ format.GBP(article.priceInstall_spa) }}
-                                    <span
-                                        v-if="article?.additionalInfo?.['addon_install'] && !article.amortisation"
-                                        :data-bs-original-title="article?.additionalInfo?.['addon_install']"
-                                        data-bs-html="true"
-                                        v-tooltip
-                                    >
-                                        <SvgIcon width="20" height="20" name="info" />
-                                    </span>
-                                </td>
-                                <td :id="'line-' + index + '-price-monthly'">
-                                    <template v-if="!article.amortisation">
-                                        {{ format.GBP(article.priceMonthly_spa) }}
-                                    </template>
-                                    <span
-                                        v-else
-                                        :data-bs-original-title="
-                                            '<b>Initial Setup Cost:</b> ' +
-                                            format.GBP(article.amortisation_install) +
-                                            (article?.additionalInfo?.['addon_install'] && article.amortisation
-                                                ? '<br/>' + article?.additionalInfo?.['addon_install']
-                                                : '') +
-                                            '<br/><b>Monthly Amortisation:</b> ' +
-                                            format.GBP(article.amortisation)
-                                        "
-                                        data-bs-html="true"
-                                        v-tooltip
-                                    >
-                                        {{ format.GBP(article.priceMonthly_spa) }}
-                                        <font-awesome-icon class="ms-1" :icon="['fas', 'coins']"></font-awesome-icon>
-                                    </span>
-                                </td>
-                                <td>
-                                    <template v-if="article.priceECC">
-                                        {{ format.GBP(article.priceECC) }}
-                                    </template>
-                                    <span
-                                        v-else
-                                        title="Subject to Survey"
-                                        class="h6"
-                                        data-bs-original-title="Subject to Survey"
-                                        v-tooltip
-                                    >
-                                        <font-awesome-icon :icon="['far', 'circle-question']"></font-awesome-icon>
-                                    </span>
-                                </td>
-                                <td>
-                                    {{ article.contractTermMonths ? article.contractTermMonths + ' Months' : 'N/A' }}
-                                </td>
-                                <td>{{ article.connectivityType ?? 'N/A' }}</td>
-                                <td>{{ article.technologyType ?? 'N/A' }}</td>
-                                <td class="text-end" v-if="!hasPrimaryProduct()">
-                                    <button
-                                        class="btn btn-outline-primary me-2 py-1"
-                                        @click="checkProduct(article)"
-                                        style="white-space: nowrap"
-                                    >
-                                        <font-awesome-icon :icon="['fas', 'plus']" />
-                                        Add
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <Paginator
-                        v-model:first="meta.first"
-                        :rows="meta.limit"
-                        :pageLinkSize="5"
-                        :totalRecords="meta.total"
-                        :rowsPerPageOptions="[10, 25, 50]"
-                        @page="handlePaginator"
-                        class="custom-paginator"
-                    >
-                    </Paginator>
+                                </p>
+                            </template>
+                        </template>
+                        <template #isManaged="{ value, data }">
+                            <p class="small">
+                                <span
+                                    v-if="
+                                        data.isManaged === null &&
+                                        data.providerKey === 'pxc' &&
+                                        data.isContended === false
+                                    "
+                                    title="This product is unmanaged and will become managed once a router is selected. For PXC Ethernet circuits routers are free of charge on 3 or 5 year terms."
+                                    data-bs-original-title="This product is unmanaged and will become managed once a router is selected. For PXC Ethernet circuits routers are free of charge on 3 or 5 year terms."
+                                    v-tooltip
+                                >
+                                    {{ data.isManaged == true ? 'Yes' : data.isManaged === false ? 'No' : 'N/A' }}
+                                    <SvgIcon class="h6 mt-1" width="20" height="20" name="info" />
+                                </span>
+                                <span
+                                    v-else-if="
+                                        data.isManaged === true &&
+                                        data.providerKey === 'its' &&
+                                        data.isContended === false
+                                    "
+                                    title="ITS managed service includes 24/7 monitoring and a 6-hour fix SLA, however no router is included. Instead, ITS-provided fibre includes an ONT (optical network terminal) while third-party fibre (e.g. Openreach) uses the carrier's own Network Termination Equipment (NTE)."
+                                    data-bs-original-title="ITS managed service includes 24/7 monitoring and a 6-hour fix SLA, however no router is included. Instead, ITS-provided fibre includes an ONT (optical network terminal) while third-party fibre (e.g. Openreach) uses the carrier's own Network Termination Equipment (NTE)"
+                                    v-tooltip
+                                >
+                                    {{ data.isManaged == true ? 'Yes' : data.isManaged === false ? 'No' : 'N/A' }}
+                                    <SvgIcon class="h6 mt-1" width="20" height="20" name="info" />
+                                </span>
+                                <span v-else>
+                                    {{ data.isManaged == true ? 'Yes' : data.isManaged === false ? 'No' : 'N/A' }}
+                                </span>
+                            </p>
+                        </template>
+                        <template #providerName="{ value, data }">
+                            <img
+                                class="img-provider"
+                                @error="setAltImg"
+                                :src="`/images/providers/${format.toLowerCase(data.providerKey)}.png`"
+                                :alt="value"
+                                :title="value"
+                                :data-bs-original-title="value"
+                                v-tooltip
+                            />
+                        </template>
+                        <template #connectivitySupplierGroup="{ value, data }">
+                            <img
+                                class="img-subprovider"
+                                @error="setAltImg"
+                                :src="`/images/providers/${format.toLowerCase(value)}.png`"
+                                :alt="data.connectivitySupplierName"
+                                :title="data.connectivitySupplierName"
+                                :data-bs-original-title="data.connectivitySupplierName"
+                                v-tooltip
+                            />
+                        </template>
+                        <template #bearer="{ value, data }">
+                            <p class="small">{{ format.speed(value) }}</p>
+                        </template>
+                        <template #speed="{ value, data }">
+                            <p class="small">{{ format.speed(value) }}</p>
+                        </template>
+                        <template #isContended="{ value, data }">
+                            <p class="small">
+                                {{ data.isContended == true ? 'Yes' : data.isContended === false ? 'No' : 'N/A' }}
+                            </p>
+                        </template>
+
+                        <template #priceInstall_spa="{ value, data, index }">
+                            <p class="small" :id="'line-' + index + '-price-install'">
+                                {{ format.GBP(value) }}
+                                <span
+                                    v-if="data?.additionalInfo?.['addon_install'] && !data.amortisation"
+                                    :data-bs-original-title="data?.additionalInfo?.['addon_install']"
+                                    data-bs-html="true"
+                                    v-tooltip
+                                >
+                                    <SvgIcon width="20" height="20" name="info" />
+                                </span>
+                            </p>
+                        </template>
+                        <template #priceMonthly_spa="{ value, data, index }">
+                            <p :id="'line-' + index + '-price-monthly'" class="small">
+                                <template v-if="!data.amortisation">
+                                    {{ format.GBP(value) }}
+                                </template>
+                                <span
+                                    v-else
+                                    :data-bs-original-title="
+                                        '<b>Initial Setup Cost:</b> ' +
+                                        format.GBP(data.amortisation_install) +
+                                        (data?.additionalInfo?.['addon_install'] && data.amortisation
+                                            ? '<br/>' + data?.additionalInfo?.['addon_install']
+                                            : '') +
+                                        '<br/><b>Monthly Amortisation:</b> ' +
+                                        format.GBP(data.amortisation)
+                                    "
+                                    data-bs-html="true"
+                                    v-tooltip
+                                >
+                                    {{ format.GBP(value) }}
+                                    <font-awesome-icon class="ms-1" :icon="['fas', 'coins']"></font-awesome-icon>
+                                </span>
+                            </p>
+                        </template>
+                        <template #priceECC="{ value, data, index }">
+                            <p class="small" v-if="value">
+                                {{ format.GBP(value) }}
+                            </p>
+                            <p
+                                v-else
+                                title="Subject to Survey"
+                                class="h6 m-0 d-inline-block"
+                                data-bs-original-title="Subject to Survey"
+                                v-tooltip
+                            >
+                                <font-awesome-icon :icon="['far', 'circle-question']"></font-awesome-icon>
+                            </p>
+                        </template>
+                        <template #contractTermMonths="{ value, data, index }">
+                            <p class="small">{{ value ? value + ' Months' : 'N/A' }}</p>
+                        </template>
+                        <template #connectivityType="{ value, data, index }">
+                            <p class="small">{{ value ?? 'N/A' }}</p>
+                        </template>
+                        <template #technologyType="{ value, data, index }">
+                            <p class="small">{{ value ?? 'N/A' }}</p>
+                        </template>
+                        <template #actions="{ value, data, index }">
+                            <div class="text-end p-1">
+                                <button
+                                    v-if="!quote.items.find((x) => x.product_code == data.code)"
+                                    class="btn btn-outline-primary btn-connectivity"
+                                    @click="checkProduct(data)"
+                                >
+                                    <font-awesome-icon :icon="['fas', 'plus']" />
+                                    Add
+                                </button>
+                            </div>
+                        </template>
+                    </NewDatatable>
                 </div>
             </div>
         </div>
@@ -1179,22 +628,25 @@ onMounted(() => {
         </div>
     </Dialog>
 
-    <QuoteConnectivityHardwareTable
-        v-if="props.needsAddons && quote.items?.find((x) => x.data.type == 'Primary Product')"
+    <QuoteConnectivityAddonsTable
+        v-if="props.needsAddons && hasProduct()"
         v-model="props.modelValue"
-        productType="Primary Hardware Product"
         :currentStep="props.currentStep"
-    ></QuoteConnectivityHardwareTable>
+        :productType="props.hardwareProductType"
+        route="cloudmarket/products/addons"
+        title="Hardware"
+        :pollInterval="4000"
+        :showCategoryBadge="false"
+        filterPrimaryCircuitHardware
+        showRequiredIndicator
+        elementId="pcx-its-hardware"
+    >
+    </QuoteConnectivityAddonsTable>
 </template>
 
 <style scoped>
 tr.active td {
     background-color: var(--light-teal);
-}
-
-.table-wrapper {
-    position: relative;
-    overflow-x: auto;
 }
 
 .table-blocker {
@@ -1239,5 +691,9 @@ tr.active td {
     width: 0%;
     background-color: var(--purple);
     animation: progressBar 240s linear forwards;
+}
+
+.btn-connectivity {
+    margin: 0 !important;
 }
 </style>

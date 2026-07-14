@@ -87,7 +87,7 @@ class FilterProvider
 
                 return $data->where($column, $isBoolValue);
             case 'contains':
-                return $data->filter(fn ($item) => Str::contains($item[$column], $value));
+                return $data->filter(fn ($item) => Str::contains($item[$column], $value, true));
             case 'in':
                 $value = is_array($value) ? $value : [$value];
                 $normalizedSearch = array_map(function ($v) {

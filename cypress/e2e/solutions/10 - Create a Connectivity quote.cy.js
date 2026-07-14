@@ -33,50 +33,43 @@ describe('Creates a Connectivity quote', () => {
         cy.selectOption('#select_address', 1);
         cy.get('.step-action-bar #btn-next-step').click();
         cy.get('.step-action-bar #btn-create-quote').should('not.be.disabled').click();
+        cy.dismissLoadingModal();
 
         //Managed filter
-        cy.get('#managed-multiselect').click();
+        cy.get('#input-select-isManaged-filter .trigger-select').click();
         cy.wait(500);
-        cy.get('.p-multiselect-list-container')
-            .eq(0)
-            .within(() => {
-                cy.get('.p-multiselect-option').contains('No').click();
-            });
+        cy.get('#input-select-isManaged-filter .options-container').within(() => {
+            cy.get('.option').contains('No').click();
+        });
 
         //Provider filter
-        cy.get('#provider-multiselect').click();
+        cy.get('#input-select-providerName-filter .trigger-select').click();
         cy.wait(500);
-        cy.get('.p-multiselect-list-container')
-            .eq(0)
-            .within(() => {
-                cy.get('.p-multiselect-option').contains(provider).click();
-            });
+        cy.get('#input-select-providerName-filter .options-container').within(() => {
+            cy.get('.option').contains(provider).click();
+        });
 
         //SubProvider filter
-        cy.get('#subprovider-multiselect').click();
+        cy.get('#input-select-connectivitySupplierGroup-filter .trigger-select').click();
         cy.wait(500);
-        cy.get('.p-multiselect-list-container')
-            .eq(0)
-            .within(() => {
-                cy.get('.p-multiselect-option').contains(subprovider).click();
-            });
-        cy.get('#subprovider-multiselect').click();
+        cy.get('#input-select-connectivitySupplierGroup-filter .options-container').within(() => {
+            cy.get('.option').contains(subprovider).click();
+        });
+        cy.get('#input-select-connectivitySupplierGroup-filter .trigger-select').click();
 
         //connectivityType filter
-        cy.get('#connectivityType-multiselect').click();
+        cy.get('#input-select-connectivityType-filter .trigger-select').click();
         cy.wait(500);
-        cy.get('.p-multiselect-list-container')
-            .eq(0)
-            .within(() => {
-                cy.get('.p-multiselect-option').contains(connectivityType).click();
-            });
-        cy.get('#connectivityType-multiselect').click();
+        cy.get('#input-select-connectivityType-filter .options-container').within(() => {
+            cy.get('.option').contains(connectivityType).click();
+        });
+        cy.get('#input-select-connectivityType-filter .trigger-select').click();
 
         // Scroll back to top
         cy.scrollTo('top');
-        cy.get('#table-header-setup').click();
+        cy.contains('.datatable-table-header-text', 'Set Up').click();
         cy.wait(1000);
-        cy.get('#table-header-setup').click();
+        cy.contains('.datatable-table-header-text', 'Set Up').click();
         cy.wait(1000);
 
         cy.get('tbody tr button').eq(0).click();
@@ -149,74 +142,62 @@ describe('Creates a Connectivity quote', () => {
         cy.selectOption('#select_address', 1);
         cy.get('.step-action-bar #btn-next-step').click();
         cy.get('.step-action-bar #btn-create-quote').should('not.be.disabled').click();
+        cy.dismissLoadingModal();
 
         cy.scrollTo('top');
 
-        cy.get('#btn-more-filters').click();
         cy.get("#filter-lower-cost input[type='checkbox']").should('be.checked');
         cy.wait(3000);
 
         //Managed filter
-        cy.get('#managed-multiselect').click();
+        cy.get('#input-select-isManaged-filter .trigger-select').click();
         cy.wait(500);
-        cy.get('.p-multiselect-list-container')
-            .eq(0)
-            .within(() => {
-                cy.get('.p-multiselect-option').contains('No').click();
-            });
+        cy.get('#input-select-isManaged-filter .options-container').within(() => {
+            cy.get('.option').contains('No').click();
+        });
 
         //Provider filter
-        cy.get('#provider-multiselect').click();
+        cy.get('#input-select-providerName-filter .trigger-select').click();
         cy.wait(500);
-        cy.get('.p-multiselect-list-container')
-            .eq(0)
-            .within(() => {
-                cy.get('.p-multiselect-option').contains('Gamma').click();
-            });
+        cy.get('#input-select-providerName-filter .options-container').within(() => {
+            cy.get('.option').contains('Gamma').click();
+        });
 
         //SubProvider filter
-        cy.get('#subprovider-multiselect').click();
+        cy.get('#input-select-connectivitySupplierGroup-filter .trigger-select').click();
         cy.wait(500);
-        cy.get('.p-multiselect-list-container')
-            .eq(0)
-            .within(() => {
-                cy.get('.p-multiselect-option').contains('TalkTalk').click();
-            });
+        cy.get('#input-select-connectivitySupplierGroup-filter .options-container').within(() => {
+            cy.get('.option').contains('TalkTalk').click();
+        });
 
-        //Contact length filter
-        cy.get('#contract-length-multiselect').click();
+        //Contract length filter
+        cy.get('#input-select-contractTermMonths-filter .trigger-select').click();
         cy.wait(500);
-        cy.get('.p-multiselect-list-container')
-            .eq(0)
-            .within(() => {
-                cy.get('.p-multiselect-option').contains('36').click();
-            });
+        cy.get('#input-select-contractTermMonths-filter .options-container').within(() => {
+            cy.get('.option').contains('36').click();
+        });
 
         //Bearer filter
-        cy.get('#bearer-multiselect').click();
+        cy.get('#input-select-bearer-filter .trigger-select').click();
         cy.wait(500);
-        cy.get('.p-select-list-container')
-            .eq(0)
-            .within(() => {
-                cy.get('.p-select-option').contains('1 Gb').click();
-            });
+        cy.get('#input-select-bearer-filter .options-container').within(() => {
+            cy.get('.option').contains('1 Gb').click();
+        });
 
         //Speed filter
-        cy.get('#speed-multiselect').click();
+        cy.get('#input-select-formattedSpeed-filter .trigger-select').click();
         cy.wait(500);
-        cy.get('.p-select-list-container')
-            .eq(0)
-            .within(() => {
-                cy.get('.p-select-option').contains('500 Mb').click();
-            });
+        cy.get('#input-select-formattedSpeed-filter .options-container').within(() => {
+            cy.get('.option').contains('500 Mb').click();
+        });
 
         cy.scrollTo('top');
-        cy.get('#table-header-speed').click();
+        cy.contains('.datatable-table-header-text', 'Speed').click();
         cy.wait(1000);
-        cy.get('#table-header-speed').click();
+        cy.contains('.datatable-table-header-text', 'Speed').click();
         cy.wait(1000);
 
-        cy.get('table tbody tr.connectivity-table-item')
+        cy.get('table tbody tr')
             .filter(':contains("Internet Access (Wires Only)")')
             .filter(':contains("1 Gb")')
             .filter(':contains("500 Mb")')

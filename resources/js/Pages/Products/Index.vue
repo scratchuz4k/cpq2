@@ -14,7 +14,7 @@ const props = defineProps({
 
 const options = new DatatableOptions('products', 'products-table');
 options.addColumn('name', 'Name', { isSticky: true });
-options.addColumn('sku', 'SKU', { isSticky: true });
+options.addColumn('sku', 'SKU');
 options.addColumn('status', 'Status');
 options.addColumn('description', 'Description');
 options.addColumn('categories.name', 'Categories', { isSortable: false });

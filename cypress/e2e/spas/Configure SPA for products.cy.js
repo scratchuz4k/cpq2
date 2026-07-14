@@ -22,29 +22,26 @@ describe('Creates a Connectivity quote', () => {
         cy.selectOption('#select_address', 1);
         cy.get('.step-action-bar #btn-next-step').click();
         cy.get('#btn-create-quote').should('not.be.disabled').click();
+        cy.dismissLoadingModal();
 
         cy.wait(1000);
 
         //Managed filter
-        cy.get('#managed-multiselect').click();
+        cy.get('#input-select-isManaged-filter .trigger-select').click();
         cy.wait(500);
-        cy.get('.p-multiselect-list-container')
-            .eq(0)
-            .within(() => {
-                cy.get('.p-multiselect-option').contains('No').click();
-            });
+        cy.get('#input-select-isManaged-filter .options-container').within(() => {
+            cy.get('.option').contains('No').click();
+        });
 
         //Provider filter
-        cy.get('#provider-multiselect').click();
-        cy.get('.p-multiselect-list-container')
-            .eq(0)
-            .within(() => {
-                cy.get('.p-checkbox').eq(1).click();
-            });
+        cy.get('#input-select-providerName-filter .trigger-select').click();
+        cy.get('#input-select-providerName-filter .options-container').within(() => {
+            cy.get('.option').eq(1).click();
+        });
 
-        cy.get('#table-header-setup').click();
+        cy.contains('.datatable-table-header-text', 'Set Up').click();
         cy.wait(1000);
-        cy.get('#table-header-setup').click();
+        cy.contains('.datatable-table-header-text', 'Set Up').click();
         cy.wait(1000);
 
         cy.get('#line-0-price-install').then(($input) => {
@@ -90,29 +87,26 @@ describe('Creates a Connectivity quote', () => {
     it('Check Price New Price For Gamma Product', () => {
         cy.visit('/quotes');
         cy.get('#datatable-btn-0-edit').click();
+        cy.dismissLoadingModal();
 
         cy.wait(1000);
 
         //Managed filter
-        cy.get('#managed-multiselect').click();
+        cy.get('#input-select-isManaged-filter .trigger-select').click();
         cy.wait(500);
-        cy.get('.p-multiselect-list-container')
-            .eq(0)
-            .within(() => {
-                cy.get('.p-multiselect-option').contains('No').click();
-            });
+        cy.get('#input-select-isManaged-filter .options-container').within(() => {
+            cy.get('.option').contains('No').click();
+        });
 
         //Provider filter
-        cy.get('#provider-multiselect').click();
-        cy.get('.p-multiselect-list-container')
-            .eq(0)
-            .within(() => {
-                cy.get('.p-checkbox').eq(1).click();
-            });
+        cy.get('#input-select-providerName-filter .trigger-select').click();
+        cy.get('#input-select-providerName-filter .options-container').within(() => {
+            cy.get('.option').eq(1).click();
+        });
 
-        cy.get('#table-header-setup').click();
+        cy.contains('.datatable-table-header-text', 'Set Up').click();
         cy.wait(1000);
-        cy.get('#table-header-setup').click();
+        cy.contains('.datatable-table-header-text', 'Set Up').click();
         cy.wait(1000);
 
         cy.get('#line-0-price-install').then(($input) => {
