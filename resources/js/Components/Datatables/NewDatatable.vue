@@ -41,7 +41,7 @@ const {
     toggleHidden: toggleUserHiddenColumn,
     colWidths: columnWidths,
     hasCustomWidths,
-    getColWidth,
+    getDisplayColWidth,
     applyMeasuredWidths,
     startResize,
     columnOrder,
@@ -49,6 +49,8 @@ const {
     onDragStart,
     onDragOver,
     onDrop,
+    isReorderLocked,
+    resetLayout,
     visibleColumns,
     stickyCount,
     stickyLeft
@@ -61,12 +63,35 @@ const {
     hideTooltip
 } = useDatatableTooltip();
 
+// table-layout: fixed only honors per-cell widths correctly if the <table>'s own rendered
+// width exactly matches their sum - a CSS width of 100% makes the browser instead stretch or
+// shrink every column proportionally to fit the container, silently fighting manual resizes.
+// So we compute the exact total ourselves and bind it directly instead of using width: 100%.
+const getEffectiveColWidth = (col) => {
+    const styleWidth = col.style?.width;
+    if (styleWidth != null) {
+        const parsed = parseFloat(styleWidth);
+        if (!Number.isNaN(parsed)) return parsed;
+    }
+    return getDisplayColWidth(col);
+};
+
+const nativeActionsColumnWidth = computed(() =>
+    props.options.allow.update || props.options.allow.link || props.options.allow.destroy ? 35 : 0
+);
+
+const tableWidth = computed(
+    () => visibleColumns.value.reduce((sum, col) => sum + getEffectiveColWidth(col), 0) + nativeActionsColumnWidth.value
+);
+
 const slots = useSlots();
 const usedSlots = Object.keys(slots);
 
 const tableContainer = ref(null);
 const isScrolled = ref(false);
+const isScrolledToEnd = ref(true);
 const activeColumnsDropdown = ref(false);
+const activeSettingsDropdown = ref(false);
 
 // First-load auto-sizing: while true, columns render at natural content width (table-layout:
 // auto, no forced width) instead of the resizable fixed-width mode, just long enough to measure
@@ -79,8 +104,16 @@ const setThRef = (column, el) => {
     }
 };
 
+const updateScrollState = () => {
+    const el = tableContainer.value;
+    if (!el) return;
+    isScrolled.value = el.scrollLeft > 0;
+    // A 1px slack absorbs rounding from fractional widths on some browsers/zoom levels.
+    isScrolledToEnd.value = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1;
+};
+
 const onScroll = () => {
-    isScrolled.value = tableContainer.value?.scrollLeft > 0;
+    updateScrollState();
     hideTooltip();
 };
 
@@ -144,6 +177,12 @@ const getData = async () => {
 
 let autoSizeAttempted = false;
 
+const resetTableLayout = () => {
+    resetLayout();
+    autoSizeAttempted = false;
+    maybeAutoSizeColumns();
+};
+
 const maybeAutoSizeColumns = async () => {
     if (autoSizeAttempted || hasCustomWidths.value || !api.items.length) {
         return;
@@ -170,6 +209,8 @@ watch(
     () => api.items.length,
     () => maybeAutoSizeColumns()
 );
+
+watch(tableWidth, () => nextTick(updateScrollState));
 
 const sortBy = (data) => {
     if (!data.isSortable) {
@@ -311,6 +352,7 @@ onMounted(() => {
     );
     var select = document.getElementById(props.options.id + '-tooltip');
     var selectColumns = document.getElementById(props.options.id + '-column-select');
+    var selectSettings = document.getElementById(props.options.id + '-settings-select');
     document.addEventListener('click', (ev) => {
         const isTooltipClick = Array.from(document.getElementsByClassName('tooltip-indicator')).some((x) =>
             x.contains(ev.target)
@@ -321,6 +363,10 @@ onMounted(() => {
 
         if (!selectColumns.contains(ev.target)) {
             activeColumnsDropdown.value = false;
+        }
+
+        if (!selectSettings.contains(ev.target)) {
+            activeSettingsDropdown.value = false;
         }
 
         const isMenuClick = Array.from(document.getElementsByClassName('datatable-actions-menu')).some((x) =>
@@ -353,7 +399,7 @@ onUnmounted(() => {
             </IconField>
         </div>
         <div class="d-flex">
-            <div v-if="props.filterable" class="me-2">
+            <div v-if="props.filterable" class="me-1">
                 <button
                     type="button"
                     class="btn d-flex justify-content-center align-items-center"
@@ -365,7 +411,7 @@ onUnmounted(() => {
                     <span v-if="activeFilterCount" class="datatable-filter-count">{{ activeFilterCount }}</span>
                 </button>
             </div>
-            <div class="me-2 position-relative" :id="props.options.id + '-column-select'">
+            <div class="me-1 position-relative" :id="props.options.id + '-column-select'">
                 <button
                     @click="activeColumnsDropdown = !activeColumnsDropdown"
                     class="btn btn-outline-primary d-flex justify-content-center align-items-center"
@@ -375,7 +421,9 @@ onUnmounted(() => {
                 </button>
                 <div v-show="activeColumnsDropdown" class="datatable-columns-dropdown p-2">
                     <div
-                        v-for="column in columnOrder.filter((x) => !x.isHidden)"
+                        v-for="column in columnOrder.filter(
+                            (x) => !x.isHidden && x.column !== 'actions' && !x.isSticky
+                        )"
                         :key="column.key"
                         class="d-flex align-items-center justify-content-start"
                     >
@@ -388,7 +436,7 @@ onUnmounted(() => {
                     </div>
                 </div>
             </div>
-            <div class="me-2">
+            <div class="me-1">
                 <button
                     v-if="props.options.allow.export"
                     :disabled="!api.items.length || exportDisabled"
@@ -401,12 +449,47 @@ onUnmounted(() => {
                     <p class="small">Export</p>
                 </button>
             </div>
+            <div class="position-relative" :id="props.options.id + '-settings-select'">
+                <button
+                    type="button"
+                    class="btn btn-outline-primary h-100 d-flex justify-content-center align-items-center datatable-settings-trigger"
+                    title="Table settings"
+                    @click="activeSettingsDropdown = !activeSettingsDropdown"
+                >
+                    <font-awesome-icon :icon="['fas', 'gear']" />
+                </button>
+                <div v-show="activeSettingsDropdown" class="datatable-columns-dropdown datatable-settings-dropdown p-1">
+                    <button
+                        type="button"
+                        class="datatable-actions-item"
+                        @click="
+                            () => {
+                                resetTableLayout();
+                                activeSettingsDropdown = false;
+                            }
+                        "
+                    >
+                        <font-awesome-icon :icon="['fas', 'rotate-left']" class="me-2" />
+                        Reset layout
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="datatable-body-wrapper">
-        <div ref="tableContainer" class="datatable-content" :class="{ 'is-scrolled': isScrolled }" @scroll="onScroll">
-            <table class="relation-table" :class="{ 'auto-layout': isAutoSizing }" :id="props.options.id">
+        <div
+            ref="tableContainer"
+            class="datatable-content"
+            :class="{ 'is-scrolled': isScrolled, 'is-scrolled-to-end': isScrolledToEnd }"
+            @scroll="onScroll"
+        >
+            <table
+                class="relation-table"
+                :class="{ 'auto-layout': isAutoSizing }"
+                :id="props.options.id"
+                :style="{ width: isAutoSizing ? undefined : tableWidth + 'px' }"
+            >
                 <thead>
                     <tr>
                         <th
@@ -414,21 +497,22 @@ onUnmounted(() => {
                             :key="data.column"
                             :ref="(el) => setThRef(data.column, el)"
                             class="datatable-table-header"
-                            :draggable="!data.isSticky"
+                            :draggable="!isReorderLocked(data)"
                             :style="{
                                 position: 'sticky',
                                 top: '-1px',
-                                left: data.isSticky ? stickyLeft(data, key) + 'px' : 0,
+                                left: data.isSticky ? stickyLeft(data, key) + 'px' : undefined,
                                 zIndex: data.isSticky ? 3 : 2,
-                                cursor: data.isSticky ? 'default' : 'grab',
+                                cursor: isReorderLocked(data) ? 'default' : 'grab',
                                 opacity: dragState.fromIndex === key ? 0.5 : 1,
-                                width: isAutoSizing ? undefined : getColWidth(data) + 'px',
+                                width: isAutoSizing ? undefined : getDisplayColWidth(data) + 'px',
                                 ...data.style
                             }"
                             :class="[
                                 'datatable-col',
                                 data.isSticky ? `datatable-col-sticky datatable-col-sticky-${key + 1}` : '',
-                                key === stickyCount - 1 ? 'datatable-col-last-sticky' : ''
+                                key === stickyCount - 1 ? 'datatable-col-last-sticky' : '',
+                                data.column === 'actions' ? 'datatable-col-actions-shadow' : ''
                             ]"
                             @dragstart="onDragStart(key)"
                             @dragover="onDragOver($event, key)"
@@ -488,11 +572,12 @@ onUnmounted(() => {
                             :class="[
                                 'datatable-col',
                                 data.isSticky ? `datatable-col-sticky datatable-col-sticky-${key + 1}` : '',
-                                key === stickyCount - 1 ? 'datatable-col-last-sticky' : ''
+                                key === stickyCount - 1 ? 'datatable-col-last-sticky' : '',
+                                data.column === 'actions' ? 'datatable-col-actions-shadow' : ''
                             ]"
                             :style="{
-                                left: data.isSticky ? stickyLeft(data, key) + 'px' : 0,
-                                width: isAutoSizing ? undefined : getColWidth(data) + 'px',
+                                left: data.isSticky ? stickyLeft(data, key) + 'px' : undefined,
+                                width: isAutoSizing ? undefined : getDisplayColWidth(data) + 'px',
                                 ...data.style
                             }"
                         >
@@ -510,10 +595,13 @@ onUnmounted(() => {
                                     v-if="isArrayValue(item, data.column).items.length"
                                     @click="(ev) => sendTooltipValues(ev, isArrayValue(item, data.column))"
                                 >
-                                    <p class="small overflow-hidden text-truncate" :title="getValue(item, data.column)">
+                                    <p
+                                        class="small overflow-hidden text-truncate datatable-array-value-text"
+                                        :title="getValue(item, data.column)"
+                                    >
                                         {{ getValue(item, data.column) }}
                                     </p>
-                                    <div class="badge badge-primary">
+                                    <div class="badge badge-primary flex-shrink-0">
                                         +{{ isArrayValue(item, data.column).items.length }}
                                     </div>
                                 </div>
@@ -684,7 +772,6 @@ onUnmounted(() => {
 </template>
 <style scoped>
 .relation-table {
-    width: 100%;
     table-layout: fixed;
 }
 
@@ -726,6 +813,7 @@ onUnmounted(() => {
 .datatable-table-header {
     background-color: #e8e8e8;
     border-top: 1px solid #dee2e6;
+    overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -743,6 +831,15 @@ onUnmounted(() => {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+/* In the array-value badge row, this text and the badge are flex siblings. The badge has no
+   overflow set so its automatic min-width is its own content size, while this <p>'s min-width
+   is 0 (from overflow: hidden) - meaning as the column narrows, ALL the squeeze lands on the
+   text first and it can shrink to nothing before the badge gives up any space. This floor keeps
+   a sliver of text always visible; the badge yields (and itself gets clipped) instead. */
+.datatable-array-value-text {
+    min-width: 20px;
 }
 
 .datatable-col {
@@ -803,6 +900,22 @@ onUnmounted(() => {
     box-shadow: inset 10px 0 8px -8px #0003;
 }
 
+.datatable-col-actions-shadow:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 10px;
+    height: 100%;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    box-shadow: inset -10px 0 8px -8px #0003;
+}
+
+.is-scrolled-to-end .datatable-col-actions-shadow:before {
+    box-shadow: none;
+}
+
 .datatable-columns-dropdown {
     position: absolute;
     top: 100%;
@@ -819,6 +932,22 @@ onUnmounted(() => {
 
 .datatable-columns-dropdown-label {
     font-size: 12px;
+}
+
+.datatable-settings-trigger {
+    line-height: 24px;
+}
+
+.datatable-settings-dropdown {
+    width: max-content;
+    min-width: 160px;
+    max-height: none;
+    overflow: visible;
+}
+
+.datatable-settings-dropdown .datatable-actions-item {
+    white-space: nowrap;
+    padding: 6px 10px;
 }
 
 .datatable-actions-trigger {

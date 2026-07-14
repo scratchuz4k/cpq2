@@ -3,6 +3,9 @@ import { computed, reactive, ref } from 'vue';
 const DEFAULT_COL_WIDTH = 150;
 const MIN_AUTO_WIDTH = 80;
 const MAX_AUTO_WIDTH = 400;
+// Sticky columns sit under a fade/shadow overlay and butt right up against the next column,
+// so they get a little extra breathing room beyond whatever width is stored/resized.
+const STICKY_WIDTH_BONUS = 20;
 
 export function useDatatableColumns(tableId, columns) {
     const STORAGE_KEY = 'datatable_' + tableId;
@@ -35,6 +38,11 @@ export function useDatatableColumns(tableId, columns) {
 
     const getColWidth = (col) => colWidths.value[col.column] ?? DEFAULT_COL_WIDTH;
 
+    // The rendered width: getColWidth() plus the sticky bonus. Use this for anything the user
+    // sees (cell width, table width, sticky offsets); use getColWidth() itself only as the
+    // stored/base value so the bonus never compounds across repeated resizes.
+    const getDisplayColWidth = (col) => getColWidth(col) + (col.isSticky ? STICKY_WIDTH_BONUS : 0);
+
     // One-time initial layout: only runs while colWidths is completely empty (this table has
     // never been resized or auto-sized before), so it never fights a user's manual resize later.
     const applyMeasuredWidths = (measurements) => {
@@ -53,7 +61,7 @@ export function useDatatableColumns(tableId, columns) {
     const startResize = (e, col) => {
         e.preventDefault();
         e.stopPropagation();
-        resizing = { col, startX: e.clientX, startWidth: getColWidth(col) };
+        resizing = { col, startX: e.clientX, startWidth: getDisplayColWidth(col) };
         document.addEventListener('mousemove', onResize);
         document.addEventListener('mouseup', stopResize);
     };
@@ -61,7 +69,8 @@ export function useDatatableColumns(tableId, columns) {
     const onResize = (e) => {
         if (!resizing) return;
         const newWidth = Math.max(50, resizing.startWidth + (e.clientX - resizing.startX));
-        colWidths.value[resizing.col.column] = newWidth;
+        const bonus = resizing.col.isSticky ? STICKY_WIDTH_BONUS : 0;
+        colWidths.value[resizing.col.column] = newWidth - bonus;
         saveState({ colWidths: colWidths.value });
     };
 
@@ -85,6 +94,17 @@ export function useDatatableColumns(tableId, columns) {
 
     const saveColumnOrder = () => saveState({ columnOrder: columnOrder.value.map((c) => c.column) });
 
+    const resetLayout = () => {
+        localStorage.removeItem(STORAGE_KEY);
+        hiddenColumns.value = [];
+        colWidths.value = {};
+        columnOrder.value = columns.slice();
+    };
+
+    // The actions column is a pinned utility column (like a sticky column) rather than real
+    // data, so it's excluded from reordering the same way isSticky columns are.
+    const isReorderLocked = (col) => col.isSticky || col.column === 'actions';
+
     const dragState = reactive({ fromIndex: null });
 
     const onDragStart = (index) => {
@@ -95,8 +115,8 @@ export function useDatatableColumns(tableId, columns) {
         e.preventDefault();
         if (dragState.fromIndex === null || dragState.fromIndex === index) return;
         const col = columnOrder.value[dragState.fromIndex];
-        if (col.isSticky) return;
-        if (columnOrder.value[index].isSticky) return;
+        if (isReorderLocked(col)) return;
+        if (isReorderLocked(columnOrder.value[index])) return;
         columnOrder.value.splice(dragState.fromIndex, 1);
         columnOrder.value.splice(index, 0, col);
         dragState.fromIndex = index;
@@ -118,7 +138,7 @@ export function useDatatableColumns(tableId, columns) {
         return visibleColumns.value
             .slice(0, visIndex)
             .filter((c) => c.isSticky)
-            .reduce((sum, c) => sum + getColWidth(c), 0);
+            .reduce((sum, c) => sum + getDisplayColWidth(c), 0);
     };
 
     return {
@@ -130,6 +150,7 @@ export function useDatatableColumns(tableId, columns) {
         colWidths,
         hasCustomWidths,
         getColWidth,
+        getDisplayColWidth,
         applyMeasuredWidths,
         startResize,
         // ordering & drag
@@ -138,6 +159,8 @@ export function useDatatableColumns(tableId, columns) {
         onDragStart,
         onDragOver,
         onDrop,
+        isReorderLocked,
+        resetLayout,
         // derived
         visibleColumns,
         stickyCount,
