@@ -84,6 +84,13 @@ const tableWidth = computed(
     () => visibleColumns.value.reduce((sum, col) => sum + getEffectiveColWidth(col), 0) + nativeActionsColumnWidth.value
 );
 
+// When the real columns don't add up to the container's width, this fills the gap with a
+// blank filler column instead of leaving the table box short (which left a bare white strip
+// after the last column) or stretching every column proportionally (which fights manual resizes).
+const containerWidth = ref(0);
+const fillerWidth = computed(() => Math.max(0, containerWidth.value - tableWidth.value));
+const hasActionsDataColumn = computed(() => visibleColumns.value.some((col) => col.column === 'actions'));
+
 const slots = useSlots();
 const usedSlots = Object.keys(slots);
 
@@ -341,8 +348,16 @@ watch(
 
 defineExpose({ getData });
 
+let containerResizeObserver = null;
+
 onMounted(() => {
     debouncedSearch();
+    if (tableContainer.value) {
+        containerResizeObserver = new ResizeObserver((entries) => {
+            containerWidth.value = entries[0].contentRect.width;
+        });
+        containerResizeObserver.observe(tableContainer.value);
+    }
     window.addEventListener(
         'scroll',
         () => {
@@ -380,6 +395,7 @@ onMounted(() => {
 
 onUnmounted(() => {
     clearTimeout(pollTimeoutId);
+    containerResizeObserver?.disconnect();
 });
 </script>
 <template>
@@ -488,66 +504,76 @@ onUnmounted(() => {
                 class="relation-table"
                 :class="{ 'auto-layout': isAutoSizing }"
                 :id="props.options.id"
-                :style="{ width: isAutoSizing ? undefined : tableWidth + 'px' }"
+                :style="{ width: isAutoSizing ? undefined : tableWidth + fillerWidth + 'px' }"
             >
                 <thead>
                     <tr>
+                        <template v-for="(data, key) in visibleColumns" :key="data.column">
+                            <th
+                                v-if="data.column === 'actions' && fillerWidth > 0"
+                                class="datatable-col-filler-header datatable-col-filler"
+                                :style="{ width: fillerWidth + 'px' }"
+                            ></th>
+                            <th
+                                :ref="(el) => setThRef(data.column, el)"
+                                class="datatable-table-header"
+                                :draggable="!isReorderLocked(data)"
+                                :style="{
+                                    position: 'sticky',
+                                    top: '-1px',
+                                    left: data.isSticky ? stickyLeft(data, key) + 'px' : undefined,
+                                    zIndex: data.isSticky ? 3 : 2,
+                                    cursor: isReorderLocked(data) ? 'default' : 'grab',
+                                    opacity: dragState.fromIndex === key ? 0.5 : 1,
+                                    width: isAutoSizing ? undefined : getDisplayColWidth(data) + 'px',
+                                    ...data.style
+                                }"
+                                :class="[
+                                    'datatable-col',
+                                    data.isSticky ? `datatable-col-sticky datatable-col-sticky-${key + 1}` : '',
+                                    key === stickyCount - 1 ? 'datatable-col-last-sticky' : '',
+                                    data.column === 'actions' ? 'datatable-col-actions-shadow' : ''
+                                ]"
+                                @dragstart="onDragStart(key)"
+                                @dragover="onDragOver($event, key)"
+                                @drop="onDrop"
+                                @dragend="onDrop"
+                            >
+                                <div v-if="data.column != 'actions'" class="d-flex align-items-center w-100 pe-3">
+                                    <p
+                                        class="datatable-table-header-text d-inline-flex align-items-center"
+                                        @click="sortBy(data)"
+                                        :style="{
+                                            cursor: data.isSearchable ? 'pointer' : 'default',
+                                            textDecoration: data.column == form.orderBy ? 'underline' : 'none'
+                                        }"
+                                        style="height: 100% !important"
+                                    >
+                                        {{ data.title }}
+                                        <span class="text-center" style="width: 20px">
+                                            <template v-if="data.column == form.orderBy">
+                                                <font-awesome-icon
+                                                    v-if="form.order == 'desc'"
+                                                    :icon="['fas', 'sort-down']"
+                                                />
+                                                <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                                            </template>
+                                        </span>
+                                    </p>
+                                </div>
+                                <div
+                                    class="col-resize-handle"
+                                    draggable="false"
+                                    @mousedown="startResize($event, data)"
+                                    @dragstart.prevent
+                                ></div>
+                            </th>
+                        </template>
                         <th
-                            v-for="(data, key) in visibleColumns"
-                            :key="data.column"
-                            :ref="(el) => setThRef(data.column, el)"
-                            class="datatable-table-header"
-                            :draggable="!isReorderLocked(data)"
-                            :style="{
-                                position: 'sticky',
-                                top: '-1px',
-                                left: data.isSticky ? stickyLeft(data, key) + 'px' : undefined,
-                                zIndex: data.isSticky ? 3 : 2,
-                                cursor: isReorderLocked(data) ? 'default' : 'grab',
-                                opacity: dragState.fromIndex === key ? 0.5 : 1,
-                                width: isAutoSizing ? undefined : getDisplayColWidth(data) + 'px',
-                                ...data.style
-                            }"
-                            :class="[
-                                'datatable-col',
-                                data.isSticky ? `datatable-col-sticky datatable-col-sticky-${key + 1}` : '',
-                                key === stickyCount - 1 ? 'datatable-col-last-sticky' : '',
-                                data.column === 'actions' ? 'datatable-col-actions-shadow' : ''
-                            ]"
-                            @dragstart="onDragStart(key)"
-                            @dragover="onDragOver($event, key)"
-                            @drop="onDrop"
-                            @dragend="onDrop"
-                        >
-                            <div v-if="data.column != 'actions'" class="d-flex align-items-center w-100 pe-3">
-                                <p
-                                    class="datatable-table-header-text d-inline-flex align-items-center"
-                                    @click="sortBy(data)"
-                                    :style="{
-                                        cursor: data.isSearchable ? 'pointer' : 'default',
-                                        textDecoration: data.column == form.orderBy ? 'underline' : 'none'
-                                    }"
-                                    style="height: 100% !important"
-                                >
-                                    {{ data.title }}
-                                    <span class="text-center" style="width: 20px">
-                                        <template v-if="data.column == form.orderBy">
-                                            <font-awesome-icon
-                                                v-if="form.order == 'desc'"
-                                                :icon="['fas', 'sort-down']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
-                                        </template>
-                                    </span>
-                                </p>
-                            </div>
-                            <div
-                                class="col-resize-handle"
-                                draggable="false"
-                                @mousedown="startResize($event, data)"
-                                @dragstart.prevent
-                            ></div>
-                        </th>
+                            v-if="!hasActionsDataColumn && fillerWidth > 0"
+                            class="datatable-col-filler-header datatable-col-filler"
+                            :style="{ width: fillerWidth + 'px' }"
+                        ></th>
                         <th
                             v-if="props.options.allow.update || props.options.allow.link || props.options.allow.destroy"
                             class="datatable-table-header datatable-col-actions-sticky"
@@ -565,55 +591,65 @@ onUnmounted(() => {
                 </thead>
                 <tbody v-if="api.items.length">
                     <tr v-for="(item, index) in api.items" :key="index">
-                        <td
-                            v-for="(data, key) in visibleColumns"
-                            :key="data.column"
-                            class="datatable-table-column"
-                            :class="[
-                                'datatable-col',
-                                data.isSticky ? `datatable-col-sticky datatable-col-sticky-${key + 1}` : '',
-                                key === stickyCount - 1 ? 'datatable-col-last-sticky' : '',
-                                data.column === 'actions' ? 'datatable-col-actions-shadow' : ''
-                            ]"
-                            :style="{
-                                left: data.isSticky ? stickyLeft(data, key) + 'px' : undefined,
-                                width: isAutoSizing ? undefined : getDisplayColWidth(data) + 'px',
-                                ...data.style
-                            }"
-                        >
-                            <slot
-                                v-if="usedSlots.includes(data.column)"
-                                :index="index"
-                                :data="item"
-                                :name="data.column"
-                                :value="getValue(item, data.column)"
-                                :id="`${data.column}-${index}`"
-                            />
-                            <template v-else>
-                                <div
-                                    class="d-flex justify-content-between cursor-pointer position-relative tooltip-indicator"
-                                    v-if="isArrayValue(item, data.column).items.length"
-                                    @click="(ev) => sendTooltipValues(ev, isArrayValue(item, data.column))"
-                                >
+                        <template v-for="(data, key) in visibleColumns" :key="data.column">
+                            <td
+                                v-if="data.column === 'actions' && fillerWidth > 0"
+                                class="datatable-col-filler-footer datatable-col-filler"
+                                :style="{ width: fillerWidth + 'px' }"
+                            ></td>
+                            <td
+                                class="datatable-table-column"
+                                :class="[
+                                    'datatable-col',
+                                    data.isSticky ? `datatable-col-sticky datatable-col-sticky-${key + 1}` : '',
+                                    key === stickyCount - 1 ? 'datatable-col-last-sticky' : '',
+                                    data.column === 'actions' ? 'datatable-col-actions-shadow' : ''
+                                ]"
+                                :style="{
+                                    left: data.isSticky ? stickyLeft(data, key) + 'px' : undefined,
+                                    width: isAutoSizing ? undefined : getDisplayColWidth(data) + 'px',
+                                    ...data.style
+                                }"
+                            >
+                                <slot
+                                    v-if="usedSlots.includes(data.column)"
+                                    :index="index"
+                                    :data="item"
+                                    :name="data.column"
+                                    :value="getValue(item, data.column)"
+                                    :id="`${data.column}-${index}`"
+                                />
+                                <template v-else>
+                                    <div
+                                        class="d-flex justify-content-between cursor-pointer position-relative tooltip-indicator"
+                                        v-if="isArrayValue(item, data.column).items.length"
+                                        @click="(ev) => sendTooltipValues(ev, isArrayValue(item, data.column))"
+                                    >
+                                        <p
+                                            class="small overflow-hidden text-truncate datatable-array-value-text"
+                                            :title="getValue(item, data.column)"
+                                        >
+                                            {{ getValue(item, data.column) }}
+                                        </p>
+                                        <div class="badge badge-primary flex-shrink-0">
+                                            +{{ isArrayValue(item, data.column).items.length }}
+                                        </div>
+                                    </div>
                                     <p
-                                        class="small overflow-hidden text-truncate datatable-array-value-text"
+                                        v-else
+                                        class="small overflow-hidden text-truncate"
                                         :title="getValue(item, data.column)"
                                     >
                                         {{ getValue(item, data.column) }}
                                     </p>
-                                    <div class="badge badge-primary flex-shrink-0">
-                                        +{{ isArrayValue(item, data.column).items.length }}
-                                    </div>
-                                </div>
-                                <p
-                                    v-else
-                                    class="small overflow-hidden text-truncate"
-                                    :title="getValue(item, data.column)"
-                                >
-                                    {{ getValue(item, data.column) }}
-                                </p>
-                            </template>
-                        </td>
+                                </template>
+                            </td>
+                        </template>
+                        <td
+                            v-if="!hasActionsDataColumn && fillerWidth > 0"
+                            class="datatable-col-filler-footer datatable-col-filler"
+                            :style="{ width: fillerWidth + 'px' }"
+                        ></td>
                         <td
                             v-if="props.options.allow.update || props.options.allow.link || props.options.allow.destroy"
                             :class="['datatable-col', 'p-0', 'datatable-col-actions-sticky']"
@@ -824,6 +860,18 @@ onUnmounted(() => {
     line-height: 20px;
     vertical-align: bottom;
     color: #646464;
+}
+
+.datatable-col-filler-header {
+    background-color: #e8e8e8;
+}
+
+.datatable-col-filler-footer {
+    border-bottom: 1px solid #dee2e6;
+}
+
+.datatable-col-filler {
+    border-top: 1px solid #dee2e6;
 }
 
 .datatable-table-column {
