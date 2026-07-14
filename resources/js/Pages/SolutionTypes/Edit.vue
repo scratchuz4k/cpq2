@@ -125,7 +125,7 @@ const items = ref([
                             />
                         </div>
                     </tab>
-                    <tab title="Steps" v-if="solution_type.code != 3">
+                    <tab title="Price" v-if="solution_type.code != 3">
                         <Panel class="mt-3" header="Steps" :toggleable="true">
                             <div class="mb-3">
                                 <label class="form-label">Order Steps:</label>
@@ -160,7 +160,7 @@ const items = ref([
                             </div>
                         </Panel>
                     </tab>
-                    <tab title="Amortisation" v-if="solution_type.code == 3">
+                    <tab title="Price" v-if="solution_type.code == 3">
                         <Panel class="mt-3" header="Amortisation" :toggleable="true">
                             <div class="mb-3">
                                 <label class="form-label">Choose months to use amortisation:</label>
