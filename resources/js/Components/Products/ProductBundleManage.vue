@@ -21,7 +21,7 @@ const proxyValue = computed({
 
 const totals = ref(proxyValue.value.bundles?.length ?? 0);
 const optionBundle = new DatatableOptions('product-bundles', 'product-bundles');
-optionBundle.addColumn('item.sku', 'SKU', { isSticky: true });
+optionBundle.addColumn('item.sku', 'SKU');
 optionBundle.addColumn('item.name', 'Name', { isSticky: true });
 optionBundle.addColumn('item.description', 'Description');
 optionBundle.addColumn('item.categories.name', 'Categories');

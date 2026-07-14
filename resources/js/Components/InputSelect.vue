@@ -191,6 +191,7 @@ emitter.on('input-select-refresh' + (props.id ? ':' + props.id : ''), () => {
                 <InputText
                     :id="'select-' + props.id + '-search'"
                     class="w-100"
+                    size="small"
                     v-model="inputSearch"
                     placeholder="Search"
                     type="search"
@@ -198,8 +199,8 @@ emitter.on('input-select-refresh' + (props.id ? ':' + props.id : ''), () => {
                 </InputText>
             </IconField>
             <div :id="props.id + '-sidebar'" class="options-container mt-2" style="max-height: 300px; overflow-y: auto">
-                <div class="p-2" v-if="!options.length">
-                    <p class="ps-1">No available options</p>
+                <div class="px-2 py-1" v-if="!options.length">
+                    <p class="ps-1 small">No available options</p>
                 </div>
                 <div
                     v-else

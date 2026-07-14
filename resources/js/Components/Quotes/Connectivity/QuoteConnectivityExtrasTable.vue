@@ -1,16 +1,21 @@
 <template>
-    <QuoteConnectivityOptionsTable
+    <QuoteConnectivityAddonsTable
         v-bind="{
             modelValue: props.modelValue,
             currentStep: props.currentStep
         }"
-    ></QuoteConnectivityOptionsTable>
-    <QuoteConnectivityAssignmentsTable
+        route="cloudmarket/products/options"
+        title="Options"
+    ></QuoteConnectivityAddonsTable>
+    <QuoteConnectivityAddonsTable
         v-bind="{
             modelValue: props.modelValue,
             currentStep: props.currentStep
         }"
-    ></QuoteConnectivityAssignmentsTable>
+        route="cloudmarket/products/assignments"
+        title="IP Assignments"
+        backfillContractTermMonths
+    ></QuoteConnectivityAddonsTable>
 </template>
 <script setup>
 const props = defineProps({

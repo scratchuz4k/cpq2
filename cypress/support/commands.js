@@ -144,6 +144,18 @@ Cypress.Commands.add('newTableSearchAndEdit', (searchValue, searchSelector = '#d
     cy.get('#datatable-btn-0-edit').click();
 });
 
+// The connectivity product table shows a "Finding your available products" modal while
+// results are still streaming in. It blocks clicks on the filters underneath it, so dismiss
+// it (via its "view now" link) if it's still up before interacting with the table.
+Cypress.Commands.add('dismissLoadingModal', () => {
+    cy.wait(300);
+    cy.get('body').then(($body) => {
+        if ($body.find('.loading-modal').length) {
+            cy.get('.loading-modal').contains('a', 'view now').click();
+        }
+    });
+});
+
 Cypress.Commands.add('addProductToStep', (stepName, productName) => {
     cy.get('#settings').click();
     cy.get('#link-steps').click();

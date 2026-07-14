@@ -54,7 +54,7 @@ const sharesStep = (item) => {
 };
 
 const optionLinks = new DatatableOptions('product-links', 'product-links');
-optionLinks.addColumn('child.sku', 'SKU', { isSticky: true });
+optionLinks.addColumn('child.sku', 'SKU');
 optionLinks.addColumn('child.name', 'Name', { isSticky: true });
 optionLinks.addColumn('child.description', 'Description');
 optionLinks.addColumn('child.categories.name', 'Categories');
