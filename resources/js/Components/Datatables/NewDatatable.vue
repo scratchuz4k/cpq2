@@ -842,7 +842,7 @@ onUnmounted(() => {
 
 .datatable-content {
     background-color: white;
-    min-height: 53vh;
+    min-height: 52vh;
     overflow: auto;
 }
 

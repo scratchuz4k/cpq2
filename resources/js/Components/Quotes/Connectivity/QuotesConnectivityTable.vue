@@ -213,7 +213,9 @@ const options = reactive(
             .addColumn('isContended', 'Contended')
             .addColumn('connectivityType', 'Connectivity')
             .addColumn('technologyType', 'Technology')
-            .addColumn('actions', '', { style: { position: 'sticky', right: 0, width: '100px', padding: '0 0.5rem' } });
+            .addColumn('actions', '', {
+                style: { position: 'sticky', right: 0, width: '100px', padding: '0 0.25rem' }
+            });
     })()
 );
 
@@ -562,7 +564,7 @@ emitter.on(`${props.productType.split(' ')[0].toLowerCase()}-product:removed`, (
                             <p
                                 v-else
                                 title="Subject to Survey"
-                                class="h6 m-0 mt-1 d-inline-block"
+                                class="h6 m-0 d-inline-block"
                                 data-bs-original-title="Subject to Survey"
                                 v-tooltip
                             >
