@@ -25,6 +25,7 @@ const saveQuote = async () => {
         router.get(`/quotes/${props.modelValue.id}`);
         return;
     }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     current_step.value++;
 };
 

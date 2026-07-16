@@ -167,7 +167,7 @@ watch(
             </tr>
             <tr>
                 <td>
-                    <p class="small text-start">One Off Total</p>
+                    <p class="small text-start">One-Off Total</p>
                 </td>
                 <td></td>
                 <td id="total_net" class="bold">

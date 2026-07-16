@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref, watch } from 'vue';
+import { reactive, ref, watch, computed } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { DatePicker, ToggleSwitch, Select, RadioButton, InputNumber } from 'primevue';
@@ -26,10 +26,22 @@ const price = reactive({
     product_id: product.id
 });
 
-const showModal = ref(false);
 const prices = ref(product.prices);
 const categories = ref(product.categories ?? []);
 const steps = ref(product.steps ?? []);
+const activationError = ref('');
+
+const isActiveProxy = computed({
+    get: () => product.is_active,
+    set: (value) => {
+        if (value && product.status === 'Retired') {
+            activationError.value = 'This product could not be activated because the expiration date is in the past.';
+            return; // don't touch product.is_active — stays false
+        }
+        activationError.value = '';
+        product.is_active = value;
+    }
+});
 
 const saveProduct = () => {
     let temp = {
@@ -121,11 +133,14 @@ watch(
                                         <div class="mb-3 d-flex flex-column">
                                             <label class="form-label" for="active-filter">Status</label>
                                             <div class="d-flex align-items-center gap-2">
-                                                <ToggleSwitch id="active-filter" v-model="product.is_active" />
-                                                <span class="small">{{
-                                                    product.is_active ? 'Active' : 'Inactive'
-                                                }}</span>
+                                                <ToggleSwitch id="active-filter" v-model="isActiveProxy" />
+                                                <span class="small">
+                                                    {{ product.is_active ? 'Active' : 'Inactive' }}
+                                                </span>
                                             </div>
+                                        </div>
+                                        <div v-if="activationError" class="text-danger small mt-1">
+                                            {{ activationError }}
                                         </div>
                                         <div class="mb-3">
                                             <label for="product-sku" class="form-label">SKU</label>
@@ -277,6 +292,7 @@ watch(
         &:has(.p-toggleswitch-input:hover) {
             .p-toggleswitch-slider {
                 background: var(--color-primary) !important;
+
                 .p-toggleswitch-handle {
                     background: var(--white) !important;
                 }
@@ -293,6 +309,7 @@ watch(
     .p-toggleswitch-slider {
         background: var(--white);
         border-color: var(--color-grey);
+
         .p-toggleswitch-handle {
             background: var(--color-grey) !important;
         }

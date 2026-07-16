@@ -16,7 +16,7 @@ class BlacklistFile
 
     private $filterable_columns = [
         'productName',
-        'providerName',
+        'providerKey',
         'connectivitySupplierGroup',
         'bearer',
         'speed',

@@ -130,8 +130,8 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                         >
                         <span v-else class="badge text-bg-secondary">{{
                             data.approvals[0] && !['PENDING', 'REJECTED'].includes(value)
-                                ? data.approvals[0]?.status.toUpperCase()
-                                : value
+                                ? value
+                                : data.approvals[0]?.status.toUpperCase()
                         }}</span>
                     </template>
                     <template #updated_at="{ data, value }">

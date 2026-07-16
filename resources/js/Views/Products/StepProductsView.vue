@@ -148,6 +148,11 @@ onMounted(async () => {
     getProducts();
 });
 
+const changeStep = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    proxyValue.value--;
+};
+
 watchEffect(() => {
     if (proxyValue.value !== props.index) return;
 
@@ -157,7 +162,7 @@ watchEffect(() => {
                   btn: 'back',
                   id: `btn-step-${props.index + 1}-previous`,
                   disabled: meta.isLoading,
-                  onClick: () => proxyValue.value--
+                  onClick: changeStep
               }
             : null,
         {
@@ -239,7 +244,7 @@ watch(
                 <div class="col-9">
                     <QuoteMobileFilters v-model="filters" :step="step"></QuoteMobileFilters>
                     <template v-if="meta.isLoading">
-                        <ProductSkeleton v-for="item in [0, 1, 2, 3, 4]"></ProductSkeleton>
+                        <ProductSkeleton v-for="item in meta.limit || 6"></ProductSkeleton>
                     </template>
                     <template v-else>
                         <div class="text-center pt-2 pb-4" v-if="!products.length">No Results Found</div>
