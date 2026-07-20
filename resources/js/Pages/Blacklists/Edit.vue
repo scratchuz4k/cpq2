@@ -41,8 +41,6 @@ const saveItem = () => {
 const changeValueFormat = (item) => {
     if (item.operator === 'between') {
         item.value = [];
-    } else {
-        item.value = null;
     }
 };
 
@@ -127,6 +125,7 @@ const items = ref([
                             optionLabel="description"
                             optionValue="name"
                             placeholder="Select a Operator"
+                            @change="changeValueFormat(blacklisted_item.bearer)"
                         />
 
                         <div class="d-flex mt-2">
@@ -163,15 +162,6 @@ const items = ref([
                                         v-model="blacklisted_item.bearer.value"
                                     />
                                 </div>
-                                <Select
-                                    v-model="blacklisted_item.bearer.unit"
-                                    :inputId="'item-bearer-unit'"
-                                    :options="props.speed_units"
-                                    class="w-100"
-                                    optionLabel="value"
-                                    optionValue="value"
-                                    placeholder="Select a Unit"
-                                />
                             </div>
                             <select
                                 id="item-bearer-unit"
@@ -197,6 +187,7 @@ const items = ref([
                             optionLabel="description"
                             optionValue="name"
                             placeholder="Select a Operator"
+                            @change="changeValueFormat(blacklisted_item.speed)"
                         />
                         <div class="d-flex mt-2">
                             <div
