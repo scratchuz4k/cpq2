@@ -140,10 +140,10 @@ const onRowEditSave = async (event) => {
         </Column>
         <Column field="active_spas" header="Active SPA">
             <template #body="slotProps">
-                <p v-for="item in slotProps.data.active_spas" :key="item.id">
+                <template v-for="item in slotProps.data.active_spas" :key="item.id" class="small">
                     {{ item.operation.code }}:
                     {{ item.percentage ? format.decimalPlaces(item.percentage) + '%' : format.GBP(item.value) }}
-                </p>
+                </template>
             </template>
         </Column>
         <Column :rowEditor="true" v-if="hasRole('Super Admin') || can('update price')" style="width: 5%">
