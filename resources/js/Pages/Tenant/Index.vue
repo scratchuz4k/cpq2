@@ -40,7 +40,6 @@ const tenant = reactive({
     configurations: {
         orders_flow_is_active: props.tenant.configurations.orders_flow_is_active ?? '0',
         log_system_is_active: props.tenant.configurations.log_system_is_active ?? '0',
-        restrict_account_management_is_active: props.tenant.configurations.restrict_account_management_is_active ?? '0',
         quote_expiration_days: props.tenant.configurations.quote_expiration_days ?? 30,
         quote_margin_rules_active: props.tenant.configurations.quote_margin_rules_active ?? '0',
         quote_margin_rules_value: props.tenant.configurations.quote_margin_rules_value
@@ -286,50 +285,6 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                         <font-awesome-icon
                                                             :icon="
                                                                 tenant.configurations.log_system_is_active === '1'
-                                                                    ? ['fas', 'circle-check']
-                                                                    : ['far', 'circle-xmark']
-                                                            "
-                                                            class="text-primary"
-                                                        />
-                                                    </template>
-                                                </ToggleSwitch>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="card bg-light border-0 settings-block h-100">
-                                    <div class="card-body">
-                                        <h6 class="fw-bold pe-5 mb-3">Account Management</h6>
-                                        <div class="restrict_account_management_is_active">
-                                            <div>
-                                                <label
-                                                    for="active-account-management"
-                                                    class="form-label lh-sm small pb-2"
-                                                >
-                                                    <i>
-                                                        If this setting is active, users will be restricted from
-                                                        managing accounts
-                                                    </i>
-                                                </label>
-                                            </div>
-                                            <div class="sidenote">
-                                                <ToggleSwitch
-                                                    id="active-account-management"
-                                                    v-model="
-                                                        tenant.configurations.restrict_account_management_is_active
-                                                    "
-                                                    @change="submitTenantSettings"
-                                                    trueValue="1"
-                                                    falseValue="0"
-                                                    binary
-                                                >
-                                                    <template #handle>
-                                                        <font-awesome-icon
-                                                            :icon="
-                                                                tenant.configurations
-                                                                    .restrict_account_management_is_active === '1'
                                                                     ? ['fas', 'circle-check']
                                                                     : ['far', 'circle-xmark']
                                                             "
