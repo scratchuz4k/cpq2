@@ -219,6 +219,12 @@ watch(
 
 watch(tableWidth, () => nextTick(updateScrollState));
 
+watch([activeColumnsDropdown, activeSettingsDropdown], () => {
+    if ((activeColumnsDropdown.value || activeSettingsDropdown.value) && activeFilters.value) {
+        activeFilters.value = false;
+    }
+});
+
 const sortBy = (data) => {
     if (!data.isSortable) {
         return;
