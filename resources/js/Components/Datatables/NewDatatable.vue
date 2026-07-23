@@ -137,7 +137,7 @@ const form = reactive({
 });
 
 const shouldOpenUpward = (index) => {
-    return index >= api.meta.limit - 2;
+    return index >= api.items.length - 2;
 };
 
 const setFilters = () => {
