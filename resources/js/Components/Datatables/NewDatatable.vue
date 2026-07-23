@@ -136,6 +136,11 @@ const form = reactive({
     search: null
 });
 
+const shouldOpenUpward = (index) => {
+    const total = api.items.length;
+    return total > 3 && index >= total - 3;
+};
+
 const setFilters = () => {
     form.filters = {};
     props.options.columns.forEach((el) => {
@@ -677,7 +682,11 @@ onUnmounted(() => {
                                 >
                                     <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" />
                                 </button>
-                                <div v-if="activeMenuIndex === index" class="datatable-actions-dropdown">
+                                <div
+                                    v-if="activeMenuIndex === index"
+                                    class="datatable-actions-dropdown"
+                                    :class="{ 'datatable-actions-dropdown-up': shouldOpenUpward(index) }"
+                                >
                                     <template v-if="props.options.allow.update">
                                         <Link
                                             :id="'datatable-btn-' + index + '-edit'"
@@ -1025,6 +1034,11 @@ onUnmounted(() => {
     z-index: 100;
     min-width: 160px;
     padding: 4px 0;
+}
+
+.datatable-actions-dropdown-up {
+    top: auto;
+    bottom: 100%;
 }
 
 .datatable-actions-item {
