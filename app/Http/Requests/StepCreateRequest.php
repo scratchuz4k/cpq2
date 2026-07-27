@@ -27,11 +27,11 @@ class StepCreateRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('steps', 'name')
-                    ->where(fn ($q) => $q
-                        ->where('tenant_id', auth()->user()->tenant_id)
-                        ->where('solution_type_id', $this->input('solution_type_id'))
-                    ),
+                // Rule::unique('steps', 'name')
+                //     ->where(fn ($q) => $q
+                //         ->where('tenant_id', auth()->user()->tenant_id)
+                //          ->where('solution_type_id', $this->input('solution_type_id'))
+                //     ),
             ],
             'solution_type_id' => 'required|exists:solution_type_tenant,id',
         ];
