@@ -124,7 +124,6 @@ const items = ref([
                         :placeholder="'Select an Group'"
                     >
                     </InputSelectMultiple>
-                    {{ form.groups }}
                 </div>
                 <div class="mb-3">
                     <label for="user-commission-rate" class="form-label">Commission Rate:</label>

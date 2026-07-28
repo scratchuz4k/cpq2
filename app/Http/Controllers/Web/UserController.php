@@ -73,7 +73,7 @@ class UserController extends BaseController
         $users = $users->where('id', '!=', $user->id);
 
         return Inertia::render('Users/Edit', [
-            'user' => (new UserResource($user->load(['tenants', 'roles'])))->toArray(request()),
+            'user' => (new UserResource($user->load(['tenants', 'roles', 'groups'])))->toArray(request()),
             'permissions' => $user->getAllPermissions(),
         ]);
     }
