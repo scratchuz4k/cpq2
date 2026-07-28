@@ -6,6 +6,7 @@ import { Head, router, usePage } from '@inertiajs/vue3';
 import { integerOnly, checkValue } from '@/Composables/input.js';
 import InputSelect from '@/Components/InputSelect.vue';
 import ToggleSwitch from 'primevue/toggleswitch';
+import InputSelectMultiple from '@/Components/InputSelectMultiple.vue';
 
 const page = usePage();
 
@@ -19,6 +20,8 @@ const form = reactive({
     password: null,
     role: null,
     role_id: null,
+    groups: [],
+    group_ids: [],
     commission_rate: 0,
     sso: false,
     is_active: true
@@ -26,6 +29,8 @@ const form = reactive({
 
 const saveUser = () => {
     form.role_id = form.role?.id;
+    form.group_ids = form.groups.map((group) => group.id);
+
     router.post(
         `/users`,
         {
@@ -108,6 +113,18 @@ const items = ref([
                         :placeholder="'Select an Role'"
                     >
                     </InputSelect>
+                </div>
+                <div class="mb-3">
+                    <label for="user-group" class="form-label">Group:</label>
+                    <InputSelectMultiple
+                        id="user-group"
+                        v-model="form.groups"
+                        url="/groups"
+                        :fields="['name']"
+                        :placeholder="'Select an Group'"
+                    >
+                    </InputSelectMultiple>
+                    {{ form.groups }}
                 </div>
                 <div class="mb-3">
                     <label for="user-commission-rate" class="form-label">Commission Rate:</label>
