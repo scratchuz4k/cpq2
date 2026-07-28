@@ -26,7 +26,7 @@ class UsersService
             $user->assignRole($array['role_id']);
         }
 
-        if (array_key_exists('group_ids', $array)) {
+        if (array_key_exists('group_ids', $array) && ! empty($array['group_ids'])) {
             $groups = [];
             foreach ($array['group_ids'] as $key => $id) {
                 $groups[$id] = [
