@@ -113,7 +113,7 @@ const items = ref([
                         </InputSelect>
                     </div>
                     <div class="mb-3">
-                        <label for="user-group" class="form-label">Group:</label>
+                        <label for="user-group" class="form-label">Groups:</label>
                         <InputSelectMultiple
                             id="user-group"
                             v-model="form.groups"
@@ -137,10 +137,6 @@ const items = ref([
                             />
                             <span class="input-group-text">%</span>
                         </div>
-                    </div>
-                    <div class="mb-3" v-if="user.group">
-                        <label for="user-group" class="form-label">Group:</label>
-                        <input id="user-group" disabled class="form-control" v-model="user.group.name" />
                     </div>
                     <div class="mb-3">
                         <div class="form-check p-0">
