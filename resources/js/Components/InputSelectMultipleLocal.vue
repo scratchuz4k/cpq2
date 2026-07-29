@@ -73,6 +73,15 @@ const selectOption = (option) => {
     proxyValue.value = next;
 };
 
+const selectAll = (e) => {
+    e.stopPropagation();
+    const existing = new Set(proxyValue.value);
+    const toAdd = filteredOptions.value.map(getValue).filter((value) => !existing.has(value));
+    if (toAdd.length) {
+        proxyValue.value = [...proxyValue.value, ...toAdd];
+    }
+};
+
 const clear = (e) => {
     e.stopPropagation();
     proxyValue.value = [];
@@ -132,6 +141,14 @@ onMounted(() => {
                 >
                 </InputText>
             </IconField>
+            <div
+                class="select-all d-flex align-items-center justify-content-between mt-2 px-1"
+                v-if="filteredOptions.length"
+                role="button"
+                @click.stop="selectAll"
+            >
+                <span>Select all ({{ filteredOptions.length }})</span>
+            </div>
             <div class="options-container mt-2" style="max-height: 300px; overflow-y: auto">
                 <div class="px-2 py-1" v-if="!filteredOptions.length">
                     <p class="ps-1 small">No available options</p>
@@ -187,6 +204,18 @@ onMounted(() => {
 }
 
 .option:hover {
+    background-color: var(--color-purple-light);
+}
+
+.select-all {
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-purple);
+}
+
+.select-all:hover {
     background-color: var(--color-purple-light);
 }
 

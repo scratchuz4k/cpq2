@@ -130,6 +130,13 @@ const filteredOptions = computed(() => {
     return collectBranchMatches(tree.value, q);
 });
 
+// Ignores collapse state (unlike filteredOptions) so "select all" always covers every matching node.
+const selectAllOptions = computed(() => {
+    const q = searchQuery.value?.trim().toLowerCase();
+    if (!q) return flattenWithDepth(tree.value);
+    return collectBranchMatches(tree.value, q);
+});
+
 const selectedIds = computed(() => new Set(proxyValue.value.map((c) => c.id)));
 
 function isSelected(option) {
@@ -166,6 +173,15 @@ function select(option) {
     } else {
         const existingIds = selectedIds.value;
         const toAdd = targets.filter((d) => !existingIds.has(d.id));
+        proxyValue.value = [...proxyValue.value, ...toAdd];
+    }
+}
+
+function selectAll(e) {
+    e.stopPropagation();
+    const existingIds = selectedIds.value;
+    const toAdd = selectAllOptions.value.filter((o) => !existingIds.has(o.id));
+    if (toAdd.length) {
         proxyValue.value = [...proxyValue.value, ...toAdd];
     }
 }
@@ -226,6 +242,15 @@ onMounted(() => {
                 </InputIcon>
                 <InputText class="w-100" size="small" v-model="searchQuery" placeholder="Search" type="search" />
             </IconField>
+
+            <div
+                class="select-all d-flex align-items-center justify-content-between mt-2 px-1"
+                v-if="selectAllOptions.length"
+                role="button"
+                @click.stop="selectAll"
+            >
+                <span>Select all ({{ selectAllOptions.length }})</span>
+            </div>
 
             <div class="options-container mt-2" style="max-height: 300px; overflow-y: auto">
                 <div class="px-2 py-1" v-if="!filteredOptions.length">
@@ -310,6 +335,18 @@ onMounted(() => {
 }
 
 .option:hover {
+    background-color: var(--color-purple-light);
+}
+
+.select-all {
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-purple);
+}
+
+.select-all:hover {
     background-color: var(--color-purple-light);
 }
 

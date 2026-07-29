@@ -9,6 +9,10 @@ use ReflectionClass;
 
 class DataProvider
 {
+    // Safety cap for `all=true` requests (e.g. "select all" in a lazy-loaded multi-select)
+    // so an unfiltered request on a huge table can't return an unbounded result set.
+    private const ALL_LIMIT = 2000;
+
     public $model;
 
     public $builder;
@@ -23,6 +27,10 @@ class DataProvider
     {
         $this->processFilters();
         $this->applyOrder();
+
+        if (request()->boolean('all')) {
+            return $this->builder->limit(self::ALL_LIMIT)->get();
+        }
 
         $page = request()->input('page', 1);
         $limit = request()->input('limit', 10);

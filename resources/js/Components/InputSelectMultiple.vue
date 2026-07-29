@@ -30,13 +30,15 @@ const props = defineProps({
 });
 
 const meta = reactive({
-    total_pages: 0
+    total_pages: 0,
+    total: 0
 });
 
 const emit = defineEmits(['update:modelValue', 'change']);
 const page = ref(1);
 const options = ref([]);
 const isLoading = ref(false);
+const isSelectingAll = ref(false);
 const showOptions = ref(false);
 const inputSearch = ref(null);
 
@@ -70,9 +72,41 @@ const search = _.debounce(async (clearOptions = false) => {
         options.value = [];
     }
     meta.total_pages = res.data.meta?.last_page ?? res.data.last_page;
+    meta.total = res.data.meta?.total ?? res.data.total ?? options.value.length;
     options.value.push(...res.data.data);
     isLoading.value = false;
 }, 200);
+
+const selectAll = async (e) => {
+    e.stopPropagation();
+    if (!props.url || isSelectingAll.value) return;
+
+    const columns = Array.isArray(props.fields) ? props.fields.filter(Boolean).join(',') : props.fields;
+    const queryParams = {
+        filters: props.query,
+        all: 1,
+        search: inputSearch.value
+    };
+
+    if (columns) {
+        queryParams.columns = columns;
+    }
+
+    let string = queryString.stringify(queryParams);
+
+    isSelectingAll.value = true;
+    try {
+        let res = await axios.get(`/api${props.url}?${string}`);
+        let allMatching = res.data.data ?? res.data;
+        allMatching.forEach((option) => {
+            if (!isSelected(option)) {
+                proxyValue.value.push(option);
+            }
+        });
+    } finally {
+        isSelectingAll.value = false;
+    }
+};
 
 onMounted(() => {
     var sidebar = document.getElementById(props.id + '-sidebar');
@@ -177,6 +211,17 @@ search();
                 >
                 </InputText>
             </IconField>
+            <div
+                class="select-all d-flex align-items-center justify-content-between mt-2 px-1"
+                v-if="options.length"
+                role="button"
+                @click.stop="selectAll"
+            >
+                <span>
+                    <font-awesome-icon v-if="isSelectingAll" :icon="['fa', 'spinner']" class="fa-spin me-1" />
+                    Select all<template v-if="meta.total"> ({{ meta.total }})</template>
+                </span>
+            </div>
             <div :id="props.id + '-sidebar'" class="options-container mt-2" style="max-height: 300px; overflow-y: auto">
                 <div class="px-2 py-1" v-if="!options.length">
                     <p class="ps-1 small">No available options</p>
@@ -239,6 +284,18 @@ search();
 }
 
 .option:hover {
+    background-color: var(--color-purple-light);
+}
+
+.select-all {
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-purple);
+}
+
+.select-all:hover {
     background-color: var(--color-purple-light);
 }
 
