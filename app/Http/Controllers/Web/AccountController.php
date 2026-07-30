@@ -9,6 +9,7 @@ use App\Http\Resources\AccountResource;
 use App\Models\Account;
 use App\Services\AccountService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 class AccountController extends BaseController
@@ -45,6 +46,11 @@ class AccountController extends BaseController
             $account = DB::transaction(fn () => $this->accountService->store($request->all()));
         } catch (\Exception $e) {
             return handleWebException($e);
+        }
+
+        $returnTo = $request->query('return_to');
+        if ($returnTo && Route::has($returnTo)) {
+            return redirect()->route($returnTo, ['account_reference' => $account->reference]);
         }
 
         return redirect()->route('accounts.index');

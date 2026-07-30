@@ -82,7 +82,12 @@ getAccount();
                             </InputSelect>
                         </div>
                         or create a
-                        <a id="link-to-create-account" href="/accounts/create" class="text-primary">new account</a>
+                        <a
+                            id="link-to-create-account"
+                            :href="route('accounts.create', { return_to: 'quotes.create' })"
+                            class="text-primary"
+                            >new account</a
+                        >
                     </div>
                 </div>
             </div>
