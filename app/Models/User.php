@@ -89,7 +89,7 @@ class User extends Authenticatable
      */
     public function group()
     {
-        return $this->groups()->where('is_default', true)->first();
+        return $this->groups()->first();
     }
 
     /**
