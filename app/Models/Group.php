@@ -16,7 +16,6 @@ class Group extends Model
     protected $fillable = [
         'owner_id',
         'name',
-        'tenant_id',
     ];
 
     protected static function booted(): void

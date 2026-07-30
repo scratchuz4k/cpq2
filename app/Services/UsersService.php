@@ -33,7 +33,14 @@ class UsersService
                 $groups = Auth::user()->groups->pluck('id')->toArray();
             }
 
-            $user->groups()->sync($groups);
+            $temp = [];
+            foreach ($groups as $group) {
+                $temp[$group] = [
+                    'tenant_id' => Auth::user()->tenant_id,
+                ];
+            }
+
+            $user->groups()->sync($temp);
         }
 
         if ($user->tenant_id) {
@@ -60,7 +67,14 @@ class UsersService
                 $groups = Auth::user()->groups->pluck('id')->toArray();
             }
 
-            $user->groups()->sync($groups);
+            $temp = [];
+            foreach ($groups as $group) {
+                $temp[$group] = [
+                    'tenant_id' => Auth::user()->tenant_id,
+                ];
+            }
+
+            $user->groups()->sync($temp);
         }
 
         if (array_key_exists('role_id', $array)) {
