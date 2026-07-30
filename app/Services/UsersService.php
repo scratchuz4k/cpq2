@@ -26,13 +26,11 @@ class UsersService
             $user->assignRole($array['role_id']);
         }
 
-        if (array_key_exists('group_ids', $array) && ! empty($array['group_ids'])) {
-            $groups = [];
-            foreach ($array['group_ids'] as $key => $id) {
-                $groups[$id] = [
-                    'is_default' => $key === 0,
-                    'tenant_id' => Auth::user()->tenant_id,
-                ];
+        if (array_key_exists('groups', $array)) {
+            $groups = $array['groups'];
+
+            if (empty($array['groups'])) {
+                $groups = Auth::user()->groups->pluck('id')->toArray();
             }
 
             $user->groups()->sync($groups);
@@ -56,12 +54,10 @@ class UsersService
         $user->update($array);
 
         if (array_key_exists('groups', $array)) {
-            $groups = [];
-            foreach ($array['groups'] as $key => $id) {
-                $groups[$id] = [
-                    'is_default' => $key === 0,
-                    'tenant_id' => Auth::user()->tenant_id,
-                ];
+            $groups = $array['groups'];
+
+            if (empty($array['groups'])) {
+                $groups = Auth::user()->groups->pluck('id')->toArray();
             }
 
             $user->groups()->sync($groups);

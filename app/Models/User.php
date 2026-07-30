@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Trait\SetTenantId;
-use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +13,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\HasApiTokens;
 use Laravel\Sanctum\NewAccessToken;
 use Spatie\Permission\Traits\HasRoles;
@@ -34,21 +32,6 @@ class User extends Authenticatable
             }
 
         });
-        static::created(function (Model $model) {
-            $user = Auth::user();
-            if ($user && $user->group()) {
-                try {
-                    $temp = [];
-                    $temp[$user->group()->id] = ['is_default' => true, 'tenant_id' => $user->tenant_id];
-                    $model->groups()->sync($temp);
-                } catch (Exception $e) {
-                    if (! config('app.debug')) {
-                        Log::error($e->getMessage());
-                    }
-                }
-            }
-        });
-
     }
 
     /**

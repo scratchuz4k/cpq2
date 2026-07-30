@@ -29,8 +29,23 @@ const page = usePage();
 const form = reactive({
     role: props.user.roles.length ? props.user.roles[0] : null,
     role_id: props.user.roles.length ? props.user.roles[0].id : null,
-    groups: props.user.groups.length ? props.user.groups : []
+    groups: props.user.groups.length ? [...props.user.groups] : []
 });
+
+const authUser = page.props.auth.user;
+const getFilters = () => {
+    let filters = [];
+
+    if (authUser.groups.length) {
+        filters.push({
+            column: 'id',
+            operator: 'in',
+            value: authUser.groups.map((item) => item.id)
+        });
+    }
+
+    return filters;
+};
 
 const saveUser = () => {
     proxyValue.value.role_id = form.role ? [form.role.id] : [];
@@ -114,12 +129,23 @@ const items = ref([
                     </div>
                     <div class="mb-3">
                         <label for="user-group" class="form-label">Groups:</label>
+                        <p class="mb-3 small">
+                            If you're user account <b>is</b> assigned to any groups, these are selected below by
+                            default. You may remove these groups, but you can only assign groups that you belong to. If
+                            all groups are removed, the new user will inherit all of your groups.
+                        </p>
+
+                        <p class="mb-3 small">
+                            If you're user account <b>is not</b> assigned to any groups, no groups are selected by
+                            default. You can choose any group(s) for the new user.
+                        </p>
                         <InputSelectMultiple
                             id="user-group"
                             v-model="form.groups"
                             url="/groups"
                             :fields="['name']"
                             :placeholder="'Select an Group'"
+                            :query="getFilters()"
                         >
                         </InputSelectMultiple>
                     </div>
