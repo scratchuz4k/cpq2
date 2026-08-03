@@ -2,6 +2,7 @@
 import { onMounted, reactive, ref, watch } from 'vue';
 import { quote, getQuote } from '@composables/useQuote';
 import { can, hasRole } from '@/Composables/useAuth';
+import { checkValue } from '@/Composables/input.js';
 
 const props = defineProps({
     preview: Boolean,
@@ -196,6 +197,8 @@ watch(
                         type="number"
                         v-model="temp"
                         min="0"
+                        max="100"
+                        @input="checkValue"
                     />
                 </td>
                 <td class="text-primary bold">-{{ format.GBP(discount.total) }}</td>
