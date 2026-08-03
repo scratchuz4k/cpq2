@@ -345,10 +345,9 @@ emitter.on(`${props.productType.split(' ')[0].toLowerCase()}-product:removed`, (
                             </div>
                             <div
                                 v-if="quote.configs?.speed || quote.configs?.bearer || quote.configs?.contract_length"
-                                class="d-flex align-self-end justify-content-around mb-2"
+                                class="d-flex mb-2"
                             >
                                 <tooltip-with-icon
-                                    class="ms-2 mt-1"
                                     :info_text="'The current results are based on predefined filters. For a more complete view, please go back and select a broader filter selection.'"
                                 />
                             </div>
