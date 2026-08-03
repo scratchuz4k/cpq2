@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\NotOwnDescendantRule;
 use App\Rules\TenantExistsRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -33,7 +34,7 @@ class RoleUpdateRequest extends FormRequest
                 Rule::requiredIf($roleHasParent),
                 Rule::when(
                     $roleHasParent,
-                    [new TenantExistsRule('roles')]
+                    [new TenantExistsRule('roles'), new NotOwnDescendantRule($this->route('role'))]
                 ),
             ],
         ];

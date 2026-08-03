@@ -108,6 +108,13 @@ const items = ref([
                                 url="/roles"
                                 :fields="['name']"
                                 :placeholder="'Select an Role'"
+                                :query="[
+                                    {
+                                        column: 'id',
+                                        operator: 'not_in',
+                                        value: [props.role.id, ...props.role.descendant_ids]
+                                    }
+                                ]"
                             >
                             </InputSelect></div
                     ></Panel>

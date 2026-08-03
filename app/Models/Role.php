@@ -48,4 +48,27 @@ class Role extends ModelsRole
 
         return $roles;
     }
+
+    /**
+     * Get the ids of every descendant of this role (children, grandchildren, ...).
+     * Used to prevent circular parent assignments.
+     */
+    public function getDescendantIds(): array
+    {
+        $ids = [];
+        $queue = $this->children()->pluck('id')->all();
+
+        while ($queue) {
+            $id = array_shift($queue);
+
+            if (in_array($id, $ids, true)) {
+                continue;
+            }
+
+            $ids[] = $id;
+            $queue = array_merge($queue, static::where('parent_id', $id)->pluck('id')->all());
+        }
+
+        return $ids;
+    }
 }
