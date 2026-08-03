@@ -61,7 +61,7 @@ class Blacklist extends Model
                             $blacklist_filters[$blacklist_item['id']][] = [
                                 'column' => $column,
                                 'operator' => $value['operator'],
-                                'value' => $value['unit'] === 'Mb'
+                                'value' => $value['unit'] === 'Mbps'
                                     ? $value['value']
                                     : (
                                         is_array($value['value'])
