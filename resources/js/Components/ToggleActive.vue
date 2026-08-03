@@ -1,4 +1,6 @@
 <script setup>
+import { computed, ref, watch } from 'vue';
+
 const props = defineProps({
     data: Object,
     value: Number | Boolean,
@@ -9,6 +11,18 @@ const props = defineProps({
     }
 });
 
+const localActive = ref(Boolean(props.value));
+
+watch(
+    () => props.value,
+    (newValue) => {
+        localActive.value = Boolean(newValue);
+    },
+    { immediate: true }
+);
+
+const isActive = computed(() => Boolean(localActive.value));
+
 const toggle_is_active = async (url, data) => {
     let result = await swal.fire({
         title: 'Do you want to change the active status?'
@@ -18,10 +32,17 @@ const toggle_is_active = async (url, data) => {
         return false;
     }
 
+    const nextValue = !isActive.value;
+
     try {
-        let res = await axios.put(`/api/${url}/` + data.id, {
-            is_active: !data.is_active
+        await axios.put(`/api/${url}/` + data.id, {
+            is_active: nextValue
         });
+
+        localActive.value = nextValue;
+        if (data) {
+            data.is_active = nextValue;
+        }
         emitter.emit(props.eventName);
 
         notyf.success('Updated with Success');
@@ -33,7 +54,7 @@ const toggle_is_active = async (url, data) => {
 <template>
     <div role="button" @click="toggle_is_active(props.route, props.data)">
         <font-awesome-icon
-            v-if="props.value"
+            v-if="isActive"
             :icon="['fas', 'circle-check']"
             style="font-size: 1.125rem"
             class="text-primary"

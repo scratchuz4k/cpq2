@@ -2,7 +2,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import ToggleActive from '@/Components/ToggleActive.vue';
 
 const props = defineProps({
     solution_types: {
