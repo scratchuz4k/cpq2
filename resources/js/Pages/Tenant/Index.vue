@@ -141,6 +141,13 @@ const submitTenantSettings = async () => {
         configs.customization_colors = JSON.stringify(configs.customization_colors);
         configs.calculator_layout = JSON.stringify(configs.calculator_layout);
 
+        if (!parseInt(configs.has_quote_approval)) {
+            configs.has_client_approval = 0;
+            configs.quote_approval_flow = props.quote_approval_flows[0].value;
+            configs.quote_margin_rules_value = 0;
+            configs.quote_margin_rules_operation = 'percentage';
+        }
+
         let res = await axios.put(`/api/tenants/` + tenant.id, { ...tenant, configurations: configs });
 
         let temp = res.data;
@@ -413,6 +420,9 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                             class="form-select"
                                                             v-model="tenant.configurations.quote_approval_flow"
                                                             @change="submitTenantSettings()"
+                                                            :disabled="
+                                                                parseInt(tenant.configurations.has_quote_approval) === 0
+                                                            "
                                                         >
                                                             <option
                                                                 :value="approval.value"
@@ -426,7 +436,8 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                         class="mb-3"
                                                         v-if="
                                                             tenant.configurations.quote_approval_flow ===
-                                                            'Margin review'
+                                                                'Margin review' &&
+                                                            parseInt(tenant.configurations.has_quote_approval)
                                                         "
                                                     >
                                                         <label>Margin value:</label>
@@ -471,6 +482,9 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                             trueValue="1"
                                                             falseValue="0"
                                                             binary
+                                                            :disabled="
+                                                                parseInt(tenant.configurations.has_quote_approval) === 0
+                                                            "
                                                         >
                                                             <template #handle>
                                                                 <font-awesome-icon
