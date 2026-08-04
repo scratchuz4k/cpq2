@@ -2,6 +2,7 @@
 import { DatatableOptions } from '@/Components/Datatables/DatatableOptions.js';
 import { FilterOperators } from '@composables/useApi';
 import ProductCreateRelation from './ProductCreateRelation.vue';
+import BundleQuantityInput from './BundleQuantityInput.vue';
 import { can, hasRole } from '@composables/useAuth';
 import { ref, computed } from 'vue';
 
@@ -21,8 +22,13 @@ const proxyValue = computed({
 
 const totals = ref(proxyValue.value.bundles?.length ?? 0);
 const optionBundle = new DatatableOptions('product-bundles', 'product-bundles');
-optionBundle.addColumn('item.sku', 'SKU');
 optionBundle.addColumn('item.name', 'Name', { isSticky: true });
+optionBundle.addColumn('quantity', 'Quantity', {
+    style: { width: '100px' },
+    isSearchable: false,
+    isSortable: false
+});
+optionBundle.addColumn('item.sku', 'SKU');
 optionBundle.addColumn('item.description', 'Description');
 optionBundle.addColumn('item.categories.name', 'Categories');
 optionBundle.addColumn('item.status', 'Status');
@@ -82,12 +88,16 @@ const setMeta = (newTotals) => {
                 route="product-bundles"
                 :product="proxyValue"
                 column="item_id"
+                withQuantity
                 :queries="bundleProductQueries"
                 @product-added="getProductBundles()"
             />
         </div>
     </div>
     <NewDatatable :options="optionBundle" @update:meta="(meta) => setMeta(meta.total)">
+        <template #quantity="{ data, value }">
+            <BundleQuantityInput :data="data" :value="value" />
+        </template>
         <template #item.status="{ data, value }">
             <span
                 class="badge"
