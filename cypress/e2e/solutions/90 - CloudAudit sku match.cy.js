@@ -67,7 +67,6 @@ describe('Match CouldAudit Sku', () => {
         cy.get('#price-price').type(productPrice.price);
 
         cy.get('.p-dialog .btn.btn-primary').click();
-        cy.get('.swal2-confirm').eq(0).click();
         cy.get('#btn-save-product').click();
         cy.get('.notyf').contains('Created with Success');
     });
