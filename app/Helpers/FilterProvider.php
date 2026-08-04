@@ -37,7 +37,7 @@ class FilterProvider
         }
         $orderBy = request()->input('orderBy', $orderBy);
 
-        $items = $order == 'asc' ? $items->sortBy($orderBy) : $items->sortByDesc($orderBy);
+        $items = $order == 'asc' ? $items->sortBy($orderBy, SORT_NATURAL | SORT_FLAG_CASE) : $items->sortByDesc($orderBy, SORT_NATURAL | SORT_FLAG_CASE);
         $limit = request()->input('limit', 10);
         $currentPage = request()->input('page', 1);
         $temp = $items->slice(($currentPage - 1) * $limit, $limit)->values();
