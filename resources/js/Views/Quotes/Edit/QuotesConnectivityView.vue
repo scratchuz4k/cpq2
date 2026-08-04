@@ -162,7 +162,8 @@ const fallbackSteps = [
 
 const steps = {
     pxc: defaultSteps,
-    its: defaultSteps
+    its: defaultSteps,
+    ipriver: defaultSteps
 };
 
 const getPrimary = () => {
