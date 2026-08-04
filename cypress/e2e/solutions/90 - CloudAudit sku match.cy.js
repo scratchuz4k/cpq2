@@ -63,8 +63,8 @@ describe('Match CouldAudit Sku', () => {
         cy.get('#add-price-btn').click();
 
         cy.get('#price-code').type(productPrice.code);
-        cy.get('#price-cost').type(productPrice.cost);
-        cy.get('#price-price').type(productPrice.price);
+        cy.get('#price-cost').clear().type(productPrice.cost);
+        cy.get('#price-price').clear().type(productPrice.price);
 
         cy.get('.p-dialog .btn.btn-primary').click();
         cy.get('#btn-save-product').click();
