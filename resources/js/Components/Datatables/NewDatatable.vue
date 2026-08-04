@@ -840,6 +840,7 @@ onUnmounted(() => {
     justify-content: center;
     min-width: 16px;
     height: 16px;
+    line-height: 16px;
     margin-left: 6px;
     padding: 0 4px;
     border-radius: 999px;
