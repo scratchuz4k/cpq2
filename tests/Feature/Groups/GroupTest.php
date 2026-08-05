@@ -27,7 +27,7 @@ beforeEach(function () {
 it('Relate Account and User with Group, ', function () {
     // relate User
     $response = $this->put('api/users/'.$this->user->id, [
-        'group_id' => $this->group->id,
+        'groups' => [$this->group->id],
     ]);
     $response->assertSuccessful();
     $this->user->refresh();
@@ -45,7 +45,7 @@ it('Relate Account and User with Group, ', function () {
 
 it('Add user to Group and create new Account and User ', function () {
     $response = $this->put('api/users/'.$this->user->id, [
-        'group_id' => $this->group->id,
+        'groups' => [$this->group->id],
     ]);
     $response->assertSuccessful();
     $this->user->refresh();
@@ -73,7 +73,7 @@ it('Add user to Group and create new Account and User ', function () {
     expect($user->name)->toBe($user_data['name']);
 
     $response = $this->put('api/users/'.$user->id, [
-        'group_id' => $this->group->id,
+        'groups' => [$this->group->id],
     ]);
     $response->assertSuccessful();
 

@@ -7,6 +7,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import ToggleSwitch from 'primevue/toggleswitch';
 import { integerOnly, checkValue } from '@/Composables/input.js';
 import InputSelect from '@/Components/InputSelect.vue';
+import InputSelectMultiple from '@/Components/InputSelectMultiple.vue';
 
 const props = defineProps({
     user: Object,
@@ -27,11 +28,28 @@ const proxyValue = computed({
 const page = usePage();
 const form = reactive({
     role: props.user.roles.length ? props.user.roles[0] : null,
-    role_id: props.user.roles.length ? props.user.roles[0].id : null
+    role_id: props.user.roles.length ? props.user.roles[0].id : null,
+    groups: props.user.groups.length ? [...props.user.groups] : []
 });
+
+const authUser = page.props.auth.user;
+const getFilters = () => {
+    let filters = [];
+
+    if (authUser.groups.length) {
+        filters.push({
+            column: 'id',
+            operator: 'in',
+            value: authUser.groups.map((item) => item.id)
+        });
+    }
+
+    return filters;
+};
 
 const saveUser = () => {
     proxyValue.value.role_id = form.role ? [form.role.id] : [];
+    proxyValue.value.groups = form.groups.map((item) => item.id);
 
     router.put(`/users/${proxyValue.value.id}`, proxyValue.value, {
         onSuccess: (page) => {
@@ -110,6 +128,28 @@ const items = ref([
                         </InputSelect>
                     </div>
                     <div class="mb-3">
+                        <label for="user-group" class="form-label">Groups:</label>
+                        <p class="mb-3 small">
+                            If you're user account <b>is</b> assigned to any groups, these are selected below by
+                            default. You may remove these groups, but you can only assign groups that you belong to. If
+                            all groups are removed, the new user will inherit all of your groups.
+                        </p>
+
+                        <p class="mb-3 small">
+                            If you're user account <b>is not</b> assigned to any groups, no groups are selected by
+                            default. You can choose any group(s) for the new user.
+                        </p>
+                        <InputSelectMultiple
+                            id="user-group"
+                            v-model="form.groups"
+                            url="/groups"
+                            :fields="['name']"
+                            :placeholder="'Select an Group'"
+                            :query="getFilters()"
+                        >
+                        </InputSelectMultiple>
+                    </div>
+                    <div class="mb-3">
                         <label for="user-commission-rate" class="form-label">Commission Rate:</label>
                         <div class="input-group p-0">
                             <input
@@ -123,10 +163,6 @@ const items = ref([
                             />
                             <span class="input-group-text">%</span>
                         </div>
-                    </div>
-                    <div class="mb-3" v-if="user.group">
-                        <label for="user-group" class="form-label">Group:</label>
-                        <input id="user-group" disabled class="form-control" v-model="user.group.name" />
                     </div>
                     <div class="mb-3">
                         <div class="form-check p-0">
