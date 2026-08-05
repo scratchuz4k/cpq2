@@ -141,6 +141,7 @@ const handlePaginator = (ev) => {
 };
 
 const emitSaveQuote = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     emitter.emit('save-quote');
 };
 

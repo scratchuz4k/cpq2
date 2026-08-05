@@ -212,6 +212,7 @@ const result = computed(() => {
 });
 
 const checkGoPrevious = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     currentStep.value--;
 };
 
@@ -221,6 +222,7 @@ const checkGoNext = () => {
     if (check && !quote.items.find((x) => x.data.type == productType) && addons.value.length != 0) {
         scrollToDiv();
     } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         currentStep.value++;
     }
 };
