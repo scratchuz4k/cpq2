@@ -259,7 +259,7 @@ watch(
                             v-model:first="meta.first"
                             :rows="meta.limit"
                             :totalRecords="meta.total"
-                            :rowsPerPageOptions="[10, 24, 48]"
+                            :rowsPerPageOptions="[12, 24, 48]"
                             @page="handlePaginator"
                         >
                         </Paginator>
