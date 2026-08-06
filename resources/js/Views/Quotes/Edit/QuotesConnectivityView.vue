@@ -119,6 +119,7 @@ const removeItem = (article) => {
         emitter.emit('failover-product:removed');
         currentStep.value = 1;
     }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     getQuote(props.modelValue.id);
 };
 

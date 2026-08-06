@@ -33,7 +33,12 @@ const steps = ref(product.steps ?? []);
 const isActiveProxy = computed({
     get: () => product.is_active,
     set: (value) => {
-        if (value && product.status === 'Retired') {
+        const expiresAt = product.expires_at ? new Date(product.expires_at) : null;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const isPastExpiration = expiresAt && expiresAt < today;
+
+        if (value && product.status !== 'Inactive' && isPastExpiration) {
             notyf.error('This product could not be activated because the expiration date is in the past.');
             return; // don't touch product.is_active — stays false
         }
@@ -133,7 +138,13 @@ watch(
                                             <div class="d-flex align-items-center gap-2">
                                                 <ToggleSwitch id="active-filter" v-model="isActiveProxy" />
                                                 <span class="small">
-                                                    {{ product.status }}
+                                                    {{
+                                                        isActiveProxy
+                                                            ? 'Active'
+                                                            : product.status === 'Retired'
+                                                              ? 'Retired'
+                                                              : 'Inactive'
+                                                    }}
                                                 </span>
                                             </div>
                                         </div>
