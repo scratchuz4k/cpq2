@@ -23,7 +23,7 @@ class BlacklistUpdateRequest extends FormRequest
     {
         $data = request()->only([
             'productName',
-            'providerName',
+            'providerKey',
             'connectivitySupplierGroup',
             'bearer',
             'speed',
@@ -42,7 +42,7 @@ class BlacklistUpdateRequest extends FormRequest
 
         return [
             'productName' => 'nullable',
-            'providerName' => 'nullable',
+            'providerKey' => 'nullable',
             'connectivitySupplierGroup' => 'nullable',
 
             'bearer.operator' => 'nullable|required_with:bearer.value,bearer.unit',

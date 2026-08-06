@@ -128,11 +128,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                             :title="'This quote will expire on ' + dateToExpire(data.created_at)"
                             >{{ value.toUpperCase() }}</span
                         >
-                        <span v-else class="badge text-bg-secondary">{{
-                            data.approvals[0] && !['PENDING', 'REJECTED'].includes(value)
-                                ? data.approvals[0]?.status.toUpperCase()
-                                : value
-                        }}</span>
+                        <span v-else class="badge text-bg-secondary">{{ value.toUpperCase() }}</span>
                     </template>
                     <template #updated_at="{ data, value }">
                         {{ format.date(data.approvals[0]?.updated_at ?? value) }}

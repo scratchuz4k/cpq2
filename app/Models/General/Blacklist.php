@@ -20,7 +20,7 @@ class Blacklist extends Model
 
     protected $filterable_columns = [
         'productName',
-        'providerName',
+        'providerKey',
         'connectivitySupplierGroup',
         'bearer',
         'speed',
