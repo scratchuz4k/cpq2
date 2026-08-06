@@ -170,6 +170,7 @@ describe('Validates same-step product link restriction', () => {
         cy.wait(1000);
         cy.get('[id^="links-checkbox-"]').should('not.exist');
         cy.wait(1000);
+
         cy.get('#btn-relation-cancel-links').click();
         cy.get('#product-links-datatable-search').clear().type(sameStepChild.sku);
         cy.wait(1000);
