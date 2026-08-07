@@ -125,8 +125,17 @@ onMounted(() => {
                 visibility: !showOptions ? 'hidden' : 'visible',
                 height: !showOptions ? '0' : 'auto'
             }"
-            style="z-index: 100"
+            style="z-index: 100; width: max-content; min-width: 100%; white-space: nowrap"
         >
+            <div
+                class="select-all d-flex align-items-center justify-content-between mb-1 px-1"
+                v-if="filteredOptions.length"
+            >
+                <button type="button" class="select-all-action small" @click.stop="selectAll">
+                    Select all ({{ filteredOptions.length }})
+                </button>
+                <button type="button" class="select-all-action small" @click.stop="clear">Clear</button>
+            </div>
             <IconField v-if="props.filter" class="p-0">
                 <InputIcon>
                     <font-awesome-icon :icon="['fas', 'search']"></font-awesome-icon>
@@ -141,14 +150,7 @@ onMounted(() => {
                 >
                 </InputText>
             </IconField>
-            <div
-                class="select-all d-flex align-items-center justify-content-between mt-2 px-1"
-                v-if="filteredOptions.length"
-                role="button"
-                @click.stop="selectAll"
-            >
-                <span>Select all ({{ filteredOptions.length }})</span>
-            </div>
+
             <div class="options-container mt-2" style="max-height: 300px; overflow-y: auto">
                 <div class="px-2 py-1" v-if="!filteredOptions.length">
                     <p class="ps-1 small">No available options</p>
@@ -215,8 +217,20 @@ onMounted(() => {
     color: var(--color-purple);
 }
 
-.select-all:hover {
-    background-color: var(--color-purple-light);
+.select-all-action {
+    background: none;
+    border: none;
+    padding: 0;
+    font-weight: 600;
+    color: var(--color-purple);
+}
+
+.select-all-action.text-muted {
+    color: #6c757d;
+}
+
+.select-all-action:hover {
+    text-decoration: underline;
 }
 
 .badge {

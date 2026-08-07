@@ -231,8 +231,18 @@ onMounted(() => {
                 visibility: showOptions ? 'visible' : 'hidden',
                 height: showOptions ? 'auto' : '0'
             }"
-            style="z-index: 1000; width: 500px"
+            style="z-index: 1000; width: max-content; min-width: 100%; white-space: nowrap"
         >
+            <div
+                class="select-all d-flex align-items-center justify-content-between mb-1 px-1"
+                v-if="selectAllOptions.length"
+            >
+                <button type="button" class="select-all-action small" @click.stop="selectAll">
+                    Select all ({{ selectAllOptions.length }})
+                </button>
+                <button type="button" class="select-all-action small" @click.stop="clear">Clear</button>
+            </div>
+
             <IconField class="p-0">
                 <InputIcon v-if="isLoading">
                     <font-awesome-icon :icon="['fa', 'spinner']" class="fa-spin" />
@@ -249,24 +259,6 @@ onMounted(() => {
                     type="search"
                 />
             </IconField>
-
-            <div
-                class="select-all d-flex align-items-center justify-content-between mt-2 px-1"
-                v-if="selectAllOptions.length"
-                role="button"
-                @click.stop="selectAll"
-            >
-                <span>Select all ({{ selectAllOptions.length }})</span>
-            </div>
-
-            <div
-                class="select-all d-flex align-items-center justify-content-between mt-2 px-1"
-                v-if="selectAllOptions.length"
-                role="button"
-                @click.stop="selectAll"
-            >
-                <span>Select all ({{ selectAllOptions.length }})</span>
-            </div>
 
             <div :id="id + '-sidebar'" class="options-container mt-2" style="max-height: 300px; overflow-y: auto">
                 <div class="px-2 py-1" v-if="!filteredOptions.length">
@@ -364,6 +356,22 @@ onMounted(() => {
 
 .select-all:hover {
     background-color: var(--color-purple-light);
+}
+
+.select-all-action {
+    background: none;
+    border: none;
+    padding: 0;
+    font-weight: 600;
+    color: var(--color-purple);
+}
+
+.select-all-action.text-muted {
+    color: #6c757d;
+}
+
+.select-all-action:hover {
+    text-decoration: underline;
 }
 
 .badge {
