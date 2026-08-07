@@ -103,7 +103,7 @@ if (! function_exists('formatBytes')) {
     {
         $temp = $value ?? 0;
         $number = $temp;
-        $suffix = 'Mb';
+        $suffix = 'Mbps';
 
         if ($temp < 100) {
             $number = ceil($temp / 10) * 10;
@@ -111,7 +111,7 @@ if (! function_exists('formatBytes')) {
             $number = ceil($temp / 100) * 100;
         } else {
             $number = round($temp / 1000, 1);
-            $suffix = 'Gb';
+            $suffix = 'Gbps';
         }
 
         return $number.' '.$suffix;

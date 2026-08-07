@@ -61,13 +61,12 @@ describe('Match CouldAudit Sku', () => {
         cy.selectOption('#contract_term_unit', 'Days');
 
         cy.get('#add-price-btn').click();
-
+        cy.wait(1000);
         cy.get('#price-code').type(productPrice.code);
-        cy.get('#price-cost').type(productPrice.cost);
-        cy.get('#price-price').type(productPrice.price);
+        cy.get('#price-cost input').type(productPrice.cost);
+        cy.get('#price-price input').type(productPrice.price);
 
         cy.get('.p-dialog .btn.btn-primary').click();
-
         cy.get('#btn-save-product').click();
         cy.get('.notyf').contains('Created with Success');
     });

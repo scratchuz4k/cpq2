@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Enums\ContractTermUnitsEnum;
+use App\Enums\ProductStatusesEnum;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\ProductCreateRequest;
 use App\Http\Requests\ProductUpdateRequest;
@@ -35,6 +36,7 @@ class ProductController extends BaseController
 
         return Inertia::render('Products/Index', [
             'solution_types' => (SolutionTypeTenantResource::collection($solutionTypes))->resolve(),
+            'statuses' => ProductStatusesEnum::cases(),
         ]);
 
     }
