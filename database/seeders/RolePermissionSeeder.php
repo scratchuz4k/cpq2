@@ -76,7 +76,7 @@ class RolePermissionSeeder extends Seeder
                 'parent' => null,
                 'tenant' => 1,
                 'permissions' => [
-                    'quote', 'quote_item', 'account', 'contact',
+                    'quote', 'quote_item', 'token', 'account', 'contact',
                     'price', 'product', 'category', 'tenant', 'supplier',
                     'spa', 'user', 'solution_type', 'api', 'price_plan', 'activity', 'email_template', 'email_history',
                     'group', 'blacklist', 'role', 'permission', 'step', 'import', 'quote_approval', 'quote_discount', 'notification',
