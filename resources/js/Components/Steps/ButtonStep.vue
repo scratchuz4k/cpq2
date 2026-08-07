@@ -18,10 +18,12 @@ const proxyValue = computed({
 });
 
 const nextStep = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     currentStep.value++;
 };
 
 const previousStep = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     currentStep.value--;
 };
 </script>

@@ -94,10 +94,3 @@ let view =
         </template>
     </AuthenticatedLayout>
 </template>
-
-<style>
-.form-control {
-    font-size: 0.9rem;
-    line-height: 1.5rem;
-}
-</style>

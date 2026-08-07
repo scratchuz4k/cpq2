@@ -211,12 +211,17 @@ import InputIcon from 'primevue/inputicon';
 import IconField from 'primevue/iconfield';
 import OrderSummary from '@/Components/OrderSummary.vue';
 
+const changeStep = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    proxyValue.value--;
+};
+
 watchEffect(() => {
     actionBarButtons.value = [
         step.value !== 1
             ? {
                   btn: 'back',
-                  onClick: () => proxyValue.value--
+                  onClick: changeStep
               }
             : null,
         {
@@ -299,8 +304,8 @@ watch(
                     "
                 ></ShopBlocksFilters>
                 <template v-if="meta.isLoading">
-                    <ShopblocksProductSkeleton v-for="item in [0, 1, 2, 3, 4]"></ShopblocksProductSkeleton
-                ></template>
+                    <ShopblocksProductSkeleton v-for="item in meta.limit || 6"></ShopblocksProductSkeleton>
+                </template>
                 <template v-else>
                     <div class="text-center pt-2 pb-4" v-if="!productsHardware.length">No Results Found</div>
                     <div class="row" :class="[showCards ? 'row-cols-4' : 'row-cols-1']">
@@ -322,8 +327,8 @@ watch(
                         :rowsPerPageOptions="[12, 24, 48]"
                         @page="handlePaginator"
                     >
-                    </Paginator
-                ></template>
+                    </Paginator>
+                </template>
             </div>
             <div class="col-3">
                 <OrderSummary />

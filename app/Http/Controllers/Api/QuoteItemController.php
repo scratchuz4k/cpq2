@@ -115,12 +115,12 @@ class QuoteItemController extends BaseController
         // get addons from descendants
         if ($descendantIds->isNotEmpty()) {
             $descendantProducts = Product::query()
-                ->with('addons:id')
+                ->with('addonsChildren:id')
                 ->whereIn('id', $descendantIds)
                 ->get();
 
             foreach ($descendantProducts as $descendantProduct) {
-                $cascadeProductIds = $cascadeProductIds->merge($descendantProduct->addons->pluck('id'));
+                $cascadeProductIds = $cascadeProductIds->merge($descendantProduct->addonsChildren->pluck('id'));
             }
         }
 
