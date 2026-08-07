@@ -22,7 +22,7 @@ const props = defineProps({
 
 const blacklisted_item = reactive({
     productName: null,
-    providerName: null,
+    providerKey: null,
     connectivitySupplierGroup: null,
     bearer: {
         operator: null,
@@ -108,7 +108,7 @@ const items = ref([
                     <div class="mb-3">
                         <label class="form-label">Provider:</label>
                         <Select
-                            v-model="blacklisted_item.providerName"
+                            v-model="blacklisted_item.providerKey"
                             :inputId="'item-provider'"
                             :options="props.providers"
                             class="w-100"

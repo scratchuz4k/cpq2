@@ -19,10 +19,10 @@ const proxyValue = computed({
     }
 });
 
-const totals = ref(proxyValue.value.children?.length ?? 0);
+const totals = ref(proxyValue.value.linked_children?.length ?? 0);
 
 const linkedProductQueries = () => {
-    let childrenIds = (proxyValue.value.children ?? []).map((c) => c.id);
+    let childrenIds = (proxyValue.value.linked_children ?? []).map((c) => c.id);
     let parentIds = (proxyValue.value.parents ?? []).map((p) => p.id);
 
     return [
@@ -79,7 +79,7 @@ optionLinks.setAllowedActions({
 
 const getProductChildren = async () => {
     const res = await axios.get(`/api/products/${proxyValue.value.id}`);
-    proxyValue.value.children = res.data.data.children;
+    proxyValue.value.linked_children = res.data.data.linked_children;
 };
 
 const setMeta = (newTotals) => {
@@ -101,7 +101,7 @@ const setMeta = (newTotals) => {
                 warningMessage="Linked products can only be added to the main product if they are configured in different steps."
                 :queries="linkedProductQueries"
                 :isRowDisabled="sharesStep"
-                @product-added="getProductChildren"
+                @product-added="getProductChildren()"
             />
         </div>
     </div>

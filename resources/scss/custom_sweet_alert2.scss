@@ -1,3 +1,10 @@
+// PrimeVue Dialog/overlay z-index is a live incrementing counter (base 1100, but can grow
+// well beyond that as more overlays are opened in the session), so swal2 must sit above any
+// realistic ceiling rather than trying to match/beat it with a single fixed value.
+.swal2-container {
+    z-index: 20000 !important;
+}
+
 .swal2-confirm.swal2-styled,
 .swal2-confirm.btn {
     font-weight: 600;

@@ -86,7 +86,12 @@ const items = ref([{ label: 'Home', url: '/dashboard' }, { label: 'Create a quot
         <form @keydown.enter.prevent @submit.prevent="submit" id="create-quote-form">
             <component
                 :is="steps[currentStep]"
-                @nextStep="() => currentStep++"
+                @nextStep="
+                    () => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        currentStep++;
+                    }
+                "
                 v-bind="{
                     solutionType: props.solution_types,
                     modelValue: quote

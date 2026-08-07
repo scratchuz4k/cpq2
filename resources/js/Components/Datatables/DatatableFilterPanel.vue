@@ -64,7 +64,7 @@
                             v-if="['select', 'checkbox'].includes(filterType(column.column))"
                             v-model="filters[column.column].value"
                             :ref="(el) => setInputRef(column.column, el)"
-                            class="filter-panel-input"
+                            class="form-select form-select-sm w-100"
                         >
                             <option :value="null">All</option>
                             <option
@@ -96,7 +96,7 @@
                             v-else
                             v-model="filters[column.column].value"
                             :ref="(el) => setInputRef(column.column, el)"
-                            class="filter-panel-input w-100"
+                            class="form-control form-control-sm w-100"
                             :placeholder="'Filter ' + column.title"
                         />
                     </div>
@@ -306,7 +306,7 @@ onUnmounted(() => {
     font-weight: 500;
     color: #646464;
 }
-
+/*
 .filter-panel-input {
     flex: 1;
     height: 32px;
@@ -320,7 +320,7 @@ onUnmounted(() => {
 .filter-panel-input:focus {
     border-color: var(--color-primary, #6366f1);
 }
-
+*/
 .filter-panel-empty {
     color: #6c757d;
 }

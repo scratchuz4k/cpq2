@@ -79,7 +79,7 @@ const format = {
     speed: (value) => {
         let temp = value ?? 0;
         let number = temp;
-        let suffix = 'Mb';
+        let suffix = 'Mbps';
 
         if (temp < 100) {
             number = Math.floor(temp / 10) * 10;
@@ -87,7 +87,7 @@ const format = {
             number = Math.floor(temp / 100) * 100;
         } else {
             number = temp / 1000;
-            suffix = 'Gb';
+            suffix = 'Gbps';
             number = Math.round(number * 10) / 10;
         }
 

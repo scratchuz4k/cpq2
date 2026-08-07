@@ -65,7 +65,7 @@ const checkQuantity = _.throttle(async (product, temp) => {
                     contract_length: product.contract_length,
                     product_id: props.addInternalProduct ? product.id : null,
                     name: product.name,
-                    raw_price: product.price ? product.price.net : 0,
+                    raw_price: product.price && product.price?.cost ? product.price.cost : product.price?.net,
                     price: product.price ? product.price.net_spa : 0,
                     price_plan_id: product.price_plan_id,
                     data: { type: 'main_product' }
@@ -477,6 +477,7 @@ h3 {
     width: 140px;
     height: 140px;
 }
+
 .product-gallery-link:after {
     content: '';
     position: absolute;
@@ -524,6 +525,7 @@ h3 {
     border-bottom: 1px solid #dee2e6;
     border-top: 1px solid #dee2e6;
 }
+
 .sticky-row:after {
     content: '';
     position: absolute;
