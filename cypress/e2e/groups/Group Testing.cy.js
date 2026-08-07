@@ -35,7 +35,9 @@ describe('Group Testing', () => {
     });
 
     it('Creates an Account', () => {
-        cy.visit('/quotes/create');
+        cy.visit('/quotes');
+        cy.get('#settings').click();
+        cy.get('#link-accounts').click();
         cy.get('#link-to-create-account').click();
         cy.get('#account-name').type(account.name);
         cy.get('#account-reference').type(account.ref);
