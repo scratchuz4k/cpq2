@@ -27,8 +27,7 @@ describe('Blacklist Crud', () => {
 
     it('Check product results for Blacklisted Item', () => {
         // Create an account
-        cy.visit('/quotes/create');
-        cy.get('#link-to-create-account').click();
+        cy.visit('/accounts/create');
         cy.get('#account-name').type(account.name);
         cy.get('#account-reference').type(account.ref);
         cy.get('#btn-save-account').click();

@@ -38,7 +38,7 @@ describe('Group Testing', () => {
         cy.visit('/quotes');
         cy.get('#settings').click();
         cy.get('#link-accounts').click();
-        cy.get('#link-to-create-account').click();
+        cy.get('#account-create-btn').click();
         cy.get('#account-name').type(account.name);
         cy.get('#account-reference').type(account.ref);
         cy.get('#btn-save-account').click();
@@ -101,8 +101,10 @@ describe('Group Testing', () => {
         cy.logout();
         cy.login(sales_manager.email, sales_manager.password);
 
-        cy.visit('/quotes/create');
-        cy.get('#link-to-create-account').click();
+        cy.visit('/quotes');
+        cy.get('#settings').click();
+        cy.get('#link-accounts').click();
+        cy.get('#account-create-btn').click();
         cy.get('#account-name').type(group_account.name);
         cy.get('#account-reference').type(group_account.ref);
         cy.get('#btn-save-account').click();
