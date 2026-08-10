@@ -45,7 +45,7 @@ const update = async () => {
             v-if="isEditing"
             ref="input"
             class="form-control text-center p-0 px-1"
-            style="width: 80px"
+            style="width: 80px; height: 25px"
             type="number"
             min="1"
             v-model="quantity"
@@ -60,8 +60,8 @@ const update = async () => {
             class="btn border-0 bg-transparent p-0 d-flex align-items-center gap-2"
             @click="edit"
         >
-            <font-awesome-icon class="text-primary" :icon="['far', 'pen-to-square']" />
             <p class="small mb-0 text-body">{{ quantity }}</p>
+            <font-awesome-icon class="text-primary" :icon="['far', 'pen-to-square']" />
         </button>
     </div>
 </template>

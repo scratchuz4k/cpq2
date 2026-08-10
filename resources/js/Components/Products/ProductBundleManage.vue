@@ -25,8 +25,7 @@ const optionBundle = new DatatableOptions('product-bundles', 'product-bundles');
 optionBundle.addColumn('item.name', 'Name', { isSticky: true });
 optionBundle.addColumn('quantity', 'Quantity', {
     style: { width: '100px' },
-    isSearchable: false,
-    isSortable: false
+    isSearchable: false
 });
 optionBundle.addColumn('item.sku', 'SKU');
 optionBundle.addColumn('item.description', 'Description');
