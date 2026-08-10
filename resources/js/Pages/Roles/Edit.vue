@@ -31,7 +31,7 @@ const saveRole = () => {
         },
         {
             onSuccess: (page) => {
-                notyf.success('Created with Success');
+                notyf.success('Updated with Success');
             },
             onError: (errors) => {
                 let string = '';
