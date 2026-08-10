@@ -91,7 +91,7 @@ const items = ref([
                     <div class="mb-3">
                         <label class="form-label">Provider:</label>
                         <Select
-                            v-model="blacklisted_item.providerName"
+                            v-model="blacklisted_item.providerKey"
                             :inputId="'item-provider'"
                             :options="props.providers"
                             class="w-100"

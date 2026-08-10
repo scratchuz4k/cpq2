@@ -147,7 +147,7 @@ watch(
             </div>
             <div class="d-flex justify-content-between mb-2 sub-total-one-off">
                 <p class="small product-name d-flex justify-content-center">
-                    One Off Total
+                    One-Off Total
                     <span
                         class="d-flex justify-content-center ms-1 mt-1"
                         title="Total before discounts, final amount may vary."
@@ -186,6 +186,7 @@ watch(
 .quote-items .truncate-1-lines {
     height: auto;
 }
+
 .quote-items .addons-wrapper {
     border-left: 2px solid #e5e5e5;
 }
@@ -194,6 +195,7 @@ watch(
     position: sticky;
     top: 1rem;
 }
+
 hr {
     border-top: 1px solid var(--color-black);
     opacity: 0.1;

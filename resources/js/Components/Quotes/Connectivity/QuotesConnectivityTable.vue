@@ -134,6 +134,7 @@ const checkProduct = (article) => {
     } else {
         remove(item);
     }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 const productDisplay = (value, data) => {

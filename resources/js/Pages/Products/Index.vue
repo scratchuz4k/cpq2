@@ -9,6 +9,10 @@ const props = defineProps({
     solution_types: {
         type: Array,
         default: []
+    },
+    statuses: {
+        type: Array,
+        default: []
     }
 });
 
@@ -40,6 +44,9 @@ options.addColumnFilter(
     'select',
     props.solution_types.map((x) => x.name)
 );
+
+options.addColumnFilter('status', 'select', props.statuses);
+
 options.setAllowedActions({
     update: true,
     destroy: true,

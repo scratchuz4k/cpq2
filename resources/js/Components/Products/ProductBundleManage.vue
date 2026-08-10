@@ -20,7 +20,7 @@ const proxyValue = computed({
     }
 });
 
-const totals = ref(proxyValue.value.bundles?.length ?? 0);
+const totals = ref(proxyValue.value.bundles_children?.length ?? 0);
 const optionBundle = new DatatableOptions('product-bundles', 'product-bundles');
 optionBundle.addColumn('item.name', 'Name', { isSticky: true });
 optionBundle.addColumn('quantity', 'Quantity', {
@@ -50,7 +50,7 @@ optionBundle.setAllowedActions({
 });
 
 const bundleProductQueries = () => {
-    const existingBundleIds = (proxyValue.value.bundles ?? []).map((bundle) => bundle.id);
+    const existingBundleIds = (proxyValue.value.bundles_children ?? []).map((bundle) => bundle.id);
 
     if (existingBundleIds.length === 0) {
         return [];
@@ -68,7 +68,7 @@ const bundleProductQueries = () => {
 
 const getProductBundles = async () => {
     const res = await axios.get(`/api/products/${proxyValue.value.id}`);
-    proxyValue.value.bundles = res.data.data.bundles;
+    proxyValue.value.bundles_children = res.data.data.bundles_children;
 };
 const setMeta = (newTotals) => {
     totals.value = newTotals;
