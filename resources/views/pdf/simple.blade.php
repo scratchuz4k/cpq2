@@ -368,7 +368,7 @@
                             </tr>
                             <tr>
                                 <th>
-                                    <p class="small text-start">One Off Total</p>
+                                    <p class="small text-start">One-Off Total</p>
                                 </th>
                                 <td></td>
                                 <td id="total_single_net">

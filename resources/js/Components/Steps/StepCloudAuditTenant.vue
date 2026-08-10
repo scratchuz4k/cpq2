@@ -117,7 +117,10 @@ watchEffect(() => {
         {
             btn: 'back',
             disabled: currentStep.value === 0,
-            onClick: () => currentStep.value--
+            onClick: () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                currentStep.value--;
+            }
         },
         {
             btn: 'next',

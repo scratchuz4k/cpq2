@@ -26,6 +26,23 @@ class UsersService
             $user->assignRole($array['role_id']);
         }
 
+        if (array_key_exists('groups', $array)) {
+            $groups = $array['groups'];
+
+            if (empty($array['groups'])) {
+                $groups = Auth::user()->groups->pluck('id')->toArray();
+            }
+
+            $temp = [];
+            foreach ($groups as $group) {
+                $temp[$group] = [
+                    'tenant_id' => Auth::user()->tenant_id,
+                ];
+            }
+
+            $user->groups()->sync($temp);
+        }
+
         if ($user->tenant_id) {
             $user->tenants()->sync($user->tenant_id);
         }
@@ -43,18 +60,21 @@ class UsersService
 
         $user->update($array);
 
-        if (array_key_exists('group_id', $array)) {
-            if (is_null($array['group_id'])) {
-                $user->groups()->sync([]);
-            } else {
-                $temp = [];
-                $temp[$array['group_id']] = [
-                    'is_default' => true,
-                    'tenant_id' => Auth::user()->tenant_id,
-                ];
-                $user->groups()->sync($temp);
+        if (array_key_exists('groups', $array)) {
+            $groups = $array['groups'];
+
+            if (empty($array['groups'])) {
+                $groups = Auth::user()->groups->pluck('id')->toArray();
             }
 
+            $temp = [];
+            foreach ($groups as $group) {
+                $temp[$group] = [
+                    'tenant_id' => Auth::user()->tenant_id,
+                ];
+            }
+
+            $user->groups()->sync($temp);
         }
 
         if (array_key_exists('role_id', $array)) {
