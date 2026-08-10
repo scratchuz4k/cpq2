@@ -63,7 +63,12 @@ export const useColors = (initialPageProps) => {
 
                 if (isLightColor(value)) {
                     root.style.setProperty(`--color-${key}-text`, `#000`);
+                } else {
+                    root.style.removeProperty(`--color-${key}-text`);
                 }
+            } else {
+                root.style.removeProperty(`--color-${key}`);
+                root.style.removeProperty(`--color-${key}-text`);
             }
         });
     }
