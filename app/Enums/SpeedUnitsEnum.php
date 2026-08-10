@@ -4,8 +4,8 @@ namespace App\Enums;
 
 enum SpeedUnitsEnum: string
 {
-    case MB = 'Mb';
-    case GB = 'Gb';
+    case MB = 'Mbps';
+    case GB = 'Gbps';
 
     public static function asArray(): array
     {

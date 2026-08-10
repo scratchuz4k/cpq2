@@ -30,7 +30,18 @@ const price = reactive({
 const showModal = ref(false);
 const editingRows = ref([]);
 
+const confirmZeroCost = async () => {
+    let result = await swal.fire({
+        title: 'Are you sure?',
+        text: 'The Cost Price is used for calculating the product margin, are you sure that you want to enter £0?'
+    });
+
+    return !['cancel', 'backdrop'].includes(result.dismiss);
+};
+
 const savePrice = async () => {
+    if (parseFloat(price.cost) === 0 && !(await confirmZeroCost())) return;
+
     isLoading.value = true;
     if (props.productId) {
         try {
@@ -75,6 +86,8 @@ const deletePrice = async (id) => {
 
 const onRowEditSave = async (event) => {
     let { newData, index } = event;
+
+    if (parseFloat(newData.cost) === 0 && !(await confirmZeroCost())) return;
 
     if (props.productId) {
         try {
@@ -127,11 +140,11 @@ const onRowEditSave = async (event) => {
         </template>
 
         <Column field="code" header="Code" />
-        <Column field="cost" header="Cost">
+        <Column field="cost" header="Cost Price">
             <template #body="{ data, field }">{{ format.GBP(data[field]) }}</template>
             <template #editor="{ data, field }"><InputPrice v-model="data[field]" /></template>
         </Column>
-        <Column field="net" header="Net">
+        <Column field="net" header="Sell Price">
             <template #body="{ data, field }">{{ format.GBP(data[field]) }}</template>
             <template #editor="{ data, field }"><InputPrice v-model="data[field]" /></template>
         </Column>
@@ -140,10 +153,10 @@ const onRowEditSave = async (event) => {
         </Column>
         <Column field="active_spas" header="Active SPA">
             <template #body="slotProps">
-                <p v-for="item in slotProps.data.active_spas" :key="item.id">
+                <template v-for="item in slotProps.data.active_spas" :key="item.id" class="small">
                     {{ item.operation.code }}:
                     {{ item.percentage ? format.decimalPlaces(item.percentage) + '%' : format.GBP(item.value) }}
-                </p>
+                </template>
             </template>
         </Column>
         <Column :rowEditor="true" v-if="hasRole('Super Admin') || can('update price')" style="width: 5%">
@@ -183,11 +196,11 @@ const onRowEditSave = async (event) => {
             <input id="price-code" class="form-control" v-model="price.code" />
         </div>
         <div class="mb-3">
-            <label class="form-label">Cost</label>
+            <label class="form-label">Cost Price</label>
             <InputPrice id="price-cost" v-model="price.cost" />
         </div>
         <div class="mb-3">
-            <label class="form-label">Price</label>
+            <label class="form-label">Sell Price</label>
             <InputPrice id="price-price" v-model="price.net" />
         </div>
 

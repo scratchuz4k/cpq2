@@ -128,15 +128,13 @@ watch(
 
                                         <div class="mb-3">
                                             <label for="product-categories" class="form-label">Category</label>
-                                            <InputSelectMultiple
+                                            <InputSelectCategories
                                                 id="product-categories"
-                                                url="/categories"
-                                                :fields="['name']"
-                                                v-model="categories"
-                                                placeholder="Select a Category"
                                                 :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                                                v-model="categories"
+                                                :select-children="false"
                                             >
-                                            </InputSelectMultiple>
+                                            </InputSelectCategories>
                                         </div>
 
                                         <div class="mb-3">
@@ -239,6 +237,7 @@ watch(
         &:has(.p-toggleswitch-input:hover) {
             .p-toggleswitch-slider {
                 background: var(--color-primary) !important;
+
                 .p-toggleswitch-handle {
                     background: var(--white) !important;
                 }
@@ -255,6 +254,7 @@ watch(
     .p-toggleswitch-slider {
         background: var(--white);
         border-color: var(--color-grey);
+
         .p-toggleswitch-handle {
             background: var(--color-grey) !important;
         }

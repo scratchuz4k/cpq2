@@ -27,12 +27,23 @@ const saveGroup = () => {
     });
 };
 
-const setUserGroup = async (user_id, group_id) => {
-    if (!user_id) {
+const setUserGroup = async (user, group_id) => {
+    if (!user.id) {
         return;
     }
+
+    let userGroups = user.groups.map((group) => group.id);
+
+    if (group_id) {
+        userGroups.push(group_id);
+    } else {
+        userGroups = userGroups.filter((x) => x !== group.id);
+    }
+
     try {
-        await axios.put('/api/users/' + user_id, { group_id: group_id });
+        await axios.put('/api/users/' + user.id, {
+            groups: userGroups
+        });
         user.value = null;
 
         if (group_id) {
@@ -108,19 +119,16 @@ const items = ref([
                     </div>
                 </tab>
                 <tab title="Users">
-                    <form @submit.prevent="setUserGroup(user?.id, group.id)" class="mt-3 d-flex">
+                    <form @submit.prevent="setUserGroup(user, group.id)" class="mt-3 d-flex">
                         <div class="me-3" style="width: 100%">
-                            <label class="form-label">Add Users without a group:</label>
+                            <label class="form-label">Add Users:</label>
                             <InputSelect
                                 id="select-user"
                                 url="/users"
                                 :fields="['name']"
                                 v-model="user"
                                 placeholder="Select a User"
-                                :query="[
-                                    { column: 'groups.id', operator: 'is_null', value: 'null' },
-                                    { column: 'is_active', operator: 'equals', value: 1 }
-                                ]"
+                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                             >
                             </InputSelect>
                         </div>
@@ -153,7 +161,7 @@ const items = ref([
                                     {{ format.date(value) }}
                                 </template>
                                 <template #actions="{ data, value, index }">
-                                    <button class="btn px-2 py-0 mx-1 border-0" @click="setUserGroup(data.id, null)">
+                                    <button class="btn px-2 py-0 mx-1 border-0" @click="setUserGroup(data, null)">
                                         <font-awesome-icon :icon="['fas', 'trash-alt']"></font-awesome-icon>
                                     </button>
                                 </template>

@@ -366,7 +366,7 @@
                     </div>
                     <div class="mb-5">
                         <div class="mobile-price-group-heading mt-3 d-flex justify-content-between align-items-center">
-                            <h3>One off charges</h3>
+                            <h3>One-off charges</h3>
                         </div>
                         <table id="table-one_off" class="table table-dealmaker table-bordered">
                             <!-- Headers -->
@@ -533,7 +533,7 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <p class="small text-start">One Off Total</p>
+                                    <p class="small text-start">One-Off Total</p>
                                 </td>
                                 <td>
                                 </td>

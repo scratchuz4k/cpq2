@@ -9,13 +9,6 @@ class AccountPolicy
 {
     private string $model = 'account';
 
-    private function isAccountManagementRestricted(User $user): bool
-    {
-        $configs = $user->currentTenant->configs ?? [];
-
-        return ! empty($configs['restrict_account_management_is_active']) && $configs['restrict_account_management_is_active'] !== '0';
-    }
-
     public function userCanManageAccount(User $user, Account $account)
     {
         /* bug fix */
@@ -32,7 +25,7 @@ class AccountPolicy
 
     private function hasPermission(User $user, string $action): bool
     {
-        if ($user->can("$action $this->model") && ! $this->isAccountManagementRestricted($user)) {
+        if ($user->can("$action $this->model")) {
             return true;
         }
 

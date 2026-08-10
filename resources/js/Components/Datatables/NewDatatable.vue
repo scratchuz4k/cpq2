@@ -136,6 +136,10 @@ const form = reactive({
     search: null
 });
 
+const shouldOpenUpward = (index) => {
+    return api.items.length > 8 && index >= api.items.length - 2;
+};
+
 const setFilters = () => {
     form.filters = {};
     props.options.columns.forEach((el) => {
@@ -218,6 +222,12 @@ watch(
 );
 
 watch(tableWidth, () => nextTick(updateScrollState));
+
+watch([activeColumnsDropdown, activeSettingsDropdown], () => {
+    if ((activeColumnsDropdown.value || activeSettingsDropdown.value) && activeFilters.value) {
+        activeFilters.value = false;
+    }
+});
 
 const sortBy = (data) => {
     if (!data.isSortable) {
@@ -671,7 +681,11 @@ onUnmounted(() => {
                                 >
                                     <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" />
                                 </button>
-                                <div v-if="activeMenuIndex === index" class="datatable-actions-dropdown">
+                                <div
+                                    v-if="activeMenuIndex === index"
+                                    class="datatable-actions-dropdown"
+                                    :class="{ 'datatable-actions-dropdown-up': shouldOpenUpward(index) }"
+                                >
                                     <template v-if="props.options.allow.update">
                                         <Link
                                             :id="'datatable-btn-' + index + '-edit'"
@@ -826,6 +840,7 @@ onUnmounted(() => {
     justify-content: center;
     min-width: 16px;
     height: 16px;
+    line-height: 16px;
     margin-left: 6px;
     padding: 0 4px;
     border-radius: 999px;
@@ -1019,6 +1034,11 @@ onUnmounted(() => {
     z-index: 100;
     min-width: 160px;
     padding: 4px 0;
+}
+
+.datatable-actions-dropdown-up {
+    top: auto;
+    bottom: 100%;
 }
 
 .datatable-actions-item {
