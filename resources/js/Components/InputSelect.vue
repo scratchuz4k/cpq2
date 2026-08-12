@@ -179,7 +179,7 @@ emitter.on('input-select-refresh' + (props.id ? ':' + props.id : ''), () => {
                 visibility: !showOptions ? 'hidden' : 'visible',
                 height: !showOptions ? '0' : 'auto'
             }"
-            style="z-index: 100"
+            style="z-index: 100; width: max-content; min-width: 100%; white-space: nowrap"
         >
             <IconField v-if="props.filter" class="p-0">
                 <InputIcon v-if="isLoading">

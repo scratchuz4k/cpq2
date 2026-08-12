@@ -16,8 +16,12 @@ class RoleResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
-            'parent' => $this->parent,
+            'parent' => $this->parent ? [
+                ...$this->parent->toArray(),
+                'permissions' => $this->parent->getAllPermissions(),
+            ] : null,
             'permissions' => $this->getAllPermissions(),
+            'descendant_ids' => $this->getDescendantIds(),
         ];
     }
 }

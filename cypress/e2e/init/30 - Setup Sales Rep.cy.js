@@ -23,8 +23,10 @@ describe('Setup Sales Rep.cy', () => {
     });
     it('Creates an Order and checks commission', () => {
         cy.login(user.email, user.password);
-        cy.visit('/quotes/create');
-        cy.get('#link-to-create-account').click();
+        cy.visit('/quotes');
+        cy.get('#settings').click();
+        cy.get('#link-accounts').click();
+        cy.get('#account-create-btn').click();
         cy.get('#account-name').type(account.name);
         cy.get('#account-reference').type(account.ref);
         cy.get('#btn-save-account').click();

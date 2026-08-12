@@ -114,7 +114,7 @@ class Product extends Model
             'product_bundles',
             'product_id',      // pivot key referencing this product (parent)
             'item_id'         // pivot key referencing related products (bundles)
-        );
+        )->withPivot('quantity');
     }
 
     public function prices(): HasMany

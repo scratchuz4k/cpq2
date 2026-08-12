@@ -25,14 +25,28 @@ class RoleCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string',
+            'name' => ['bail', 'required', 'string',
                 Rule::unique('roles')->where('tenant_id', Auth::user()->tenant_id)->where('guard_name', 'web')],
             'parent_id' => [
+                'bail',
                 'required',
                 new TenantExistsRule('roles'),
             ],
             'permissions' => 'array',
             'permissions.*' => 'integer|exists:permissions,id',
+        ];
+    }
+
+    /**
+     * Get the custom validation messages.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'The Name field is required.',
+            'parent_id.required' => 'The Parent field is required.',
         ];
     }
 }

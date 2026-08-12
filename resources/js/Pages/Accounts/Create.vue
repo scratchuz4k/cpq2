@@ -24,8 +24,11 @@ const addContact = () => {
     account.activePanel = account.contacts.length - 1;
 };
 
+const returnTo = new URLSearchParams(window.location.search).get('return_to');
+
 const saveAccount = () => {
-    router.post('/accounts', account, {
+    const url = returnTo ? `/accounts?return_to=${encodeURIComponent(returnTo)}` : '/accounts';
+    router.post(url, account, {
         onSuccess: (page) => {
             notyf.success('Created with Success');
         },
