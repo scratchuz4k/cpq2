@@ -30,17 +30,37 @@ const prices = ref(product.prices);
 const categories = ref(product.categories ?? []);
 const steps = ref(product.steps ?? []);
 
+const expiresAt = computed(() => {
+    if (!product.expires_at) {
+        return null;
+    }
+    return new Date(product.expires_at);
+});
+
+const isExpired = computed(() => {
+    const date = expiresAt.value;
+    if (!date) {
+        return false;
+    }
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return date < today;
+});
+
+const canToggleActive = computed(() => {
+    return !(product.status !== 'Inactive' && isExpired.value);
+});
+
+const notifyExpired = () => {
+    notyf.error('This product could not be activated because the expiration date is in the past.');
+};
+
 const isActiveProxy = computed({
     get: () => product.is_active,
     set: (value) => {
-        const expiresAt = product.expires_at ? new Date(product.expires_at) : null;
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const isPastExpiration = expiresAt && expiresAt < today;
-
-        if (value && product.status !== 'Inactive' && isPastExpiration) {
-            notyf.error('This product could not be activated because the expiration date is in the past.');
-            return; // don't touch product.is_active — stays false
+        if (value && !canToggleActive.value) {
+            notifyExpired();
+            return;
         }
         product.is_active = value;
     }
@@ -135,8 +155,20 @@ watch(
                                     <div class="col-6">
                                         <div class="mb-3 d-flex flex-column">
                                             <label class="form-label" for="active-filter">Status</label>
-                                            <div class="d-flex align-items-center gap-2">
-                                                <ToggleSwitch id="active-filter" v-model="isActiveProxy" />
+                                            <div class="d-flex align-items-center gap-2 position-relative">
+                                                <ToggleSwitch
+                                                    id="active-filter"
+                                                    v-model="isActiveProxy"
+                                                    :disabled="!canToggleActive"
+                                                    style="z-index: 0"
+                                                />
+                                                <button
+                                                    v-if="!canToggleActive"
+                                                    type="button"
+                                                    class="position-absolute top-0 start-0 w-100 h-100 border-0 bg-transparent"
+                                                    @click.prevent="notifyExpired"
+                                                    aria-label="Cannot activate because expiration date is in the past"
+                                                />
                                                 <span class="small">
                                                     {{
                                                         isActiveProxy
@@ -318,6 +350,19 @@ watch(
 
         .p-toggleswitch-handle {
             background: var(--color-grey) !important;
+        }
+    }
+
+    &.p-disabled,
+    &.p-toggleswitch-disabled {
+        .p-toggleswitch-slider {
+            background: var(--white) !important;
+            border-color: var(--color-grey) !important;
+
+            .p-toggleswitch-handle {
+                background: var(--color-grey) !important;
+                opacity: 1 !important;
+            }
         }
     }
 }

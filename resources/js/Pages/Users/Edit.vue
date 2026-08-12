@@ -144,7 +144,7 @@ const items = ref([
                             v-model="form.groups"
                             url="/groups"
                             :fields="['name']"
-                            :placeholder="'Select an Group'"
+                            :placeholder="'Select a Group'"
                             :query="getFilters()"
                         >
                         </InputSelectMultiple>
