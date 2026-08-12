@@ -42,6 +42,15 @@ const getAccount = async () => {
     }
 };
 
+const removeAccountReferenceParam = () => {
+    try {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('account_reference');
+        const newUrl = url.pathname + url.search + url.hash;
+        window.history.replaceState({}, '', newUrl);
+    } catch (e) {}
+};
+
 onMounted(() => {
     isDisabled.value = proxyValue.value.account === null;
 });
@@ -53,6 +62,7 @@ watch(
             isDisabled.value = true;
         } else {
             isDisabled.value = false;
+            removeAccountReferenceParam();
         }
     }
 );
