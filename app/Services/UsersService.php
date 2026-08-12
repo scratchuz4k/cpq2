@@ -27,11 +27,7 @@ class UsersService
         }
 
         if (array_key_exists('groups', $array)) {
-            $groups = $array['groups'];
-
-            if (empty($array['groups'])) {
-                $groups = Auth::user()->groups->pluck('id')->toArray();
-            }
+            $groups = (array) ($array['groups'] ?? []);
 
             $temp = [];
             foreach ($groups as $group) {
@@ -61,11 +57,7 @@ class UsersService
         $user->update($array);
 
         if (array_key_exists('groups', $array)) {
-            $groups = $array['groups'];
-
-            if (empty($array['groups'])) {
-                $groups = Auth::user()->groups->pluck('id')->toArray();
-            }
+            $groups = (array) ($array['groups'] ?? []);
 
             $temp = [];
             foreach ($groups as $group) {
