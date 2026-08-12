@@ -19,7 +19,7 @@
                 <div class="d-flex align-items-start justify-content-end gap-1 flex-shrink-0 h-100">
                     <button class="btn btn-sm text-primary" @click="clearFilters">
                         <FontAwesomeIcon :icon="['fas', 'arrow-rotate-left']"></FontAwesomeIcon>
-                        Reset
+                        Reset All
                     </button>
                     <button
                         v-if="filterComponent.filter((f) => f.show).length > 4"

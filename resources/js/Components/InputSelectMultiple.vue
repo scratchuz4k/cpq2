@@ -30,13 +30,15 @@ const props = defineProps({
 });
 
 const meta = reactive({
-    total_pages: 0
+    total_pages: 0,
+    total: 0
 });
 
 const emit = defineEmits(['update:modelValue', 'change']);
 const page = ref(1);
 const options = ref([]);
 const isLoading = ref(false);
+const isSelectingAll = ref(false);
 const showOptions = ref(false);
 const inputSearch = ref(null);
 
@@ -70,9 +72,41 @@ const search = _.debounce(async (clearOptions = false) => {
         options.value = [];
     }
     meta.total_pages = res.data.meta?.last_page ?? res.data.last_page;
+    meta.total = res.data.meta?.total ?? res.data.total ?? options.value.length;
     options.value.push(...res.data.data);
     isLoading.value = false;
 }, 200);
+
+const selectAll = async (e) => {
+    e.stopPropagation();
+    if (!props.url || isSelectingAll.value) return;
+
+    const columns = Array.isArray(props.fields) ? props.fields.filter(Boolean).join(',') : props.fields;
+    const queryParams = {
+        filters: props.query,
+        all: 1,
+        search: inputSearch.value
+    };
+
+    if (columns) {
+        queryParams.columns = columns;
+    }
+
+    let string = queryString.stringify(queryParams);
+
+    isSelectingAll.value = true;
+    try {
+        let res = await axios.get(`/api${props.url}?${string}`);
+        let allMatching = res.data.data ?? res.data;
+        allMatching.forEach((option) => {
+            if (!isSelected(option)) {
+                proxyValue.value.push(option);
+            }
+        });
+    } finally {
+        isSelectingAll.value = false;
+    }
+};
 
 onMounted(() => {
     var sidebar = document.getElementById(props.id + '-sidebar');
@@ -158,8 +192,15 @@ search();
                 visibility: !showOptions ? 'hidden' : 'visible',
                 height: !showOptions ? '0' : 'auto'
             }"
-            style="z-index: 100"
+            style="z-index: 100; width: max-content; min-width: 100%; white-space: nowrap"
         >
+            <div class="select-all d-flex align-items-center justify-content-between mb-1 px-1" v-if="options.length">
+                <button type="button" class="select-all-action small" @click.stop="selectAll">
+                    <font-awesome-icon v-if="isSelectingAll" :icon="['fa', 'spinner']" class="fa-spin me-1" />
+                    Select all<template v-if="meta.total"> ({{ meta.total }})</template>
+                </button>
+                <button type="button" class="select-all-action small" @click.stop="clear">Clear</button>
+            </div>
             <IconField v-if="props.filter" class="p-0">
                 <InputIcon v-if="isLoading">
                     <font-awesome-icon :icon="['fa', 'spinner']" class="fa-spin"></font-awesome-icon>
@@ -177,6 +218,7 @@ search();
                 >
                 </InputText>
             </IconField>
+
             <div :id="props.id + '-sidebar'" class="options-container mt-2" style="max-height: 300px; overflow-y: auto">
                 <div class="px-2 py-1" v-if="!options.length">
                     <p class="ps-1 small">No available options</p>
@@ -240,6 +282,30 @@ search();
 
 .option:hover {
     background-color: var(--color-purple-light);
+}
+
+.select-all {
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-purple);
+}
+
+.select-all-action {
+    background: none;
+    border: none;
+    padding: 0;
+    font-weight: 600;
+    color: var(--color-purple);
+}
+
+.select-all-action.text-muted {
+    color: #6c757d;
+}
+
+.select-all-action:hover {
+    text-decoration: underline;
 }
 
 .badge {
