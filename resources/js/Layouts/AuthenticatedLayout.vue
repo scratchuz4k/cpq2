@@ -1,6 +1,6 @@
 <script setup>
 import { usePage } from '@inertiajs/vue3';
-import { Comment, computed, onMounted, ref, useSlots } from 'vue';
+import { Comment, computed, onBeforeUnmount, onMounted, ref, useSlots } from 'vue';
 import TopBarSearchable from '@/Components/TopBarSearchable.vue';
 import Resources from '@/Components/Resources.vue';
 import { can, hasRole } from '@/Composables/useAuth.js';
@@ -14,8 +14,12 @@ import UserFeedback from '@/Components/UserFeedback.vue';
 const page = usePage();
 
 const user = page.props.auth.user;
-const links = page.props.customization.header;
+const links = ref(page.props.customization?.header ?? []);
 const feedbackAvailable = !!Sentry.getFeedback();
+
+const updateHeaderLinks = (updatedLinks) => {
+    links.value = updatedLinks ?? [];
+};
 
 Sentry.setUser({
     fullName: user.name,
@@ -61,6 +65,12 @@ onMounted(() => {
     if (page.props.flash?.status) {
         notyf.success(page.props.flash.status);
     }
+});
+
+emitter.on('customization:header-updated', updateHeaderLinks);
+
+onBeforeUnmount(() => {
+    emitter.off('customization:header-updated', updateHeaderLinks);
 });
 </script>
 
