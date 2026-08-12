@@ -18,11 +18,9 @@ class QuoteItemService
         $data = is_array($array['data'] ?? null) ? $array['data'] : [];
 
         if (! empty($array['product_id']) && ($data['type'] ?? null) === 'main_product') {
-            $product = Product::find($array['product_id']);
-            if ($product->bundlesChildren->count() > 0) {
-                $data['bundle_items'] = $product->bundlesChildren
-                    ->map(fn ($bundle) => ['product_id' => $bundle->id, 'name' => $bundle->name, 'quantity' => 1])
-                    ->toArray();
+            $bundleItems = $this->resolveBundleItems($array['product_id'], $array['quantity'] ?? 1);
+            if ($bundleItems) {
+                $data['bundle_items'] = $bundleItems;
             }
         }
 
@@ -37,10 +35,42 @@ class QuoteItemService
 
     public function update(QuoteItem $quoteItem, array $array): QuoteItem
     {
+        if (
+            array_key_exists('quantity', $array)
+            && $quoteItem->product_id
+            && ($quoteItem->data?->type ?? null) === 'main_product'
+        ) {
+            $bundleItems = $this->resolveBundleItems($quoteItem->product_id, $array['quantity']);
+            if ($bundleItems) {
+                $array['data'] = [...(array) $quoteItem->data, 'bundle_items' => $bundleItems];
+            }
+        }
+
         $quoteItem->update($array);
 
         $quoteItem->computeTotals();
 
         return $quoteItem;
+    }
+
+    /**
+     * Build the bundle_items metadata for a main product, scaling each bundled
+     * item's quantity by the number of the parent product being added.
+     */
+    private function resolveBundleItems(int $productId, int $quantity): array
+    {
+        $product = Product::find($productId);
+
+        if (! $product || $product->bundlesChildren->count() === 0) {
+            return [];
+        }
+
+        return $product->bundlesChildren
+            ->map(fn ($bundle) => [
+                'product_id' => $bundle->id,
+                'name' => $bundle->name,
+                'quantity' => ($bundle->pivot->quantity ?? 1) * $quantity,
+            ])
+            ->toArray();
     }
 }

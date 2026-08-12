@@ -56,8 +56,9 @@
                 <thead>
                     <tr class="relation-table-header">
                         <th style="background-color: lightgray"></th>
-                        <th>SKU</th>
                         <th>Name</th>
+                        <th v-if="props.withQuantity">Quantity</th>
+                        <th>SKU</th>
                         <th>Description</th>
                         <th>Categories</th>
                         <th>Steps</th>
@@ -81,10 +82,23 @@
                             />
                         </td>
                         <td>
-                            <p class="small">{{ product.sku }}</p>
+                            <p class="small">{{ product.name }}</p>
+                        </td>
+                        <td v-if="props.withQuantity">
+                            <input
+                                :id="props.id + '-quantity-' + index"
+                                type="number"
+                                min="1"
+                                class="form-control form-control-sm text-center"
+                                style="width: 70px"
+                                v-model="quantities[product.id]"
+                                @keydown="integerOnly"
+                                @input="checkValue"
+                                @click.stop
+                            />
                         </td>
                         <td>
-                            <p class="small">{{ product.name }}</p>
+                            <p class="small">{{ product.sku }}</p>
                         </td>
                         <td>
                             <p class="small">{{ product.description }}</p>
@@ -198,6 +212,7 @@ import Paginator from 'primevue/paginator';
 import Dialog from 'primevue/dialog';
 import { ref, reactive, watch } from 'vue';
 import { Api, FilterOperators } from '../../Composables/useApi';
+import { checkValue, integerOnly } from '@/Composables/input.js';
 import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -213,6 +228,10 @@ const props = defineProps({
     column: String,
     queries: Function,
     warningMessage: String,
+    withQuantity: {
+        type: Boolean,
+        default: false
+    },
     isRowDisabled: {
         type: Function,
         default: () => false
@@ -232,6 +251,18 @@ const search = reactive({
 });
 
 const api = reactive(new Api('products'));
+const quantities = reactive({});
+
+watch(
+    () => api.items,
+    (items) => {
+        items.forEach((item) => {
+            if (quantities[item.id] === undefined) {
+                quantities[item.id] = 1;
+            }
+        });
+    }
+);
 
 const getData = _.debounce(async () => {
     api.clearFilters();
@@ -288,6 +319,10 @@ const addProducts = async () => {
                 product_id: props.product.id,
                 [props.column]: item.id
             };
+
+            if (props.withQuantity) {
+                body.quantity = quantities[item.id] ?? 1;
+            }
 
             await axios.post('/api/' + props.route, body);
         } catch (ex) {

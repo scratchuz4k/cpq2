@@ -13,6 +13,7 @@ class ProductBundle extends Model
     protected $fillable = [
         'product_id',
         'item_id',
+        'quantity',
     ];
 
     protected static function booted(): void
