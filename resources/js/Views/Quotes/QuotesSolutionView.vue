@@ -241,6 +241,12 @@ watch(addressPostCode, () => {
                     <font-awesome-icon :icon="['fas', 'map-pin']" class="me-2"></font-awesome-icon
                     >{{ modelValue.position?.lat }}, {{ modelValue.position?.lon }}
                 </p>
+                <p v-if="modelValue.address.uprn" class="small" id="location_uprn">
+                    <strong>UPRN:</strong> {{ modelValue.address.uprn }}
+                </p>
+                <p v-else-if="modelValue.address.addressKey" class="small" id="location_addresskey">
+                    <strong>Address Key:</strong> {{ modelValue.address.addressKey }}
+                </p>
                 <p><i class="fa fa-location-dot"></i> <span id="location_geo"></span></p>
                 <iframe
                     v-if="modelValue.position"
