@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref, watch } from 'vue';
+import { reactive, ref, watch, computed } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { DatePicker, ToggleSwitch, Select, RadioButton, InputNumber } from 'primevue';
@@ -26,10 +26,45 @@ const price = reactive({
     product_id: product.id
 });
 
-const showModal = ref(false);
 const prices = ref(product.prices);
 const categories = ref(product.categories ?? []);
 const steps = ref(product.steps ?? []);
+
+const expiresAt = computed(() => {
+    if (!product.expires_at) {
+        return null;
+    }
+    return new Date(product.expires_at);
+});
+
+const isExpired = computed(() => {
+    const date = expiresAt.value;
+    if (!date) {
+        return false;
+    }
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return date < today;
+});
+
+const canToggleActive = computed(() => {
+    return !(product.status !== 'Inactive' && isExpired.value);
+});
+
+const notifyExpired = () => {
+    notyf.error('This product could not be activated because the expiration date is in the past.');
+};
+
+const isActiveProxy = computed({
+    get: () => product.is_active,
+    set: (value) => {
+        if (value && !canToggleActive.value) {
+            notifyExpired();
+            return;
+        }
+        product.is_active = value;
+    }
+});
 
 const saveProduct = () => {
     let temp = {
@@ -120,11 +155,29 @@ watch(
                                     <div class="col-6">
                                         <div class="mb-3 d-flex flex-column">
                                             <label class="form-label" for="active-filter">Status</label>
-                                            <div class="d-flex align-items-center gap-2">
-                                                <ToggleSwitch id="active-filter" v-model="product.is_active" />
-                                                <span class="small">{{
-                                                    product.is_active ? 'Active' : 'Inactive'
-                                                }}</span>
+                                            <div class="d-flex align-items-center gap-2 position-relative">
+                                                <ToggleSwitch
+                                                    id="active-filter"
+                                                    v-model="isActiveProxy"
+                                                    :disabled="!canToggleActive"
+                                                    style="z-index: 0"
+                                                />
+                                                <button
+                                                    v-if="!canToggleActive"
+                                                    type="button"
+                                                    class="position-absolute top-0 start-0 w-100 h-100 border-0 bg-transparent"
+                                                    @click.prevent="notifyExpired"
+                                                    aria-label="Cannot activate because expiration date is in the past"
+                                                />
+                                                <span class="small">
+                                                    {{
+                                                        isActiveProxy
+                                                            ? 'Active'
+                                                            : product.status === 'Retired'
+                                                              ? 'Retired'
+                                                              : 'Inactive'
+                                                    }}
+                                                </span>
                                             </div>
                                         </div>
                                         <div class="mb-3">
@@ -277,6 +330,7 @@ watch(
         &:has(.p-toggleswitch-input:hover) {
             .p-toggleswitch-slider {
                 background: var(--color-primary) !important;
+
                 .p-toggleswitch-handle {
                     background: var(--white) !important;
                 }
@@ -293,8 +347,22 @@ watch(
     .p-toggleswitch-slider {
         background: var(--white);
         border-color: var(--color-grey);
+
         .p-toggleswitch-handle {
             background: var(--color-grey) !important;
+        }
+    }
+
+    &.p-disabled,
+    &.p-toggleswitch-disabled {
+        .p-toggleswitch-slider {
+            background: var(--white) !important;
+            border-color: var(--color-grey) !important;
+
+            .p-toggleswitch-handle {
+                background: var(--color-grey) !important;
+                opacity: 1 !important;
+            }
         }
     }
 }

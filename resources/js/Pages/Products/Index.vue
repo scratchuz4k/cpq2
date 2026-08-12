@@ -9,12 +9,16 @@ const props = defineProps({
     solution_types: {
         type: Array,
         default: []
+    },
+    statuses: {
+        type: Array,
+        default: []
     }
 });
 
 const options = new DatatableOptions('products', 'products-table');
 options.addColumn('name', 'Name', { isSticky: true });
-options.addColumn('sku', 'SKU', { isSticky: true });
+options.addColumn('sku', 'SKU');
 options.addColumn('status', 'Status');
 options.addColumn('description', 'Description');
 options.addColumn('categories.name', 'Categories', { isSortable: false });
@@ -40,6 +44,9 @@ options.addColumnFilter(
     'select',
     props.solution_types.map((x) => x.name)
 );
+
+options.addColumnFilter('status', 'select', props.statuses);
+
 options.setAllowedActions({
     update: true,
     destroy: true,

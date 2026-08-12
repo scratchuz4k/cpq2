@@ -42,6 +42,10 @@ class CloudMarketApi
             $params['IsManaged'] = $product->data->isManaged ? 'true' : 'false';
         }
 
+        if ($product->data?->connectivityType !== null) {
+            $params['ConnectivityType'] = $product->data->connectivityType;
+        }
+
         Log::debug('CloudMarketApi::getFailover lookup:', $params);
 
         return self::makeRequest('/PartnerQuoteService/GetFailover', array_merge($params, $credentials));
@@ -64,6 +68,10 @@ class CloudMarketApi
 
         if ($product->data?->isManaged !== null) {
             $params['IsManaged'] = $product->data->isManaged ? 'true' : 'false';
+        }
+
+        if ($product->data?->connectivityType !== null) {
+            $params['ConnectivityType'] = $product->data->connectivityType;
         }
 
         Log::debug('CloudMarketApi::getAddons lookup:', $params);
@@ -94,6 +102,10 @@ class CloudMarketApi
             $params['IsManaged'] = $product->data->isManaged ? 'true' : 'false';
         }
 
+        if ($product->data?->connectivityType !== null) {
+            $params['ConnectivityType'] = $product->data->connectivityType;
+        }
+
         Log::debug('CloudMarketApi::getOptions lookup:', $params);
 
         return self::makeRequest('/PartnerQuoteService/GetOptions', array_merge($params, $credentials));
@@ -120,6 +132,10 @@ class CloudMarketApi
 
         if ($product->data?->isManaged !== null) {
             $params['IsManaged'] = $product->data->isManaged ? 'true' : 'false';
+        }
+
+        if ($product->data?->connectivityType !== null) {
+            $params['ConnectivityType'] = $product->data->connectivityType;
         }
 
         Log::debug('CloudMarketApi::getAssignments lookup:', $params);

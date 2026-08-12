@@ -39,7 +39,7 @@ class BlacklistCreateRequest extends FormRequest
 
         return [
             'productName' => 'nullable',
-            'providerName' => 'nullable',
+            'providerKey' => 'nullable',
             'connectivitySupplierGroup' => 'nullable',
 
             'bearer.operator' => 'nullable|required_with:bearer.value,bearer.unit',

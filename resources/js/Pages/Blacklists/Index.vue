@@ -35,7 +35,7 @@ const items = ref([
                     :columns="[
                         { data: 'is_active', title: 'Active', style: 'width:5%' },
                         { data: 'productName', title: 'Name', style: 'width:10%' },
-                        { data: 'providerName', title: 'Provider', style: 'width:5%' },
+                        { data: 'providerKey', title: 'Provider', style: 'width:5%' },
                         { data: 'connectivitySupplierGroup', title: 'Subprovider', style: 'width:5%' },
                         { data: 'bearer', title: 'Bearer', style: 'width:5%' },
                         { data: 'speed', title: 'Speed', style: 'width:5%' },

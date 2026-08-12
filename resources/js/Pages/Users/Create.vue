@@ -6,26 +6,44 @@ import { Head, router, usePage } from '@inertiajs/vue3';
 import { integerOnly, checkValue } from '@/Composables/input.js';
 import InputSelect from '@/Components/InputSelect.vue';
 import ToggleSwitch from 'primevue/toggleswitch';
+import InputSelectMultiple from '@/Components/InputSelectMultiple.vue';
 
 const page = usePage();
 
 const props = defineProps({
     roles: Object
 });
-
+const authUser = page.props.auth.user;
 const form = reactive({
     name: null,
     email: null,
     password: null,
     role: null,
     role_id: null,
+    groups: authUser.groups ? [...authUser.groups] : [],
     commission_rate: 0,
     sso: false,
     is_active: true
 });
 
+const getFilters = () => {
+    let filters = [];
+
+    if (authUser.groups.length) {
+        filters.push({
+            column: 'id',
+            operator: 'in',
+            value: authUser.groups.map((item) => item.id)
+        });
+    }
+
+    return filters;
+};
+
 const saveUser = () => {
     form.role_id = form.role?.id;
+    form.groups = form.groups.map((group) => group.id);
+
     router.post(
         `/users`,
         {
@@ -108,6 +126,28 @@ const items = ref([
                         :placeholder="'Select an Role'"
                     >
                     </InputSelect>
+                </div>
+                <div class="mb-3">
+                    <label for="user-group" class="form-label">Groups:</label>
+                    <p class="mb-3 small">
+                        If you're user account <b>is</b> assigned to any groups, these are selected below by default.
+                        You may remove these groups, but you can only assign groups that you belong to. If all groups
+                        are removed, the new user will inherit all of your groups.
+                    </p>
+
+                    <p class="mb-3 small">
+                        If you're user account <b>is not</b> assigned to any groups, no groups are selected by default.
+                        You can choose any group(s) for the new user.
+                    </p>
+                    <InputSelectMultiple
+                        id="user-group"
+                        v-model="form.groups"
+                        url="/groups"
+                        :fields="['name']"
+                        :placeholder="'Select a Group'"
+                        :query="getFilters()"
+                    >
+                    </InputSelectMultiple>
                 </div>
                 <div class="mb-3">
                     <label for="user-commission-rate" class="form-label">Commission Rate:</label>

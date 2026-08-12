@@ -30,6 +30,7 @@ export class Api {
     search = null;
     route = null;
     meta = null;
+    params = {};
 
     /**
      *
@@ -88,6 +89,15 @@ export class Api {
     }
 
     /**
+     * Sets extra top-level request params that aren't part of the generic filters array
+     * (e.g. quote_id, account_id, clear_cache)
+     * @param {object} params
+     */
+    setParams(params) {
+        this.params = params ?? {};
+    }
+
+    /**
      * Adds columns to the columns array to be sent to the backend as a searchable column
      * @param {array} columns
      */
@@ -131,6 +141,7 @@ export class Api {
 
         this.isLoading.value = true;
         let object = {
+            ...this.params,
             order: this.order,
             orderBy: this.orderBy,
             limit: this.meta.limit,
@@ -154,10 +165,15 @@ export class Api {
             let res = await axios.get('/api/' + this.route + '?' + qs.stringify(object), {
                 signal: this._abortController.signal
             });
+
             this.meta.total = res.data.meta?.total ?? res.data.total;
+            this.meta.overall_total = res.data.meta?.overall_total ?? res.data.overall_total;
             this.meta.last_page = res.data.meta?.last_page ?? res.data.last_page ?? 1;
             this.meta.links = res.data.meta?.links ?? res.data.links ?? [];
             this.meta.first = (this.meta.page - 1) * this.meta.limit;
+            this.meta.filters = res.data.meta?.filters ?? res.data.filters ?? {};
+            this.meta.errors = res.data.meta?.errors ?? res.data.errors ?? [];
+            this.meta.is_request_completed = !!res.data.finished_at;
             this.items.value = res.data.data;
             this.isLoading.value = false;
         } catch (ex) {
@@ -165,7 +181,8 @@ export class Api {
                 return;
             }
             this.isLoading.value = false;
-            notyf.error(ex.response.data.message);
+            this.meta.is_request_completed = true;
+            notyf.error(ex.response?.data?.message ?? 'Something went wrong while loading data.');
         }
     };
 
@@ -181,8 +198,12 @@ class ApiMeta {
         this.limit = 10;
         this.page = 1;
         this.total = 0;
+        this.overall_total = 0;
         this.first = 1;
         this.last_page = 1;
         this.links = [];
+        this.filters = {};
+        this.errors = [];
+        this.is_request_completed = false;
     }
 }

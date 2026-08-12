@@ -79,7 +79,7 @@ const format = {
     speed: (value) => {
         let temp = value ?? 0;
         let number = temp;
-        let suffix = 'Mb';
+        let suffix = 'Mbps';
 
         if (temp < 100) {
             number = Math.floor(temp / 10) * 10;
@@ -87,7 +87,7 @@ const format = {
             number = Math.floor(temp / 100) * 100;
         } else {
             number = temp / 1000;
-            suffix = 'Gb';
+            suffix = 'Gbps';
             number = Math.round(number * 10) / 10;
         }
 
@@ -182,6 +182,19 @@ const format = {
         const digits = number.replace(/\D/g, '');
         const withoutLeadingZero = digits.startsWith('0') ? digits.slice(1) : digits;
         return `+44 (0)${withoutLeadingZero}`;
+    },
+    productName: (rawName) => {
+        if (!rawName?.includes('with router:')) {
+            return { name: rawName, router: null };
+        }
+
+        const [name, routerPart] = rawName.split('with router:');
+        const router = routerPart?.trim();
+
+        return {
+            name: name.trim(),
+            router: router && router !== 'n/a' ? router : null
+        };
     }
 };
 

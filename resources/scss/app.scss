@@ -662,12 +662,7 @@ body {
 
     #filters {
         font-size: 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
         padding: 30px 15px 30px 15px;
-        overflow-x: hidden;
-        overflow-y: hidden;
 
         .slider-wrapper {
             label {
@@ -1008,6 +1003,11 @@ body {
 
         .p-select-dropdown {
             color: var(--color-black);
+        }
+    }
+    select {
+        &:disabled {
+            cursor: not-allowed;
         }
     }
 }
@@ -1407,6 +1407,22 @@ body {
     &.p-toggleswitch-checked {
         .p-toggleswitch-slider {
             background: var(--color-purple-light) !important;
+        }
+    }
+
+    &.p-disabled {
+        .p-toggleswitch-input {
+            pointer-events: auto;
+            cursor: not-allowed !important;
+        }
+
+        .p-toggleswitch-slider {
+            background: var(--disabled-bg-grey) !important;
+
+            .p-toggleswitch-handle {
+                background: var(--white) !important;
+                opacity: 0.5 !important;
+            }
         }
     }
 }
