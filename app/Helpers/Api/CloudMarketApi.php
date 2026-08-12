@@ -263,12 +263,23 @@ class CloudMarketApi
             'Address1.Street' => $address->street,
             'Address1.Town' => $address->town,
             'ManagedOption' => 0,
-            'TermMonths' => ! empty($quote->configs['contract_length']) ? explode(',', (string) $quote->configs['contract_length']) : [],
-            'ConnectionSpeeds.MinBearer' => is_numeric($quote->configs['bearer'] ?? null) ? (int) $quote->configs['bearer'] : 100,
-            'ConnectionSpeeds.MaxBearer' => 100000,
-            'ConnectionSpeeds.MinSpeed' => is_numeric($quote->configs['speed'] ?? null) ? (int) $quote->configs['speed'] : 10,
-            'ConnectionSpeeds.MaxSpeed' => 100000,
+            'TermMonths' => ! empty($quote->configs['contract_length']) ? explode(',', (string) $quote->configs['contract_length']) : []
         ];
+
+        $connectionSpeeds = [];
+        if (isset($quote->configs['bearer']) && is_numeric($quote->configs['bearer'])) {
+            $connectionSpeeds['ConnectionSpeeds.MinBearer'] = (int) $quote->configs['bearer'];
+            $connectionSpeeds['ConnectionSpeeds.MaxBearer'] = 100000;
+        }
+
+        if (isset($quote->configs['speed']) && is_numeric($quote->configs['speed'])) {
+            $connectionSpeeds['ConnectionSpeeds.MinSpeed'] = (int) $quote->configs['speed'];
+            $connectionSpeeds['ConnectionSpeeds.MaxSpeed'] = 100000;
+        }
+
+        if (! empty($connectionSpeeds)) {
+            $quoteAddress = array_merge($quoteAddress, $connectionSpeeds);
+        }
 
         if (! in_array(config('app.env'), ['local', 'testing'], true)) {
             $quoteAddress = array_merge(['RequestId' => $quote->uuid], $quoteAddress);
