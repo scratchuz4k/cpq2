@@ -31,7 +31,7 @@ const saveRole = () => {
         },
         {
             onSuccess: (page) => {
-                notyf.success('Created with Success');
+                notyf.success('Updated with Success');
             },
             onError: (errors) => {
                 let string = '';
@@ -43,6 +43,32 @@ const saveRole = () => {
         }
     );
 };
+const onParentChange = async (newParent) => {
+    let text = newParent
+        ? 'Updating the parent may change the permissions available for this role'
+        : 'Removing the parent will clear any selected permissions for this role';
+
+    let result = await swal.fire({
+        title: 'Are you sure?',
+        text
+    });
+
+    if (['cancel', 'backdrop'].includes(result.dismiss)) {
+        return;
+    }
+
+    form.parent = newParent;
+    form.parent_id = newParent ? newParent.id : null;
+
+    if (!newParent) {
+        form.temp_permissions = [];
+        return;
+    }
+
+    let allowedIds = new Set((newParent.permissions ?? []).map((x) => x.id));
+    form.temp_permissions = form.temp_permissions.filter((x) => allowedIds.has(x.id));
+};
+
 const addPerms = (group) => {
     group.permissions.forEach((name) => {
         let index = form.temp_permissions.find((x) => x.name == name);
@@ -104,10 +130,18 @@ const items = ref([
                             <InputSelect
                                 :disabled="!roleHasParent"
                                 id="account_id"
-                                v-model="form.parent"
+                                :modelValue="form.parent"
+                                @update:modelValue="onParentChange"
                                 url="/roles"
                                 :fields="['name']"
                                 :placeholder="'Select an Role'"
+                                :query="[
+                                    {
+                                        column: 'id',
+                                        operator: 'not_in',
+                                        value: [props.role.id, ...props.role.descendant_ids]
+                                    }
+                                ]"
                             >
                             </InputSelect></div
                     ></Panel>
@@ -119,7 +153,11 @@ const items = ref([
                 </div>
             </div>
             <Panel class="mt-4" header="Permissions" :toggleable="true">
-                <PermissionsTree v-model="form.temp_permissions"></PermissionsTree>
+                <PermissionsTree
+                    v-model="form.temp_permissions"
+                    :parent-permissions="form.parent?.permissions ?? null"
+                    :unrestricted="!roleHasParent"
+                ></PermissionsTree>
             </Panel>
         </div>
     </AuthenticatedLayout>

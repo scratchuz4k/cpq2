@@ -34,6 +34,18 @@ const saveRole = () => {
     });
 };
 
+watch(
+    () => form.parent,
+    (newParent) => {
+        if (!newParent) {
+            form.temp_permissions = [];
+            return;
+        }
+        let allowedIds = new Set((newParent.permissions ?? []).map((x) => x.id));
+        form.temp_permissions = form.temp_permissions.filter((x) => allowedIds.has(x.id));
+    }
+);
+
 const addPerms = (group) => {
     group.permissions.forEach((name) => {
         let index = form.temp_permissions.find((x) => x.name == name);
@@ -105,7 +117,10 @@ const items = ref([
                 </div>
             </div>
             <Panel class="mt-4" header="Permissions" :toggleable="true">
-                <PermissionsTree v-model="form.temp_permissions"></PermissionsTree>
+                <PermissionsTree
+                    v-model="form.temp_permissions"
+                    :parent-permissions="form.parent?.permissions ?? null"
+                ></PermissionsTree>
             </Panel>
         </div>
     </AuthenticatedLayout>
