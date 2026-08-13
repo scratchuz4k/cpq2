@@ -157,6 +157,7 @@ class CloudMarketApi
             'addOns' => self::saveAddons($quote),
             'customerName' => str_pad($quote->account->name, 5, '_'),
             'customReference' => str_pad($quote->account->reference, 5, '_'),
+            'isManaged' => $product->data?->isManaged ?? null,
         ];
 
         if (is_array($quote->data) && isset($quote->data['quoteReference'])) {

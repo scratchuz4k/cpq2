@@ -3,8 +3,6 @@ import { ref } from 'vue';
 import { setQuote, quote } from '@composables/useQuote';
 import { getMarginThreshHoldWarning } from '@composables/useQuoteItem';
 import { usePage } from '@inertiajs/vue3';
-import WarningNote from '@/Components/WarningNote.vue';
-import { checkWarnings } from '@composables/warning.js';
 import format from '@/Composables/format.js';
 import { can, hasRole } from '@composables/useAuth';
 
@@ -21,12 +19,6 @@ const user = page.props.auth.user;
 setQuote(props.modelValue);
 
 const calc_layout = JSON.parse(tenant.configurations?.calculator_layout ?? '[]');
-
-const warningProviders = ref([
-    { name: 'pxc', is_present: quote.items.some((item) => item.data?.providerName === 'PXC') }
-]);
-
-checkWarnings(warningProviders.value, null);
 
 const items = ref([
     { label: 'Home', url: '/' },
@@ -53,13 +45,9 @@ const items = ref([
                     </template>
                 </Header>
                 <ContactInfo />
-                <div
-                    class="row"
-                    v-if="warningProviders.find((x) => x.is_present) || quote.items.some((x) => !x.is_margin_valid)"
-                >
+                <div class="row" v-if="quote.items.some((x) => !x.is_margin_valid)">
                     <div class="col">
                         <InfoBox class="mb-4 py-0" severity="danger">
-                            <WarningNote :warnings="warningProviders" />
                             <p v-if="quote.items.some((x) => !x.is_margin_valid)" class="small">
                                 {{ getMarginThreshHoldWarning() }}
                             </p>

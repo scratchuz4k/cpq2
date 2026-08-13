@@ -32,7 +32,7 @@ const props = defineProps({
 });
 
 const hasProduct = () => {
-    return quote.items && quote.items.find((x) => x.data.type == props.productType);
+    return Array.isArray(quote.items) && quote.items.some((x) => x?.data?.type == props.productType);
 };
 
 const showLoadingModal = ref(false);
@@ -297,9 +297,13 @@ const getFreshData = async () => {
     clearCache.value = false;
 };
 
-onMounted(() => {
-    showLoadingModal.value = hasProduct() ? false : true;
-});
+watch(
+    [() => quote.items, () => meta.isRequestCompleted],
+    () => {
+        showLoadingModal.value = hasProduct() ? false : !meta.isRequestCompleted;
+    },
+    { deep: true, immediate: true }
+);
 
 emitter.on(`${props.productType.split(' ')[0].toLowerCase()}-product:removed`, () => tableRef.value?.getData());
 </script>

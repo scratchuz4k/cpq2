@@ -3,7 +3,6 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { setQuote, quote } from '@composables/useQuote';
-import { checkWarnings } from '@composables/warning.js';
 import { actionBarButtons } from '@composables/useQuoteSteps';
 
 const props = defineProps({
@@ -12,12 +11,6 @@ const props = defineProps({
 });
 
 setQuote(props.quote);
-
-const warningProviders = ref([
-    { name: 'pxc', is_present: quote.items.some((item) => item.data?.providerName === 'PXC') }
-]);
-
-//checkWarnings(warningProviders.value, null);
 
 const items = ref([
     { label: 'Home', url: '/dashboard' },
@@ -72,10 +65,7 @@ const items = ref([
                 </a>
             </div>
             <div class="right">
-                <a
-                    @click="checkWarnings(warningProviders, route('quotes.download', { quote: quote.uuid }))"
-                    class="btn btn-secondary ms-2"
-                >
+                <a :href="route('quotes.download', { quote: quote.uuid })" class="btn btn-secondary ms-2">
                     <font-awesome-icon :icon="['fas', 'file-pdf']"></font-awesome-icon>
                     Download PDF
                 </a>

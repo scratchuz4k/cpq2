@@ -81,7 +81,7 @@ class ProductController extends BaseController
         $quote->update(['data' => $data]);
         $product = $this->getProduct($quote, 'Primary Product');
 
-        if (! $product || $product->data?->providerName !== 'ITS') {
+        if (! $product || ($product->data?->providerName !== 'ITS' && $product->data?->providerName !== 'PXC')) {
             return;
         }
 
