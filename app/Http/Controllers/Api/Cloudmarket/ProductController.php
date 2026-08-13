@@ -187,8 +187,8 @@ class ProductController extends BaseController
         $apiCodes = $apiRecords->pluck('code')->sort()->implode('');
 
         $configs = '';
-        $configs .= 'speed:'.(array_key_exists('speed', $quote->configs) ? $quote->configs['speed'] : '10');
-        $configs .= 'bearer:'.(array_key_exists('bearer', $quote->configs) ? $quote->configs['bearer'] : '100');
+        $configs .= 'speed:'.(array_key_exists('speed', $quote->configs) ? $quote->configs['speed'] : '0');
+        $configs .= 'bearer:'.(array_key_exists('bearer', $quote->configs) ? $quote->configs['bearer'] : '0');
         $configs .= 'contract_length:'.(array_key_exists('contract_length', $quote->configs) ? $quote->configs['contract_length'] : '0');
 
         $filename = $address->toString().'_'.md5($apiCodes.$configs);
