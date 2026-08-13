@@ -32,6 +32,11 @@ const getAccount = async () => {
                 column: 'reference',
                 operator: 'equals',
                 value: account_reference
+            },
+            {
+                column: 'is_active',
+                operator: 'equals',
+                value: 1
             }
         ]
     });
@@ -39,7 +44,20 @@ const getAccount = async () => {
     const res = await axios.get('/api/accounts' + '?' + string);
     if (res.data.data.length) {
         proxyValue.value.account = res.data.data[0];
+        return;
     }
+
+    proxyValue.value.account = null;
+    removeAccountReferenceParam();
+};
+
+const removeAccountReferenceParam = () => {
+    try {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('account_reference');
+        const newUrl = url.pathname + url.search + url.hash;
+        window.history.replaceState({}, '', newUrl);
+    } catch (e) {}
 };
 
 onMounted(() => {
@@ -53,6 +71,7 @@ watch(
             isDisabled.value = true;
         } else {
             isDisabled.value = false;
+            removeAccountReferenceParam();
         }
     }
 );

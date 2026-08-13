@@ -395,7 +395,7 @@ emitter.on(`${props.productType.split(' ')[0].toLowerCase()}-product:removed`, (
                         <div class="col-lg-2 col-12 d-flex flex-column gap-2">
                             <button class="btn btn-sm text-primary" @click="resetFilters()">
                                 <font-awesome-icon :icon="['fas', 'arrow-rotate-left']"></font-awesome-icon>
-                                Reset
+                                Reset All
                             </button>
                         </div>
                     </div>
