@@ -32,6 +32,11 @@ const getAccount = async () => {
                 column: 'reference',
                 operator: 'equals',
                 value: account_reference
+            },
+            {
+                column: 'is_active',
+                operator: 'equals',
+                value: 1
             }
         ]
     });
@@ -39,7 +44,11 @@ const getAccount = async () => {
     const res = await axios.get('/api/accounts' + '?' + string);
     if (res.data.data.length) {
         proxyValue.value.account = res.data.data[0];
+        return;
     }
+
+    proxyValue.value.account = null;
+    removeAccountReferenceParam();
 };
 
 const removeAccountReferenceParam = () => {
