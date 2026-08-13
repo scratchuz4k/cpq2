@@ -263,7 +263,7 @@ class CloudMarketApi
             'Address1.Street' => $address->street,
             'Address1.Town' => $address->town,
             'ManagedOption' => 0,
-            'TermMonths' => ! empty($quote->configs['contract_length']) ? explode(',', (string) $quote->configs['contract_length']) : []
+            'TermMonths' => ! empty($quote->configs['contract_length']) ? explode(',', (string) $quote->configs['contract_length']) : [],
         ];
 
         $connectionSpeeds = [];
