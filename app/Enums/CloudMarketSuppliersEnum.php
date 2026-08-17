@@ -25,4 +25,9 @@ enum CloudMarketSuppliersEnum: string
     {
         return array_column(self::cases(), 'value');
     }
+
+    public static function canSaveQuote(?self $case): bool
+    {
+        return in_array($case, [self::ITS, self::PXC], true);
+    }
 }
