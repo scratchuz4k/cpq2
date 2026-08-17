@@ -167,6 +167,11 @@ const steps = {
     ipriver: defaultSteps
 };
 
+const showFullResilienceText = ref(false);
+const toggleResilienceText = () => {
+    showFullResilienceText.value = true;
+};
+
 const getPrimary = () => {
     if (!quote.items) {
         return null;
