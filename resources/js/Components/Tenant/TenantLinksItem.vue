@@ -6,8 +6,13 @@
             </button>
         </td>
         <td>
-            <p :id="`${props.id}-${index}-link-label`" class="py-2" v-if="!isEditing">
-                <font-awesome-icon class="me-3" v-if="proxyValue.icon" :icon="['fa-brands', proxyValue.icon]" />
+            <p
+                :title="proxyValue.label"
+                :id="`${props.id}-${index}-link-label`"
+                class="py-2 link-truncated"
+                v-if="!isEditing"
+            >
+                <font-awesome-icon class="me-2" v-if="proxyValue.icon" :icon="['fa-brands', proxyValue.icon]" />
                 {{ proxyValue.label }}
             </p>
             <template v-else>
@@ -44,7 +49,14 @@
             </template>
         </td>
         <td>
-            <p :id="`${props.id}-${index}-link-url`" class="py-2" v-if="!isEditing">{{ proxyValue.url }}</p>
+            <p
+                :title="proxyValue.url"
+                :id="`${props.id}-${index}-link-url`"
+                class="py-2 link-truncated"
+                v-if="!isEditing"
+            >
+                {{ proxyValue.url }}
+            </p>
             <input
                 :id="`${props.id}-${index}-link-edit-url`"
                 v-else
@@ -235,3 +247,14 @@ const isValidHttpUrl = (str) => {
     }
 };
 </script>
+<style scoped>
+.link-truncated {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+    line-height: 22px;
+    height: 36px;
+}
+</style>

@@ -19,7 +19,7 @@ const formatBundleDescription = (item) => {
     if (item.price_plan?.name) {
         parts.push(item.price_plan.name);
     }
-    parts.push('Qty 1');
+    parts.push(`Qty ${item.pivot?.quantity ?? 1}`);
     return parts.join(' · ');
 };
 </script>

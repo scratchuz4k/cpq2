@@ -79,10 +79,10 @@ const items = ref([
             <div class="row mb-3">
                 <div class="mb-3 d-flex flex-column">
                     <label class="form-label" for="active-filter"> Active: </label>
-                    <ToggleSwitch id="active-filter" v-model="account.is_active">
+                    <ToggleSwitch id="active-filter" v-model="form.is_active">
                         <template #handle>
                             <font-awesome-icon
-                                :icon="account.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                :icon="form.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
                                 class="text-primary"
                             />
                         </template>

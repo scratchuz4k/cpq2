@@ -8,7 +8,9 @@ import { permissions, groupedPermissions } from '@composables/usePermissions';
 import queryString from 'qs';
 
 const props = defineProps({
-    modelValue: Array
+    modelValue: Array,
+    parentPermissions: { type: Array, default: null },
+    unrestricted: { type: Boolean, default: false }
 });
 const emit = defineEmits(['update:modelValue']);
 const proxyValue = computed({
@@ -105,7 +107,22 @@ function keepExcludedText(inputString) {
     return matches ? matches.join(' ') : '';
 }
 
+const isAllowedByParent = (item) => {
+    if (props.unrestricted) {
+        return true;
+    }
+    if (!props.parentPermissions) {
+        return false;
+    }
+    return props.parentPermissions.some((x) => x.id == item.id);
+};
+
+const isGroupAllowed = (group) => group.children.some(isAllowedByParent);
+
 const check = (item) => {
+    if (!isAllowedByParent(item)) {
+        return;
+    }
     let temp = proxyValue.value.findIndex((x) => x.id == item.id);
     if (temp == -1) {
         proxyValue.value.push(item);
@@ -115,24 +132,34 @@ const check = (item) => {
 };
 
 const checkGroup = (group) => {
-    let temp = group.children.some((x) => !!proxyValue.value.find((e) => e.id == x.id));
+    let allowedChildren = group.children.filter(isAllowedByParent);
+    if (!allowedChildren.length) {
+        return;
+    }
+
+    let temp = allowedChildren.some((x) => !!proxyValue.value.find((e) => e.id == x.id));
     if (temp) {
-        group.children.forEach((x) => {
+        allowedChildren.forEach((x) => {
             let temp = proxyValue.value.findIndex((e) => e.id == x.id);
             if (temp != -1) {
                 proxyValue.value.splice(temp, 1);
             }
         });
     } else {
-        group.children.forEach((x) => {
+        allowedChildren.forEach((x) => {
             proxyValue.value.push(x);
         });
     }
 };
 
 const getGroupCheck = (group) => {
+    let allowedChildren = group.children.filter(isAllowedByParent);
+    if (!allowedChildren.length) {
+        return false;
+    }
+
     let allInSelected = false;
-    group.children.forEach((x) => {
+    allowedChildren.forEach((x) => {
         if (!proxyValue.value.find((e) => e.id == x.id)) {
             allInSelected = true;
         }
@@ -142,7 +169,7 @@ const getGroupCheck = (group) => {
         return true;
     }
 
-    let temp = group.children.some((x) => !!proxyValue.value.find((e) => e.id == x.id));
+    let temp = allowedChildren.some((x) => !!proxyValue.value.find((e) => e.id == x.id));
     if (temp) {
         return null;
     }
@@ -165,6 +192,20 @@ const getTooltip = (item) => {
         export: `Allows exporting ${name} data to a file (e.g. CSV, Excel).`
     };
     return text[perm];
+};
+
+const getBlockedReason = () => {
+    if (!props.parentPermissions) {
+        return 'Blocked: select a parent role to enable permissions.';
+    }
+    return 'Blocked: the parent role does not have this permission.';
+};
+
+const getGroupBlockedReason = () => {
+    if (!props.parentPermissions) {
+        return 'Blocked: select a parent role to enable permissions.';
+    }
+    return 'Blocked: the parent role does not have any permission in this group.';
 };
 
 getPermissions();
@@ -209,25 +250,52 @@ watch(search, () => {
                                     ></font-awesome-icon>
                                 </button>
 
-                                <Checkbox @click="checkGroup(group)" :checked="getGroupCheck(group)" />
-                                <p class="ms-2">{{ group.title }}</p>
+                                <div
+                                    class="d-flex align-items-center"
+                                    :class="{ 'permission-blocked': !isGroupAllowed(group) }"
+                                    v-tooltip
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    :title="isGroupAllowed(group) ? null : getGroupBlockedReason()"
+                                >
+                                    <Checkbox
+                                        @click="checkGroup(group)"
+                                        :checked="getGroupCheck(group)"
+                                        :disabled="!isGroupAllowed(group)"
+                                    />
+                                    <p class="ms-2 mb-0">{{ group.title }}</p>
+                                    <font-awesome-icon
+                                        v-if="!isGroupAllowed(group)"
+                                        :icon="['fas', 'lock']"
+                                        class="ms-2 text-muted small"
+                                    ></font-awesome-icon>
+                                </div>
                             </div>
                             <ul class="ms-2 my-2 tree-childs" v-if="group.is_visble">
-                                <li class="ms-3 d-flex" v-for="item in group.children" :key="'permission-' + group.id">
+                                <li
+                                    class="ms-3 d-flex align-items-center"
+                                    :class="{ 'permission-blocked': !isAllowedByParent(item) }"
+                                    v-for="item in group.children"
+                                    :key="'permission-' + group.id"
+                                    v-tooltip
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    :title="isAllowedByParent(item) ? getTooltip(item) : getBlockedReason()"
+                                >
                                     <Checkbox
                                         v-model="item.is_checked"
                                         @click="check(item)"
                                         :checked="!!proxyValue.find((x) => x.id == item.id)"
+                                        :disabled="!isAllowedByParent(item)"
                                     />
-                                    <p
-                                        class="ps-1 cursor-pointer"
-                                        v-tooltip
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="top"
-                                        :title="getTooltip(item)"
-                                    >
+                                    <p class="ps-1 mb-0" :class="isAllowedByParent(item) ? 'cursor-pointer' : ''">
                                         {{ keepExcludedText(item.title) }}
                                     </p>
+                                    <font-awesome-icon
+                                        v-if="!isAllowedByParent(item)"
+                                        :icon="['fas', 'lock']"
+                                        class="ms-1 text-muted small"
+                                    ></font-awesome-icon>
                                 </li>
                             </ul>
                         </li>
@@ -241,6 +309,13 @@ watch(search, () => {
 <style scoped>
 ul {
     list-style: none;
+}
+.permission-blocked {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+.permission-blocked p {
+    cursor: not-allowed;
 }
 .tree-childs,
 .tree-childs li {

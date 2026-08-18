@@ -39,8 +39,25 @@
 <script setup>
 import { usePage } from '@inertiajs/vue3';
 import AppLogo from './AppLogo.vue';
+import { onBeforeUnmount, ref } from 'vue';
 
 const page = usePage();
-const links = page.props.customization.footer;
-const socialLinks = page.props.customization.social;
+const links = ref(page.props.customization?.footer ?? []);
+const socialLinks = ref(page.props.customization?.social ?? []);
+
+const updateFooterLinks = (updatedLinks) => {
+    links.value = updatedLinks ?? [];
+};
+
+const updateSocialLinks = (updatedLinks) => {
+    socialLinks.value = updatedLinks ?? [];
+};
+
+emitter.on('customization:footer-updated', updateFooterLinks);
+emitter.on('customization:social-updated', updateSocialLinks);
+
+onBeforeUnmount(() => {
+    emitter.off('customization:footer-updated', updateFooterLinks);
+    emitter.off('customization:social-updated', updateSocialLinks);
+});
 </script>

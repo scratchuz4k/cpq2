@@ -21,8 +21,7 @@ describe('Creates a Group and associates accounts.cy', () => {
     });
     it('Creates Accounts', () => {
         cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
-        cy.visit('/quotes/create');
-        cy.get('#link-to-create-account').click();
+        cy.visit('/accounts/create');
         cy.get('#account-name').type(account1.name);
         cy.get('#account-reference').type(account1.ref);
         cy.get('#btn-save-account').click();

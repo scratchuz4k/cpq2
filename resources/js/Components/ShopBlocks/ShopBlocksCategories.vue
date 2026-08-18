@@ -103,6 +103,13 @@ const filteredOptions = computed(() => {
     return collectBranchMatches(tree.value, q);
 });
 
+// Ignores collapse state (unlike filteredOptions) so "select all" always covers every matching node.
+const selectAllOptions = computed(() => {
+    const q = searchQuery.value?.trim().toLowerCase();
+    if (!q) return flattenWithDepth(tree.value);
+    return collectBranchMatches(tree.value, q);
+});
+
 const selectedIds = computed(() => new Set(proxyValue.value.map((c) => c.id)));
 
 function isSelected(option) {
@@ -139,6 +146,15 @@ function select(option) {
     } else {
         const existingIds = selectedIds.value;
         const toAdd = descendants.filter((d) => !existingIds.has(d.id));
+        proxyValue.value = [...proxyValue.value, ...toAdd];
+    }
+}
+
+function selectAll(e) {
+    e.stopPropagation();
+    const existingIds = selectedIds.value;
+    const toAdd = selectAllOptions.value.filter((o) => !existingIds.has(o.id));
+    if (toAdd.length) {
         proxyValue.value = [...proxyValue.value, ...toAdd];
     }
 }
@@ -188,8 +204,17 @@ onMounted(() => {
                 visibility: showOptions ? 'visible' : 'hidden',
                 height: showOptions ? 'auto' : '0'
             }"
-            style="z-index: 1000; width: 500px"
+            style="z-index: 1000; width: max-content; min-width: 100%; white-space: nowrap"
         >
+            <div
+                class="select-all d-flex align-items-center justify-content-between mb-1 px-1"
+                v-if="selectAllOptions.length"
+            >
+                <button type="button" class="select-all-action small" @click.stop="selectAll">
+                    Select all ({{ selectAllOptions.length }})
+                </button>
+                <button type="button" class="select-all-action small" @click.stop="clear">Clear</button>
+            </div>
             <IconField class="p-0">
                 <InputIcon v-if="isLoading">
                     <font-awesome-icon :icon="['fa', 'spinner']" class="fa-spin" />
@@ -294,6 +319,30 @@ onMounted(() => {
 
 .option:hover {
     background-color: var(--color-purple-light);
+}
+
+.select-all {
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-purple);
+}
+
+.select-all-action {
+    background: none;
+    border: none;
+    padding: 0;
+    font-weight: 600;
+    color: var(--color-purple);
+}
+
+.select-all-action.text-muted {
+    color: #6c757d;
+}
+
+.select-all-action:hover {
+    text-decoration: underline;
 }
 
 .badge {

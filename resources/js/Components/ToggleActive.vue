@@ -35,9 +35,12 @@ const toggle_is_active = async (url, data) => {
     const nextValue = !isActive.value;
 
     try {
-        await axios.put(`/api/${url}/` + data.id, {
+        const payload = {
+            ...data,
             is_active: nextValue
-        });
+        };
+
+        await axios.put(`/api/${url}/` + data.id, payload);
 
         localActive.value = nextValue;
         if (data) {

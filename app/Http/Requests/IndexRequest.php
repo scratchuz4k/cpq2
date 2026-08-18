@@ -38,6 +38,7 @@ class IndexRequest extends FormRequest
             'groupOrder' => 'nullable',
             'page' => 'nullable|numeric',
             'limit' => 'nullable|numeric',
+            'all' => 'nullable|boolean',
             'search' => 'nullable|string',
             'filters' => 'nullable|array',
             'filters.*.group' => 'nullable|array',

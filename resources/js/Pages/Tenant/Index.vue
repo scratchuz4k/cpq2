@@ -1,13 +1,14 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
-import { reactive, ref } from 'vue';
+import { reactive, ref, watch } from 'vue';
 import axios from 'axios';
 import ToggleSwitch from 'primevue/toggleswitch';
 import { InputText, MultiSelect, Select } from 'primevue';
 import _ from 'lodash';
 import InputColor from '@/Components/InputColor.vue';
 import Separator from '@/Components/Separator.vue';
+import { useColors } from '@/Composables/layouts.js';
 
 const props = defineProps({
     isSuperAdmin: Boolean,
@@ -106,13 +107,14 @@ const submitLogoForm = async () => {
     try {
         let res = await axios.put(`/api/tenants/` + tenant.id, data);
         Object.assign(tenant, parseTenantConfigurations(res.data));
+
         emitter.emit('logo:updated');
         notyf.success('Updated with Success');
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong');
+    } finally {
+        isLoading.value = false;
     }
-
-    isLoading.value = false;
 };
 
 const submitTextForm = async () => {
@@ -183,6 +185,41 @@ const submitCalculatorLayout = _.debounce(function () {
 }, 1000);
 
 const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/settings' }, { label: 'Tenant' }]);
+
+watch(
+    () => tenant.configurations.customization_colors,
+    (colors) => {
+        useColors({
+            customization: { colors },
+            shareableType: undefined
+        });
+    },
+    { deep: true }
+);
+
+watch(
+    () => tenant.configurations.customization_header,
+    (links) => {
+        emitter.emit('customization:header-updated', links);
+    },
+    { deep: true }
+);
+
+watch(
+    () => tenant.configurations.customization_footer,
+    (links) => {
+        emitter.emit('customization:footer-updated', links);
+    },
+    { deep: true }
+);
+
+watch(
+    () => tenant.configurations.customization_social,
+    (links) => {
+        emitter.emit('customization:social-updated', links);
+    },
+    { deep: true }
+);
 </script>
 
 <template>
