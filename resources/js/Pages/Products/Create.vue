@@ -225,7 +225,7 @@ watch([() => product.contract_term_unit, () => product.contract_term_value], () 
                                             </div>
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label">Contract terms</label>
+                                            <label class="form-label">Renewal terms</label>
                                             <div class="row">
                                                 <div class="col-3">
                                                     <InputNumber

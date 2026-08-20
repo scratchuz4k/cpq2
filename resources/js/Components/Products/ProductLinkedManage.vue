@@ -61,7 +61,7 @@ optionLinks.addColumn('child.categories.name', 'Categories');
 optionLinks.addColumn('child.status', 'Status');
 optionLinks.addColumn('child.price.cost', 'Cost Price', { style: { width: '150px' }, isSearchable: false });
 optionLinks.addColumn('child.price.net', 'Net Price', { style: { width: '150px' }, isSearchable: false });
-optionLinks.addColumn('child.price.net_spa', 'Net SPA', { style: { width: '150px' }, isSearchable: false });
+optionLinks.addColumn('child.price.net_spa', 'Final sell price', { style: { width: '150px' }, isSearchable: false });
 optionLinks.addColumn('child.price.active_spas', 'Active SPAs', {
     style: { width: '350px' },
     isSearchable: false,

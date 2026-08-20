@@ -23,6 +23,7 @@ const price = reactive({
     code: null,
     cost: 0,
     net: 0,
+    net_spa: 0,
     product_id: product.id
 });
 
@@ -254,7 +255,7 @@ watch(
                                             </div>
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label">Contract terms</label>
+                                            <label class="form-label">Renewal terms</label>
                                             <div class="row">
                                                 <div class="col-3">
                                                     <InputNumber

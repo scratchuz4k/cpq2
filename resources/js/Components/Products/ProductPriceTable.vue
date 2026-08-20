@@ -139,7 +139,7 @@ const onRowEditSave = async (event) => {
             </div>
         </template>
 
-        <Column field="code" header="Code" />
+        <Column field="code" header="Price Code" />
         <Column field="cost" header="Cost Price">
             <template #body="{ data, field }">{{ format.GBP(data[field]) }}</template>
             <template #editor="{ data, field }"><InputPrice v-model="data[field]" /></template>
@@ -148,16 +148,17 @@ const onRowEditSave = async (event) => {
             <template #body="{ data, field }">{{ format.GBP(data[field]) }}</template>
             <template #editor="{ data, field }"><InputPrice v-model="data[field]" /></template>
         </Column>
-        <Column field="net" header="Net SPA">
-            <template #body="{ data, field }">{{ format.GBP(data[field]) }}</template>
-        </Column>
         <Column field="active_spas" header="Active SPA">
             <template #body="slotProps">
-                <template v-for="item in slotProps.data.active_spas" :key="item.id" class="small">
+                <template v-if="!slotProps.data.active_spas || !slotProps.data.active_spas.length"> N/A </template>
+                <template v-else v-for="item in slotProps.data.active_spas" :key="item.id" class="small">
                     {{ item.operation.code }}:
                     {{ item.percentage ? format.decimalPlaces(item.percentage) + '%' : format.GBP(item.value) }}
                 </template>
             </template>
+        </Column>
+        <Column field="net_spa" header="Final sell price">
+            <template #body="{ data, field }">{{ format.GBP(data[field]) }}</template>
         </Column>
         <Column :rowEditor="true" v-if="hasRole('Super Admin') || can('update price')" style="width: 5%">
             <template #roweditoriniticon>
@@ -192,7 +193,7 @@ const onRowEditSave = async (event) => {
         <template #header><h3>Add new Price</h3></template>
 
         <div class="mb-3">
-            <label class="form-label">Code:</label>
+            <label class="form-label">Price Code:</label>
             <input id="price-code" class="form-control" v-model="price.code" />
         </div>
         <div class="mb-3">
