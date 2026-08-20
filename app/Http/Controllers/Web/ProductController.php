@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Enums\ContractTermUnitsEnum;
+use App\Enums\FrequencyUnitsEnum;
 use App\Enums\ProductStatusesEnum;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\ProductCreateRequest;
@@ -48,7 +48,7 @@ class ProductController extends BaseController
     {
         return Inertia::render('Products/Create', [
             'price_plans' => PricePlan::orderBy('code', 'desc')->get(),
-            'contract_term_units' => ContractTermUnitsEnum::asArray(),
+            'frequency_units' => FrequencyUnitsEnum::asArray(),
         ]);
     }
 
@@ -83,7 +83,7 @@ class ProductController extends BaseController
         return Inertia::render('Products/Edit', [
             'product' => ProductResource::make($product->load(['prices', 'categories', 'steps']))->resolve(),
             'price_plans' => PricePlan::orderBy('code', 'desc')->get(),
-            'contract_term_units' => ContractTermUnitsEnum::asArray(),
+            'contract_term_units' => FrequencyUnitsEnum::asArray(),
         ]);
     }
 

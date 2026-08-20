@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum ContractTermUnitsEnum: string
+enum FrequencyUnitsEnum: string
 {
     case DAYS = 'Days';
     case MONTHS = 'Months';

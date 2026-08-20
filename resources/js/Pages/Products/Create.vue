@@ -1,21 +1,23 @@
 <script setup>
-import { reactive, ref, watch } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import DatePicker from 'primevue/datepicker';
 import ToggleSwitch from 'primevue/toggleswitch';
 import Select from 'primevue/select';
 import { DateTime } from 'luxon';
-import InputSelectMultiple from '@/Components/InputSelectMultiple.vue';
 import Header from '@/Components/Header.vue';
 import ProductPriceTable from '@/Components/Products/ProductPriceTable.vue';
 import { InputNumber, RadioButton } from 'primevue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import format from '@/Composables/format.js';
 
 const props = defineProps({
     price_plans: Object,
-    contract_term_units: Array
+    frequency_units: Array
 });
+
+const contract_length = ref(null);
 
 const product = reactive({
     name: null,
@@ -26,7 +28,9 @@ const product = reactive({
     prices: [],
     is_active: true,
     contract_term_value: null,
-    contract_term_unit: null
+    contract_term_unit: null,
+    billing_frequency_value: null,
+    billing_frequency_unit: null
 });
 
 const categories = ref([]);
@@ -57,6 +61,42 @@ const saveProduct = () => {
     );
 };
 
+const calculateContractLengthDays = () => {
+    if (!product.contract_term_unit || !product.contract_term_value) {
+        contract_length.value = null;
+    }
+
+    contract_length.value = product.contract_term_value * (format.daysPerUnit[product.contract_term_unit] ?? 0);
+    if (contract_length.value) {
+        product.billing_frequency_unit = product.contract_term_unit;
+        product.billing_frequency_value = product.contract_term_value;
+    }
+};
+
+const billingFrequencyUnits = computed(() => {
+    if (!contract_length.value) {
+        return [];
+    }
+
+    return props.frequency_units.filter((unit) => contract_length.value >= (format.daysPerUnit[unit.name] ?? 0));
+});
+
+const billingFrequencyValues = computed(() => {
+    if (!contract_length.value || !product.billing_frequency_unit) {
+        return [];
+    }
+
+    const numOfDays = format.daysPerUnit[product.billing_frequency_unit] ?? 1;
+
+    if (contract_length.value % numOfDays !== 0) {
+        return [];
+    }
+
+    const values = contract_length.value / numOfDays;
+
+    return format.dividers(values);
+});
+
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'Settings', url: '/settings' },
@@ -73,6 +113,10 @@ watch(
         }
     }
 );
+
+watch([() => product.contract_term_unit, () => product.contract_term_value], () => {
+    calculateContractLengthDays();
+});
 </script>
 <template>
     <Head title="New Product" />
@@ -200,7 +244,36 @@ watch(
                                                         :disabled="product.price_plan_id !== 1"
                                                         :inputId="'contract_term_unit'"
                                                         :inputClass="'my-auto'"
-                                                        :options="contract_term_units"
+                                                        :options="frequency_units"
+                                                        class="h-100"
+                                                        optionLabel="value"
+                                                        optionValue="name"
+                                                        placeholder="Select an Unit"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Billing frequency</label>
+                                            <div class="row">
+                                                <div class="col-3">
+                                                    <Select
+                                                        :disabled="!contract_length"
+                                                        v-model="product.billing_frequency_value"
+                                                        :inputId="'billing_frequency_value'"
+                                                        :inputClass="'my-auto'"
+                                                        :options="billingFrequencyValues"
+                                                        class="h-100"
+                                                        placeholder="Select a Value"
+                                                    />
+                                                </div>
+                                                <div class="col-6">
+                                                    <Select
+                                                        :disabled="!contract_length"
+                                                        v-model="product.billing_frequency_unit"
+                                                        :inputId="'billing_frequency_unit'"
+                                                        :inputClass="'my-auto'"
+                                                        :options="billingFrequencyUnits"
                                                         class="h-100"
                                                         optionLabel="value"
                                                         optionValue="name"

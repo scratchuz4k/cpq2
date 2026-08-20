@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\ContractTermUnitsEnum;
+use App\Enums\FrequencyUnitsEnum;
 use App\Models\Product;
 use App\Rules\TenantExistsRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -54,7 +54,7 @@ class ProductUpdateRequest extends FormRequest
             'contract_term_unit' => [
                 Rule::requiredIf($this->input('price_plan_id') == 1),
                 'nullable',
-                Rule::in(ContractTermUnitsEnum::names()),
+                Rule::in(FrequencyUnitsEnum::names()),
             ],
         ];
     }
