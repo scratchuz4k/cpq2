@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Enums\FrequencyUnitsEnum;
 use App\Enums\ProductStatusesEnum;
 use App\Models\Product;
+use App\Rules\BillingFrequencyRule;
 use App\Rules\TenantExistsRule;
 use App\Rules\TenantUniqueRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -73,6 +74,9 @@ class ProductCreateRequest extends FormRequest
             ],
             'prices.*.cost' => 'required|numeric',
             'prices.*.net' => 'required|numeric',
+            'billing_frequency_value' => [
+                'nullable', 'integer', new BillingFrequencyRule,
+            ],
         ];
     }
 

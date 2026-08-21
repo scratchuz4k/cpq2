@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Enums\FrequencyUnitsEnum;
 use App\Models\Product;
+use App\Rules\BillingFrequencyRule;
 use App\Rules\TenantExistsRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -55,6 +56,9 @@ class ProductUpdateRequest extends FormRequest
                 Rule::requiredIf($this->input('price_plan_id') == 1),
                 'nullable',
                 Rule::in(FrequencyUnitsEnum::names()),
+            ],
+            'billing_frequency_value' => [
+                'nullable', 'integer', new BillingFrequencyRule,
             ],
         ];
     }
