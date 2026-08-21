@@ -83,7 +83,7 @@ class ProductController extends BaseController
         return Inertia::render('Products/Edit', [
             'product' => ProductResource::make($product->load(['prices', 'categories', 'steps']))->resolve(),
             'price_plans' => PricePlan::orderBy('code', 'desc')->get(),
-            'contract_term_units' => FrequencyUnitsEnum::asArray(),
+            'frequency_units' => FrequencyUnitsEnum::asArray(),
         ]);
     }
 

@@ -1,5 +1,5 @@
 <script setup>
-import { computed, reactive, ref, watch } from 'vue';
+import { reactive, ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import DatePicker from 'primevue/datepicker';
@@ -10,14 +10,12 @@ import Header from '@/Components/Header.vue';
 import ProductPriceTable from '@/Components/Products/ProductPriceTable.vue';
 import { InputNumber, RadioButton } from 'primevue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import format from '@/Composables/format.js';
+import { useBillingFrequency } from '@/Composables/billingFrequency.js';
 
 const props = defineProps({
     price_plans: Object,
     frequency_units: Array
 });
-
-const contract_length = ref(null);
 
 const product = reactive({
     name: null,
@@ -32,6 +30,11 @@ const product = reactive({
     billing_frequency_value: null,
     billing_frequency_unit: null
 });
+
+const { contract_length, billingFrequencyUnits, billingFrequencyValues } = useBillingFrequency(
+    product,
+    props.frequency_units
+);
 
 const categories = ref([]);
 const steps = ref([]);
@@ -61,62 +64,12 @@ const saveProduct = () => {
     );
 };
 
-const calculateContractLengthDays = () => {
-    if (!product.contract_term_unit || !product.contract_term_value) {
-        contract_length.value = null;
-    }
-
-    contract_length.value = product.contract_term_value * (format.daysPerUnit[product.contract_term_unit] ?? 0);
-    if (contract_length.value) {
-        product.billing_frequency_unit = product.contract_term_unit;
-        product.billing_frequency_value = product.contract_term_value;
-    }
-};
-
-const billingFrequencyUnits = computed(() => {
-    if (!contract_length.value) {
-        return [];
-    }
-
-    return props.frequency_units.filter((unit) => contract_length.value >= (format.daysPerUnit[unit.name] ?? 0));
-});
-
-const billingFrequencyValues = computed(() => {
-    if (!contract_length.value || !product.billing_frequency_unit) {
-        return [];
-    }
-
-    const numOfDays = format.daysPerUnit[product.billing_frequency_unit] ?? 1;
-
-    if (contract_length.value % numOfDays !== 0) {
-        return [];
-    }
-
-    const values = contract_length.value / numOfDays;
-
-    return format.dividers(values);
-});
-
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'Settings', url: '/settings' },
     { label: 'Products', url: '/products' },
     { label: 'New Product' }
 ]);
-
-watch(
-    () => product.price_plan_id,
-    (newVal) => {
-        if (newVal !== 1) {
-            product.contract_term_unit = null;
-            product.contract_term_value = null;
-        }
-    }
-);
-
-watch([() => product.contract_term_unit, () => product.contract_term_value], () => {
-    calculateContractLengthDays();
-});
 </script>
 <template>
     <Head title="New Product" />
