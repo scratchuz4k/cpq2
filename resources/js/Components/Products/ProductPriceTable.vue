@@ -157,7 +157,7 @@ const onRowEditSave = async (event) => {
                 </template>
             </template>
         </Column>
-        <Column field="net_spa" header="Final sell price">
+        <Column field="net_spa" header="Final Sell Price">
             <template #body="{ data, field }">{{ format.GBP(data[field]) }}</template>
         </Column>
         <Column :rowEditor="true" v-if="hasRole('Super Admin') || can('update price')" style="width: 5%">
