@@ -34,6 +34,7 @@ class UserUpdateRequest extends FormRequest
                     }
                 },
             ],
+            'is_active' => ['required', 'boolean'],
         ];
     }
 }

@@ -5,6 +5,7 @@ namespace App\Imports;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -88,21 +89,36 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
             $newUser = User::create([
                 'parent_id' => $managerId,
+                'is_active' => (int) $user['is_active'] ?? 1,
                 'name' => $user['name'] ?? '',
                 'email' => $user['email'] ?? '',
                 'password' => ! empty($user['password']) ? Hash::make($user['password']) : Hash::make(Str::random(12)),
                 'sso' => isset($user['sso']) && (int) $user['sso'] === 1 ? 1 : 0,
+                'commission_rate' => (int) $user['commission_rate'] ?? 0,
                 'tenant_id' => $this->tenant->id,
             ]);
 
             $newUser->save();
 
             if (! empty($newUser->id)) {
-                $user = request()->user();
                 DB::table('tenant_user')->insert([
                     'tenant_id' => $this->tenant->id,
                     'user_id' => $newUser->id,
                 ]);
+
+                // Assign role
+                $newUser->assignRole($user['role']);
+
+                // Assign group
+                $temp = [];
+                $groups = explode(',', $user['groups']);
+
+                foreach ($groups as $group) {
+                    $temp[$group] = [
+                        'tenant_id' => Auth::user()->tenant_id,
+                    ];
+                }
+                $newUser->groups()->sync($temp);
 
                 $this->results['success']++;
 
