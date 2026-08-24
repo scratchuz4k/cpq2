@@ -39,7 +39,7 @@ const items = ref([
                         { data: 'connectivitySupplierGroup', title: 'Subprovider', style: 'width:5%' },
                         { data: 'bearer', title: 'Bearer', style: 'width:5%' },
                         { data: 'speed', title: 'Speed', style: 'width:5%' },
-                        { data: 'contractTermMonths', title: 'Contract Term', style: 'width:24%' },
+                        { data: 'contractTermMonths', title: 'Renewal Term', style: 'width:24%' },
                         { data: 'created_at', title: 'created At', style: 'width:15%' },
                         { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
                     ]"

@@ -67,7 +67,7 @@ optionLinks.addColumn('child.price.active_spas', 'Active SPAs', {
     isSearchable: false,
     isSortable: false
 });
-optionLinks.addColumn('child.price_plan.name', 'Contract Term');
+optionLinks.addColumn('child.price_plan.name', 'Renewal Term');
 optionLinks.addColumn('child.steps.name', 'Steps', { style: { width: '150px' } });
 optionLinks.addColumn('child.steps.solution_type.name', 'Solution Type');
 

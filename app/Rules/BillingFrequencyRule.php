@@ -38,7 +38,7 @@ class BillingFrequencyRule implements DataAwareRule, ValidationRule
         }
 
         if ($contractLengthDays % $billingLengthDays !== 0) {
-            $fail('The billing frequency must evenly divide the contract term.');
+            $fail('The billing frequency must evenly divide the renewal term.');
         }
     }
 }

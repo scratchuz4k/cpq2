@@ -39,7 +39,7 @@ optionBundle.addColumn('item.price.active_spas', 'Active SPAs', {
     isSearchable: false,
     isSortable: false
 });
-optionBundle.addColumn('item.price_plan.name', 'Contract Term');
+optionBundle.addColumn('item.price_plan.name', 'Renewal Term');
 optionBundle.addColumn('item.steps.name', 'Steps', { style: { width: '150px' } });
 optionBundle.addColumn('item.steps.solution_type.name', 'Solution Type', { style: { width: '250px' } });
 

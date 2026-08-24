@@ -45,7 +45,7 @@ it('creates a product with valid renewable payload and divisible billing frequen
     $this->assertDatabaseHas('products', ['sku' => $payload['sku'] ?? null]);
 });
 
-it('fails to create when billing frequency does not evenly divide contract term', function () {
+it('fails to create when billing frequency does not evenly divide Renewal term', function () {
     $response = $this->postJson('/products', validRenewablePayload([
         'contract_term_value' => 12,
         'contract_term_unit' => 'MONTHS',
@@ -73,7 +73,7 @@ it('updates a product with valid divisible billing frequency', function () {
     $response->assertRedirect();
 });
 
-it('fails when billing frequency does not evenly divide contract term', function () {
+it('fails when billing frequency does not evenly divide Renewal term', function () {
     $product = Product::factory()->create();
 
     $response = $this->putJson("/products/{$product->id}", [

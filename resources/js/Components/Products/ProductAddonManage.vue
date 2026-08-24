@@ -34,7 +34,7 @@ optionAddons.addColumn('addon.price.active_spas', 'Active SPAs', {
     isSearchable: false,
     isSortable: false
 });
-optionAddons.addColumn('addon.price_plan.name', 'Contract Term');
+optionAddons.addColumn('addon.price_plan.name', 'Renewal Term');
 optionAddons.addColumn('addon.steps.name', 'Steps', { style: { width: '150px' } });
 optionAddons.addColumn('addon.steps.solution_type.name', 'Solution Type', { style: { width: '250px' } });
 

@@ -210,7 +210,7 @@ const options = reactive(
             .addColumn('priceInstall_spa', 'Set Up', { isSearchable: false })
             .addColumn('priceMonthly_spa', 'Monthly', { isSearchable: false })
             .addColumn('priceECC', 'ECC')
-            .addColumn('contractTermMonths', 'Contract Term')
+            .addColumn('contractTermMonths', 'Renewal Term')
             .addColumn('isContended', 'Contended')
             .addColumn('connectivityType', 'Connectivity')
             .addColumn('technologyType', 'Technology')
