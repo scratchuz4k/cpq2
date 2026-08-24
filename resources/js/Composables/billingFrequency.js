@@ -23,12 +23,10 @@ const daysPerUnit = {
 };
 
 /**
- * Encapsulates contract length / billing frequency logic shared between
- * the Product Create and Edit pages.
+ * Encapsulates contract length / billing frequency logic shared between the Product Create and Edit pages.
  *
- * @param {object} product - reactive product object (must expose contract_term_value,
- *                            contract_term_unit, billing_frequency_value, billing_frequency_unit)
- * @param {import('vue').Ref<Array>|Array} frequencyUnits - list of available frequency units
+ * @param {object} product - product
+ * @param {Array} frequencyUnits - frequency units enum values
  */
 export function useBillingFrequency(product, frequencyUnits) {
     const contract_length = ref(

@@ -195,26 +195,6 @@ const format = {
             name: name.trim(),
             router: router && router !== 'n/a' ? router : null
         };
-    },
-    dividers: (num) => {
-        const n = num ?? 360;
-        const divisors = [];
-
-        for (let i = 1; i * i <= n; i++) {
-            if (n % i === 0) {
-                divisors.push(i);
-                if (i !== n / i) {
-                    divisors.push(n / i);
-                }
-            }
-        }
-
-        return divisors.sort((a, b) => a - b);
-    },
-    daysPerUnit: {
-        DAYS: 1,
-        MONTHS: 30,
-        YEARS: 360
     }
 };
 

@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(RefreshDatabase::class);
 
 /**
- * Helper: base valid payload to create a product.
+ * Helper: valid payload to create a product.
  */
 function validRenewablePayload(array $overrides = []): array
 {
@@ -53,7 +53,6 @@ it('fails to create when billing frequency does not evenly divide Renewal term',
         'billing_frequency_unit' => 'MONTHS',
     ]));
 
-    // 12 months = 360 days; 5 months = 150 days; 360 % 150 !== 0
     $response->assertInvalid(['billing_frequency_value']);
 });
 

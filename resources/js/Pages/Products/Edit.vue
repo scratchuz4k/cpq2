@@ -279,7 +279,6 @@ const items = ref([
                                                 </div>
                                             </div>
                                         </div>
-                                        {{ contract_length }}
                                         <div class="mb-3">
                                             <label class="form-label">Billing frequency</label>
                                             <div class="row">

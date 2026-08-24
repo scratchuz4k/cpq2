@@ -75,7 +75,16 @@ class ProductCreateRequest extends FormRequest
             'prices.*.cost' => 'required|numeric',
             'prices.*.net' => 'required|numeric',
             'billing_frequency_value' => [
-                'nullable', 'integer', new BillingFrequencyRule,
+                Rule::requiredIf(fn () => $this->input('price_plan_id') == 1),
+                'nullable',
+                'integer',
+                new BillingFrequencyRule,
+            ],
+            'billing_frequency_unit' => [
+                Rule::requiredIf(fn () => $this->input('price_plan_id') == 1),
+                'nullable',
+                'nullable',
+                Rule::in(FrequencyUnitsEnum::names()),
             ],
         ];
     }
