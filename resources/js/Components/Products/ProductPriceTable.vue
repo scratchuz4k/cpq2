@@ -116,7 +116,7 @@ const onRowEditSave = async (event) => {
         :pt="{
             column: {
                 bodycell: ({ state }) => ({
-                    style: state['d_editing'] && 'padding-top: 0.75rem; padding-bottom: 0.75rem',
+                    style: state['d_editing'] && 'padding0 !important',
                     class: 'small'
                 }),
                 headercell: {
@@ -164,7 +164,11 @@ const onRowEditSave = async (event) => {
                 </template>
             </template>
         </Column>
-        <Column :rowEditor="true" v-if="hasRole('Super Admin') || can('update price')" style="width: 5%">
+        <Column
+            :rowEditor="true"
+            v-if="hasRole('Super Admin') || can('update price')"
+            style="width: 40px; padding: 0 !important; text-align: center"
+        >
             <template #roweditoriniticon>
                 <Button
                     class="p-button p-component p-button-icon-only p-button-secondary p-button-rounded p-button-text p-datatable-row-editor-init"
@@ -173,7 +177,11 @@ const onRowEditSave = async (event) => {
                 </Button>
             </template>
         </Column>
-        <Column bodyStyle="text-align:center" v-if="hasRole('Super Admin') || can('delete price')" style="width: 5%">
+        <Column
+            bodyStyle="text-align:center"
+            v-if="hasRole('Super Admin') || can('delete price')"
+            style="width: 40px; padding: 0 !important; text-align: center"
+        >
             <template #body="{ data }">
                 <Button
                     @click="deletePrice(data.id)"
@@ -221,5 +229,18 @@ const onRowEditSave = async (event) => {
         font-weight: 500;
         color: var(--table-header-dark-grey) !important;
     }
+}
+
+.p-datatable tr th {
+    white-space: nowrap;
+}
+
+.p-datatable-row-editor-cancel,
+.p-datatable-row-editor-save {
+    padding: 0 !important;
+}
+
+.p-datatable .p-datatable-empty-message td:not(.p-0) {
+    padding: 0 !important;
 }
 </style>
