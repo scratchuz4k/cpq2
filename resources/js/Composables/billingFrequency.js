@@ -80,6 +80,8 @@ export function useBillingFrequency(product, frequencyUnits) {
             if (newVal !== 1) {
                 product.contract_term_unit = null;
                 product.contract_term_value = null;
+                product.billing_frequency_unit = null;
+                product.billing_frequency_value = null;
             }
         }
     );

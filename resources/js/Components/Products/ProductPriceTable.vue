@@ -159,9 +159,7 @@ const onRowEditSave = async (event) => {
         </Column>
         <Column field="net_spa" header="Final Sell Price">
             <template #body="{ data, field }">
-                <template v-if="data[field]">
-                    {{ format.GBP(data[field]) }}
-                </template>
+                {{ format.GBP(data[field] ?? data['net']) }}
             </template>
         </Column>
         <Column
