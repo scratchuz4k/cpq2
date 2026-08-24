@@ -42,7 +42,11 @@ export function useBillingFrequency(product, frequencyUnits) {
         }
 
         contract_length.value = product.contract_term_value * (daysPerUnit[product.contract_term_unit] ?? 0);
-        if (contract_length.value) {
+        const billingUnitDays = daysPerUnit[product.billing_frequency_unit] ?? 0;
+        const billingLengthDays = product.billing_frequency_value * billingUnitDays;
+        const billingFrequencyIsValid = billingLengthDays > 0 && contract_length.value % billingLengthDays === 0;
+
+        if (contract_length.value && !billingFrequencyIsValid) {
             product.billing_frequency_unit = product.contract_term_unit;
             product.billing_frequency_value = product.contract_term_value;
         }
