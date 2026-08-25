@@ -61,11 +61,21 @@ const totalProducts = ref(0);
     <AuthenticatedLayout>
         <Header title="Products" :breadcrumbs="items">
             <template #buttons>
-                <Link href="/blacklists" id="blacklist-index-btn" class="btn btn-outline-primary me-2">
+                <Link
+                    v-if="can(`viewAny blacklist`) || hasRole('Super Admin')"
+                    href="/blacklists"
+                    id="blacklist-index-btn"
+                    class="btn btn-outline-primary me-2"
+                >
                     <font-awesome-icon :icon="['fas', 'shop-lock']" />
                     Blacklisted Items
                 </Link>
-                <Link href="/imports" id="product-import-btn" class="btn btn-outline-primary me-2">
+                <Link
+                    v-if="can(`viewAny import`) || hasRole('Super Admin')"
+                    href="/imports"
+                    id="product-import-btn"
+                    class="btn btn-outline-primary me-2"
+                >
                     <font-awesome-icon :icon="['fas', 'file-import']"></font-awesome-icon>
                     Import Products
                 </Link>
