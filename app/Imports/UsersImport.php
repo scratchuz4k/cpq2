@@ -102,7 +102,7 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
                         }
                     },
                 ],
-
+                'commission_rate' => 'nullable|integer|min:0|max:100',
             ]);
 
             if ($validator->fails()) {
@@ -147,6 +147,7 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 }
 
                 // Assign group
+                $temp = [];
                 foreach ($user['groups'] as $group) {
                     $temp[$group] = [
                         'tenant_id' => Auth::user()->tenant_id,
