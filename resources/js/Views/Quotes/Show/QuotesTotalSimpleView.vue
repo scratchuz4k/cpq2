@@ -4,8 +4,6 @@ import { ref } from 'vue';
 import { setQuote, quote } from '@composables/useQuote';
 import { getMarginThreshHoldWarning } from '@composables/useQuoteItem';
 import { usePage } from '@inertiajs/vue3';
-import { checkWarnings } from '@composables/warning.js';
-import WarningNote from '@/Components/WarningNote.vue';
 import StepActionBar from '@/Components/Steps/StepActionBar.vue';
 
 const page = usePage();
@@ -18,11 +16,6 @@ const props = defineProps({
 });
 
 setQuote(props.modelValue);
-
-let temp = quote.items;
-const warningProviders = ref([{ name: 'pxc', is_present: temp.some((item) => item.data?.providerName === 'PXC') }]);
-
-checkWarnings(warningProviders.value, null);
 
 const items = ref([
     { label: 'Home', url: '/dashboard' },
@@ -46,10 +39,9 @@ const items = ref([
         </template>
     </Header>
     <ContactInfo />
-    <div class="row" v-if="warningProviders.find((x) => x.is_present) || quote.items.some((x) => !x.is_margin_valid)">
+    <div class="row" v-if="quote.items.some((x) => !x.is_margin_valid)">
         <div class="col">
             <InfoBox class="mb-4 py-0" severity="danger">
-                <WarningNote :warnings="warningProviders" />
                 <p v-if="quote.items.some((x) => !x.is_margin_valid)" class="small">
                     {{ getMarginThreshHoldWarning() }}
                 </p>

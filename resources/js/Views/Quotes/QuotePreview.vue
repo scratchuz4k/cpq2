@@ -1,7 +1,6 @@
 <script setup>
 import { ref } from 'vue';
 import { setQuote, quote } from '@composables/useQuote';
-import WarningNote from '@/Components/WarningNote.vue';
 import format from '@/Composables/format.js';
 import { usePage } from '@inertiajs/vue3';
 import dayjs from 'dayjs';
@@ -15,10 +14,6 @@ const props = defineProps({
 });
 
 setQuote(props.modelValue);
-
-const warningProviders = ref([
-    { name: 'pxc', is_present: quote.items.some((item) => item.data?.providerName === 'PXC') }
-]);
 
 const showDate = (days = 0) => {
     const dateObj = new Date();
@@ -62,15 +57,6 @@ let view = component && Object.keys(solutionsViews).includes(component) ? soluti
                         Valid Date:
                         {{ format.expireDate(quote.created_at, tenant.configurations?.quote_expiration_days) }}
                     </p>
-                </div>
-            </div>
-            <div v-if="warningProviders.some((obj) => Object.values(obj).includes(true))">
-                <div class="row">
-                    <div class="col">
-                        <InfoBox class="mb-4 p-0" severity="error">
-                            <WarningNote :warnings="warningProviders" />
-                        </InfoBox>
-                    </div>
                 </div>
             </div>
             <TableCustom
