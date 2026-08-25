@@ -262,6 +262,7 @@ const items = ref([
                                                         :inputId="'contract_term_value'"
                                                         :inputClass="'w-100'"
                                                         showButtons
+                                                        placeholder="Value"
                                                     />
                                                 </div>
                                                 <div class="col-6">
@@ -274,7 +275,7 @@ const items = ref([
                                                         class="h-100"
                                                         optionLabel="value"
                                                         optionValue="name"
-                                                        placeholder="Select an Unit"
+                                                        placeholder="Frequency"
                                                     />
                                                 </div>
                                             </div>
@@ -290,7 +291,7 @@ const items = ref([
                                                         :inputClass="'my-auto'"
                                                         :options="billingFrequencyValues"
                                                         class="h-100"
-                                                        placeholder="Select a Value"
+                                                        placeholder="Value"
                                                     />
                                                 </div>
                                                 <div class="col-6">
@@ -303,7 +304,7 @@ const items = ref([
                                                         class="h-100"
                                                         optionLabel="value"
                                                         optionValue="name"
-                                                        placeholder="Select an Unit"
+                                                        placeholder="Frequency"
                                                     />
                                                 </div>
                                             </div>
