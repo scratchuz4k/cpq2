@@ -32,12 +32,12 @@ options.addColumn('updated_at', 'Updated At');
 options.addColumn('expires_at', 'Expires At');
 options.addColumn('price.cost', 'Cost', { isSearchable: false });
 options.addColumn('price.net', 'Net', { isSearchable: false });
-options.addColumn('price.net_spa', 'Net Spa', { isSearchable: false });
+options.addColumn('price.net_spa', 'Final Sell Price', { isSearchable: false });
 options.addColumn('price.active_spas.rule.name', 'Active Spa', { isSearchable: false, isSortable: false });
 options.addColumn('price_plan.name', 'Contact Term', { isSortable: false });
 // options.addColumn('child.price.cost', 'Cost Price', { width: '150px' }, { isSearchable: false });
 // options.addColumn('child.price.net', 'Net Price', { width: '150px' }, { isSearchable: false });
-// options.addColumn('child.price.net_spa', 'Net SPA', { width: '150px' }, { isSearchable: false });
+// options.addColumn('child.price.net_spa', 'Final Sell Price', { width: '150px' }, { isSearchable: false });
 
 options.addColumnFilter(
     'steps.solution_type.name',

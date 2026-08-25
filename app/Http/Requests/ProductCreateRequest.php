@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\ContractTermUnitsEnum;
+use App\Enums\FrequencyUnitsEnum;
 use App\Enums\ProductStatusesEnum;
 use App\Models\Product;
+use App\Rules\BillingFrequencyRule;
 use App\Rules\TenantExistsRule;
 use App\Rules\TenantUniqueRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -54,7 +55,7 @@ class ProductCreateRequest extends FormRequest
             'contract_term_unit' => [
                 Rule::requiredIf(fn () => $this->input('price_plan_id') == 1),
                 'nullable',
-                Rule::in(ContractTermUnitsEnum::names()),
+                Rule::in(FrequencyUnitsEnum::names()),
             ],
             'categories.*' => [
                 'integer',
@@ -73,6 +74,18 @@ class ProductCreateRequest extends FormRequest
             ],
             'prices.*.cost' => 'required|numeric',
             'prices.*.net' => 'required|numeric',
+            'billing_frequency_value' => [
+                Rule::requiredIf(fn () => $this->input('price_plan_id') == 1),
+                'nullable',
+                'integer',
+                new BillingFrequencyRule,
+            ],
+            'billing_frequency_unit' => [
+                Rule::requiredIf(fn () => $this->input('price_plan_id') == 1),
+                'nullable',
+                'nullable',
+                Rule::in(FrequencyUnitsEnum::names()),
+            ],
         ];
     }
 

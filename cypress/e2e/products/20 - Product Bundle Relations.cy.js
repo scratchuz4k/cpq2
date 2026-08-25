@@ -26,6 +26,10 @@ describe('Product Bundle Relations', () => {
         cy.get('#price_plan_1').click();
         cy.get('#contract_term_value').type('3');
         cy.selectOption('#contract_term_unit', 'Years');
+
+        cy.selectOption('#billing_frequency_value', '1');
+        cy.selectOption('#billing_frequency_unit', 'Years');
+
         cy.get('#btn-save-product').click();
         cy.get('.notyf').contains('Created with Success');
 
@@ -42,6 +46,10 @@ describe('Product Bundle Relations', () => {
         cy.get('#price_plan_1').click();
         cy.get('#contract_term_value').type('3');
         cy.selectOption('#contract_term_unit', 'Years');
+
+        cy.selectOption('#billing_frequency_value', '1');
+        cy.selectOption('#billing_frequency_unit', 'Years');
+
         cy.get('#btn-save-product').click();
         cy.get('.notyf').contains('Created with Success');
     });
