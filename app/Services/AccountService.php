@@ -35,6 +35,14 @@ class AccountService
             $this->accountRepository->syncContacts($account, $array['contacts']);
         }
 
+        if (! array_key_exists('groups', $array)) {
+            // Caller didn't specify groups at all (e.g. a non-UI caller) — fall back to
+            // the creating user's own groups, same safety net the old auto-assign hook provided.
+            $array['groups'] = Auth::user()->groups()->pluck('groups.id')->all();
+        }
+
+        $this->syncGroups($account, $array);
+
         return $account;
     }
 
@@ -56,6 +64,24 @@ class AccountService
             $this->accountRepository->syncContacts($account, $array['contacts']);
         }
 
+        $this->syncGroups($account, $array);
+
         return $account;
+    }
+
+    protected function syncGroups(Account $account, array $array): void
+    {
+        if (! array_key_exists('groups', $array) || ! is_array($array['groups'])) {
+            return;
+        }
+
+        $temp = [];
+        foreach ($array['groups'] as $group) {
+            $temp[$group] = [
+                'tenant_id' => Auth::user()->tenant_id,
+            ];
+        }
+
+        $account->groups()->sync($temp);
     }
 }

@@ -41,6 +41,8 @@ class AccountCreateRequest extends FormRequest
             'contacts.*.name' => 'nullable',
             'contacts.*.email' => 'nullable|email',
             'contacts.*.phone' => 'nullable|max_digits:12',
+            'groups' => 'nullable|array',
+            'groups.*' => 'integer|exists:groups,id',
         ];
     }
 
