@@ -7,9 +7,9 @@ use App\Models\Tenant;
 use App\Models\User;
 use App\Rules\TenantExistsRule;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -36,7 +36,7 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
     protected $isDryRun;
 
-    public function __construct(protected bool $overwrite = false, bool $isDryRun = false)
+    public function __construct(protected bool $overwrite, protected User $actingUser, bool $isDryRun = false)
     {
         $this->tenant = Tenant::current();
         $this->isDryRun = $isDryRun;
@@ -55,9 +55,9 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
     /**
      * Validate the import file.
      */
-    public static function validateFile($file, bool $overwrite): array
+    public static function validateFile($file, User $actingUser, bool $overwrite): array
     {
-        $import = new self($overwrite, true);
+        $import = new self($overwrite, $actingUser, true);
         Excel::import($import, $file);
 
         return $import->results;
@@ -69,20 +69,27 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
     private function insertUser(array $user, int $rowIndex): bool
     {
         try {
-            $user['groups'] = explode(',', $user['groups']);
+            $user['groups'] = $user['groups'] ? explode(',', $user['groups']) : [];
+            $actingUser = $this->actingUser;
+
             $validator = Validator::make($user, [
                 'name' => 'required|string|max:255',
                 'email' => $this->overwrite
                     ? 'required|email'
                     : ['required', 'email', Rule::unique('users')],
-                'is_active' => ['required', 'boolean'],
+                'is_active' => ['boolean'],
                 'groups' => [
-                    function ($attribute, $value, $fail) {
-                        if (empty($value)) {
+                    'nullable',
+                    function ($attribute, $value, $fail) use ($actingUser) {
+                        if (empty($value) || ! $actingUser->groups->count()) {
                             return;
                         }
 
-                        if (! empty(array_diff($value, auth()->user()->groups->pluck('id')->toArray()))) {
+                        Log::debug('value', $actingUser->toArray());
+                        if (
+                            ! $this->actingUser->hasRole('Super Admin')
+                            && ! empty(array_diff($value, $actingUser->groups->pluck('id')->toArray()))
+                        ) {
                             $fail("The {$attribute} field contains group(s) the authenticated user does not belong to.");
                         }
                     },
@@ -94,10 +101,13 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 'role' => [
                     'integer',
                     new TenantExistsRule('roles'),
-                    function ($attribute, $value, $fail) {
-                        $authRole = auth()->user()->roles->first();
+                    function ($attribute, $value, $fail) use ($actingUser) {
+                        $authRole = $actingUser->roles->first();
 
-                        if (! in_array((int) $value, [$authRole->id, ...$authRole->getDescendantIds()])) {
+                        if (
+                            ! $this->actingUser->hasRole('Super Admin')
+                            && ! in_array((int) $value, [$authRole->id, ...$authRole->getDescendantIds()])
+                        ) {
                             $fail("The {$attribute} must be {$authRole->name} or a descendant.");
                         }
                     },
@@ -143,14 +153,15 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 // Assign role
                 if ($user['role']) {
                     $role = Role::find($user['role']);
-                    $newUser->assignRole($role->name);
+
+                    $newUser->assignRole($role);
                 }
 
                 // Assign group
                 $temp = [];
                 foreach ($user['groups'] as $group) {
                     $temp[$group] = [
-                        'tenant_id' => Auth::user()->tenant_id,
+                        'tenant_id' => $actingUser->tenant_id,
                     ];
                 }
                 $newUser->groups()->sync($temp);
@@ -185,6 +196,7 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
             $this->results['data'][] = [
                 'index' => $rowIndex,
                 ...$row,
+                'is_active' => (int) $row['is_active'],
             ];
             $this->results['processed']++;
             $this->insertUser($row, $rowIndex);

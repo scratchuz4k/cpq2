@@ -36,7 +36,7 @@ class ImportService
             'tenant_id' => $user->tenant_id,
         ]);
 
-        ImportJob::dispatch($import, $import->overwrite);
+        ImportJob::dispatch($import, $user, $import->overwrite);
 
         return $import;
     }
@@ -50,9 +50,9 @@ class ImportService
         $helperFile = require app_path('Helpers/Import/'.mb_strtolower($model).'_import.php');
 
         $importClass = ImportsEnum::tryFromName($model)->value;
-        $importHandler = new $importClass($overwrite);
+        $importHandler = new $importClass($overwrite, $user);
 
-        $results = $importHandler->validateFile($file, $overwrite);
+        $results = $importHandler->validateFile($file, $user, $overwrite);
 
         return [
             'model' => $model,
