@@ -9,7 +9,6 @@ use App\Rules\TenantExistsRule;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -85,7 +84,6 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
                             return;
                         }
 
-                        Log::debug('value', $actingUser->toArray());
                         if (
                             ! $this->actingUser->hasRole('Super Admin')
                             && ! empty(array_diff($value, $actingUser->groups->pluck('id')->toArray()))
