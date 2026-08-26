@@ -26,7 +26,7 @@ const previewData = ref(null);
 
 const rowClass = (rowData) => {
     const errors = previewData.value.results?.errors ?? [];
-    const hasError = errors.some((errorItem) => errorItem.row?.sku === rowData.sku);
+    const hasError = errors.some((errorItem) => errorItem.row_index === rowData.index);
     const rowClass = 'preview-table-row';
 
     return hasError ? rowClass + ' row-has-error' : rowClass;

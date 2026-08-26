@@ -33,13 +33,13 @@ optionBundle.addColumn('item.categories.name', 'Categories');
 optionBundle.addColumn('item.status', 'Status');
 optionBundle.addColumn('item.price.cost', 'Cost Price', { style: { width: '150px' }, isSearchable: false });
 optionBundle.addColumn('item.price.net', 'Net Price', { style: { width: '150px' }, isSearchable: false });
-optionBundle.addColumn('item.price.net_spa', 'Net SPA', { style: { width: '150px' }, isSearchable: false });
+optionBundle.addColumn('item.price.net_spa', 'Final Sell Price', { style: { width: '150px' }, isSearchable: false });
 optionBundle.addColumn('item.price.active_spas', 'Active SPAs', {
     style: { width: '350px' },
     isSearchable: false,
     isSortable: false
 });
-optionBundle.addColumn('item.price_plan.name', 'Contract Term');
+optionBundle.addColumn('item.price_plan.name', 'Renewal Term');
 optionBundle.addColumn('item.steps.name', 'Steps', { style: { width: '150px' } });
 optionBundle.addColumn('item.steps.solution_type.name', 'Solution Type', { style: { width: '250px' } });
 

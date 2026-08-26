@@ -3,19 +3,6 @@
 
     // $quote['items']  = getLeafNodesWithChildren($quote['items']);
 
-    $warningProviders = [
-        'pxc' => array_reduce(
-            $quote['items'],
-            function ($carry, $item) {
-                return $carry ||
-                    (isset($item['data']) &&
-                        isset($item['data']->providerName) &&
-                        $item['data']->providerName === 'PXC');
-            },
-            false,
-        ),
-    ];
-
     $items = [];
 
     foreach ($quote['items'] as $key => $item) {
@@ -119,17 +106,7 @@
                         </p>
                     </div>
                 </div>
-                @if (count(array_filter($warningProviders)) > 0)
-                    <div class="row">
-                        <div class="col">
-                            <InfoBox class="m-4 p-0" severity="error">
-                                @component('components.warning-note', ['warnings' => $warningProviders])
-                                @endcomponent
-                            </InfoBox>
-                        </div>
-                    </div>
             </div>
-            @endif
             <div class="row mb-4">
                 <div class="col">
                     <div class="mb-5">

@@ -55,6 +55,9 @@ describe('Creates products and associates Category.cy', () => {
                 cy.get('#contract_term_value').type('100');
                 cy.selectOption('#contract_term_unit', 'Days');
 
+                cy.selectOption('#billing_frequency_value', '50');
+                cy.selectOption('#billing_frequency_unit', 'Days');
+
                 cy.get('#btn-save-product').click();
                 cy.get('.notyf').contains('Created with Success');
             }
@@ -76,6 +79,9 @@ describe('Creates products and associates Category.cy', () => {
                 cy.get('#price_plan_1').click();
                 cy.get('#contract_term_value').type('100');
                 cy.selectOption('#contract_term_unit', 'Days');
+
+                cy.selectOption('#billing_frequency_value', '50');
+                cy.selectOption('#billing_frequency_unit', 'Days');
 
                 cy.get('#btn-save-product').click();
                 cy.get('.notyf').contains('Created with Success');
@@ -125,6 +131,9 @@ describe('Validates same-step product link restriction', () => {
         cy.get('#contract_term_value').type('100');
         cy.selectOption('#contract_term_unit', 'Days');
 
+        cy.selectOption('#billing_frequency_value', '50');
+        cy.selectOption('#billing_frequency_unit', 'Days');
+
         cy.get('#btn-save-product').click();
         cy.get('.notyf').contains('Created with Success');
 
@@ -135,6 +144,9 @@ describe('Validates same-step product link restriction', () => {
         cy.get('#price_plan_1').click();
         cy.get('#contract_term_value').type('100');
         cy.selectOption('#contract_term_unit', 'Days');
+
+        cy.selectOption('#billing_frequency_value', '50');
+        cy.selectOption('#billing_frequency_unit', 'Days');
 
         cy.get('#btn-save-product').click();
         cy.get('.notyf').contains('Created with Success');

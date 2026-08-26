@@ -22,6 +22,8 @@ class Product extends Model
         'price_plan_id',
         'contract_term_value',
         'contract_term_unit',
+        'billing_frequency_value',
+        'billing_frequency_unit',
         'supplier_id',
         'sku',
         'name',
