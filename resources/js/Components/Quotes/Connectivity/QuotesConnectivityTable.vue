@@ -32,7 +32,7 @@ const props = defineProps({
 });
 
 const hasProduct = () => {
-    return quote.items && quote.items.find((x) => x.data.type == props.productType);
+    return Array.isArray(quote.items) && quote.items.some((x) => x?.data?.type == props.productType);
 };
 
 const showLoadingModal = ref(false);
@@ -210,7 +210,7 @@ const options = reactive(
             .addColumn('priceInstall_spa', 'Set Up', { isSearchable: false })
             .addColumn('priceMonthly_spa', 'Monthly', { isSearchable: false })
             .addColumn('priceECC', 'ECC')
-            .addColumn('contractTermMonths', 'Contract Term')
+            .addColumn('contractTermMonths', 'Renewal Term')
             .addColumn('isContended', 'Contended')
             .addColumn('connectivityType', 'Connectivity')
             .addColumn('technologyType', 'Technology')
@@ -297,9 +297,13 @@ const getFreshData = async () => {
     clearCache.value = false;
 };
 
-onMounted(() => {
-    showLoadingModal.value = hasProduct() ? false : true;
-});
+watch(
+    [() => quote.items, () => meta.isRequestCompleted],
+    () => {
+        showLoadingModal.value = hasProduct() ? false : !meta.isRequestCompleted;
+    },
+    { deep: true, immediate: true }
+);
 
 emitter.on(`${props.productType.split(' ')[0].toLowerCase()}-product:removed`, () => tableRef.value?.getData());
 </script>

@@ -61,13 +61,13 @@ optionLinks.addColumn('child.categories.name', 'Categories');
 optionLinks.addColumn('child.status', 'Status');
 optionLinks.addColumn('child.price.cost', 'Cost Price', { style: { width: '150px' }, isSearchable: false });
 optionLinks.addColumn('child.price.net', 'Net Price', { style: { width: '150px' }, isSearchable: false });
-optionLinks.addColumn('child.price.net_spa', 'Net SPA', { style: { width: '150px' }, isSearchable: false });
+optionLinks.addColumn('child.price.net_spa', 'Final Sell Price', { style: { width: '150px' }, isSearchable: false });
 optionLinks.addColumn('child.price.active_spas', 'Active SPAs', {
     style: { width: '350px' },
     isSearchable: false,
     isSortable: false
 });
-optionLinks.addColumn('child.price_plan.name', 'Contract Term');
+optionLinks.addColumn('child.price_plan.name', 'Renewal Term');
 optionLinks.addColumn('child.steps.name', 'Steps', { style: { width: '150px' } });
 optionLinks.addColumn('child.steps.solution_type.name', 'Solution Type');
 

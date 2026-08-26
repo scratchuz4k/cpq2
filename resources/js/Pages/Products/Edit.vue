@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref, watch, computed } from 'vue';
+import { reactive, ref, computed } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { DatePicker, ToggleSwitch, Select, RadioButton, InputNumber } from 'primevue';
@@ -7,11 +7,12 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { DateTime } from 'luxon';
 import ProductPriceTable from '@/Components/Products/ProductPriceTable.vue';
 import InputSelectCategories from '@/Components/Categories/InputSelectCategories.vue';
+import { useBillingFrequency } from '@/Composables/billingFrequency.js';
 
 const props = defineProps({
     product: Object,
     price_plans: Object,
-    contract_term_units: Array
+    frequency_units: Array
 });
 
 const product = reactive({
@@ -23,12 +24,18 @@ const price = reactive({
     code: null,
     cost: 0,
     net: 0,
+    net_spa: 0,
     product_id: product.id
 });
 
 const prices = ref(product.prices);
 const categories = ref(product.categories ?? []);
 const steps = ref(product.steps ?? []);
+
+const { contract_length, billingFrequencyUnits, billingFrequencyValues } = useBillingFrequency(
+    product,
+    props.frequency_units
+);
 
 const expiresAt = computed(() => {
     if (!product.expires_at) {
@@ -110,16 +117,6 @@ const items = ref([
     { label: 'Products', url: '/products' },
     { label: 'Edit Product' }
 ]);
-
-watch(
-    () => product.price_plan_id,
-    (newVal) => {
-        if (newVal !== 1) {
-            product.contract_term_unit = null;
-            product.contract_term_value = null;
-        }
-    }
-);
 </script>
 <template>
     <Head :title="'Edit Products: ' + product.name" />
@@ -254,7 +251,7 @@ watch(
                                             </div>
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label">Contract terms</label>
+                                            <label class="form-label">Renewal Terms</label>
                                             <div class="row">
                                                 <div class="col-3">
                                                     <InputNumber
@@ -265,6 +262,7 @@ watch(
                                                         :inputId="'contract_term_value'"
                                                         :inputClass="'w-100'"
                                                         showButtons
+                                                        placeholder="Value"
                                                     />
                                                 </div>
                                                 <div class="col-6">
@@ -273,11 +271,40 @@ watch(
                                                         :disabled="product.price_plan_id !== 1"
                                                         :inputId="'contract_term_unit'"
                                                         :inputClass="'my-auto'"
-                                                        :options="contract_term_units"
+                                                        :options="frequency_units"
                                                         class="h-100"
                                                         optionLabel="value"
                                                         optionValue="name"
-                                                        placeholder="Select an Unit"
+                                                        placeholder="Frequency"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Billing frequency</label>
+                                            <div class="row">
+                                                <div class="col-3">
+                                                    <Select
+                                                        :disabled="!contract_length"
+                                                        v-model="product.billing_frequency_value"
+                                                        :inputId="'billing_frequency_value'"
+                                                        :inputClass="'my-auto'"
+                                                        :options="billingFrequencyValues"
+                                                        class="h-100"
+                                                        placeholder="Value"
+                                                    />
+                                                </div>
+                                                <div class="col-6">
+                                                    <Select
+                                                        :disabled="!contract_length"
+                                                        v-model="product.billing_frequency_unit"
+                                                        :inputId="'billing_frequency_unit'"
+                                                        :inputClass="'my-auto'"
+                                                        :options="billingFrequencyUnits"
+                                                        class="h-100"
+                                                        optionLabel="value"
+                                                        optionValue="name"
+                                                        placeholder="Frequency"
                                                     />
                                                 </div>
                                             </div>

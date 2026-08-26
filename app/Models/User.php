@@ -157,7 +157,7 @@ class User extends Authenticatable
     public static function getChildAndOrphansUser(): Builder
     {
         $query = User::query()
-            ->where('tenant_id', Auth::user()->tenant_id)
+            ->where('users.tenant_id', Auth::user()->tenant_id)
             ->with(['roles', 'groups', 'tenants', 'currentTenant']);
         $superUsers = User::whereHas('roles', fn ($query) => $query->whereIn('roles.name', ['Super Admin']))->get();
         $query = $query->whereNotIn('users.id', $superUsers->pluck('id'));

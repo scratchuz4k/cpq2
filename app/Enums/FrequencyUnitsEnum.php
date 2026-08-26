@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum ContractTermUnitsEnum: string
+enum FrequencyUnitsEnum: string
 {
     case DAYS = 'Days';
     case MONTHS = 'Months';
@@ -24,5 +24,14 @@ enum ContractTermUnitsEnum: string
     public static function values(): array
     {
         return array_column(self::cases(), 'name');
+    }
+
+    public static function daysPerUnit(): array
+    {
+        return [
+            self::DAYS->name => 1,
+            self::MONTHS->name => 30,
+            self::YEARS->name => 360,
+        ];
     }
 }
