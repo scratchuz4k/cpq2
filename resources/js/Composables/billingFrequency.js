@@ -59,7 +59,11 @@ export function useBillingFrequency(product, frequencyUnits) {
 
         const units = frequencyUnits.value ?? frequencyUnits;
 
-        return units.filter((unit) => contract_length.value >= (daysPerUnit[unit.name] ?? 0));
+        return units.filter((unit) => {
+            const unitDays = daysPerUnit[unit.name] ?? 0;
+
+            return unitDays > 0 && contract_length.value % unitDays === 0;
+        });
     });
 
     const billingFrequencyValues = computed(() => {

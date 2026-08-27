@@ -99,10 +99,9 @@ class ImportController extends BaseController
         $model = $request->input('model') ?? null;
         if ($model) {
             $importClass = ImportsEnum::tryFromName($model)->value;
-            $importHandler = new $importClass;
-            $template = $importHandler::getImportTemplate();
+            $template = $importClass::getImportTemplate();
 
-            return Excel::download(new ExportCSVTemplate($importHandler::class, $template['data']), $template['filename']);
+            return Excel::download(new ExportCSVTemplate($importClass, $template['data']), $template['filename']);
         }
 
         return parent::export($request);
