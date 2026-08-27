@@ -90,9 +90,13 @@ export function useBillingFrequency(product, frequencyUnits) {
         }
     );
 
-    watch([() => product.contract_term_unit, () => product.contract_term_value], () => {
-        calculateContractLengthDays();
-    });
+    watch(
+        [() => product.contract_term_unit, () => product.contract_term_value],
+        () => {
+            calculateContractLengthDays();
+        },
+        { immediate: true }
+    );
 
     return {
         contract_length,
