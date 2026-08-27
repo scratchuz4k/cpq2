@@ -29,6 +29,12 @@ const price = reactive({
 
 const showModal = ref(false);
 const editingRows = ref([]);
+const tableKey = ref(0);
+
+const resetTableEditing = () => {
+    editingRows.value = [];
+    tableKey.value += 1;
+};
 
 const confirmZeroCost = async () => {
     let result = await swal.fire({
@@ -65,20 +71,22 @@ const savePrice = async () => {
     isLoading.value = false;
 };
 
-const deletePrice = async (id) => {
+const deletePrice = async (row) => {
     let result = await swal.fire({ title: 'Are you sure?' });
     if (['cancel', 'backdrop'].includes(result.dismiss)) return;
 
+    resetTableEditing();
+
     if (props.productId) {
         try {
-            let index = prices.value.findIndex((e) => e.id == id);
-            await axios.delete(`/api/prices/${id}`);
+            let index = prices.value.findIndex((item) => item === row);
+            await axios.delete(`/api/prices/${row.id}`);
             prices.value.splice(index, 1);
         } catch (ex) {
             notyf.error(ex.response.data.message);
         }
     } else {
-        let index = prices.value.findIndex((e) => e === id || e.code == id);
+        let index = prices.value.findIndex((item) => item === row);
         prices.value.splice(index, 1);
     }
     Object.assign(price, { code: null, cost: 0, net: 0 });
@@ -103,11 +111,14 @@ const onRowEditSave = async (event) => {
     } else {
         prices.value[index] = { ...newData };
     }
+
+    resetTableEditing();
 };
 </script>
 
 <template>
     <DataTable
+        :key="tableKey"
         v-model:editingRows="editingRows"
         :value="prices"
         editMode="row"
@@ -182,7 +193,7 @@ const onRowEditSave = async (event) => {
         >
             <template #body="{ data }">
                 <Button
-                    @click="deletePrice(data.id)"
+                    @click="deletePrice(data)"
                     class="p-button p-component p-button-icon-only p-button-secondary p-button-rounded p-button-text"
                 >
                     <font-awesome-icon :icon="['far', 'trash-can']" />

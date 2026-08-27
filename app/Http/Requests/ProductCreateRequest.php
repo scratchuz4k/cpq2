@@ -89,6 +89,14 @@ class ProductCreateRequest extends FormRequest
         ];
     }
 
+    public function attributes(): array
+    {
+        return [
+            'contract_term_unit' => 'renewal terms unit',
+            'contract_term_value' => 'renewal terms value',
+        ];
+    }
+
     /**
      * Configure the validator instance.
      */

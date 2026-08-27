@@ -178,7 +178,7 @@ const items = ref([
                                             </div>
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label">Renewal Terms</label>
+                                            <label class="form-label">Renewal terms</label>
                                             <div class="row">
                                                 <div class="col-3">
                                                     <InputNumber
