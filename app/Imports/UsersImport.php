@@ -86,18 +86,9 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
                             return;
                         }
 
-                        $allowedGroupIds = $actingUser->groups
-                            ->pluck('id')
-                            ->map(fn ($id) => (string) $id)
-                            ->toArray();
-                        $requestedGroupIds = array_map(
-                            fn ($id) => (string) $id,
-                            $value
-                        );
-
                         if (
                             ! $this->actingUser->hasRole('Super Admin')
-                            && ! empty(array_diff($requestedGroupIds, $allowedGroupIds))
+                            && ! empty(array_diff($value, $actingUser->groups->pluck('id')->toArray()))
                         ) {
                             $fail("The {$attribute} field contains group(s) the authenticated user does not belong to.");
                         }
@@ -202,21 +193,7 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
     public function collection(Collection $collection): void
     {
         foreach ($collection->values() as $rowIndex => $row) {
-            $row = $row->toArray();
-
-            foreach (['is_active', 'sso'] as $booleanField) {
-                if (! array_key_exists($booleanField, $row)) {
-                    continue;
-                }
-
-                $booleanValue = filter_var($row[$booleanField], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-
-                if ($booleanValue !== null) {
-                    $row[$booleanField] = (int) $booleanValue;
-                }
-            }
-
-            $row = array_map(fn ($value) => trim((string) $value), $row);
+            $row = array_map(fn ($value) => trim((string) $value), $row->toArray());
             $this->results['data'][] = [
                 'index' => $rowIndex,
                 ...$row,
