@@ -20,6 +20,7 @@ class AccountResource extends JsonResource
             ...$this->resource->toArray(),
             'contacts' => (ContactResource::collection($this->contacts))->resolve(),
             'main_contact' => new ContactResource($main_contact),
+            'groups' => (GroupResource::collection($this->groups))->resolve(),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
