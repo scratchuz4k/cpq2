@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\AssignableGroups;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -26,8 +27,11 @@ class AccountUpdateRequest extends FormRequest
     {
         $user = Auth::user();
         $account_id = null;
+        $currentGroupIds = [];
         if ($this->route() && array_key_exists('account', $this->route()->parameters())) {
-            $account_id = $this->route()->parameters()['account']->id;
+            $account = $this->route()->parameters()['account'];
+            $account_id = $account->id;
+            $currentGroupIds = $account->groups()->pluck('groups.id')->all();
         }
 
         return [
@@ -45,7 +49,7 @@ class AccountUpdateRequest extends FormRequest
             'contacts.*.email' => 'nullable|email',
             'contacts.*.phone' => 'nullable|max_digits:12',
             'is_active' => 'boolean',
-            'groups' => 'nullable|array',
+            'groups' => ['nullable', 'array', new AssignableGroups($currentGroupIds)],
             'groups.*' => 'integer|exists:groups,id',
         ];
 

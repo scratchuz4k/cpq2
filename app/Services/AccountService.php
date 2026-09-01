@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Account;
 use App\Models\Contact;
 use App\Repositories\AccountRepository;
+use App\Support\GroupAssignment;
 use Illuminate\Support\Facades\Auth;
 
 class AccountService
@@ -35,13 +36,7 @@ class AccountService
             $this->accountRepository->syncContacts($account, $array['contacts']);
         }
 
-        if (! array_key_exists('groups', $array)) {
-            // Caller didn't specify groups at all (e.g. a non-UI caller) — fall back to
-            // the creating user's own groups, same safety net the old auto-assign hook provided.
-            $array['groups'] = Auth::user()->groups()->pluck('groups.id')->all();
-        }
-
-        $this->syncGroups($account, $array);
+        $this->syncGroups($account, $array, allowFloor: true);
 
         return $account;
     }
@@ -69,19 +64,31 @@ class AccountService
         return $account;
     }
 
-    protected function syncGroups(Account $account, array $array): void
+    /**
+     * On create ($allowFloor), a grouped actor that submits no groups gets the
+     * account floored to their own groups. On update we only touch group
+     * memberships when `groups` is explicitly supplied.
+     */
+    protected function syncGroups(Account $account, array $array, bool $allowFloor = false): void
     {
-        if (! array_key_exists('groups', $array) || ! is_array($array['groups'])) {
+        $actor = Auth::user();
+        $hasKey = array_key_exists('groups', $array) && is_array($array['groups']);
+
+        if (! $hasKey && ! ($allowFloor && $actor && $actor->isGrouped())) {
             return;
         }
 
-        $temp = [];
-        foreach ($array['groups'] as $group) {
-            $temp[$group] = [
-                'tenant_id' => Auth::user()->tenant_id,
-            ];
-        }
+        $submitted = $hasKey ? $array['groups'] : null;
 
-        $account->groups()->sync($temp);
+        $groupIds = GroupAssignment::resolve(
+            $actor,
+            $account->groups()->pluck('groups.id'),
+            $submitted,
+            'account',
+        );
+
+        $account->groups()->sync(
+            collect($groupIds)->mapWithKeys(fn ($id) => [$id => ['tenant_id' => $actor->tenant_id]])->all()
+        );
     }
 }

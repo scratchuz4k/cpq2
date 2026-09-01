@@ -56,6 +56,11 @@ const removeContact = (key) => {
 };
 
 const saveAccount = () => {
+    if (authUser.groups?.length && !form.groups.length) {
+        notyf.error('You must keep at least one of your groups assigned to the account.');
+        return;
+    }
+
     router.put(
         `/accounts/${props.account.id}`,
         { ...form, contacts: contacts.value, groups: form.groups.map((group) => group.id) },

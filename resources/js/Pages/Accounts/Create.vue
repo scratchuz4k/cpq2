@@ -46,6 +46,11 @@ const addContact = () => {
 const returnTo = new URLSearchParams(window.location.search).get('return_to');
 
 const saveAccount = () => {
+    if (authUser.groups?.length && !account.groups.length) {
+        notyf.error('You must assign at least one of your groups to the account.');
+        return;
+    }
+
     const url = returnTo ? `/accounts?return_to=${encodeURIComponent(returnTo)}` : '/accounts';
     router.post(
         url,

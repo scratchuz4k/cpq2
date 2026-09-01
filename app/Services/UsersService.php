@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Imports\UsersImport;
 use App\Models\User;
+use App\Support\GroupAssignment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
@@ -26,18 +27,7 @@ class UsersService
             $user->assignRole($array['role_id']);
         }
 
-        if (array_key_exists('groups', $array)) {
-            $groups = (array) ($array['groups'] ?? []);
-
-            $temp = [];
-            foreach ($groups as $group) {
-                $temp[$group] = [
-                    'tenant_id' => Auth::user()->tenant_id,
-                ];
-            }
-
-            $user->groups()->sync($temp);
-        }
+        $this->syncGroups($user, $array, allowFloor: true);
 
         if ($user->tenant_id) {
             $user->tenants()->sync($user->tenant_id);
@@ -56,18 +46,7 @@ class UsersService
 
         $user->update($array);
 
-        if (array_key_exists('groups', $array)) {
-            $groups = (array) ($array['groups'] ?? []);
-
-            $temp = [];
-            foreach ($groups as $group) {
-                $temp[$group] = [
-                    'tenant_id' => Auth::user()->tenant_id,
-                ];
-            }
-
-            $user->groups()->sync($temp);
-        }
+        $this->syncGroups($user, $array);
 
         if (array_key_exists('role_id', $array)) {
             $user->syncRoles($array['role_id']);
@@ -86,5 +65,35 @@ class UsersService
         Excel::import($import, $array['file']);
 
         return $import->results;
+    }
+
+    /**
+     * Apply the CPQ-530 group-assignment rules when a user's groups change.
+     *
+     * On create ($allowFloor), a grouped actor that submits no groups gets the
+     * new user floored to their own groups. On update we only touch memberships
+     * when `groups` is explicitly supplied.
+     */
+    protected function syncGroups(User $user, array $array, bool $allowFloor = false): void
+    {
+        $actor = Auth::user();
+        $hasKey = array_key_exists('groups', $array);
+
+        if (! $hasKey && ! ($allowFloor && $actor && $actor->isGrouped())) {
+            return;
+        }
+
+        $submitted = $hasKey ? (array) ($array['groups'] ?? []) : null;
+
+        $groupIds = GroupAssignment::resolve(
+            $actor,
+            $user->groups()->pluck('groups.id'),
+            $submitted,
+            'user',
+        );
+
+        $user->groups()->sync(
+            collect($groupIds)->mapWithKeys(fn ($id) => [$id => ['tenant_id' => $actor->tenant_id]])->all()
+        );
     }
 }

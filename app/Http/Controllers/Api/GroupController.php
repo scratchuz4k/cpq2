@@ -23,6 +23,12 @@ class GroupController extends BaseController
     {
 
         $dataProvider = new DataProvider(Group::class);
+
+        $viewer = $request->user();
+        if ($viewer && $viewer->isGrouped()) {
+            $dataProvider->builder = $dataProvider->builder->whereIn('id', $viewer->groupIds());
+        }
+
         try {
             $data = $dataProvider->get();
         } catch (Exception $e) {

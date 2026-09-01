@@ -132,6 +132,12 @@ class QuotePolicy
      */
     private function canManageQuote(User $user, Quote $quote): bool
     {
+        // CPQ-530: a grouped user can only touch a quote whose creator AND account
+        // share one of their groups.
+        if ($user->isGrouped() && ! $quote->isVisibleToGroups($user)) {
+            return false;
+        }
+
         $userAncestors = User::getChildAndOrphansUser()->get();
 
         return $user->id === $quote->user_id
