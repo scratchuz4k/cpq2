@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\ContractTermUnitsEnum;
+use App\Enums\FrequencyUnitsEnum;
 use App\Models\Product;
+use App\Rules\BillingFrequencyRule;
 use App\Rules\TenantExistsRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -54,8 +55,28 @@ class ProductUpdateRequest extends FormRequest
             'contract_term_unit' => [
                 Rule::requiredIf($this->input('price_plan_id') == 1),
                 'nullable',
-                Rule::in(ContractTermUnitsEnum::names()),
+                Rule::in(FrequencyUnitsEnum::names()),
             ],
+            'billing_frequency_value' => [
+                Rule::requiredIf(fn () => $this->input('price_plan_id') == 1),
+                'nullable',
+                'integer',
+                new BillingFrequencyRule,
+            ],
+            'billing_frequency_unit' => [
+                Rule::requiredIf(fn () => $this->input('price_plan_id') == 1),
+                'nullable',
+                'nullable',
+                Rule::in(FrequencyUnitsEnum::names()),
+            ],
+        ];
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'contract_term_unit' => 'renewal terms unit',
+            'contract_term_value' => 'renewal terms value',
         ];
     }
 

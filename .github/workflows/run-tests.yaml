@@ -2,7 +2,7 @@ name: Docker Build & Publish
 
 on:
     pull_request:
-        types: [opened, synchronize]
+        types: [opened, synchronize, ready_for_review]
 
 env:
     REGISTRY: ghcr.io
@@ -14,6 +14,7 @@ jobs:
         name: Run Pest and Cypress Tests
         runs-on: ubuntu-22.04
         environment: testing
+        if: github.event.pull_request.draft == false
 
         permissions:
             contents: read

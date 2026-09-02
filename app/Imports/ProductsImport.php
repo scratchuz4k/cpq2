@@ -113,7 +113,11 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
             if ($validator->fails()) {
                 $this->results['skipped']++;
-                $this->results['errors'][] = ['row' => $product, 'errors' => $validator->errors()->all()];
+                $this->results['errors'][] = [
+                    'row_index' => $row['index'] ?? null,
+                    'row' => $product,
+                    'errors' => $validator->errors()->all(),
+                ];
 
                 return false;
             }
@@ -157,7 +161,11 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
             } else {
                 if (Product::where('sku', $product['sku'])->exists()) {
                     $this->results['skipped']++;
-                    $this->results['errors'][] = ['row' => $product, 'error' => 'Product already exists'];
+                    $this->results['errors'][] = [
+                        'row_index' => $row['index'] ?? null,
+                        'row' => $product,
+                        'error' => 'Product already exists',
+                    ];
 
                     return false;
                 }
@@ -193,10 +201,18 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
         } catch (ValidationException $e) {
             $this->results['skipped']++;
-            $this->results['errors'][] = ['row' => $product, 'error' => $e->errors()];
+            $this->results['errors'][] = [
+                'row_index' => $row['index'] ?? null,
+                'row' => $product,
+                'error' => $e->errors(),
+            ];
         } catch (\Exception $e) {
             $this->results['skipped']++;
-            $this->results['errors'][] = ['row' => $product, 'error' => $e->getMessage()];
+            $this->results['errors'][] = [
+                'row_index' => $row['index'] ?? null,
+                'row' => $product,
+                'error' => $e->getMessage(),
+            ];
         }
 
         return false;
@@ -207,7 +223,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
         $deferredRows = [];
         $fileSkus = $collection->pluck('sku')->filter()->unique()->toArray();
 
-        foreach ($collection as $row) {
+        foreach ($collection as $rowIndex => $row) {
             if ($row->filter()->isEmpty()) {
                 continue;
             }
@@ -217,6 +233,9 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
                 return $value === '' ? null : $value;
             })->toArray();
+
+            $row['index'] = $rowIndex;
+
             $this->results['processed']++;
             $this->results['data'][] = $row;
             if (empty($row['parent_sku'])) {
@@ -263,7 +282,11 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
         if (count($deferredRows) > 0) {
             foreach ($deferredRows as $row) {
                 $this->results['skipped']++;
-                $this->results['errors'][] = ['row' => $row, 'error' => 'Parent Product with SKU: "'.$row['parent_sku'].'" not found!'];
+                $this->results['errors'][] = [
+                    'row_index' => $row['index'] ?? null,
+                    'row' => $row,
+                    'error' => 'Parent Product with SKU: "'.$row['parent_sku'].'" not found!',
+                ];
             }
         }
     }

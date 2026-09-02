@@ -193,6 +193,12 @@ watch(addressPostCode, () => {
                         <font-awesome-icon :icon="['fas', 'map-pin']" class="me-2"></font-awesome-icon
                         >{{ proxyValue.position?.lat }}, {{ proxyValue.position?.lon }}
                     </p>
+                    <p v-if="proxyValue.address.uprn" id="location_uprn">
+                        <strong>UPRN:</strong> {{ proxyValue.address.uprn }}
+                    </p>
+                    <p v-else-if="proxyValue.address.addressKey" id="location_addresskey">
+                        <strong>Address Key:</strong> {{ proxyValue.address.addressKey }}
+                    </p>
                     <p><i class="fa fa-location-dot"></i> <span id="location_geo"></span></p>
                     <iframe
                         v-if="proxyValue.position"

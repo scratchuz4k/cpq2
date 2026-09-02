@@ -28,13 +28,13 @@ optionAddons.addColumn('addon.categories.name', 'Categories');
 optionAddons.addColumn('addon.status', 'Status');
 optionAddons.addColumn('addon.price.cost', 'Cost Price', { style: { width: '150px' }, isSearchable: false });
 optionAddons.addColumn('addon.price.net', 'Net Price', { style: { width: '150px' }, isSearchable: false });
-optionAddons.addColumn('addon.price.net_spa', 'Net SPA', { style: { width: '150px' }, isSearchable: false });
+optionAddons.addColumn('addon.price.net_spa', 'Final Sell Price', { style: { width: '150px' }, isSearchable: false });
 optionAddons.addColumn('addon.price.active_spas', 'Active SPAs', {
     style: { width: '350px' },
     isSearchable: false,
     isSortable: false
 });
-optionAddons.addColumn('addon.price_plan.name', 'Contract Term');
+optionAddons.addColumn('addon.price_plan.name', 'Renewal Term');
 optionAddons.addColumn('addon.steps.name', 'Steps', { style: { width: '150px' } });
 optionAddons.addColumn('addon.steps.solution_type.name', 'Solution Type', { style: { width: '250px' } });
 

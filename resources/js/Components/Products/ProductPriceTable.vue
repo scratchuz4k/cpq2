@@ -29,6 +29,12 @@ const price = reactive({
 
 const showModal = ref(false);
 const editingRows = ref([]);
+const tableKey = ref(0);
+
+const resetTableEditing = () => {
+    editingRows.value = [];
+    tableKey.value += 1;
+};
 
 const confirmZeroCost = async () => {
     let result = await swal.fire({
@@ -65,20 +71,22 @@ const savePrice = async () => {
     isLoading.value = false;
 };
 
-const deletePrice = async (id) => {
+const deletePrice = async (row) => {
     let result = await swal.fire({ title: 'Are you sure?' });
     if (['cancel', 'backdrop'].includes(result.dismiss)) return;
 
+    resetTableEditing();
+
     if (props.productId) {
         try {
-            let index = prices.value.findIndex((e) => e.id == id);
-            await axios.delete(`/api/prices/${id}`);
+            let index = prices.value.findIndex((item) => item === row);
+            await axios.delete(`/api/prices/${row.id}`);
             prices.value.splice(index, 1);
         } catch (ex) {
             notyf.error(ex.response.data.message);
         }
     } else {
-        let index = prices.value.findIndex((e) => e === id || e.code == id);
+        let index = prices.value.findIndex((item) => item === row);
         prices.value.splice(index, 1);
     }
     Object.assign(price, { code: null, cost: 0, net: 0 });
@@ -103,11 +111,14 @@ const onRowEditSave = async (event) => {
     } else {
         prices.value[index] = { ...newData };
     }
+
+    resetTableEditing();
 };
 </script>
 
 <template>
     <DataTable
+        :key="tableKey"
         v-model:editingRows="editingRows"
         :value="prices"
         editMode="row"
@@ -116,7 +127,7 @@ const onRowEditSave = async (event) => {
         :pt="{
             column: {
                 bodycell: ({ state }) => ({
-                    style: state['d_editing'] && 'padding-top: 0.75rem; padding-bottom: 0.75rem',
+                    style: state['d_editing'] && 'padding0 !important',
                     class: 'small'
                 }),
                 headercell: {
@@ -139,7 +150,7 @@ const onRowEditSave = async (event) => {
             </div>
         </template>
 
-        <Column field="code" header="Code" />
+        <Column field="code" header="Price Code" />
         <Column field="cost" header="Cost Price">
             <template #body="{ data, field }">{{ format.GBP(data[field]) }}</template>
             <template #editor="{ data, field }"><InputPrice v-model="data[field]" /></template>
@@ -148,18 +159,25 @@ const onRowEditSave = async (event) => {
             <template #body="{ data, field }">{{ format.GBP(data[field]) }}</template>
             <template #editor="{ data, field }"><InputPrice v-model="data[field]" /></template>
         </Column>
-        <Column field="net" header="Net SPA">
-            <template #body="{ data, field }">{{ format.GBP(data[field]) }}</template>
-        </Column>
         <Column field="active_spas" header="Active SPA">
             <template #body="slotProps">
-                <template v-for="item in slotProps.data.active_spas" :key="item.id" class="small">
+                <template v-if="!slotProps.data.active_spas || !slotProps.data.active_spas.length"> N/A </template>
+                <template v-else v-for="item in slotProps.data.active_spas" :key="item.id" class="small">
                     {{ item.operation.code }}:
                     {{ item.percentage ? format.decimalPlaces(item.percentage) + '%' : format.GBP(item.value) }}
                 </template>
             </template>
         </Column>
-        <Column :rowEditor="true" v-if="hasRole('Super Admin') || can('update price')" style="width: 5%">
+        <Column field="net_spa" header="Final Sell Price">
+            <template #body="{ data, field }">
+                {{ format.GBP(data[field] ?? data['net']) }}
+            </template>
+        </Column>
+        <Column
+            :rowEditor="true"
+            v-if="hasRole('Super Admin') || can('update price')"
+            style="width: 40px; padding: 0 !important; text-align: center"
+        >
             <template #roweditoriniticon>
                 <Button
                     class="p-button p-component p-button-icon-only p-button-secondary p-button-rounded p-button-text p-datatable-row-editor-init"
@@ -168,10 +186,14 @@ const onRowEditSave = async (event) => {
                 </Button>
             </template>
         </Column>
-        <Column bodyStyle="text-align:center" v-if="hasRole('Super Admin') || can('delete price')" style="width: 5%">
+        <Column
+            bodyStyle="text-align:center"
+            v-if="hasRole('Super Admin') || can('delete price')"
+            style="width: 40px; padding: 0 !important; text-align: center"
+        >
             <template #body="{ data }">
                 <Button
-                    @click="deletePrice(data.id)"
+                    @click="deletePrice(data)"
                     class="p-button p-component p-button-icon-only p-button-secondary p-button-rounded p-button-text"
                 >
                     <font-awesome-icon :icon="['far', 'trash-can']" />
@@ -192,7 +214,7 @@ const onRowEditSave = async (event) => {
         <template #header><h3>Add new Price</h3></template>
 
         <div class="mb-3">
-            <label class="form-label">Code:</label>
+            <label class="form-label">Price Code:</label>
             <input id="price-code" class="form-control" v-model="price.code" />
         </div>
         <div class="mb-3">
@@ -216,5 +238,18 @@ const onRowEditSave = async (event) => {
         font-weight: 500;
         color: var(--table-header-dark-grey) !important;
     }
+}
+
+.p-datatable tr th {
+    white-space: nowrap;
+}
+
+.p-datatable-row-editor-cancel,
+.p-datatable-row-editor-save {
+    padding: 0 !important;
+}
+
+.p-datatable .p-datatable-empty-message td:not(.p-0) {
+    padding: 0 !important;
 }
 </style>

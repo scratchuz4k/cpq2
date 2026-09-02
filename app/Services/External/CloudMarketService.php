@@ -134,6 +134,7 @@ class CloudMarketService
             'Latitude not set' => 'There is no latitude set for this address.',
             'Longitude not set' => 'There is no longitude set for this address.',
             'Street is not set' => 'There is no street set for this address.',
+            'Missing UPRN' => 'Products may not be returned at this address as a UPRN is not available. Products may be available at a different variant of this address.',
         ];
 
         $mappedErrors = [];

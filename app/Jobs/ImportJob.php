@@ -5,11 +5,14 @@ namespace App\Jobs;
 use App\Enums\ImportsEnum;
 use App\Enums\ImportStatusesEnum;
 use App\Models\Import;
+use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use Spatie\Multitenancy\Jobs\TenantAware;
+use Spatie\Permission\PermissionRegistrar;
 
 class ImportJob implements ShouldQueue, TenantAware
 {
@@ -20,10 +23,13 @@ class ImportJob implements ShouldQueue, TenantAware
     /**
      * Create a new job instance.
      */
-    public function __construct(public Import $import, public bool $overwrite = false)
-    {
+    public function __construct(
+        public Import $import,
+        public ?User $actingUser = null,
+        public bool $overwrite = false
+    ) {
         $importClass = ImportsEnum::tryFromName($this->import->model)->value;
-        $this->importHandler = new $importClass($overwrite);
+        $this->importHandler = new $importClass($overwrite, $actingUser);
     }
 
     /**
@@ -31,13 +37,21 @@ class ImportJob implements ShouldQueue, TenantAware
      */
     public function handle(): void
     {
-        $resource = $this->import->file;
-        Excel::import($this->importHandler, Storage::disk('public')->path($resource->getRouteValue()));
+        try {
+            app(PermissionRegistrar::class)->setPermissionsTeamId($this->import->tenant_id);
 
-        $this->import->update([
-            'status' => ImportStatusesEnum::COMPLETED->name,
-            'data' => $this->importHandler->getResults(),
-        ]);
+            $resource = $this->import->file;
+            Excel::import($this->importHandler, Storage::disk('public')->path($resource->getRouteValue()));
+
+            $this->import->update([
+                'status' => ImportStatusesEnum::COMPLETED->name,
+                'data' => $this->importHandler->getResults(),
+            ]);
+        } catch (\Exception $e) {
+            Log::error("[JOB] Import Job | Error processing: {$e->getMessage()}");
+        } finally {
+            app(PermissionRegistrar::class)->setPermissionsTeamId(null);
+        }
     }
 
     public function failed()

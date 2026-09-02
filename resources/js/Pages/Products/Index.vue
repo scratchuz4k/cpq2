@@ -32,12 +32,16 @@ options.addColumn('updated_at', 'Updated At');
 options.addColumn('expires_at', 'Expires At');
 options.addColumn('price.cost', 'Cost', { isSearchable: false });
 options.addColumn('price.net', 'Net', { isSearchable: false });
-options.addColumn('price.net_spa', 'Net Spa', { isSearchable: false });
+options.addColumn('price.net_spa', 'Final Sell Price', { isSearchable: false });
 options.addColumn('price.active_spas.rule.name', 'Active Spa', { isSearchable: false, isSortable: false });
-options.addColumn('price_plan.name', 'Contact Term', { isSortable: false });
+options.addColumn('price_plan.name', 'Price Plan', { isSortable: false });
+options.addColumn('contract_term_value', 'Renewal Terms Value');
+options.addColumn('contract_term_unit', 'Renewal Terms Unit');
+options.addColumn('billing_frequency_value', 'Billing Frequency Value');
+options.addColumn('billing_frequency_unit', 'Billing Frequency Unit');
 // options.addColumn('child.price.cost', 'Cost Price', { width: '150px' }, { isSearchable: false });
 // options.addColumn('child.price.net', 'Net Price', { width: '150px' }, { isSearchable: false });
-// options.addColumn('child.price.net_spa', 'Net SPA', { width: '150px' }, { isSearchable: false });
+// options.addColumn('child.price.net_spa', 'Final Sell Price', { width: '150px' }, { isSearchable: false });
 
 options.addColumnFilter(
     'steps.solution_type.name',
@@ -61,11 +65,21 @@ const totalProducts = ref(0);
     <AuthenticatedLayout>
         <Header title="Products" :breadcrumbs="items">
             <template #buttons>
-                <Link href="/blacklists" id="blacklist-index-btn" class="btn btn-outline-primary me-2">
+                <Link
+                    v-if="can(`viewAny blacklist`) || hasRole('Super Admin')"
+                    href="/blacklists"
+                    id="blacklist-index-btn"
+                    class="btn btn-outline-primary me-2"
+                >
                     <font-awesome-icon :icon="['fas', 'shop-lock']" />
                     Blacklisted Items
                 </Link>
-                <Link href="/imports" id="product-import-btn" class="btn btn-outline-primary me-2">
+                <Link
+                    v-if="can(`viewAny import`) || hasRole('Super Admin')"
+                    href="/imports"
+                    id="product-import-btn"
+                    class="btn btn-outline-primary me-2"
+                >
                     <font-awesome-icon :icon="['fas', 'file-import']"></font-awesome-icon>
                     Import Products
                 </Link>

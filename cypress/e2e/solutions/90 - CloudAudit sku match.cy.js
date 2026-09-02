@@ -60,6 +60,9 @@ describe('Match CouldAudit Sku', () => {
         cy.get('#contract_term_value').type('100');
         cy.selectOption('#contract_term_unit', 'Days');
 
+        cy.selectOption('#billing_frequency_value', '50');
+        cy.selectOption('#billing_frequency_unit', 'Days');
+
         cy.get('#add-price-btn').click();
         cy.wait(1000);
         cy.get('#price-code').type(productPrice.code);
