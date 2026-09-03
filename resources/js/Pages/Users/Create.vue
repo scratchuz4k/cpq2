@@ -20,7 +20,8 @@ const form = reactive({
     password: null,
     role: null,
     role_id: null,
-    groups: authUser.groups ? [...authUser.groups] : [],
+    temp_groups: authUser.groups ? [...authUser.groups] : [],
+    groups: [],
     commission_rate: 0,
     sso: false,
     is_active: true
@@ -41,13 +42,13 @@ const getFilters = () => {
 };
 
 const saveUser = () => {
-    if (authUser.groups?.length && !form.groups.length) {
+    if (authUser.groups?.length && !form.temp_groups.length) {
         notyf.error('You must assign at least one of your groups to the new user.');
         return;
     }
 
     form.role_id = form.role?.id;
-    form.groups = form.groups.map((group) => group.id);
+    form.groups = form.temp_groups.map((group) => group.id);
 
     router.post(
         `/users`,
@@ -145,7 +146,7 @@ const items = ref([
                     </p>
                     <InputSelectMultiple
                         id="user-group"
-                        v-model="form.groups"
+                        v-model="form.temp_groups"
                         url="/groups"
                         :fields="['name']"
                         :placeholder="'Select a Group'"
