@@ -145,6 +145,36 @@ it('removes a user from the editor\'s group while preserving groups the editor i
     expect($target->fresh()->groups->pluck('id')->all())->toBe([$this->groupC->id]);
 });
 
+it('rejects updating a user to an email already used by another user', function () {
+    $other = ($this->makeUser)();
+    $other->update(['email' => 'taken@example.test']);
+
+    $target = ($this->makeUser)();
+
+    ($this->login)(($this->makeUser)());
+
+    $this->putJson("api/users/{$target->id}", [
+        'name' => 'Renamed',
+        'email' => 'taken@example.test',
+    ])->assertStatus(422)->assertJsonValidationErrorFor('email');
+
+    expect($target->fresh()->email)->not->toBe('taken@example.test');
+});
+
+it('allows updating a user while keeping their own email', function () {
+    $target = ($this->makeUser)();
+    $target->update(['email' => 'keep@example.test']);
+
+    ($this->login)(($this->makeUser)());
+
+    $this->putJson("api/users/{$target->id}", [
+        'name' => 'Renamed',
+        'email' => 'keep@example.test',
+    ])->assertSuccessful();
+
+    expect($target->fresh()->name)->toBe('Renamed');
+});
+
 /*
 |--------------------------------------------------------------------------
 | Group page — add / remove
