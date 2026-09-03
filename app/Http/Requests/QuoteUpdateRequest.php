@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\QuoteStatusesEnum;
+use App\Rules\SelectableAccount;
 use Illuminate\Foundation\Http\FormRequest;
 
 class QuoteUpdateRequest extends FormRequest
@@ -24,7 +25,7 @@ class QuoteUpdateRequest extends FormRequest
     {
         return [
             'user_id' => 'exists:users,id',
-            'account_id' => 'exists:accounts,id',
+            'account_id' => ['sometimes', 'exists:accounts,id', new SelectableAccount],
             'solution_type_id' => 'exists:solution_types,id',
             'items' => 'array',
             'items.*.quantity' => 'required|numeric',

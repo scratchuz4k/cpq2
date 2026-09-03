@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\AssignableGroups;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UserUpdateRequest extends FormRequest
@@ -21,6 +22,9 @@ class UserUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $target = $this->route('user');
+        $currentGroupIds = $target instanceof \App\Models\User ? $target->groupIds()->all() : [];
+
         return [
             'name' => ['string', 'max:255'],
             'email' => ['string', 'email', 'max:255'],
@@ -34,6 +38,8 @@ class UserUpdateRequest extends FormRequest
                     }
                 },
             ],
+            'groups' => ['nullable', 'array', new AssignableGroups($currentGroupIds)],
+            'groups.*' => ['integer', 'exists:groups,id'],
         ];
     }
 }

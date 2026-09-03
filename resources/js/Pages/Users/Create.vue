@@ -41,6 +41,11 @@ const getFilters = () => {
 };
 
 const saveUser = () => {
+    if (authUser.groups?.length && !form.groups.length) {
+        notyf.error('You must assign at least one of your groups to the new user.');
+        return;
+    }
+
     form.role_id = form.role?.id;
     form.groups = form.groups.map((group) => group.id);
 
@@ -130,14 +135,13 @@ const items = ref([
                 <div class="mb-3">
                     <label for="user-group" class="form-label">Groups:</label>
                     <p class="mb-3 small">
-                        If you're user account <b>is</b> assigned to any groups, these are selected below by default.
-                        You may remove these groups, but you can only assign groups that you belong to. If all groups
-                        are removed, the new user will inherit all of your groups.
+                        If your user account <b>is</b> assigned to any groups, they are selected below by default. You
+                        can only assign groups that you belong to, and the new user must stay in at least one of them.
                     </p>
 
                     <p class="mb-3 small">
-                        If you're user account <b>is not</b> assigned to any groups, no groups are selected by default.
-                        You can choose any group(s) for the new user.
+                        If your user account <b>is not</b> assigned to any groups, no groups are selected by default.
+                        You can choose any group(s), or none, for the new user.
                     </p>
                     <InputSelectMultiple
                         id="user-group"

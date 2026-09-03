@@ -1,7 +1,7 @@
 <script setup>
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, router } from '@inertiajs/vue3';
+import { Head, router, usePage } from '@inertiajs/vue3';
 import Accordion from 'primevue/accordion';
 import AccordionPanel from 'primevue/accordionpanel';
 import AccordionHeader from 'primevue/accordionheader';
@@ -10,14 +10,33 @@ import InputMask from 'primevue/inputmask';
 import { reactive, ref } from 'vue';
 import ToggleSwitch from 'primevue/toggleswitch';
 import { checkLength, integerOnly } from '@/Composables/input.js';
+import InputSelectMultiple from '@/Components/InputSelectMultiple.vue';
+
+const page = usePage();
+const authUser = page.props.auth.user;
 
 const account = reactive({
     name: null,
     reference: null,
     contacts: [],
     activePanel: 0,
-    is_active: true
+    is_active: true,
+    groups: authUser.groups ? [...authUser.groups] : []
 });
+
+const getGroupFilters = () => {
+    let filters = [];
+
+    if (authUser.groups.length) {
+        filters.push({
+            column: 'id',
+            operator: 'in',
+            value: authUser.groups.map((item) => item.id)
+        });
+    }
+
+    return filters;
+};
 
 const addContact = () => {
     account.contacts.push({});
@@ -27,19 +46,28 @@ const addContact = () => {
 const returnTo = new URLSearchParams(window.location.search).get('return_to');
 
 const saveAccount = () => {
+    if (authUser.groups?.length && !account.groups.length) {
+        notyf.error('You must assign at least one of your groups to the account.');
+        return;
+    }
+
     const url = returnTo ? `/accounts?return_to=${encodeURIComponent(returnTo)}` : '/accounts';
-    router.post(url, account, {
-        onSuccess: (page) => {
-            notyf.success('Created with Success');
-        },
-        onError: (errors) => {
-            let string = '';
-            Object.keys(errors).forEach((key) => {
-                string += errors[key] + '<br>';
-            });
-            notyf.error(string);
+    router.post(
+        url,
+        { ...account, groups: account.groups.map((group) => group.id) },
+        {
+            onSuccess: (page) => {
+                notyf.success('Created with Success');
+            },
+            onError: (errors) => {
+                let string = '';
+                Object.keys(errors).forEach((key) => {
+                    string += errors[key] + '<br>';
+                });
+                notyf.error(string);
+            }
         }
-    });
+    );
 };
 
 const removeContact = (key) => {
@@ -93,6 +121,20 @@ const items = ref([
                 <div class="col">
                     <label for="account-reference" class="form-label">Reference:</label>
                     <input id="account-reference" class="form-control" v-model="account.reference" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col">
+                    <label for="account-group" class="form-label">Group:</label>
+                    <InputSelectMultiple
+                        id="account-group"
+                        v-model="account.groups"
+                        url="/groups"
+                        :fields="['name']"
+                        :placeholder="'Select a Group'"
+                        :query="getGroupFilters()"
+                    >
+                    </InputSelectMultiple>
                 </div>
             </div>
             <h2>Contacts</h2>

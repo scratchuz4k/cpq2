@@ -48,6 +48,11 @@ const getFilters = () => {
 };
 
 const saveUser = () => {
+    if (authUser.groups?.length && !form.groups.length) {
+        notyf.error('You must keep at least one of your groups assigned to this user.');
+        return;
+    }
+
     proxyValue.value.role_id = form.role ? [form.role.id] : [];
     proxyValue.value.groups = form.groups.map((item) => item.id);
 
