@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Account;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -10,10 +11,27 @@ class GroupAccountCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
+     *
+     * CPQ-530 "Additional Group Settings":
+     *  - Ungrouped users may add any account to any group.
+     *  - Grouped users may only move an account it already shares a group with
+     *    into another of the groups they belong to.
      */
     public function authorize(): bool
     {
-        return true;
+        $user = Auth::user();
+
+        if (! $user || ! $user->isGrouped()) {
+            return true;
+        }
+
+        if (! $user->groupIds()->contains((int) $this->input('group_id'))) {
+            return false;
+        }
+
+        $account = Account::with('groups')->find($this->input('account_id'));
+
+        return $account !== null && $user->sharesGroupWith($account->groups->pluck('id'));
     }
 
     /**

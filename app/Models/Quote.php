@@ -8,6 +8,7 @@ use App\Models\Scopes\TenantScope;
 use App\Trait\HasConfigurations;
 use App\Trait\RegisterActivity;
 use App\Trait\SetTenantId;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -87,6 +88,36 @@ class Quote extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * CPQ-530: a quote is visible to a grouped user only when the user shares a
+     * group with both the quote's creator and the quote's account. Ungrouped
+     * users are unrestricted.
+     */
+    public function scopeVisibleToGroups(Builder $query, User $user): Builder
+    {
+        if (! $user->isGrouped()) {
+            return $query;
+        }
+
+        $groupIds = $user->groupIds();
+
+        return $query
+            ->whereHas('user.groups', fn ($q) => $q->whereIn('groups.id', $groupIds))
+            ->whereHas('account.groups', fn ($q) => $q->whereIn('groups.id', $groupIds));
+    }
+
+    public function isVisibleToGroups(User $user): bool
+    {
+        if (! $user->isGrouped()) {
+            return true;
+        }
+
+        return static::withoutGlobalScopes()
+            ->whereKey($this->getKey())
+            ->visibleToGroups($user)
+            ->exists();
     }
 
     public function solutionType(): BelongsTo

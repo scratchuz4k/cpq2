@@ -26,11 +26,12 @@ class GroupPolicy
      */
     public function view(User $user, Group $group): bool
     {
-        if ($user->can("view $this->model")) {
-            return true;
+        if (! $user->can("view $this->model")) {
+            return false;
         }
 
-        return false;
+        // CPQ-530: grouped users may only view groups they belong to.
+        return $this->canReach($user, $group);
     }
 
     /**
@@ -50,11 +51,24 @@ class GroupPolicy
      */
     public function update(User $user, Group $group): bool
     {
-        if ($user->can("update $this->model")) {
+        if (! $user->can("update $this->model")) {
+            return false;
+        }
+
+        return $this->canReach($user, $group);
+    }
+
+    /**
+     * CPQ-530: ungrouped users (and Super Admin) can reach any group; grouped
+     * users only the groups they belong to.
+     */
+    private function canReach(User $user, Group $group): bool
+    {
+        if (! $user->isGrouped() || $user->hasRole('Super Admin')) {
             return true;
         }
 
-        return false;
+        return $user->groupIds()->contains($group->id);
     }
 
     /**

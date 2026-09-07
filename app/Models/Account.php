@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Scopes\TenantScope;
 use App\Trait\SetTenantId;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -49,5 +50,18 @@ class Account extends Model
     public function groups(): BelongsToMany
     {
         return $this->belongsToMany(Group::class, 'group_account');
+    }
+
+    /**
+     * CPQ-530: restrict accounts to those a grouped user shares a group with.
+     * Ungrouped users are unrestricted.
+     */
+    public function scopeVisibleToGroups(Builder $query, User $user): Builder
+    {
+        if (! $user->isGrouped()) {
+            return $query;
+        }
+
+        return $query->whereHas('groups', fn ($q) => $q->whereIn('groups.id', $user->groupIds()));
     }
 }
