@@ -135,15 +135,7 @@ const items = ref([
                 </div>
                 <div class="mb-3">
                     <label for="user-group" class="form-label">Groups:</label>
-                    <p class="mb-3 small">
-                        If your user account <b>is</b> assigned to any groups, they are selected below by default. You
-                        can only assign groups that you belong to, and the new user must stay in at least one of them.
-                    </p>
-
-                    <p class="mb-3 small">
-                        If your user account <b>is not</b> assigned to any groups, no groups are selected by default.
-                        You can choose any group(s), or none, for the new user.
-                    </p>
+                    <GroupFieldHelp subject="user" />
                     <InputSelectMultiple
                         id="user-group"
                         v-model="form.temp_groups"

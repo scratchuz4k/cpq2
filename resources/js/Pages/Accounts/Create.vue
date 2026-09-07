@@ -126,6 +126,7 @@ const items = ref([
             <div class="row mb-3">
                 <div class="col">
                     <label for="account-group" class="form-label">Group:</label>
+                    <GroupFieldHelp subject="account" />
                     <InputSelectMultiple
                         id="account-group"
                         v-model="account.groups"

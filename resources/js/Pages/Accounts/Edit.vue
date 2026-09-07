@@ -6,7 +6,7 @@ import Accordion from 'primevue/accordion';
 import AccordionPanel from 'primevue/accordionpanel';
 import AccordionHeader from 'primevue/accordionheader';
 import AccordionContent from 'primevue/accordioncontent';
-import { ref, reactive } from 'vue';
+import { ref, reactive, computed } from 'vue';
 import ToggleSwitch from 'primevue/toggleswitch';
 import { integerOnly } from '@/Composables/input.js';
 import InputSelectMultiple from '@/Components/InputSelectMultiple.vue';
@@ -25,19 +25,19 @@ const activePanel = reactive({
 const form = reactive({ ...props.account, groups: props.account.groups ? [...props.account.groups] : [] });
 const contacts = ref([...props.account.contacts]);
 
-const getGroupFilters = () => {
-    let filters = [];
+const authGroupIds = (authUser.groups ?? []).map((g) => g.id);
 
-    if (authUser.groups.length) {
-        filters.push({
-            column: 'id',
-            operator: 'in',
-            value: authUser.groups.map((item) => item.id)
-        });
-    }
+// The /api/groups endpoint scopes results to the acting user's own groups plus
+// (via `for_account_id`) the groups of the account being edited, so no client
+// filter is needed here.
+const groupParams = { for_account_id: props.account.id };
 
-    return filters;
-};
+// Groups the account is in but the acting user is not: selected but locked.
+const lockedGroupIds = computed(() =>
+    !authGroupIds.length
+        ? []
+        : (props.account.groups ?? []).filter((g) => !authGroupIds.includes(g.id)).map((g) => g.id)
+);
 
 const addContact = () => {
     contacts.value.push({});
@@ -123,13 +123,15 @@ const items = ref([
             <div class="row mb-3">
                 <div class="col">
                     <label for="account-group" class="form-label">Group:</label>
+                    <GroupFieldHelp subject="account" />
                     <InputSelectMultiple
                         id="account-group"
                         v-model="form.groups"
                         url="/groups"
                         :fields="['name']"
                         :placeholder="'Select a Group'"
-                        :query="getGroupFilters()"
+                        :params="groupParams"
+                        :locked-ids="lockedGroupIds"
                     >
                     </InputSelectMultiple>
                 </div>
