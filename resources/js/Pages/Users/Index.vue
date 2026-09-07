@@ -55,6 +55,7 @@ const saveNewGroup = async () => {
     try {
         await axios.post('/api/groups', { name: newGroup.value });
         showGroupModel.value = false;
+        newGroup.value = '';
         emitter.emit('datatable-refresh');
         notyf.success('Created with Success');
     } catch (ex) {

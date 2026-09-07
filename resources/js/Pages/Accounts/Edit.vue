@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, router } from '@inertiajs/vue3';
+import { Head, router, usePage } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import Accordion from 'primevue/accordion';
 import AccordionPanel from 'primevue/accordionpanel';
@@ -9,17 +9,35 @@ import AccordionContent from 'primevue/accordioncontent';
 import { ref, reactive } from 'vue';
 import ToggleSwitch from 'primevue/toggleswitch';
 import { integerOnly } from '@/Composables/input.js';
+import InputSelectMultiple from '@/Components/InputSelectMultiple.vue';
 
 const props = defineProps({
     account: Object
 });
 
+const page = usePage();
+const authUser = page.props.auth.user;
+
 const activePanel = reactive({
     value: 0
 });
 
-const form = reactive({ ...props.account });
+const form = reactive({ ...props.account, groups: props.account.groups ? [...props.account.groups] : [] });
 const contacts = ref([...props.account.contacts]);
+
+const getGroupFilters = () => {
+    let filters = [];
+
+    if (authUser.groups.length) {
+        filters.push({
+            column: 'id',
+            operator: 'in',
+            value: authUser.groups.map((item) => item.id)
+        });
+    }
+
+    return filters;
+};
 
 const addContact = () => {
     contacts.value.push({});
@@ -40,7 +58,7 @@ const removeContact = (key) => {
 const saveAccount = () => {
     router.put(
         `/accounts/${props.account.id}`,
-        { ...form, contacts: contacts.value },
+        { ...form, contacts: contacts.value, groups: form.groups.map((group) => group.id) },
         {
             onSuccess: (page) => {
                 notyf.success('Updated with Success');
@@ -88,13 +106,27 @@ const items = ref([
                         </template>
                     </ToggleSwitch>
                 </div>
-                <div class="col">
+                <div class="col-6">
                     <label for="account-name" class="form-label">Name:</label>
                     <input id="account-name" class="form-control" v-model="form.name" />
                 </div>
-                <div class="col">
+                <div class="col-6">
                     <label for="account-reference" class="form-label">Reference:</label>
                     <input id="account-reference" class="form-control" v-model="form.reference" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-6">
+                    <label for="account-group" class="form-label">Group:</label>
+                    <InputSelectMultiple
+                        id="account-group"
+                        v-model="form.groups"
+                        url="/groups"
+                        :fields="['name']"
+                        :placeholder="'Select a Group'"
+                        :query="getGroupFilters()"
+                    >
+                    </InputSelectMultiple>
                 </div>
             </div>
             <h2>Contacts</h2>

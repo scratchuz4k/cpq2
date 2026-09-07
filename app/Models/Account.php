@@ -4,15 +4,12 @@ namespace App\Models;
 
 use App\Models\Scopes\TenantScope;
 use App\Trait\SetTenantId;
-use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class Account extends Model
 {
@@ -32,22 +29,6 @@ class Account extends Model
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
-
-        static::created(function ($account) {
-            $user = Auth::user();
-            if ($user && $user->group()) {
-                try {
-                    GroupAccount::create([
-                        'account_id' => $account->id,
-                        'group_id' => $user->group()->id,
-                    ]);
-                } catch (Exception $e) {
-                    if (! config('app.debug')) {
-                        Log::error($e->getMessage());
-                    }
-                }
-            }
-        });
     }
 
     public function tenant(): BelongsTo

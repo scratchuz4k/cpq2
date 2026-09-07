@@ -45,6 +45,8 @@ class AccountUpdateRequest extends FormRequest
             'contacts.*.email' => 'nullable|email',
             'contacts.*.phone' => 'nullable|max_digits:12',
             'is_active' => 'boolean',
+            'groups' => 'nullable|array',
+            'groups.*' => 'integer|exists:groups,id',
         ];
 
     }
