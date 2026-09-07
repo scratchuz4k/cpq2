@@ -111,11 +111,11 @@ const items = ref([
                         </template>
                     </ToggleSwitch>
                 </div>
-                <div class="col">
+                <div class="col-6">
                     <label for="account-name" class="form-label">Name:</label>
                     <input id="account-name" class="form-control" v-model="form.name" />
                 </div>
-                <div class="col">
+                <div class="col-6">
                     <label for="account-reference" class="form-label">Reference:</label>
                     <input id="account-reference" class="form-control" v-model="form.reference" />
                 </div>
