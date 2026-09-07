@@ -121,7 +121,7 @@ const items = ref([
                 </div>
             </div>
             <div class="row mb-3">
-                <div class="col">
+                <div class="col-6">
                     <label for="account-group" class="form-label">Group:</label>
                     <GroupFieldHelp subject="account" />
                     <InputSelectMultiple

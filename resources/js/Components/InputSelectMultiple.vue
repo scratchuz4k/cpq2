@@ -252,8 +252,10 @@ search();
                     :style="{ cursor: isLocked(option) ? 'not-allowed' : 'pointer' }"
                 >
                     <span class="flex-shrink-0 option-checkbox">
-                        <font-awesome-icon v-if="isLocked(option)" :icon="['fas', 'lock']" />
-                        <font-awesome-icon v-else-if="isSelected(option)" :icon="['fas', 'square-check']" />
+                        <font-awesome-icon
+                            v-if="isSelected(option) || isLocked(option)"
+                            :icon="['fas', 'square-check']"
+                        />
                         <font-awesome-icon v-else :icon="['far', 'square']" />
                     </span>
                     <span class="flex-grow-1">

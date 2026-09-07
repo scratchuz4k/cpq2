@@ -72,8 +72,10 @@ const onGroupsClose = async () => {
     lastPromptSignature = signature;
 
     await swal.fire({
-        title: 'Are you sure?',
-        text: 'Any groups removed from your own user can only be re-added by another authorized user'
+        title: 'Please Note',
+        text: 'Any groups removed from your own user can only be re-added by another authorized user.',
+        width: '480px',
+        showCancelButton: false
     });
     // Informational only: the selection is intentionally left as-is.
 };
@@ -83,7 +85,7 @@ const saveUser = () => {
         notyf.error(
             isSelf
                 ? 'You cannot remove all groups from your account. Please contact a company administrator'
-                : 'You must keep at least one of your groups assigned to this user.'
+                : 'You must keep at least one of your groups assigned to this user'
         );
         return;
     }
