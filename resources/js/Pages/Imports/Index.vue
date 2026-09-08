@@ -216,11 +216,8 @@ watch(
                                 id="products-import-template-link"
                                 >sample CSV template</a
                             >
-                            to see and example of the format required.
+                            to see and example of the format required. Maximum file upload size is 2 MB.
                         </i>
-                    </p>
-                    <p class="text-muted">
-                        <i class="small">Maximum file upload size is 2 MB.</i>
                     </p>
                     <div v-if="form.model === 'Product'" class="form-check px-0 pt-2">
                         <Checkbox
@@ -265,12 +262,8 @@ watch(
                         :size="'small'"
                         class="p-datatable-sm preview-table"
                     >
-                        <Column
-                            v-for="(column, key) in previewData.columns"
-                            :key="key"
-                            :field="key"
-                            :header="column"
-                        ></Column>
+                        <Column v-for="(column, key) in previewData.columns" :key="key" :field="key" :header="column">
+                        </Column>
                     </Table>
                 </div>
                 <div class="mt-2 row row-cols-1 row-cols-md-3 g-3 mb-2">
