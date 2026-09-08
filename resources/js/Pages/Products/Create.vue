@@ -25,8 +25,8 @@ const product = reactive({
     description: null,
     prices: [],
     is_active: true,
-    contract_term_value: null,
-    contract_term_unit: null,
+    renewal_terms_value: null,
+    renewal_terms_unit: null,
     billing_frequency_value: null,
     billing_frequency_unit: null
 });
@@ -182,11 +182,11 @@ const items = ref([
                                             <div class="row">
                                                 <div class="col-3">
                                                     <InputNumber
-                                                        v-model="product.contract_term_value"
+                                                        v-model="product.renewal_terms_value"
                                                         :disabled="product.price_plan_id !== 1"
                                                         :min="0"
                                                         :max="100"
-                                                        :inputId="'contract_term_value'"
+                                                        :inputId="'renewal_terms_value'"
                                                         :inputClass="'w-100'"
                                                         showButtons
                                                         placeholder="Value"
@@ -194,9 +194,9 @@ const items = ref([
                                                 </div>
                                                 <div class="col-6">
                                                     <Select
-                                                        v-model="product.contract_term_unit"
+                                                        v-model="product.renewal_terms_unit"
                                                         :disabled="product.price_plan_id !== 1"
-                                                        :inputId="'contract_term_unit'"
+                                                        :inputId="'renewal_terms_unit'"
                                                         :inputClass="'my-auto'"
                                                         :options="frequency_units"
                                                         class="h-100"

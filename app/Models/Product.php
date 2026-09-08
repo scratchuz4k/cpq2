@@ -20,8 +20,8 @@ class Product extends Model
     protected $fillable = [
         'tenant_id',
         'price_plan_id',
-        'contract_term_value',
-        'contract_term_unit',
+        'renewal_terms_value',
+        'renewal_terms_unit',
         'billing_frequency_value',
         'billing_frequency_unit',
         'supplier_id',
