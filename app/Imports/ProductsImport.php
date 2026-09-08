@@ -2,12 +2,16 @@
 
 namespace App\Imports;
 
+use App\Enums\FrequencyUnitsEnum;
+use App\Enums\PricePlanEnum;
 use App\Enums\ProductStatusesEnum;
 use App\Http\Requests\ProductCreateRequest;
 use App\Models\Price;
 use App\Models\PricePlan;
 use App\Models\Product;
 use App\Models\Tenant;
+use App\Models\User;
+use App\Rules\BillingFrequencyRule;
 use App\Rules\TenantUniqueRule;
 use App\Rules\ValidDateValidator;
 use Illuminate\Support\Carbon;
@@ -37,14 +41,15 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
     protected bool $isDryRun;
 
-    protected array $availableSkus = [];
-
     protected ?int $ignoreProductId = null;
 
     protected ?int $ignorePriceId = null;
 
-    public function __construct(protected bool $overwrite = false, bool $isDryRun = false)
-    {
+    public function __construct(
+        protected bool $overwrite = false,
+        protected ?User $actingUser = null,
+        bool $isDryRun = false
+    ) {
         $this->tenant = Tenant::current();
         $this->isDryRun = $isDryRun;
     }
@@ -62,9 +67,9 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
     /**
      * Validate the import file.
      */
-    public static function validateFile($file, bool $overwrite): array
+    public static function validateFile($file, ?User $actingUser, bool $overwrite): array
     {
-        $import = new self($overwrite, true);
+        $import = new self($overwrite, $actingUser, true);
         Excel::import($import, $file);
 
         return $import->results;
@@ -109,20 +114,25 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 $product['steps'] = array_filter(array_map('trim', explode(',', $product['steps'])));
             }
 
-            $validator = Validator::make($product, $this->getValidationRules());
+            if (! $this->isRecurringPricePlan($product['price_plan_id'] ?? null)) {
+                $product['renewal_terms_value'] = null;
+                $product['renewal_terms_unit'] = null;
+                $product['billing_frequency_value'] = null;
+                $product['billing_frequency_unit'] = null;
+            }
+
+            $validator = Validator::make($product, $this->getValidationRules($product));
 
             if ($validator->fails()) {
                 $this->results['skipped']++;
                 $this->results['errors'][] = [
-                    'row_index' => $row['index'] ?? null,
+                    'row_index' => $product['index'] ?? null,
                     'row' => $product,
                     'errors' => $validator->errors()->all(),
                 ];
 
                 return false;
             }
-
-            $this->availableSkus[] = $product['sku'];
 
             if ($this->isDryRun) {
                 $this->results['success']++;
@@ -137,8 +147,11 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                     ? Carbon::createFromFormat('d/m/Y', $product['expires_at'])->endOfDay()
                     : null,
                 'status' => (isset($product['status']) && ! empty($product['status'])) ? $product['status'] : ProductStatusesEnum::ACTIVE->name,
-                'supplier_id' => $product['supplier_id'] ?? null,
                 'price_plan_id' => (isset($product['price_plan_id']) && ! empty($product['price_plan_id'])) ? PricePlan::find($product['price_plan_id'])->id : null,
+                'renewal_terms_value' => $product['renewal_terms_value'] ?? null,
+                'renewal_terms_unit' => $product['renewal_terms_unit'] ?? null,
+                'billing_frequency_value' => $product['billing_frequency_value'] ?? null,
+                'billing_frequency_unit' => $product['billing_frequency_unit'] ?? null,
                 'prices' => [
                     'code' => $product['price_code'] ?? null,
                     'net' => $product['price_net'] ?? null,
@@ -162,7 +175,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 if (Product::where('sku', $product['sku'])->exists()) {
                     $this->results['skipped']++;
                     $this->results['errors'][] = [
-                        'row_index' => $row['index'] ?? null,
+                        'row_index' => $product['index'] ?? null,
                         'row' => $product,
                         'error' => 'Product already exists',
                     ];
@@ -202,14 +215,14 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
         } catch (ValidationException $e) {
             $this->results['skipped']++;
             $this->results['errors'][] = [
-                'row_index' => $row['index'] ?? null,
+                'row_index' => $product['index'] ?? null,
                 'row' => $product,
                 'error' => $e->errors(),
             ];
         } catch (\Exception $e) {
             $this->results['skipped']++;
             $this->results['errors'][] = [
-                'row_index' => $row['index'] ?? null,
+                'row_index' => $product['index'] ?? null,
                 'row' => $product,
                 'error' => $e->getMessage(),
             ];
@@ -220,9 +233,6 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
     public function collection(Collection $collection): void
     {
-        $deferredRows = [];
-        $fileSkus = $collection->pluck('sku')->filter()->unique()->toArray();
-
         foreach ($collection as $rowIndex => $row) {
             if ($row->filter()->isEmpty()) {
                 continue;
@@ -235,60 +245,42 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
             })->toArray();
 
             $row['index'] = $rowIndex;
+            $row['renewal_terms_unit'] = $this->normalizeFrequencyUnit($row['renewal_terms_unit'] ?? null);
+            $row['billing_frequency_unit'] = $this->normalizeFrequencyUnit($row['billing_frequency_unit'] ?? null);
 
             $this->results['processed']++;
             $this->results['data'][] = $row;
-            if (empty($row['parent_sku'])) {
-                $this->insertProduct($row);
-            } else {
-                $deferredRows[] = $row;
-            }
+            $this->insertProduct($row);
         }
-
-        $fileProductParentSkus = collect($deferredRows)->pluck('parent_sku')->unique()->filter();
-
-        if ($fileProductParentSkus->isNotEmpty() && $missingParentSkus = array_diff($fileProductParentSkus->toArray(), $fileSkus)) {
-            $this->availableSkus = Product::query()->whereIn('sku', $missingParentSkus)->pluck('sku')->toArray();
-            $this->availableSkus = array_unique(array_merge($this->availableSkus, $fileSkus));
-        }
-
-        $this->processDeferredChildren($deferredRows, $fileSkus);
     }
 
-    private function processDeferredChildren(array $deferredRows, array $fileSkus): void
+    /**
+     * Normalise a frequency unit (e.g. "months") to the FrequencyUnitsEnum name ("MONTHS").
+     */
+    private function normalizeFrequencyUnit(?string $value): ?string
     {
-        $processedInLastIteration = true;
-        while (count($deferredRows) > 0 && $processedInLastIteration) {
-            $processedInLastIteration = false;
-            $remainingRows = [];
-
-            foreach ($deferredRows as $row) {
-                $parent = null;
-                if (in_array($row['parent_sku'], $this->availableSkus)) {
-                    if (! $this->isDryRun) {
-                        $parent = Product::where('sku', $row['parent_sku'])->first();
-                    }
-
-                    if ($this->insertProduct($row)) {
-                        $processedInLastIteration = true;
-                    }
-                } else {
-                    $remainingRows[] = $row;
-                }
-            }
-            $deferredRows = $remainingRows;
+        if (empty($value)) {
+            return null;
         }
 
-        if (count($deferredRows) > 0) {
-            foreach ($deferredRows as $row) {
-                $this->results['skipped']++;
-                $this->results['errors'][] = [
-                    'row_index' => $row['index'] ?? null,
-                    'row' => $row,
-                    'error' => 'Parent Product with SKU: "'.$row['parent_sku'].'" not found!',
-                ];
-            }
+        $match = collect(FrequencyUnitsEnum::cases())
+            ->first(fn ($case) => strtoupper($case->name) === strtoupper($value) || strtoupper($case->value) === strtoupper($value));
+
+        return $match?->name ?? $value;
+    }
+
+    /**
+     * Whether the given price plan id refers to a recurring plan.
+     */
+    private function isRecurringPricePlan($pricePlanId): bool
+    {
+        if (empty($pricePlanId)) {
+            return false;
         }
+
+        return PricePlan::where('id', $pricePlanId)
+            ->where('code', PricePlanEnum::MONTHLY->name)
+            ->exists();
     }
 
     public function batchSize(): int
@@ -316,11 +308,21 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
         ];
     }
 
-    private function getValidationRules($ignoreProductId = null): array
+    private function getValidationRules(array $product): array
     {
         $rules = (new ProductCreateRequest)->rules();
 
-        unset($rules['prices.*.code'], $rules['prices.*.cost'], $rules['prices.*.net']);
+        unset(
+            $rules['prices.*.code'],
+            $rules['prices.*.cost'],
+            $rules['prices.*.net'],
+            $rules['renewal_terms_value'],
+            $rules['renewal_terms_unit'],
+            $rules['billing_frequency_value'],
+            $rules['billing_frequency_unit'],
+        );
+
+        $recurringRule = $this->isRecurringPricePlan($product['price_plan_id'] ?? null) ? 'required' : 'nullable';
 
         return [
             ...$rules,
@@ -337,6 +339,10 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
             ],
             'prices.cost' => 'required|numeric',
             'prices.net' => 'required|numeric',
+            'renewal_terms_value' => [$recurringRule, 'integer', 'between:1,100'],
+            'renewal_terms_unit' => [$recurringRule, Rule::in(FrequencyUnitsEnum::names())],
+            'billing_frequency_value' => [$recurringRule, 'integer', new BillingFrequencyRule],
+            'billing_frequency_unit' => [$recurringRule, Rule::in(FrequencyUnitsEnum::names())],
         ];
     }
 }

@@ -23,13 +23,20 @@ class ImportCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => 'required|file|mimetypes:text/csv,application/csv,text/plain|extensions:csv',
+            'file' => 'required|file|mimetypes:text/csv,application/csv,text/plain|extensions:csv|max:2048',
             'overwrite' => 'required|boolean',
             'model' => [
                 'required',
                 'string',
                 Rule::in(['Product', 'User']),
             ],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'file.max' => 'The maximum file upload size is 2 MB.',
         ];
     }
 }
