@@ -17,6 +17,7 @@ use App\Rules\ValidDateValidator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Concerns\SkipsErrors;
@@ -255,7 +256,8 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
     }
 
     /**
-     * Normalise a frequency unit (e.g. "months") to the FrequencyUnitsEnum name ("MONTHS").
+     * Normalise a frequency unit to the FrequencyUnitsEnum name.
+     * Accepts singular or plural, any case ("day", "Months", "YEAR" -> "DAYS", "MONTHS", "YEARS").
      */
     private function normalizeFrequencyUnit(?string $value): ?string
     {
@@ -263,8 +265,10 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
             return null;
         }
 
+        $needle = strtoupper(Str::plural(trim($value)));
+
         $match = collect(FrequencyUnitsEnum::cases())
-            ->first(fn ($case) => strtoupper($case->name) === strtoupper($value) || strtoupper($case->value) === strtoupper($value));
+            ->first(fn ($case) => strtoupper($case->name) === $needle);
 
         return $match?->name ?? $value;
     }

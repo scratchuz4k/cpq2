@@ -110,6 +110,25 @@ it('populates renewal terms and billing frequency for a recurring product', func
         ->and($oneOff->billing_frequency_unit)->toBeNull();
 });
 
+it('accepts singular, mixed-case frequency units', function () {
+    $csv = '"sku","name","description","categories","steps","status","expires_at","price_code","price_cost","price_net","price_plan_id","renewal_terms_value","renewal_terms_unit","billing_frequency_value","billing_frequency_unit"
+"singular_units","Singular Units","Singular Units","1","1","Active","31/12/2100","2001","10.00","15.00","1","2","year","6","month"';
+
+    $file = UploadedFile::fake()->createWithContent('products_import.csv', $csv);
+
+    $this->post('/imports', [
+        'file' => $file,
+        'overwrite' => 0,
+        'model' => 'Product',
+    ])->assertRedirect();
+
+    $product = Product::where('sku', 'singular_units')->first();
+
+    expect($product)->not->toBeNull()
+        ->and($product->renewal_terms_unit)->toBe('YEARS')
+        ->and($product->billing_frequency_unit)->toBe('MONTHS');
+});
+
 it('skips a recurring product missing renewal terms', function () {
     $response = $this->post('/api/imports', [
         'file' => $this->file,
