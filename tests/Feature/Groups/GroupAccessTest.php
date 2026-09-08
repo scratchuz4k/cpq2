@@ -117,6 +117,19 @@ it('rejects a grouped user creating another user in a group they do not belong t
     ])->assertStatus(422);
 });
 
+it('rejects a grouped user creating a user with an explicitly empty group list', function () {
+    ($this->login)(($this->makeUser)([$this->groupA->id, $this->groupB->id]));
+
+    $this->postJson('api/users', [
+        'name' => 'New User',
+        'email' => 'empty-groups@example.test',
+        'password' => 'password123',
+        'groups' => [],
+    ])->assertStatus(422)->assertJsonValidationErrorFor('groups');
+
+    expect(User::where('email', 'empty-groups@example.test')->exists())->toBeFalse();
+});
+
 it('floors a new user to the creator\'s groups when none are submitted', function () {
     ($this->login)(($this->makeUser)([$this->groupA->id, $this->groupB->id]));
 
@@ -143,6 +156,54 @@ it('removes a user from the editor\'s group while preserving groups the editor i
     ])->assertSuccessful();
 
     expect($target->fresh()->groups->pluck('id')->all())->toBe([$this->groupC->id]);
+});
+
+it('lists a grouped editor\'s own groups only by default', function () {
+    ($this->login)(($this->makeUser)([$this->groupA->id]));
+
+    $ids = collect($this->getJson('api/groups')->json('data'))->pluck('id')->all();
+
+    expect($ids)->toBe([$this->groupA->id]);
+});
+
+it('also lists the edited user\'s groups when for_user_id is supplied', function () {
+    $target = ($this->makeUser)([$this->groupA->id, $this->groupB->id]);
+    ($this->login)(($this->makeUser)([$this->groupA->id]));
+
+    $ids = collect($this->getJson("api/groups?for_user_id={$target->id}")->json('data'))
+        ->pluck('id')->sort()->values()->all();
+
+    expect($ids)->toBe(collect([$this->groupA->id, $this->groupB->id])->sort()->values()->all());
+});
+
+it('ignores for_user_id for a user the editor may not manage', function () {
+    $stranger = ($this->makeUser)([$this->groupC->id]);
+    ($this->login)(($this->makeUser)([$this->groupA->id]));
+
+    $ids = collect($this->getJson("api/groups?for_user_id={$stranger->id}")->json('data'))->pluck('id')->all();
+
+    expect($ids)->toBe([$this->groupA->id]);
+});
+
+it('also lists an edited account\'s groups when for_account_id is supplied', function () {
+    $account = Account::factory()->create(['tenant_id' => $this->tenant->id]);
+    $account->groups()->attach([$this->groupA->id, $this->groupB->id], ['tenant_id' => $this->tenant->id]);
+    ($this->login)(($this->makeUser)([$this->groupA->id]));
+
+    $ids = collect($this->getJson("api/groups?for_account_id={$account->id}")->json('data'))
+        ->pluck('id')->sort()->values()->all();
+
+    expect($ids)->toBe(collect([$this->groupA->id, $this->groupB->id])->sort()->values()->all());
+});
+
+it('ignores for_account_id for an account the editor may not manage', function () {
+    $account = Account::factory()->create(['tenant_id' => $this->tenant->id]);
+    $account->groups()->attach([$this->groupC->id], ['tenant_id' => $this->tenant->id]);
+    ($this->login)(($this->makeUser)([$this->groupA->id]));
+
+    $ids = collect($this->getJson("api/groups?for_account_id={$account->id}")->json('data'))->pluck('id')->all();
+
+    expect($ids)->toBe([$this->groupA->id]);
 });
 
 it('rejects updating a user to an email already used by another user', function () {
@@ -173,6 +234,23 @@ it('allows updating a user while keeping their own email', function () {
     ])->assertSuccessful();
 
     expect($target->fresh()->name)->toBe('Renamed');
+});
+
+it('rejects a grouped user removing every group from their own account', function () {
+    $self = ($this->makeUser)([$this->groupA->id, $this->groupB->id]);
+    ($this->login)($self);
+
+    $this->putJson("api/users/{$self->id}", [
+        'groups' => [],
+    ])
+        ->assertStatus(422)
+        ->assertJsonValidationErrorFor('groups')
+        ->assertJsonFragment([
+            'groups' => ['You cannot remove all groups from your account. Please contact a company administrator'],
+        ]);
+
+    expect($self->fresh()->groups->pluck('id')->sort()->values()->all())
+        ->toBe(collect([$this->groupA->id, $this->groupB->id])->sort()->values()->all());
 });
 
 /*

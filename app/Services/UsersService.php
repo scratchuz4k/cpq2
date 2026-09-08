@@ -85,11 +85,14 @@ class UsersService
 
         $submitted = $hasKey ? (array) ($array['groups'] ?? []) : null;
 
+        $isSelf = $actor && $actor->is($user);
+
         $groupIds = GroupAssignment::resolve(
             $actor,
             $user->groups()->pluck('groups.id'),
             $submitted,
             'user',
+            $isSelf ? 'You cannot remove all groups from your account. Please contact a company administrator' : null,
         );
 
         $user->groups()->sync(

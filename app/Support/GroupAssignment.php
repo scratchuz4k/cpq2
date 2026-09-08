@@ -22,7 +22,7 @@ class GroupAssignment
      * @param  array|null  $submitted  group ids submitted in the request (null = not supplied)
      * @return array<int, int> group ids to sync
      */
-    public static function resolve(User $actor, iterable $currentIds, ?array $submitted, string $label = 'record'): array
+    public static function resolve(User $actor, iterable $currentIds, ?array $submitted, string $label = 'record', ?string $emptyMessage = null): array
     {
         $current = collect($currentIds)->map(fn ($id) => (int) $id)->unique();
 
@@ -52,15 +52,15 @@ class GroupAssignment
 
         if ($result->isEmpty()) {
             throw ValidationException::withMessages([
-                'groups' => "This {$label} must remain in at least one group.",
+                'groups' => $emptyMessage ?? "This {$label} must remain in at least one group.",
             ]);
         }
 
         return $result->values()->all();
     }
 
-    public static function collect(User $actor, iterable $currentIds, ?array $submitted, string $label = 'record'): Collection
+    public static function collect(User $actor, iterable $currentIds, ?array $submitted, string $label = 'record', ?string $emptyMessage = null): Collection
     {
-        return collect(self::resolve($actor, $currentIds, $submitted, $label));
+        return collect(self::resolve($actor, $currentIds, $submitted, $label, $emptyMessage));
     }
 }

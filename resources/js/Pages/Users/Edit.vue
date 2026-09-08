@@ -33,23 +33,60 @@ const form = reactive({
 });
 
 const authUser = page.props.auth.user;
-const getFilters = () => {
-    let filters = [];
+const isSelf = authUser.id === props.user.id;
+const authGroupIds = (authUser.groups ?? []).map((g) => g.id);
+const committedGroupIds = ref(props.user.groups.map((g) => g.id));
+let lastPromptSignature = '';
 
-    if (authUser.groups.length) {
-        filters.push({
-            column: 'id',
-            operator: 'in',
-            value: authUser.groups.map((item) => item.id)
-        });
+// The /api/groups endpoint scopes results to the acting user's own groups plus
+// (via `for_user_id`) the groups of the user being edited, so no client filter
+// is needed here.
+const groupParams = { for_user_id: props.user.id };
+
+// Groups the target user is in but the acting user is not: selected but locked.
+const lockedGroupIds = computed(() =>
+    isSelf || !authGroupIds.length ? [] : props.user.groups.filter((g) => !authGroupIds.includes(g.id)).map((g) => g.id)
+);
+
+const onGroupsClose = async () => {
+    if (!isSelf || !authGroupIds.length) {
+        return;
     }
 
-    return filters;
+    const currentIds = form.groups.map((g) => g.id);
+    const removed = committedGroupIds.value.filter((id) => !currentIds.includes(id));
+
+    if (!removed.length) {
+        return;
+    }
+
+    if (!currentIds.length) {
+        notyf.error('You cannot remove all groups from your account. Please contact a company administrator');
+        return;
+    }
+
+    const signature = [...removed].sort().join(',');
+    if (signature === lastPromptSignature) {
+        return;
+    }
+    lastPromptSignature = signature;
+
+    await swal.fire({
+        title: 'Please Note',
+        text: 'Any groups removed from your own user can only be re-added by another authorized user.',
+        width: '480px',
+        showCancelButton: false
+    });
+    // Informational only: the selection is intentionally left as-is.
 };
 
 const saveUser = () => {
     if (authUser.groups?.length && !form.groups.length) {
-        notyf.error('You must keep at least one of your groups assigned to this user.');
+        notyf.error(
+            isSelf
+                ? 'You cannot remove all groups from your account. Please contact a company administrator'
+                : 'You must keep at least one of your groups assigned to this user'
+        );
         return;
     }
 
@@ -58,6 +95,8 @@ const saveUser = () => {
 
     router.put(`/users/${proxyValue.value.id}`, proxyValue.value, {
         onSuccess: (page) => {
+            committedGroupIds.value = form.groups.map((g) => g.id);
+            lastPromptSignature = '';
             notyf.success('Updated with Success');
         },
         onError: (errors) => {
@@ -134,23 +173,16 @@ const items = ref([
                     </div>
                     <div class="mb-3">
                         <label for="user-group" class="form-label">Groups:</label>
-                        <p class="mb-3 small">
-                            If you're user account <b>is</b> assigned to any groups, these are selected below by
-                            default. You may remove these groups, but you can only assign groups that you belong to. If
-                            all groups are removed, the new user will inherit all of your groups.
-                        </p>
-
-                        <p class="mb-3 small">
-                            If you're user account <b>is not</b> assigned to any groups, no groups are selected by
-                            default. You can choose any group(s) for the new user.
-                        </p>
+                        <GroupFieldHelp subject="user" />
                         <InputSelectMultiple
                             id="user-group"
                             v-model="form.groups"
                             url="/groups"
                             :fields="['name']"
                             :placeholder="'Select a Group'"
-                            :query="getFilters()"
+                            :params="groupParams"
+                            :locked-ids="lockedGroupIds"
+                            @close="onGroupsClose"
                         >
                         </InputSelectMultiple>
                     </div>

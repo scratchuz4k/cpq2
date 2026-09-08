@@ -26,6 +26,14 @@ const props = defineProps({
     filter: {
         type: Boolean,
         default: true
+    },
+    lockedIds: {
+        type: Array,
+        default: () => []
+    },
+    params: {
+        type: Object,
+        default: () => ({})
     }
 });
 
@@ -34,7 +42,7 @@ const meta = reactive({
     total: 0
 });
 
-const emit = defineEmits(['update:modelValue', 'change']);
+const emit = defineEmits(['update:modelValue', 'change', 'close']);
 const page = ref(1);
 const options = ref([]);
 const isLoading = ref(false);
@@ -55,6 +63,7 @@ const search = _.debounce(async (clearOptions = false) => {
 
     const columns = Array.isArray(props.fields) ? props.fields.filter(Boolean).join(',') : props.fields;
     const queryParams = {
+        ...props.params,
         filters: props.query,
         page: page.value,
         search: inputSearch.value
@@ -83,6 +92,7 @@ const selectAll = async (e) => {
 
     const columns = Array.isArray(props.fields) ? props.fields.filter(Boolean).join(',') : props.fields;
     const queryParams = {
+        ...props.params,
         filters: props.query,
         all: 1,
         search: inputSearch.value
@@ -132,8 +142,11 @@ onMounted(() => {
 });
 
 const isSelected = (option) => !!proxyValue.value.find((x) => x.id === option.id);
+const isLocked = (option) => props.lockedIds.includes(option.id);
 
 const selectOption = (option) => {
+    if (isLocked(option)) return;
+
     let index = proxyValue.value.findIndex((x) => x.id === option.id);
     if (index === -1) {
         proxyValue.value.push(option);
@@ -144,12 +157,19 @@ const selectOption = (option) => {
 
 const clear = (e) => {
     e.stopPropagation();
-    proxyValue.value.splice(0, proxyValue.value.length);
+    const kept = proxyValue.value.filter((x) => props.lockedIds.includes(x.id));
+    proxyValue.value.splice(0, proxyValue.value.length, ...kept);
 };
 
 watch(inputSearch, () => {
     page.value = 1;
     search(true);
+});
+
+watch(showOptions, (open, wasOpen) => {
+    if (wasOpen && !open) {
+        emit('close');
+    }
 });
 
 watch(
@@ -227,12 +247,15 @@ search();
                     v-else
                     v-for="option in options"
                     class="option d-flex align-items-center gap-2"
-                    :class="{ selected: isSelected(option) }"
+                    :class="{ selected: isSelected(option), locked: isLocked(option) }"
                     @click.stop="selectOption(option)"
-                    style="cursor: pointer"
+                    :style="{ cursor: isLocked(option) ? 'not-allowed' : 'pointer' }"
                 >
                     <span class="flex-shrink-0 option-checkbox">
-                        <font-awesome-icon v-if="isSelected(option)" :icon="['fas', 'square-check']" />
+                        <font-awesome-icon
+                            v-if="isSelected(option) || isLocked(option)"
+                            :icon="['fas', 'square-check']"
+                        />
                         <font-awesome-icon v-else :icon="['far', 'square']" />
                     </span>
                     <span class="flex-grow-1">
@@ -282,6 +305,14 @@ search();
 
 .option:hover {
     background-color: var(--color-purple-light);
+}
+
+.option.locked {
+    opacity: 0.6;
+}
+
+.option.locked:hover {
+    background-color: transparent;
 }
 
 .select-all {
