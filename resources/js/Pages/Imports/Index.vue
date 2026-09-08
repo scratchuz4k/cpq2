@@ -5,6 +5,7 @@ import { reactive, ref, watch } from 'vue';
 import Header from '@/Components/Header.vue';
 import { Dialog, Button, Checkbox, Select } from 'primevue';
 import { exportData } from '@/Composables/export.js';
+import { formatResponseErrors } from '@composables/useApiErrors';
 import queryString from 'qs';
 import CountUp from 'vue-countup-v3';
 import Table from 'primevue/datatable';
@@ -72,7 +73,7 @@ const submitFile = async () => {
         }
         showImportPreview.value = true;
     } catch (err) {
-        notyf.error(err?.response?.data?.message ?? 'Something went wrong');
+        notyf.error(formatResponseErrors(err));
         return false;
     } finally {
         showForm.value = false;
@@ -102,7 +103,7 @@ const importData = async () => {
             emitter.emit('datatable-refresh');
         }
     } catch (err) {
-        notyf.error(err?.response?.data?.message ?? 'Something went wrong');
+        notyf.error(formatResponseErrors(err));
         return false;
     } finally {
         form.overwrite = 0;
