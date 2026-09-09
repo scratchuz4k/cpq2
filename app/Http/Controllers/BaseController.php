@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Export\Export;
+use App\Export\ExportCSVTemplate;
 use App\Helpers\DataProvider;
+use App\Imports\Import;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 
 class BaseController extends Controller
@@ -53,6 +56,46 @@ class BaseController extends Controller
         }
     }
 
+    public function import(Request $request)
+    {
+        if ($request->isMethod('get')) {
+            $model = Str::lower(class_basename($this->model));
+            $template = app_path("Helpers/Import/{$model}_import.php");
+            if (file_exists($template)) {
+                $template = require $template;
+
+                return Excel::download(
+                    new ExportCSVTemplate($this->model, collect($template['data'])),
+                    $template['filename']
+                );
+            }
+
+            $data = $this->model::factory(10)->make();
+
+            return Excel::download(
+                new ExportCSVTemplate($this->model, $data),
+                Str::lower(class_basename($this->model).'_import_template.csv')
+            );
+        }
+
+        $file = array_key_exists('file', $request->all()) ? $request['file'] : null;
+        $isDryRun = array_key_exists('dry_run', $request->all()) ? $request['dry_run'] : null;
+        $user = auth()->user();
+
+        $importHandler = new Import(auth()->user(), $this->model, $isDryRun);
+        $results = $importHandler->validateFile($file, $this->model, $user);
+        $columns = $result = array_combine(
+            getFillableColumns($this->model),
+            array_map(fn ($key) => Str::headline($key), getFillableColumns($this->model))
+        );
+
+        return [
+            'results' => $results,
+            'user' => $user,
+            'columns' => $columns,
+        ];
+    }
+
     protected function transformExportData(Collection $data): Collection
     {
         return $data;
@@ -69,12 +112,13 @@ class BaseController extends Controller
             'update' => 'update',
             'destroy' => 'delete',
             'export' => 'export',
+            'import' => 'import',
         ];
     }
 
     protected function resourceMethodsWithoutModels()
     {
-        return ['index', 'create', 'store', 'export'];
+        return ['index', 'create', 'store', 'export', 'import'];
     }
 
     protected function customFilter(DataProvider &$dataProvider)

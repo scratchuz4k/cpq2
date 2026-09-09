@@ -50,7 +50,7 @@ class ImportService
         $helperFile = require app_path('Helpers/Import/'.mb_strtolower($model).'_import.php');
 
         $importClass = ImportsEnum::tryFromName($model)->value;
-        $importHandler = new $importClass($overwrite, $user);
+        $importHandler = new $importClass($user, true);
 
         $results = $importHandler->validateFile($file, $user, $overwrite);
 

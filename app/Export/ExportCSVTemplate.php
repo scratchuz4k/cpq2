@@ -3,17 +3,24 @@
 namespace App\Export;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithCustomCsvSettings;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
 
-class ExportCSVTemplate implements FromCollection, ShouldAutoSize, WithCustomCsvSettings, WithHeadings
+class ExportCSVTemplate implements FromCollection, ShouldAutoSize, WithCustomCsvSettings, WithHeadings, WithMapping
 {
+    protected array $fillable;
+
     public function __construct(
         protected string $model,
         protected Collection $collection
-    ) {}
+    ) {
+        $model = new $this->model;
+        $this->fillable = getFillableColumns($model);
+    }
 
     public function collection(): Collection
     {
@@ -22,6 +29,10 @@ class ExportCSVTemplate implements FromCollection, ShouldAutoSize, WithCustomCsv
 
     public function headings(): array
     {
+        if ($this->collection->isNotEmpty() && $this->collection->every(fn ($item) => $item instanceof $this->model)) {
+            return array_map(fn ($field) => Str::snake($field), $this->fillable);
+        }
+
         return array_keys($this->collection->first());
     }
 
@@ -33,5 +44,17 @@ class ExportCSVTemplate implements FromCollection, ShouldAutoSize, WithCustomCsv
             'line_ending' => "\r\n",
             'use_bom' => true,
         ];
+    }
+
+    public function map($row): array
+    {
+        if (is_array($row)) {
+            return $row;
+        }
+
+        return array_map(
+            fn (string $field) => $row->getAttribute($field),
+            $this->fillable
+        );
     }
 }

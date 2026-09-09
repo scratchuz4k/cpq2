@@ -7,7 +7,7 @@ use App\Http\Requests\ProductCreateRequest;
 use App\Models\Price;
 use App\Models\PricePlan;
 use App\Models\Product;
-use App\Models\Tenant;
+use App\Models\User;
 use App\Rules\TenantUniqueRule;
 use App\Rules\ValidDateValidator;
 use Illuminate\Support\Carbon;
@@ -15,38 +15,21 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
-use Maatwebsite\Excel\Concerns\SkipsErrors;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Facades\Excel;
 
-class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
+class ProductsImport extends Import implements ToCollection, WithBatchInserts, WithHeadingRow
 {
-    use SkipsErrors;
-
-    protected $results = [
-        'processed' => 0,
-        'success' => 0,
-        'skipped' => 0,
-        'errors' => [],
-        'data' => [],
-    ];
-
-    protected Tenant $tenant;
-
-    protected bool $isDryRun;
-
     protected array $availableSkus = [];
 
     protected ?int $ignoreProductId = null;
 
     protected ?int $ignorePriceId = null;
 
-    public function __construct(protected bool $overwrite = false, bool $isDryRun = false)
+    public function __construct(protected bool $overwrite, protected User $actingUser, bool $isDryRun = false)
     {
-        $this->tenant = Tenant::current();
-        $this->isDryRun = $isDryRun;
+        parent::__construct($this->overwrite, $this->actingUser);
     }
 
     public function getResults(): array
@@ -57,17 +40,6 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
     public function setDryRun(bool $isDryRun): void
     {
         $this->isDryRun = $isDryRun;
-    }
-
-    /**
-     * Validate the import file.
-     */
-    public static function validateFile($file, bool $overwrite): array
-    {
-        $import = new self($overwrite, true);
-        Excel::import($import, $file);
-
-        return $import->results;
     }
 
     /**
@@ -289,21 +261,6 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 ];
             }
         }
-    }
-
-    public function batchSize(): int
-    {
-        return 500;
-    }
-
-    public function chunkSize(): int
-    {
-        return 500;
-    }
-
-    public function headingRow(): int
-    {
-        return 1;
     }
 
     public static function getImportTemplate()

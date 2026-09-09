@@ -3,6 +3,7 @@
 use App\Enums\NotificationEnum;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 
 if (! function_exists('format_date')) {
@@ -141,5 +142,19 @@ if (! function_exists('createNotification')) {
         ];
 
         app(\App\Services\NotificationService::class)->store($data);
+    }
+}
+
+if (! function_exists('getFillableColumns')) {
+    function getFillableColumns($model)
+    {
+        if (! $model instanceof Model) {
+            $model = new $model;
+        }
+
+        return array_values(array_diff(
+            $model->getFillable(),
+            ['created_at', 'updated_at', 'deleted_at', 'tenant_id']
+        ));
     }
 }

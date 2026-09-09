@@ -3,7 +3,6 @@
 namespace App\Imports;
 
 use App\Models\Role;
-use App\Models\Tenant;
 use App\Models\User;
 use App\Rules\TenantExistsRule;
 use Illuminate\Support\Collection;
@@ -13,32 +12,15 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
-use Maatwebsite\Excel\Concerns\SkipsErrors;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Facades\Excel;
 
-class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
+class UsersImport extends Import implements ToCollection, WithBatchInserts, WithHeadingRow
 {
-    use SkipsErrors;
-
-    public $results = [
-        'processed' => 0,
-        'success' => 0,
-        'skipped' => 0,
-        'errors' => [],
-        'data' => [],
-    ];
-
-    protected Tenant $tenant;
-
-    protected $isDryRun;
-
-    public function __construct(protected bool $overwrite, protected User $actingUser, bool $isDryRun = false)
+    public function __construct(protected User $actingUser, bool $isDryRun = false)
     {
-        $this->tenant = Tenant::current();
-        $this->isDryRun = $isDryRun;
+        parent::__construct($actingUser, $isDryRun);
     }
 
     public function getResults(): array
@@ -49,17 +31,6 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
     public function setDryRun(bool $isDryRun): void
     {
         $this->isDryRun = $isDryRun;
-    }
-
-    /**
-     * Validate the import file.
-     */
-    public static function validateFile($file, User $actingUser, bool $overwrite): array
-    {
-        $import = new self($overwrite, $actingUser, true);
-        Excel::import($import, $file);
-
-        return $import->results;
     }
 
     /**
@@ -199,21 +170,6 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
             $this->results['processed']++;
             $this->insertUser($row, $rowIndex);
         }
-    }
-
-    public function batchSize(): int
-    {
-        return 500;
-    }
-
-    public function chunkSize(): int
-    {
-        return 500;
-    }
-
-    public function headingRow(): int
-    {
-        return 1;
     }
 
     public function rules(): array
