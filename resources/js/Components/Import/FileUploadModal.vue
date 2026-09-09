@@ -31,12 +31,8 @@ const onFileChange = (event) => {
 const submitFile = async () => {
     isLoading.value = true;
 
-    const formData = new FormData();
-    formData.append('file', form.file);
-    formData.append('overwrite', form.overwrite);
-
     try {
-        const data = await importPreview(form.file, props.model, true);
+        const data = await importPreview(form.file, props.model);
         emit('preview', { data, form: { ...form } });
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong');

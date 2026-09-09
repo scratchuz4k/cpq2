@@ -18,6 +18,10 @@ const props = defineProps({
     importForm: {
         type: Object,
         default: null
+    },
+    model: {
+        type: String,
+        default: ''
     }
 });
 
@@ -36,13 +40,8 @@ const rowClass = (rowData) => {
 const importData = async () => {
     isLoading.value = true;
 
-    const formData = new FormData();
-    formData.append('file', props.importForm.file);
-    formData.append('overwrite', props.importForm.overwrite);
-    formData.append('model', props.importForm.model);
-
     try {
-        let res = await importConfirm(formData.file, formData.model);
+        let res = await importConfirm(props.importForm.file, props.model);
 
         notyf.success('File imported successfully');
 
