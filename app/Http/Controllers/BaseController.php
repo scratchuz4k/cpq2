@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ImportStatusesEnum;
 use App\Export\Export;
 use App\Export\ExportCSVTemplate;
 use App\Helpers\DataProvider;
 use App\Imports\Import;
+use App\Jobs\ImportJob;
+use App\Models\Resource;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -84,10 +87,35 @@ class BaseController extends Controller
 
         $importHandler = new Import(auth()->user(), $this->model, $isDryRun);
         $results = $importHandler->validateFile($file, $this->model, $user);
-        $columns = $result = array_combine(
+        $columns = array_combine(
             getFillableColumns($this->model),
             array_map(fn ($key) => Str::headline($key), getFillableColumns($this->model))
         );
+
+        if (! $isDryRun) {
+            if ($path = $file->store('imports', 'public')) {
+                $resource = Resource::create([
+                    'title' => $file->getClientOriginalName(),
+                    'mime_type' => $file->getClientMimeType(),
+                    'route' => $path,
+                    'size' => $file->getSize(),
+                    'tenant_id' => $user->tenant_id,
+                ]);
+            }
+
+            $import = \App\Models\Import::create([
+                'name' => $file->getClientOriginalName(),
+                'file_id' => $resource->id ?? null,
+                'status' => ImportStatusesEnum::IN_PROGRESS->name,
+                'model' => $this->model,
+                'user_id' => $user->id,
+                'tenant_id' => $user->tenant_id,
+            ]);
+
+            ImportJob::dispatch($import, $user);
+
+            return $import;
+        }
 
         return [
             'results' => $results,

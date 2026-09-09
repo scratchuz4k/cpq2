@@ -63,6 +63,11 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
         return 1;
     }
 
+    public function getResults(): array
+    {
+        return $this->results;
+    }
+
     public function collection(Collection $collection): void
     {
         foreach ($collection->values() as $index => $item) {
