@@ -16,8 +16,8 @@ function validRenewablePayload(array $overrides = []): array
         'sku' => 'SKU-'.fake()->unique()->numerify('####'),
         'name' => 'Test Product',
         'price_plan_id' => 1,
-        'contract_term_value' => 12,
-        'contract_term_unit' => 'MONTHS',
+        'renewal_terms_value' => 12,
+        'renewal_terms_unit' => 'MONTHS',
         'billing_frequency_value' => 1,
         'billing_frequency_unit' => 'MONTHS',
         'prices' => [
@@ -47,8 +47,8 @@ it('creates a product with valid renewable payload and divisible billing frequen
 
 it('fails to create when billing frequency does not evenly divide Renewal term', function () {
     $response = $this->postJson('/products', validRenewablePayload([
-        'contract_term_value' => 12,
-        'contract_term_unit' => 'MONTHS',
+        'renewal_terms_value' => 12,
+        'renewal_terms_unit' => 'MONTHS',
         'billing_frequency_value' => 5,
         'billing_frequency_unit' => 'MONTHS',
     ]));
@@ -63,8 +63,8 @@ it('updates a product with valid divisible billing frequency', function () {
         'sku' => $product->sku,
         'name' => $product->name,
         'price_plan_id' => 1,
-        'contract_term_value' => 12,
-        'contract_term_unit' => 'MONTHS',
+        'renewal_terms_value' => 12,
+        'renewal_terms_unit' => 'MONTHS',
         'billing_frequency_value' => 3,
         'billing_frequency_unit' => 'MONTHS',
     ]);
@@ -78,8 +78,8 @@ it('fails when billing frequency does not evenly divide Renewal term', function 
     $response = $this->putJson("/products/{$product->id}", [
         'sku' => $product->sku,
         'price_plan_id' => 1,
-        'contract_term_value' => 12,
-        'contract_term_unit' => 'MONTHS',
+        'renewal_terms_value' => 12,
+        'renewal_terms_unit' => 'MONTHS',
         'billing_frequency_value' => 5,
         'billing_frequency_unit' => 'MONTHS',
     ]);

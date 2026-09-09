@@ -39,10 +39,18 @@ class QuoteController extends BaseController
      */
     public function index()
     {
-        if (Auth::user()->can('viewOwn quote')) {
-            $users = User::where('id', Auth::id())->get();
+        $authUser = Auth::user();
+
+        if ($authUser->can('viewOwn quote') && ! $authUser->can('viewAny quote')) {
+            $users = User::where('id', $authUser->id)->get();
         } else {
-            $users = User::getChildAndOrphansUser()->get();
+            $usersQuery = User::getChildAndOrphansUser();
+
+            if ($authUser->isGrouped()) {
+                $usersQuery->whereHas('groups', fn ($q) => $q->whereIn('groups.id', $authUser->groupIds()));
+            }
+
+            $users = $usersQuery->get();
         }
         $solutionTypes = SolutionType::whereHas('quotes')->get();
 
@@ -61,7 +69,7 @@ class QuoteController extends BaseController
         $solutionTypes = Auth::user()->currentTenant->solutionTypes->filter(fn ($solutionType) => $solutionType->pivot->is_active === 1);
 
         return Inertia::render('Quotes/Create', [
-            'accounts' => Account::all(),
+            'accounts' => Account::query()->visibleToGroups(Auth::user())->get(),
             'solution_types' => (SolutionTypeResource::collection($solutionTypes))->resolve(),
             'steps' => SolutionTypesEnum::getSteps(),
         ]);
@@ -102,7 +110,7 @@ class QuoteController extends BaseController
     public function edit(Quote $quote)
     {
         return Inertia::render('Quotes/Edit', [
-            'accounts' => Account::all(),
+            'accounts' => Account::query()->visibleToGroups(Auth::user())->get(),
             'solution_types' => (SolutionTypeResource::collection(Auth::user()->currentTenant->solutionTypes))->resolve(),
             'quote' => new QuoteResource($quote->load(['items'])),
         ]);
@@ -136,7 +144,7 @@ class QuoteController extends BaseController
     public function configure(Quote $quote)
     {
         return Inertia::render('Quotes/Configure', [
-            'accounts' => Account::all(),
+            'accounts' => Account::query()->visibleToGroups(Auth::user())->get(),
             'solution_types' => (SolutionTypeResource::collection(Auth::user()->currentTenant->solutionTypes))->resolve(),
             'quote' => new QuoteResource($quote->load(['items'])),
         ]);
@@ -171,6 +179,18 @@ class QuoteController extends BaseController
             ! $quote ||
             (! $user && ! $quote->sharedLink()->exists()) ||
             ($user && $user->tenant_id !== $quote->tenant_id && ! $quote->sharedLink()->exists())
+        ) {
+            return response()->json(['message' => 'Quote not available or not shared.'], 404);
+        }
+
+        // CPQ-530: an authenticated user viewing their own tenant's quote (not via a
+        // shared link) is still bound by group visibility.
+        if (
+            $user
+            && $user->tenant_id === $quote->tenant_id
+            && ! $quote->sharedLink()->exists()
+            && $user->isGrouped()
+            && ! $quote->isVisibleToGroups($user)
         ) {
             return response()->json(['message' => 'Quote not available or not shared.'], 404);
         }

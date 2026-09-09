@@ -39,7 +39,7 @@ class ExportCSVTemplate implements FromCollection, ShouldAutoSize, WithCustomCsv
     public function getCsvSettings(): array
     {
         return [
-            'delimiter' => ';',
+            'delimiter' => app()->environment(['local', 'testing']) ? ';' : ',',
             'enclosure' => '',
             'line_ending' => "\r\n",
             'use_bom' => true,

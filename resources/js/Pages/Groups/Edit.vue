@@ -1,8 +1,8 @@
 <script setup>
 import { Button, InputText, DataTable, Column, Panel } from 'primevue';
-import { reactive, ref } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, router } from '@inertiajs/vue3';
+import { Head, router, usePage } from '@inertiajs/vue3';
 
 const props = defineProps({
     group: Object
@@ -11,6 +11,27 @@ const props = defineProps({
 const user = ref(null);
 const account = ref(null);
 const group = reactive(props.group);
+
+const authUser = usePage().props.auth.user;
+const authGroupIds = (authUser.groups ?? []).map((g) => g.id);
+const authIsGrouped = authGroupIds.length > 0;
+
+// CPQ-530: a user in exactly one group has nothing to add (they can only see
+// users/accounts that are already in their group). Ungrouped users, and users in
+// more than one group, can add.
+const canAddMembers = computed(() => !authIsGrouped || authGroupIds.length > 1);
+
+// Users/accounts offered must not already be in this group, and — for grouped
+// editors — must sit in one of the editor's other groups.
+const memberPickerQuery = (extra = []) => {
+    const query = [{ column: 'groups.id', operator: 'not_in', value: [group.id] }, ...extra];
+
+    if (authIsGrouped) {
+        query.push({ column: 'groups.id', operator: 'in', value: authGroupIds });
+    }
+
+    return query;
+};
 
 const saveGroup = () => {
     router.put(`/groups/${props.group.id}`, group, {
@@ -119,7 +140,7 @@ const items = ref([
                     </div>
                 </tab>
                 <tab title="Users">
-                    <form @submit.prevent="setUserGroup(user, group.id)" class="mt-3 d-flex">
+                    <form v-if="canAddMembers" @submit.prevent="setUserGroup(user, group.id)" class="mt-3 d-flex">
                         <div class="me-3" style="width: 100%">
                             <label class="form-label">Add Users:</label>
                             <InputSelect
@@ -128,7 +149,7 @@ const items = ref([
                                 :fields="['name']"
                                 v-model="user"
                                 placeholder="Select a User"
-                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                                :query="memberPickerQuery([{ column: 'is_active', operator: 'equals', value: 1 }])"
                             >
                             </InputSelect>
                         </div>
@@ -170,7 +191,7 @@ const items = ref([
                     </div>
                 </tab>
                 <tab title="Accounts">
-                    <form @submit.prevent="addAccount()" class="mt-3 d-flex">
+                    <form v-if="canAddMembers" @submit.prevent="addAccount()" class="mt-3 d-flex">
                         <div class="me-3" style="width: 100%">
                             <label class="form-label">Add Accounts:</label>
                             <InputSelect
@@ -179,10 +200,7 @@ const items = ref([
                                 :fields="['name']"
                                 v-model="account"
                                 placeholder="Select an Account"
-                                :query="[
-                                    { column: 'groups.id', operator: 'is_null', value: '' },
-                                    { column: 'is_active', operator: 'equals', value: 1 }
-                                ]"
+                                :query="memberPickerQuery([{ column: 'is_active', operator: 'equals', value: 1 }])"
                             >
                             </InputSelect>
                         </div>

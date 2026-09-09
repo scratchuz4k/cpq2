@@ -9,11 +9,9 @@ use App\Http\Requests\QuoteCreateRequest;
 use App\Http\Requests\QuoteUpdateRequest;
 use App\Http\Resources\QuoteResource;
 use App\Models\Quote;
-use App\Models\User;
 use App\Services\QuoteService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class QuoteController extends BaseController
@@ -35,16 +33,15 @@ class QuoteController extends BaseController
         $dataProvider = new DataProvider(Quote::class);
 
         $user = request()->user();
-        $users = User::where('id', Auth::id())->get();
 
         if ($user->can('viewAny quote')) {
-            if ($user->group()) {
-                $users->push(...$user->group()->users);
-            } else {
-                $users->push(...User::get());
-            }
+            // CPQ-530: grouped users only see quotes whose creator AND account
+            // share one of their groups; ungrouped users see everything.
+            $dataProvider->builder = $dataProvider->builder->visibleToGroups($user);
+        } else {
+            // viewOwn quote (or no quote-view permission) → own quotes only.
+            $dataProvider->builder = $dataProvider->builder->where('quotes.user_id', $user->id);
         }
-        $dataProvider->builder = $dataProvider->builder->whereIn('quotes.user_id', $users->pluck('id'));
 
         try {
             $data = $dataProvider->get();

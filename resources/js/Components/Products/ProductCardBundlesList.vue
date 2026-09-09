@@ -13,8 +13,8 @@ const visible = ref(false);
 
 const formatBundleDescription = (item) => {
     const parts = [];
-    if (item.contract_term_value && item.contract_term_unit) {
-        parts.push(`${item.contract_term_value} ${format.capitalizeFirstLetter(item.contract_term_unit)}`);
+    if (item.renewal_terms_value && item.renewal_terms_unit) {
+        parts.push(`${item.renewal_terms_value} ${format.capitalizeFirstLetter(item.renewal_terms_unit)}`);
     }
     if (item.price_plan?.name) {
         parts.push(item.price_plan.name);

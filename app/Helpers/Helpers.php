@@ -99,6 +99,11 @@ if (! function_exists('safeXmlParse')) {
 if (! function_exists('handleException')) {
     function handleException(\Exception $e, string $message = 'Something went wrong.')
     {
+        // Validation failures must surface as 422 with their field errors, not a generic 500.
+        if ($e instanceof \Illuminate\Validation\ValidationException) {
+            throw $e;
+        }
+
         Log::debug($e->getMessage());
 
         if (config('app.debug')) {

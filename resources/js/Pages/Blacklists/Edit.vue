@@ -236,13 +236,13 @@ const items = ref([
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Renewal Term:</label>
+                        <label class="form-label">Renewal term:</label>
                         <select
                             id="item-contract_terms"
                             class="form-select"
                             v-model="blacklisted_item.contractTermMonths"
                         >
-                            <option :value="null">Select a Renewal Term</option>
+                            <option :value="null">Select a renewal term</option>
                             <option v-for="term in props.contract_terms" :value="term.value">
                                 {{ term.value }} months
                             </option>

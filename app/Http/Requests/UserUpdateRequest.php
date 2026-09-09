@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Models\User;
+use App\Rules\AssignableGroups;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UserUpdateRequest extends FormRequest
 {
@@ -21,9 +24,22 @@ class UserUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $target = $this->route('user');
+        $currentGroupIds = $target instanceof User ? $target->groupIds()->all() : [];
+        $targetId = $target instanceof User ? $target->id : $target;
+
         return [
-            'name' => ['string', 'max:255'],
-            'email' => ['string', 'email', 'max:255'],
+            // `sometimes` so partial updates (e.g. the group page sending only `groups`)
+            // are not forced to resend name/email.
+            'name' => ['sometimes', 'required', 'string', 'max:255'],
+            'email' => [
+                'sometimes',
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')->ignore($targetId),
+            ],
             'parent_id' => [
                 'nullable',
                 'integer',
@@ -34,6 +50,8 @@ class UserUpdateRequest extends FormRequest
                     }
                 },
             ],
+            'groups' => ['nullable', 'array', new AssignableGroups($currentGroupIds)],
+            'groups.*' => ['integer', 'exists:groups,id'],
         ];
     }
 }

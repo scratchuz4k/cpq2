@@ -54,8 +54,8 @@ describe('Creates a Cloud Quote', () => {
                 cy.get('#product-sku').type(product.sku);
 
                 cy.get('#price_plan_1').click();
-                cy.get('#contract_term_value').type('100');
-                cy.selectOption('#contract_term_unit', 'Days');
+                cy.get('#renewal_terms_value').type('100');
+                cy.selectOption('#renewal_terms_unit', 'Days');
 
                 cy.selectOption('#billing_frequency_value', '50');
                 cy.selectOption('#billing_frequency_unit', 'Days');

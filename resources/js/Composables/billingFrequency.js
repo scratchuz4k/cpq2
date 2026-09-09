@@ -30,25 +30,25 @@ const daysPerUnit = {
  */
 export function useBillingFrequency(product, frequencyUnits) {
     const contract_length = ref(
-        product.contract_term_value
-            ? product.contract_term_value * (daysPerUnit[product.contract_term_unit] ?? 0)
+        product.renewal_terms_value
+            ? product.renewal_terms_value * (daysPerUnit[product.renewal_terms_unit] ?? 0)
             : null
     );
 
     const calculateContractLengthDays = () => {
-        if (!product.contract_term_unit || !product.contract_term_value) {
+        if (!product.renewal_terms_unit || !product.renewal_terms_value) {
             contract_length.value = null;
             return;
         }
 
-        contract_length.value = product.contract_term_value * (daysPerUnit[product.contract_term_unit] ?? 0);
+        contract_length.value = product.renewal_terms_value * (daysPerUnit[product.renewal_terms_unit] ?? 0);
         const billingUnitDays = daysPerUnit[product.billing_frequency_unit] ?? 0;
         const billingLengthDays = product.billing_frequency_value * billingUnitDays;
         const billingFrequencyIsValid = billingLengthDays > 0 && contract_length.value % billingLengthDays === 0;
 
         if (contract_length.value && !billingFrequencyIsValid) {
-            product.billing_frequency_unit = product.contract_term_unit;
-            product.billing_frequency_value = product.contract_term_value;
+            product.billing_frequency_unit = product.renewal_terms_unit;
+            product.billing_frequency_value = product.renewal_terms_value;
         }
     };
 
@@ -59,7 +59,11 @@ export function useBillingFrequency(product, frequencyUnits) {
 
         const units = frequencyUnits.value ?? frequencyUnits;
 
-        return units.filter((unit) => contract_length.value >= (daysPerUnit[unit.name] ?? 0));
+        return units.filter((unit) => {
+            const unitDays = daysPerUnit[unit.name] ?? 0;
+
+            return unitDays > 0 && contract_length.value % unitDays === 0;
+        });
     });
 
     const billingFrequencyValues = computed(() => {
@@ -82,8 +86,8 @@ export function useBillingFrequency(product, frequencyUnits) {
         () => product.price_plan_id,
         (newVal) => {
             if (newVal !== 1) {
-                product.contract_term_unit = null;
-                product.contract_term_value = null;
+                product.renewal_terms_unit = null;
+                product.renewal_terms_value = null;
                 product.billing_frequency_unit = null;
                 product.billing_frequency_value = null;
             }
@@ -91,7 +95,7 @@ export function useBillingFrequency(product, frequencyUnits) {
     );
 
     watch(
-        [() => product.contract_term_unit, () => product.contract_term_value],
+        [() => product.renewal_terms_unit, () => product.renewal_terms_value],
         () => {
             calculateContractLengthDays();
         },

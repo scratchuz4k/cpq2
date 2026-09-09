@@ -251,15 +251,15 @@ const items = ref([
                                             </div>
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label">Renewal Terms</label>
+                                            <label class="form-label">Renewal terms</label>
                                             <div class="row">
                                                 <div class="col-3">
                                                     <InputNumber
-                                                        v-model="product.contract_term_value"
+                                                        v-model="product.renewal_terms_value"
                                                         :disabled="product.price_plan_id !== 1"
                                                         :min="0"
                                                         :max="100"
-                                                        :inputId="'contract_term_value'"
+                                                        :inputId="'renewal_terms_value'"
                                                         :inputClass="'w-100'"
                                                         showButtons
                                                         placeholder="Value"
@@ -267,9 +267,9 @@ const items = ref([
                                                 </div>
                                                 <div class="col-6">
                                                     <Select
-                                                        v-model="product.contract_term_unit"
+                                                        v-model="product.renewal_terms_unit"
                                                         :disabled="product.price_plan_id !== 1"
-                                                        :inputId="'contract_term_unit'"
+                                                        :inputId="'renewal_terms_unit'"
                                                         :inputClass="'my-auto'"
                                                         :options="frequency_units"
                                                         class="h-100"

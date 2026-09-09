@@ -46,13 +46,13 @@ class ProductUpdateRequest extends FormRequest
                 new TenantExistsRule('categories'),
             ],
             'price_plan_id' => 'exists:price_plans,id',
-            'contract_term_value' => [
+            'renewal_terms_value' => [
                 Rule::requiredIf($this->input('price_plan_id') == 1),
                 'nullable',
                 'integer',
                 'between:1,100',
             ],
-            'contract_term_unit' => [
+            'renewal_terms_unit' => [
                 Rule::requiredIf($this->input('price_plan_id') == 1),
                 'nullable',
                 Rule::in(FrequencyUnitsEnum::names()),

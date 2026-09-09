@@ -39,7 +39,9 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
     private function insertUser(array $user, int $rowIndex): bool
     {
         try {
-            $user['groups'] = $user['groups'] ? explode(',', $user['groups']) : [];
+            $user['groups'] = $user['groups']
+                ? array_map('trim', explode(',', $user['groups']))
+                : [];
             $actingUser = $this->actingUser;
 
             $validator = Validator::make($user, [
@@ -82,6 +84,7 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
                     },
                 ],
                 'commission_rate' => 'nullable|integer|min:0|max:100',
+                'sso' => ['boolean'],
             ]);
 
             if ($validator->fails()) {
@@ -165,7 +168,6 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
             $this->results['data'][] = [
                 'index' => $rowIndex,
                 ...$row,
-                'is_active' => (int) $row['is_active'],
             ];
             $this->results['processed']++;
             $this->insertUser($row, $rowIndex);

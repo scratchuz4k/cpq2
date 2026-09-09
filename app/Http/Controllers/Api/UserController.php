@@ -29,6 +29,12 @@ class UserController extends BaseController
         $dataProvider = new DataProvider(User::class);
         $dataProvider->builder = User::getChildAndOrphansUser();
 
+        $viewer = $request->user();
+        if ($viewer->isGrouped()) {
+            $dataProvider->builder = $dataProvider->builder
+                ->whereHas('groups', fn ($q) => $q->whereIn('groups.id', $viewer->groupIds()));
+        }
+
         try {
             $data = $dataProvider->get();
         } catch (\Exception $e) {

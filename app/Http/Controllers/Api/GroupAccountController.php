@@ -78,6 +78,13 @@ class GroupAccountController extends BaseController
     #[ExcludeRouteFromDocs]
     public function destroy(GroupAccount $groupAccount)
     {
+        $user = auth()->user();
+
+        // CPQ-530: grouped users may only remove an account from a group they belong to.
+        if ($user && $user->isGrouped() && ! $user->groupIds()->contains($groupAccount->group_id)) {
+            abort(403);
+        }
+
         $groupAccount->delete();
 
         return response(null, 200);

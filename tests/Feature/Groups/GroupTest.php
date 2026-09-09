@@ -25,14 +25,7 @@ beforeEach(function () {
 });
 
 it('Relate Account and User with Group, ', function () {
-    // relate User
-    $response = $this->put('api/users/'.$this->user->id, [
-        'groups' => [$this->group->id],
-    ]);
-    $response->assertSuccessful();
-    $this->user->refresh();
-    expect($this->user->groups()->count())->toBe(1);
-
+    // The acting user is not in any group yet, so it may add any account to any group.
     $response = $this->post('api/group-accounts/', [
         'account_id' => $this->account->id,
         'group_id' => $this->group->id,
@@ -41,6 +34,14 @@ it('Relate Account and User with Group, ', function () {
 
     $this->group->refresh();
     expect($this->group->accounts()->count())->toBe(1);
+
+    // relate User
+    $response = $this->put('api/users/'.$this->user->id, [
+        'groups' => [$this->group->id],
+    ]);
+    $response->assertSuccessful();
+    $this->user->refresh();
+    expect($this->user->groups()->count())->toBe(1);
 });
 
 it('Add user to Group and create new Account and User ', function () {

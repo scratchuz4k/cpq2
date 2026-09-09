@@ -55,6 +55,7 @@ const saveNewGroup = async () => {
     try {
         await axios.post('/api/groups', { name: newGroup.value });
         showGroupModel.value = false;
+        newGroup.value = '';
         emitter.emit('datatable-refresh');
         notyf.success('Created with Success');
     } catch (ex) {
@@ -189,8 +190,14 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                     {{ value }}
                                 </span>
                             </template>
-                            <template #groups.name="{ value }">
-                                <span class="badge text-bg-secondary">{{ value }}</span>
+                            <template #groups.name="{ data }">
+                                <span
+                                    v-for="group in data.groups ?? []"
+                                    :key="group.id"
+                                    class="badge text-bg-secondary me-1"
+                                >
+                                    {{ group.name }}
+                                </span>
                             </template>
                             <template #commission_rate="{ value }"> {{ value }}%</template>
                         </Datatable>
