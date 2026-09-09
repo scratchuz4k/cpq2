@@ -40,7 +40,7 @@ class ExportCSVTemplate implements FromCollection, ShouldAutoSize, WithCustomCsv
     {
         return [
             'delimiter' => ';',
-            'enclosure' => '"',
+            'enclosure' => '',
             'line_ending' => "\r\n",
             'use_bom' => true,
         ];

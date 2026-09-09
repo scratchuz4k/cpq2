@@ -60,7 +60,7 @@ const submitFile = async () => {
             <hr class="mt-0" />
             <form @submit.prevent="submitFile" enctype="multipart/form-data">
                 <div class="row g-3">
-                    <div class="col-md-9 mb-1">
+                    <div class="mb-1">
                         <label for="csv-file" class="form-label">CSV file:</label>
                         <input
                             id="csv-file"

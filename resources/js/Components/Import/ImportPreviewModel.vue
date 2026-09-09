@@ -4,7 +4,7 @@ import { Dialog, Button } from 'primevue';
 import Table from 'primevue/datatable';
 import Column from 'primevue/column';
 import CountUp from 'vue-countup-v3';
-import { importConfirm, importPreview } from '@/Composables/import.js';
+import { importConfirm } from '@/Composables/import.js';
 
 const props = defineProps({
     visible: {

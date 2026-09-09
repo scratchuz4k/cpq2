@@ -32,13 +32,14 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
     public function __construct(protected User $actingUser, protected string $model, bool $isDryRun = false)
     {
         $this->tenant = Tenant::current();
-        $this->model = $model;
         $this->isDryRun = $isDryRun;
     }
 
-    /**
-     * Validate the import file.
-     */
+    public function setModel(string $model): void
+    {
+        $this->model = $model;
+    }
+
     public static function validateFile($file, $model, User $actingUser): array
     {
         $import = new self($actingUser, $model, true);
@@ -62,24 +63,22 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
         return 1;
     }
 
-    public static function getImportTemplate()
-    {
-        $template = require app_path('Helpers/Import/user_import.php');
-
-        return [
-            'data' => collect($template['data']),
-            'filename' => $template['filename'],
-        ];
-    }
-
     public function collection(Collection $collection): void
     {
         foreach ($collection->values() as $index => $item) {
             $item = array_map(fn ($value) => trim((string) $value), $item->toArray());
+
+            if (array_key_exists('is_active', $item)) {
+                $item['is_active'] = $item['is_active'] === '' ? 1 : (int) $item['is_active'];
+            }
+
+            if (! array_key_exists('tenant_id', $item)) {
+                $item['tenant_id'] = $this->tenant->id;
+            }
+
             $this->results['data'][] = [
                 'index' => $index,
                 ...$item,
-                'is_active' => (int) $item['is_active'],
             ];
             $this->results['processed']++;
             $this->insert($item, $index);
@@ -103,6 +102,8 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
     private function insert(array $item, int $index): bool
     {
         try {
+            request()->merge($item);
+
             $validator = Validator::make($item, $this->rules());
 
             if ($validator->fails()) {
@@ -126,6 +127,9 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
 
             $newItem->save();
 
+            $this->results['success']++;
+
+            return true;
         } catch (ValidationException $e) {
             $this->results['skipped']++;
             $this->results['errors'][] = [

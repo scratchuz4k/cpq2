@@ -102,7 +102,7 @@ class ImportController extends BaseController
             $importHandler = new $importClass;
             $template = $importHandler::getImportTemplate();
 
-            return Excel::download(new ExportCSVTemplate($importHandler::class, $template['data']), $template['filename']);
+            return Excel::download(new ExportCSVTemplate($importClass, $template['data']), $template['filename']);
         }
 
         return parent::export($request);

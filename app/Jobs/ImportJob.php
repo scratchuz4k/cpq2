@@ -30,6 +30,9 @@ class ImportJob implements ShouldQueue, TenantAware
     ) {
         $importClass = ImportsEnum::tryFromName($this->import->model)->value;
         $this->importHandler = new $importClass($overwrite, $actingUser);
+
+        $this->importHandler->setModel($this->import->model);
+
     }
 
     /**
