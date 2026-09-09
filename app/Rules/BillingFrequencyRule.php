@@ -20,8 +20,8 @@ class BillingFrequencyRule implements DataAwareRule, ValidationRule
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $contractValue = $this->data['contract_term_value'] ?? null;
-        $contractUnit = $this->data['contract_term_unit'] ?? null;
+        $contractValue = $this->data['renewal_terms_value'] ?? null;
+        $contractUnit = $this->data['renewal_terms_unit'] ?? null;
         $billingUnit = $this->data['billing_frequency_unit'] ?? null;
 
         if (! $contractValue || ! $contractUnit || ! $value || ! $billingUnit) {

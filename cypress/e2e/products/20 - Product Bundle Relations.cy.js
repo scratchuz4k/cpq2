@@ -24,8 +24,8 @@ describe('Product Bundle Relations', () => {
         cy.get('#product-name').type(bundleItem.name);
         cy.get('#product-sku').type(bundleItem.sku);
         cy.get('#price_plan_1').click();
-        cy.get('#contract_term_value').type('3');
-        cy.selectOption('#contract_term_unit', 'Years');
+        cy.get('#renewal_terms_value').type('3');
+        cy.selectOption('#renewal_terms_unit', 'Years');
 
         cy.selectOption('#billing_frequency_value', '1');
         cy.selectOption('#billing_frequency_unit', 'Years');
@@ -44,8 +44,8 @@ describe('Product Bundle Relations', () => {
         cy.get('#product-name').type(bundleParent.name);
         cy.get('#product-sku').type(bundleParent.sku);
         cy.get('#price_plan_1').click();
-        cy.get('#contract_term_value').type('3');
-        cy.selectOption('#contract_term_unit', 'Years');
+        cy.get('#renewal_terms_value').type('3');
+        cy.selectOption('#renewal_terms_unit', 'Years');
 
         cy.selectOption('#billing_frequency_value', '1');
         cy.selectOption('#billing_frequency_unit', 'Years');

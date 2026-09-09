@@ -8,7 +8,9 @@ const props = defineProps({
     <span class="cpq-tooltip border-0">
         <font-awesome-icon :icon="['fas', 'circle-info']" />
         <span class="cpq-tooltip-text">
-            <small>{{ props.info_text }}</small>
+            <slot>
+                <small>{{ props.info_text }}</small>
+            </slot>
         </span>
     </span>
 </template>

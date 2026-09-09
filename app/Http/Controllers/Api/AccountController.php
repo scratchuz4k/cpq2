@@ -34,9 +34,8 @@ class AccountController extends BaseController
         $dataProvider = new DataProvider(Account::class);
 
         $user = request()->user();
-        if ($user->group()) {
-            $ids = $user->group()->accounts->pluck('id');
-            $dataProvider->builder = $dataProvider->builder->whereIn('id', $ids);
+        if ($user->isGrouped()) {
+            $dataProvider->builder = $dataProvider->builder->visibleToGroups($user);
         }
 
         try {

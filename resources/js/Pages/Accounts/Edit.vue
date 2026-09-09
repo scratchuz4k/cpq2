@@ -1,25 +1,43 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, router } from '@inertiajs/vue3';
+import { Head, router, usePage } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import Accordion from 'primevue/accordion';
 import AccordionPanel from 'primevue/accordionpanel';
 import AccordionHeader from 'primevue/accordionheader';
 import AccordionContent from 'primevue/accordioncontent';
-import { ref, reactive } from 'vue';
+import { ref, reactive, computed } from 'vue';
 import ToggleSwitch from 'primevue/toggleswitch';
 import { integerOnly } from '@/Composables/input.js';
+import InputSelectMultiple from '@/Components/InputSelectMultiple.vue';
 
 const props = defineProps({
     account: Object
 });
 
+const page = usePage();
+const authUser = page.props.auth.user;
+
 const activePanel = reactive({
     value: 0
 });
 
-const form = reactive({ ...props.account });
+const form = reactive({ ...props.account, groups: props.account.groups ? [...props.account.groups] : [] });
 const contacts = ref([...props.account.contacts]);
+
+const authGroupIds = (authUser.groups ?? []).map((g) => g.id);
+
+// The /api/groups endpoint scopes results to the acting user's own groups plus
+// (via `for_account_id`) the groups of the account being edited, so no client
+// filter is needed here.
+const groupParams = { for_account_id: props.account.id };
+
+// Groups the account is in but the acting user is not: selected but locked.
+const lockedGroupIds = computed(() =>
+    !authGroupIds.length
+        ? []
+        : (props.account.groups ?? []).filter((g) => !authGroupIds.includes(g.id)).map((g) => g.id)
+);
 
 const addContact = () => {
     contacts.value.push({});
@@ -38,9 +56,14 @@ const removeContact = (key) => {
 };
 
 const saveAccount = () => {
+    if (authUser.groups?.length && !form.groups.length) {
+        notyf.error('You must keep at least one of your groups assigned to the account.');
+        return;
+    }
+
     router.put(
         `/accounts/${props.account.id}`,
-        { ...form, contacts: contacts.value },
+        { ...form, contacts: contacts.value, groups: form.groups.map((group) => group.id) },
         {
             onSuccess: (page) => {
                 notyf.success('Updated with Success');
@@ -88,13 +111,29 @@ const items = ref([
                         </template>
                     </ToggleSwitch>
                 </div>
-                <div class="col">
+                <div class="col-6">
                     <label for="account-name" class="form-label">Name:</label>
                     <input id="account-name" class="form-control" v-model="form.name" />
                 </div>
-                <div class="col">
+                <div class="col-6">
                     <label for="account-reference" class="form-label">Reference:</label>
                     <input id="account-reference" class="form-control" v-model="form.reference" />
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-6">
+                    <label for="account-group" class="form-label">Group:</label>
+                    <GroupFieldHelp subject="account" />
+                    <InputSelectMultiple
+                        id="account-group"
+                        v-model="form.groups"
+                        url="/groups"
+                        :fields="['name']"
+                        :placeholder="'Select a Group'"
+                        :params="groupParams"
+                        :locked-ids="lockedGroupIds"
+                    >
+                    </InputSelectMultiple>
                 </div>
             </div>
             <h2>Contacts</h2>

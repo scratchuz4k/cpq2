@@ -35,6 +35,10 @@ class UserPolicy
             return false;
         }
 
+        if (! $this->sharesGroup($user, $model)) {
+            return false;
+        }
+
         if (! $user->can("view $this->model")) {
             return false;
         }
@@ -68,6 +72,10 @@ class UserPolicy
         }
 
         if (! $this->hasUserInChild($model)) {
+            return false;
+        }
+
+        if (! $this->sharesGroup($user, $model)) {
             return false;
         }
 
@@ -135,6 +143,19 @@ class UserPolicy
         }
 
         return true;
+    }
+
+    /**
+     * CPQ-530: a grouped acting user may only see/manage users that share at
+     * least one of their groups. Ungrouped users and Super Admin are unrestricted.
+     */
+    private function sharesGroup(User $user, User $model): bool
+    {
+        if (! $user->isGrouped() || $user->hasRole('Super Admin')) {
+            return true;
+        }
+
+        return $user->sharesGroupWith($model->groupIds());
     }
 
     private function hasUserInChild(User $user): bool
