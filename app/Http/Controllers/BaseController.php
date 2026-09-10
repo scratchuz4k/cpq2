@@ -93,7 +93,8 @@ class BaseController extends Controller
         );
 
         if (! $isDryRun) {
-            if ($path = $file->store('imports', 'public')) {
+            $filename = Str::random(40).'.'.$file->getClientOriginalExtension();
+            if ($path = $file->storeAs('imports', $filename, 'public')) {
                 $resource = Resource::create([
                     'title' => $file->getClientOriginalName(),
                     'mime_type' => $file->getClientMimeType(),
@@ -107,11 +108,12 @@ class BaseController extends Controller
                 'name' => $file->getClientOriginalName(),
                 'file_id' => $resource->id ?? null,
                 'status' => ImportStatusesEnum::IN_PROGRESS->name,
-                'model' => $this->model,
+                'model' => class_basename($this->model),
                 'user_id' => $user->id,
                 'tenant_id' => $user->tenant_id,
             ]);
 
+            $import->model = $this->model;
             ImportJob::dispatch($import, $user);
 
             return $import;

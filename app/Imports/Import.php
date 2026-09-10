@@ -4,8 +4,11 @@ namespace App\Imports;
 
 use App\Models\Tenant;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\Unique;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Concerns\SkipsErrors;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -128,7 +131,7 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
                 return true;
             }
 
-            $newItem = new $this->model($item);
+            $newItem = $this->resolveModel($item);
 
             $newItem->save();
 
@@ -152,5 +155,57 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
         }
 
         return false;
+    }
+
+    /**
+     * Build the model to save for this row. For soft-deletable models, a row that
+     * matches an existing trashed record on its unique fields is restored and
+     * updated instead of inserted, since the row would otherwise still collide
+     * with the trashed record's unique constraint.
+     */
+    private function resolveModel(array $item): Model
+    {
+        $modelClass = $this->model;
+
+        if (! in_array(SoftDeletes::class, class_uses_recursive($modelClass))) {
+            return new $modelClass($item);
+        }
+
+        $uniqueFields = $this->uniqueFields();
+
+        if (empty($uniqueFields)) {
+            return new $modelClass($item);
+        }
+
+        $conditions = collect($uniqueFields)
+            ->mapWithKeys(fn ($field) => [$field => $item[$field] ?? null])
+            ->all();
+
+        $existing = $modelClass::withTrashed()->where($conditions)->first();
+
+        if (! $existing) {
+            return new $modelClass($item);
+        }
+
+        if ($existing->trashed()) {
+            $existing->restore();
+        }
+
+        $existing->fill($item);
+
+        return $existing;
+    }
+
+    /**
+     * Fields covered by a Rule::unique() validation rule for this import, i.e.
+     * the columns whose combination the model's DB unique constraint enforces.
+     */
+    private function uniqueFields(): array
+    {
+        return collect($this->rules())
+            ->filter(fn ($rule) => collect(is_array($rule) ? $rule : [$rule])
+                ->contains(fn ($r) => $r instanceof Unique))
+            ->keys()
+            ->all();
     }
 }
