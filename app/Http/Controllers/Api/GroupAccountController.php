@@ -24,6 +24,11 @@ class GroupAccountController extends BaseController
     {
 
         $dataProvider = new DataProvider(GroupAccount::class);
+
+        // A soft-deleted account leaves its pivot row behind; skip those so the
+        // group never shows a membership row with no account name.
+        $dataProvider->builder = $dataProvider->builder->whereHas('account');
+
         try {
             $data = $dataProvider->get();
         } catch (Exception $e) {

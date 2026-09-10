@@ -25,12 +25,12 @@ class Group extends Model
 
     public function accounts(): BelongsToMany
     {
-        return $this->belongsToMany(Account::class, 'group_account');
+        return $this->belongsToMany(Account::class, 'group_account')->withTimestamps();
     }
 
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class)->withTimestamps();
     }
 
     public function owner(): BelongsTo
