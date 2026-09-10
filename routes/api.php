@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\ExternalController;
 use App\Http\Controllers\Api\General\BlacklistController;
 use App\Http\Controllers\Api\GroupAccountController;
 use App\Http\Controllers\Api\GroupController;
+use App\Http\Controllers\Api\GroupUserController;
 use App\Http\Controllers\Api\ImportController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PermissionController;
@@ -90,7 +91,6 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         Route::get('/columns', [ReportController::class, 'getColumns']);
     });
     Route::post('/quotes/{quote}/complete', [QuoteController::class, 'complete']);
-
     Route::get('categories/tree', [CategoryController::class, 'tree']);
 
     Route::apiResources([
@@ -123,6 +123,7 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         'email-history' => EmailHistoryController::class,
         'groups' => GroupController::class,
         'group-accounts' => GroupAccountController::class,
+        'group-users' => GroupUserController::class,
         'roles' => RoleController::class,
         'imports' => ImportController::class,
         'steps' => StepController::class,

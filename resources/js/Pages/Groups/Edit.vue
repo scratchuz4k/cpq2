@@ -165,15 +165,15 @@ const items = ref([
                             <label class="form-label">Users:</label>
                             <Datatable
                                 id="group-users"
-                                :query="[{ column: 'groups.id', operator: 'equals', value: group.id }]"
+                                :query="[{ column: 'group_id', operator: 'equals', value: group.id }]"
                                 :columns="[
                                     { data: 'id', title: '#', style: 'width:5%' },
-                                    { data: 'name', title: 'Name', style: 'width:50%' },
+                                    { data: 'user.name', title: 'Name', style: 'width:50%' },
                                     { data: 'created_at', title: 'Created At', style: 'width:15%' },
                                     { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
                                     { data: 'actions', title: ' At', style: 'width:5%' }
                                 ]"
-                                route="/users"
+                                route="/group-users"
                             >
                                 <template #updated_at="{ value }">
                                     {{ format.date(value) }}
@@ -182,7 +182,7 @@ const items = ref([
                                     {{ format.date(value) }}
                                 </template>
                                 <template #actions="{ data, value, index }">
-                                    <button class="btn px-2 py-0 mx-1 border-0" @click="setUserGroup(data, null)">
+                                    <button class="btn px-2 py-0 mx-1 border-0" @click="setUserGroup(data.user, null)">
                                         <font-awesome-icon :icon="['fas', 'trash-alt']"></font-awesome-icon>
                                     </button>
                                 </template>
