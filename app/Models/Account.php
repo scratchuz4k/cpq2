@@ -49,7 +49,7 @@ class Account extends Model
 
     public function groups(): BelongsToMany
     {
-        return $this->belongsToMany(Group::class, 'group_account');
+        return $this->belongsToMany(Group::class, 'group_account')->withTimestamps();
     }
 
     /**

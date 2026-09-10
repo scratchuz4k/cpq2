@@ -11,6 +11,7 @@ use App\Http\Controllers\Web\EmailTemplateController;
 use App\Http\Controllers\Web\General\BlacklistController;
 use App\Http\Controllers\Web\GroupAccountController;
 use App\Http\Controllers\Web\GroupController;
+use App\Http\Controllers\Web\GroupUserController;
 use App\Http\Controllers\Web\ImportController;
 use App\Http\Controllers\Web\NotificationController;
 use App\Http\Controllers\Web\ProductAddonController;
@@ -98,6 +99,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'blacklists' => BlacklistController::class,
         'groups' => GroupController::class,
         'group-accounts' => GroupAccountController::class,
+        'group-users' => GroupUserController::class,
         'activities' => ActivityController::class,
         'roles' => RoleController::class,
         'imports' => ImportController::class,
