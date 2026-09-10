@@ -99,6 +99,12 @@ const options = [
         url: route('reporting'),
         has_permission: hasRole('Super Admin') || can('viewAny report'),
         icon: ['fas', 'gauge']
+    },
+    {
+        title: 'Imports',
+        url: route('imports.index'),
+        has_permission: hasRole('Super Admin') || can('viewAny import'),
+        icon: ['fas', 'file-import']
     }
 ];
 const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings' }]);
