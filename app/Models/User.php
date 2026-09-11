@@ -97,7 +97,33 @@ class User extends Authenticatable
      */
     public function groups(): BelongsToMany
     {
-        return $this->belongsToMany(Group::class);
+        return $this->belongsToMany(Group::class)->withTimestamps();
+    }
+
+    /**
+     * Ids of every group this user belongs to.
+     */
+    public function groupIds(): Collection
+    {
+        return $this->relationLoaded('groups')
+            ? $this->groups->pluck('id')->values()
+            : $this->groups()->pluck('groups.id')->values();
+    }
+
+    /**
+     * Whether the user belongs to at least one group.
+     */
+    public function isGrouped(): bool
+    {
+        return $this->groupIds()->isNotEmpty();
+    }
+
+    /**
+     * Whether the user shares at least one group with the given group ids.
+     */
+    public function sharesGroupWith(iterable $groupIds): bool
+    {
+        return $this->groupIds()->intersect(collect($groupIds))->isNotEmpty();
     }
 
     public function currentTenant(): HasOne

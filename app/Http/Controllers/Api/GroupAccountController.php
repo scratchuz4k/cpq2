@@ -24,6 +24,11 @@ class GroupAccountController extends BaseController
     {
 
         $dataProvider = new DataProvider(GroupAccount::class);
+
+        // A soft-deleted account leaves its pivot row behind; skip those so the
+        // group never shows a membership row with no account name.
+        $dataProvider->builder = $dataProvider->builder->whereHas('account');
+
         try {
             $data = $dataProvider->get();
         } catch (Exception $e) {
@@ -78,6 +83,13 @@ class GroupAccountController extends BaseController
     #[ExcludeRouteFromDocs]
     public function destroy(GroupAccount $groupAccount)
     {
+        $user = auth()->user();
+
+        // CPQ-530: grouped users may only remove an account from a group they belong to.
+        if ($user && $user->isGrouped() && ! $user->groupIds()->contains($groupAccount->group_id)) {
+            abort(403);
+        }
+
         $groupAccount->delete();
 
         return response(null, 200);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\AssignableGroups;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -41,6 +42,8 @@ class AccountCreateRequest extends FormRequest
             'contacts.*.name' => 'nullable',
             'contacts.*.email' => 'nullable|email',
             'contacts.*.phone' => 'nullable|max_digits:12',
+            'groups' => ['nullable', 'array', new AssignableGroups],
+            'groups.*' => 'integer|exists:groups,id',
         ];
     }
 

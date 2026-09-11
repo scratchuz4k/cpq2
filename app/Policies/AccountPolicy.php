@@ -9,18 +9,15 @@ class AccountPolicy
 {
     private string $model = 'account';
 
-    public function userCanManageAccount(User $user, Account $account)
+    public function userCanManageAccount(User $user, Account $account): bool
     {
-        /* bug fix */
-        if (! $user->group()) {
+        // CPQ-530: ungrouped users (and Super Admin) are unrestricted; grouped
+        // users may only manage accounts sharing one of their groups.
+        if (! $user->isGrouped() || $user->hasRole('Super Admin')) {
             return true;
         }
 
-        if (! $user->hasRole('Super Admin')) {
-            return $user->group->accounts->contains('id', $account->id);
-        }
-
-        return true;
+        return $user->sharesGroupWith($account->groups()->pluck('groups.id'));
     }
 
     private function hasPermission(User $user, string $action): bool
@@ -53,11 +50,7 @@ class AccountPolicy
      */
     public function view(User $user, Account $account): bool
     {
-        if (! $user->can("view $this->model") && $this->userCanManageAccount($user, $account)) {
-            return false;
-        }
-
-        return true;
+        return $this->hasPermission($user, 'view') && $this->userCanManageAccount($user, $account);
     }
 
     /**

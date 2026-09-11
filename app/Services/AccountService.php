@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Account;
 use App\Models\Contact;
 use App\Repositories\AccountRepository;
+use App\Support\GroupAssignment;
 use Illuminate\Support\Facades\Auth;
 
 class AccountService
@@ -35,6 +36,8 @@ class AccountService
             $this->accountRepository->syncContacts($account, $array['contacts']);
         }
 
+        $this->syncGroups($account, $array, allowFloor: true);
+
         return $account;
     }
 
@@ -56,6 +59,36 @@ class AccountService
             $this->accountRepository->syncContacts($account, $array['contacts']);
         }
 
+        $this->syncGroups($account, $array);
+
         return $account;
+    }
+
+    /**
+     * On create ($allowFloor), a grouped actor that submits no groups gets the
+     * account floored to their own groups. On update we only touch group
+     * memberships when `groups` is explicitly supplied.
+     */
+    protected function syncGroups(Account $account, array $array, bool $allowFloor = false): void
+    {
+        $actor = Auth::user();
+        $hasKey = array_key_exists('groups', $array) && is_array($array['groups']);
+
+        if (! $hasKey && ! ($allowFloor && $actor && $actor->isGrouped())) {
+            return;
+        }
+
+        $submitted = $hasKey ? $array['groups'] : null;
+
+        $groupIds = GroupAssignment::resolve(
+            $actor,
+            $account->groups()->pluck('groups.id'),
+            $submitted,
+            'account',
+        );
+
+        $account->groups()->sync(
+            collect($groupIds)->mapWithKeys(fn ($id) => [$id => ['tenant_id' => $actor->tenant_id]])->all()
+        );
     }
 }

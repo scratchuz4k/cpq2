@@ -5,6 +5,7 @@ import { reactive, ref, watch } from 'vue';
 import Header from '@/Components/Header.vue';
 import { Dialog, Button, Checkbox, Select } from 'primevue';
 import { exportData } from '@/Composables/export.js';
+import { formatResponseErrors } from '@composables/useApiErrors';
 import queryString from 'qs';
 import CountUp from 'vue-countup-v3';
 import Table from 'primevue/datatable';
@@ -72,7 +73,7 @@ const submitFile = async () => {
         }
         showImportPreview.value = true;
     } catch (err) {
-        notyf.error(err?.response?.data?.message ?? 'Something went wrong');
+        notyf.error(formatResponseErrors(err));
         return false;
     } finally {
         showForm.value = false;
@@ -102,7 +103,7 @@ const importData = async () => {
             emitter.emit('datatable-refresh');
         }
     } catch (err) {
-        notyf.error(err?.response?.data?.message ?? 'Something went wrong');
+        notyf.error(formatResponseErrors(err));
         return false;
     } finally {
         form.overwrite = 0;
@@ -215,7 +216,7 @@ watch(
                                 id="products-import-template-link"
                                 >sample CSV template</a
                             >
-                            to see and example of the format required.
+                            to see and example of the format required. Maximum file upload size is 2 MB.
                         </i>
                     </p>
                     <div v-if="form.model === 'Product'" class="form-check px-0 pt-2">
@@ -251,17 +252,18 @@ watch(
             position="top"
             header="Import Preview"
         >
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 pb-2">
+            <div class="import-preview-body max-w-7xl mx-auto sm:px-6 lg:px-8 pb-2">
                 <hr class="mt-0" />
-                <div v-if="previewData" class="mt-2 row row-cols-1 g-3 mb-2">
+                <div v-if="previewData" class="preview-table-scroll mt-2 mb-3">
                     <Table
                         :value="previewData.results?.data"
                         :rowClass="rowClass"
-                        tableStyle="min-width: 50rem"
+                        tableStyle="min-width: max-content"
                         :size="'small'"
                         class="p-datatable-sm preview-table"
                     >
-                        <Column v-for="(column, key) in previewData.columns" :field="key" :header="column"></Column>
+                        <Column v-for="(column, key) in previewData.columns" :key="key" :field="key" :header="column">
+                        </Column>
                     </Table>
                 </div>
                 <div class="mt-2 row row-cols-1 row-cols-md-3 g-3 mb-2">
@@ -338,5 +340,35 @@ watch(
 
 :deep(.row-has-error:hover) {
     background-color: #ffd9dd !important;
+}
+
+/* Keep the wide preview table inside the modal and scroll it horizontally */
+.import-preview-body {
+    min-width: 0;
+    max-width: 100%;
+}
+
+:deep(.p-dialog-content) {
+    overflow-x: hidden;
+}
+
+.preview-table-scroll {
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.preview-table-scroll :deep(.p-datatable) {
+    width: max-content;
+    min-width: 100%;
+}
+
+.preview-table-scroll :deep(.p-datatable-table-container) {
+    overflow: visible !important;
+}
+
+.preview-table-scroll :deep(th),
+.preview-table-scroll :deep(td) {
+    white-space: nowrap;
 }
 </style>

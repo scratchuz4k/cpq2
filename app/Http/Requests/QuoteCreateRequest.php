@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\QuoteStatusesEnum;
+use App\Rules\SelectableAccount;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
@@ -35,7 +36,7 @@ class QuoteCreateRequest extends FormRequest
     {
         return [
             'user_id' => 'required|exists:users,id',
-            'account_id' => 'required|exists:accounts,id',
+            'account_id' => ['required', 'exists:accounts,id', new SelectableAccount],
             'solution_type_id' => 'required|exists:solution_types,id',
             'items' => 'nullable|array',
             'items.*.quantity' => 'required|numeric',

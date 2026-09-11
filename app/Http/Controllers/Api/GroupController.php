@@ -6,7 +6,9 @@ use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
 use App\Http\Resources\GroupResource;
+use App\Models\Account;
 use App\Models\Group;
+use App\Models\User;
 use App\Services\GroupService;
 use Exception;
 use Illuminate\Http\Request;
@@ -23,6 +25,32 @@ class GroupController extends BaseController
     {
 
         $dataProvider = new DataProvider(Group::class);
+
+        $viewer = $request->user();
+        if ($viewer && $viewer->isGrouped()) {
+            $allowed = $viewer->groupIds();
+
+            // CPQ-527: when editing another user / an account, also expose that
+            // record's own groups so they can be shown (locked) in the picker.
+            $forUserId = (int) $request->input('for_user_id');
+            if ($forUserId) {
+                $target = User::find($forUserId);
+                if ($target && $viewer->can('update', $target)) {
+                    $allowed = $allowed->merge($target->groupIds());
+                }
+            }
+
+            $forAccountId = (int) $request->input('for_account_id');
+            if ($forAccountId) {
+                $account = Account::find($forAccountId);
+                if ($account && $viewer->can('update', $account)) {
+                    $allowed = $allowed->merge($account->groups()->pluck('groups.id'));
+                }
+            }
+
+            $dataProvider->builder = $dataProvider->builder->whereIn('id', $allowed->unique()->values()->all());
+        }
+
         try {
             $data = $dataProvider->get();
         } catch (Exception $e) {
