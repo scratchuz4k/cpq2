@@ -63,8 +63,12 @@
             {{ formatBytes($item['data']?->bearer) }}
         @break
 
+        @case('renewal_terms')
+            {{ $item->pricePlan['code'] == 'MONTHLY' ? frequencyLabel($item['renewal_terms_value'], $item['renewal_terms_unit']) : '' }}
+        @break
+
         @case('billing_frequency')
-            {{ $item->pricePlan['code'] == 'MONTHLY' ? billingFrequencyLabel($item['renewal_terms_value'], $item['renewal_terms_unit'], $item['billing_frequency_value'], $item['billing_frequency_unit']) : '' }}
+            {{ $item->pricePlan['code'] == 'MONTHLY' ? frequencyLabel($item['billing_frequency_value'], $item['billing_frequency_unit']) : '' }}
         @break
 
         @case('price_plan.name')

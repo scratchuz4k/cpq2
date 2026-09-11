@@ -217,8 +217,11 @@
                                                     <td class="column-price_plan-body">
                                                         {{ $item['price_plan']?->name }}
                                                     </td>
+                                                    <td class="column-renewal_terms-body">
+                                                        {{ $item['price_plan']['code'] == 'MONTHLY' ? frequencyLabel($item['renewal_terms_value'], $item['renewal_terms_unit']) : '' }}
+                                                    </td>
                                                     <td class="column-billing_frequency-body">
-                                                        {{ $item['price_plan']['code'] == 'MONTHLY' ? billingFrequencyLabel($item['renewal_terms_value'], $item['renewal_terms_unit'], $item['billing_frequency_value'], $item['billing_frequency_unit']) : '' }}
+                                                        {{ $item['price_plan']['code'] == 'MONTHLY' ? frequencyLabel($item['billing_frequency_value'], $item['billing_frequency_unit']) : '' }}
                                                     </td>
                                                     <td class="column-quantity-body">
                                                         {{ $item['quantity'] }}
@@ -246,8 +249,11 @@
                                                     {{ $group['price_plan']?->name }}
 
                                                 </td>
+                                                <td class="column-renewal_terms-body">
+                                                    {{ $group['renewal_terms_value'] > 1 ? frequencyLabel($group['renewal_terms_value'], $group['renewal_terms_unit']) : '' }}
+                                                </td>
                                                 <td class="column-billing_frequency-body">
-                                                    {{ $group['renewal_terms_value'] > 1 ? billingFrequencyLabel($group['renewal_terms_value'], $group['renewal_terms_unit'], $group['billing_frequency_value'], $group['billing_frequency_unit']) : '' }}
+                                                    {{ $group['renewal_terms_value'] > 1 ? frequencyLabel($group['billing_frequency_value'], $group['billing_frequency_unit']) : '' }}
                                                 </td>
                                                 <td class="column-quantity-body">
                                                     {{ $group['quantity'] }}
@@ -304,8 +310,11 @@
                                             <td class="column-price_plan-body">
                                                 {{ $group['price_plan']?->name }}
                                             </td>
+                                            <td class="column-renewal_terms-body">
+                                                {{ $group['renewal_terms_value'] > 1 ? frequencyLabel($group['renewal_terms_value'], $group['renewal_terms_unit']) : '' }}
+                                            </td>
                                             <td class="column-billing_frequency-body">
-                                                {{ $group['renewal_terms_value'] > 1 ? billingFrequencyLabel($group['renewal_terms_value'], $group['renewal_terms_unit'], $group['billing_frequency_value'], $group['billing_frequency_unit']) : '' }}
+                                                {{ $group['renewal_terms_value'] > 1 ? frequencyLabel($group['billing_frequency_value'], $group['billing_frequency_unit']) : '' }}
                                             </td>
                                             <td class="column-quantity-body">
                                                 {{ $group['quantity'] }}

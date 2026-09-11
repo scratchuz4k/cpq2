@@ -77,20 +77,14 @@ if (! function_exists('quoteQuantityPrice')) {
         return $total;
     }
 }
-if (! function_exists('billingFrequencyLabel')) {
-    function billingFrequencyLabel($renewalValue, $renewalUnit, $billingValue, $billingUnit)
+if (! function_exists('frequencyLabel')) {
+    function frequencyLabel($value, $unit)
     {
-        if (! $renewalValue || ! $renewalUnit) {
+        if (! $value || ! $unit) {
             return '';
         }
 
-        $label = $renewalValue.' '.ucfirst(strtolower($renewalUnit));
-
-        if ($billingValue && $billingUnit) {
-            $label .= ' / every '.$billingValue.' '.ucfirst(strtolower($billingUnit));
-        }
-
-        return $label;
+        return $value.' '.ucfirst(strtolower($unit));
     }
 }
 if (! function_exists('getCss')) {

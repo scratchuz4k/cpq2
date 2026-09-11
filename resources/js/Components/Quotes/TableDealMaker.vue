@@ -38,14 +38,14 @@ const quoteTotalMonths = (key) => {
 
 const filterColumns = (columns, code) => {
     if (code == 'SINGLE') {
-        return columns.filter((x) => x.value != 'billing_frequency');
+        return columns.filter((x) => x.value != 'renewal_terms' && x.value != 'billing_frequency');
     }
     return columns;
 };
 
 const editableColumns = (columns, code) => {
     let temp = filterColumns(columns, code);
-    let editable = ['name', 'price', 'discount', 'billing_frequency', 'quantity'];
+    let editable = ['name', 'price', 'discount', 'renewal_terms', 'billing_frequency', 'quantity'];
     temp.forEach((e) => {
         e.is_editable = editable.includes(e.value);
     });
