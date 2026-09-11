@@ -22,6 +22,14 @@ export const daysPerUnit = {
     YEARS: 360
 };
 
+const unitAbbreviations = {
+    DAYS: 'd',
+    MONTHS: 'mo',
+    YEARS: 'yr'
+};
+
+export const abbreviateUnit = (unit) => unitAbbreviations[unit] ?? '';
+
 export const frequencyUnitOptions = [
     { name: 'DAYS', value: 'Days' },
     { name: 'MONTHS', value: 'Months' },

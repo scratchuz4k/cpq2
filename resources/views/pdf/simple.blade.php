@@ -122,8 +122,8 @@
                                         <th class="column-name-header w-20">Name</th>
                                     @endif
                                     <th class="column-price_plan-header w-20">Price Plan</th>
-                                    <th class="column-renewal_terms-header w-5">Renewal Term</th>
-                                    <th class="column-billing_frequency-header w-5">Billing Frequency</th>
+                                    <th class="column-renewal_terms-header w-5">Term</th>
+                                    <th class="column-billing_frequency-header w-5">Frequency</th>
                                     <th class="column-quantity-header w-5">Quantity</th>
                                     <th class="column-price-header w-10">Price</th>
                                     <th class="column-total-header">Total </th>

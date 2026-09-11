@@ -190,8 +190,8 @@
                                         <th class="column-subprovider-header d-xl-table-cell">SubProvider</th>
                                     @endif
                                     <th class="column-name-header">Name</th>
-                                    <th class="column-renewal_terms-header">Renewal Term</th>
-                                    <th class="column-billing_frequency-header">Billing Frequency</th>
+                                    <th class="column-renewal_terms-header">Term</th>
+                                    <th class="column-billing_frequency-header">Frequency</th>
                                     @if ($isConnectivity)
                                         <th class="column-speed-header">Speed</th>
                                         <th class="column-bearer-header">Bearer</th>

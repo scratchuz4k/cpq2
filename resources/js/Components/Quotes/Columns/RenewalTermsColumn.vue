@@ -2,7 +2,7 @@
 import { Select } from 'primevue';
 import { temp } from '@composables/useQuoteItem';
 import { quote } from '@composables/useQuote';
-import { frequencyUnitOptions } from '@/Composables/billingFrequency';
+import { frequencyUnitOptions, abbreviateUnit } from '@/Composables/billingFrequency';
 import { integerOnly, checkValue } from '@/Composables/input.js';
 
 defineProps({
@@ -13,15 +13,13 @@ defineProps({
     index: Number
 });
 const item = defineModel();
-
-const unitLabel = (unit) => (unit ? unit.charAt(0) + unit.slice(1).toLowerCase() : '');
 </script>
 <template>
     <template v-if="!isGroup">
         <p class="small" v-if="!item.is_editing || quote.solution_type.code == 3">
             {{
                 item.price_plan?.code == 'MONTHLY' && quote && item.renewal_terms_value
-                    ? `${item.renewal_terms_value} ${unitLabel(item.renewal_terms_unit)}`
+                    ? `${item.renewal_terms_value}${abbreviateUnit(item.renewal_terms_unit)}`
                     : ''
             }}
         </p>

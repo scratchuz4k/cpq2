@@ -84,7 +84,13 @@ if (! function_exists('frequencyLabel')) {
             return '';
         }
 
-        return $value.' '.ucfirst(strtolower($unit));
+        $abbreviations = [
+            'DAYS' => 'd',
+            'MONTHS' => 'mo',
+            'YEARS' => 'yr',
+        ];
+
+        return $value.($abbreviations[$unit] ?? '');
     }
 }
 if (! function_exists('getCss')) {
