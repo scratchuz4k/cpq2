@@ -122,7 +122,8 @@
                                         <th class="column-name-header w-20">Name</th>
                                     @endif
                                     <th class="column-price_plan-header w-20">Price Plan</th>
-                                    <th class="column-contract_lenght-header w-5">Months</th>
+                                    <th class="column-renewal_terms-header w-5">Renewal Term</th>
+                                    <th class="column-billing_frequency-header w-5">Billing Frequency</th>
                                     <th class="column-quantity-header w-5">Quantity</th>
                                     <th class="column-price-header w-10">Price</th>
                                     <th class="column-total-header">Total </th>
@@ -132,7 +133,7 @@
                                 @if ($isConnectivity)
                                     @foreach ($items as $key => $group)
                                         <tr class="group-row" style="vertical-align: middle;">
-                                            <td class="group-body" colspan="8">
+                                            <td class="group-body" colspan="9">
                                                 <div class="d-flex py-2">
                                                     <div class="me-3">
                                                         @if ($group['data']?->providerKey)

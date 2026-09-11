@@ -6,8 +6,20 @@ import { checkValue } from '@/Composables/input.js';
 
 const props = defineProps({
     preview: Boolean,
-    pricePlan: Object
+    pricePlan: Object,
+    columns: {
+        type: Array,
+        default: () => []
+    }
 });
+
+const discountIndex = () => {
+    let index = props.columns.findIndex((column) => column.value == 'discount');
+    return index == -1 ? props.columns.length - 1 : index;
+};
+
+const labelColspan = () => discountIndex();
+const valueColspan = () => Math.max(props.columns.length - discountIndex() - 1, 1);
 
 const isEditing = ref(false);
 const isLoading = ref(false);
@@ -109,7 +121,7 @@ watch(
 </script>
 <template>
     <tr v-if="!props.preview || discount.discount">
-        <td :colspan="props.pricePlan.name == 'Recurring' ? 4 : 3">
+        <td :colspan="labelColspan()">
             <p class="small text-primary">{{ props.pricePlan.name }} Discount</p>
         </td>
         <td class="text-center">
@@ -127,7 +139,7 @@ watch(
                 @input="checkValue"
             />
         </td>
-        <td colspan="2" class="text-right text-primary bold">
+        <td :colspan="valueColspan()" class="text-right text-primary bold">
             <p v-if="props.preview || props.pricePlan.name != 'Recurring'" class="small column_total">
                 -{{ format.GBP(discount.value) }}
             </p>

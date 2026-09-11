@@ -190,7 +190,8 @@
                                         <th class="column-subprovider-header d-xl-table-cell">SubProvider</th>
                                     @endif
                                     <th class="column-name-header">Name</th>
-                                    <th class="column-contract_lenght-header">Months</th>
+                                    <th class="column-renewal_terms-header">Renewal Term</th>
+                                    <th class="column-billing_frequency-header">Billing Frequency</th>
                                     @if ($isConnectivity)
                                         <th class="column-speed-header">Speed</th>
                                         <th class="column-bearer-header">Bearer</th>
@@ -322,7 +323,7 @@
                                 @if ($discounts['monthly']['discount'])
                                     <tr class="item-row" style="vertical-align: middle;">
                                         <td class="column-name-body text-primary"
-                                            colspan="{{ $isConnectivity ? '8' : '4' }}">
+                                            colspan="{{ $isConnectivity ? '9' : '5' }}">
                                             Recurring Discount
                                         </td>
                                         <td class="text-center text-primary">
@@ -337,7 +338,7 @@
 
                             <tfoot>
                                 <tr>
-                                    <th class="text-start" colspan="{{ $isConnectivity ? '9' : '5' }}">
+                                    <th class="text-start" colspan="{{ $isConnectivity ? '10' : '6' }}">
                                         Monthly Subtotal
                                     </th>
                                     <th class="text-end">

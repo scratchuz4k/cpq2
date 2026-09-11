@@ -89,6 +89,7 @@ const editableColumns = (columns, code) => {
                         "
                         :preview="props.preview"
                         :pricePlan="pricePlan"
+                        :columns="filterColumns(columns, pricePlan.code)"
                     ></QuoteDiscountRow>
                 </tbody>
                 <tfoot>
