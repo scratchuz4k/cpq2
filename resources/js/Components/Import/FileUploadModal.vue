@@ -60,7 +60,17 @@ const submitFile = async () => {
             <hr class="mt-0" />
             <form @submit.prevent="submitFile" enctype="multipart/form-data">
                 <div class="row g-3">
-                    <div class="mb-1">
+                    <div class="col-md-3 mb-1">
+                        <label for="import" class="form-label">Import Type:</label>
+                        <Select
+                            inputId="import"
+                            v-model="form.model"
+                            :options="props.imports"
+                            placeholder="Select a Import"
+                            class="w-100"
+                        />
+                    </div>
+                    <div class="col-md-9 mb-1">
                         <label for="csv-file" class="form-label">CSV file:</label>
                         <input
                             id="csv-file"
@@ -83,13 +93,12 @@ const submitFile = async () => {
                             id="products-import-template-link"
                             >sample CSV template</a
                         >
-                        to see and example of the format required.
+                        to see and example of the format required. Maximum file upload size is 2 MB.
                     </i>
                 </p>
                 <div v-if="form.model === 'Product'" class="form-check px-0 pt-2">
                     <Checkbox
                         inputId="overwrite-products"
-                        s
                         v-model="form.overwrite"
                         binary
                         trueValue="1"
