@@ -1,6 +1,6 @@
 <script setup>
 import _ from 'lodash';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -10,7 +10,7 @@ import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 
-import { reactive, ref, useSlots, watch } from 'vue';
+import { computed, reactive, ref, useSlots, watch } from 'vue';
 import queryString from 'qs';
 import axios from 'axios';
 import { can, hasRole } from '@/Composables/useAuth.js';
@@ -18,6 +18,8 @@ import pluralize from 'pluralize';
 import { exportData } from '@/Composables/export.js';
 import FileUploadModal from '@/Components/Import/FileUploadModal.vue';
 import ImportPreviewModel from '@/Components/Import/ImportPreviewModel.vue';
+
+const page = usePage();
 
 const slots = useSlots();
 const usedSlots = Object.keys(slots);
@@ -52,6 +54,9 @@ const showImportPreview = ref(false);
 const previewData = ref(null);
 const importForm = ref(null);
 
+const isImportable = computed(() =>
+    page.props.importModels.some((imp) => imp.value === props.route.replace(/^\//, ''))
+);
 const handlePreview = ({ data, form }) => {
     previewData.value = data;
     importForm.value = form;
@@ -61,7 +66,8 @@ const handlePreview = ({ data, form }) => {
 const has_export_permission =
     can(`export ${pluralize.singular(props.route.replace(/^\//, ''))}`) || hasRole('Super Admin');
 const has_import_permission =
-    can(`import ${pluralize.singular(props.route.replace(/^\//, ''))}`) || hasRole('Super Admin');
+    isImportable.value &&
+    (can(`import ${pluralize.singular(props.route.replace(/^\//, ''))}`) || hasRole('Super Admin'));
 
 const form = reactive({
     filters: [],

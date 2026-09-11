@@ -12,6 +12,10 @@ const props = defineProps({
     model: {
         type: String,
         default: ''
+    },
+    imports: {
+        type: Array,
+        default: () => []
     }
 });
 
@@ -60,17 +64,19 @@ const submitFile = async () => {
             <hr class="mt-0" />
             <form @submit.prevent="submitFile" enctype="multipart/form-data">
                 <div class="row g-3">
-                    <div class="col-md-3 mb-1">
+                    <div v-if="props.imports.length > 0" class="col-md-3 mb-1">
                         <label for="import" class="form-label">Import Type:</label>
                         <Select
                             inputId="import"
                             v-model="form.model"
                             :options="props.imports"
+                            optionLabel="name"
+                            optionValue="value"
                             placeholder="Select a Import"
                             class="w-100"
                         />
                     </div>
-                    <div class="col-md-9 mb-1">
+                    <div :class="props.imports.length > 0 ? 'col-md-9' : ''" class="col-md-9 mb-1">
                         <label for="csv-file" class="form-label">CSV file:</label>
                         <input
                             id="csv-file"
