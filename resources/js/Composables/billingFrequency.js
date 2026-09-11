@@ -16,11 +16,17 @@ const dividers = (num) => {
     return divisors.sort((a, b) => a - b);
 };
 
-const daysPerUnit = {
+export const daysPerUnit = {
     DAYS: 1,
     MONTHS: 30,
     YEARS: 360
 };
+
+export const frequencyUnitOptions = [
+    { name: 'DAYS', value: 'Days' },
+    { name: 'MONTHS', value: 'Months' },
+    { name: 'YEARS', value: 'Years' }
+];
 
 /**
  * Encapsulates contract length / billing frequency logic shared between the Product Create and Edit pages.

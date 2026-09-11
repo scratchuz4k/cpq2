@@ -217,8 +217,8 @@
                                                     <td class="column-price_plan-body">
                                                         {{ $item['price_plan']?->name }}
                                                     </td>
-                                                    <td class="column-contract_length-body">
-                                                        {{ $item['price_plan']['code'] == 'MONTHLY' ? $item['contract_length'] : '' }}
+                                                    <td class="column-billing_frequency-body">
+                                                        {{ $item['price_plan']['code'] == 'MONTHLY' ? billingFrequencyLabel($item['renewal_terms_value'], $item['renewal_terms_unit'], $item['billing_frequency_value'], $item['billing_frequency_unit']) : '' }}
                                                     </td>
                                                     <td class="column-quantity-body">
                                                         {{ $item['quantity'] }}
@@ -246,8 +246,8 @@
                                                     {{ $group['price_plan']?->name }}
 
                                                 </td>
-                                                <td class="column-contract_length-body">
-                                                    {{ $group['contract_length'] > 1 ? $group['contract_length'] : '' }}
+                                                <td class="column-billing_frequency-body">
+                                                    {{ $group['renewal_terms_value'] > 1 ? billingFrequencyLabel($group['renewal_terms_value'], $group['renewal_terms_unit'], $group['billing_frequency_value'], $group['billing_frequency_unit']) : '' }}
                                                 </td>
                                                 <td class="column-quantity-body">
                                                     {{ $group['quantity'] }}
@@ -304,8 +304,8 @@
                                             <td class="column-price_plan-body">
                                                 {{ $group['price_plan']?->name }}
                                             </td>
-                                            <td class="column-contract_length-body">
-                                                {{ $group['contract_length'] > 1 ? $group['contract_length'] : '' }}
+                                            <td class="column-billing_frequency-body">
+                                                {{ $group['renewal_terms_value'] > 1 ? billingFrequencyLabel($group['renewal_terms_value'], $group['renewal_terms_unit'], $group['billing_frequency_value'], $group['billing_frequency_unit']) : '' }}
                                             </td>
                                             <td class="column-quantity-body">
                                                 {{ $group['quantity'] }}

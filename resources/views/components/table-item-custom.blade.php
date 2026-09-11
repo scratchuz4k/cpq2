@@ -63,8 +63,8 @@
             {{ formatBytes($item['data']?->bearer) }}
         @break
 
-        @case('contract_length')
-            {{ $item->pricePlan['code'] == 'MONTHLY' ? $item['contract_length'] : '' }}
+        @case('billing_frequency')
+            {{ $item->pricePlan['code'] == 'MONTHLY' ? billingFrequencyLabel($item['renewal_terms_value'], $item['renewal_terms_unit'], $item['billing_frequency_value'], $item['billing_frequency_unit']) : '' }}
         @break
 
         @case('price_plan.name')

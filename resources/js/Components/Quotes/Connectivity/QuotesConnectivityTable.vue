@@ -126,7 +126,7 @@ const checkProduct = (article) => {
 
     if (props.productType !== 'Primary Product') {
         const primaryProduct = quote.items.find((x) => x.data.type == 'Primary Product');
-        article.contractTermMonths = article.contractTermMonths ?? primaryProduct?.contract_length;
+        article.contractTermMonths = article.contractTermMonths ?? primaryProduct?.renewal_terms_value;
     }
 
     if (index == -1) {

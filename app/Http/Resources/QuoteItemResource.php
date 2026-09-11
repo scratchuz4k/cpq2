@@ -26,7 +26,11 @@ class QuoteItemResource extends JsonResource
             'total_tax' => format_currency($this->total_tax),
             'total_gross' => format_currency($this->total_gross),
             'price_plan' => $this->pricePlan,
-            'contract_length' => (float) $this->contract_length,
+            'renewal_terms_value' => $this->renewal_terms_value,
+            'renewal_terms_unit' => $this->renewal_terms_unit,
+            'billing_frequency_value' => $this->billing_frequency_value,
+            'billing_frequency_unit' => $this->billing_frequency_unit,
+            'number_of_payments' => $this->numberOfPayments(),
             'is_deleted' => $this->trashed(),
             'is_margin_valid' => $this->isWithinMarginThresholds(),
         ];

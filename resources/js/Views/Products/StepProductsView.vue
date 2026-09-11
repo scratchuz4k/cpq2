@@ -123,7 +123,14 @@ const getProducts = async () => {
     res.data.data.forEach((e) => {
         let temp = quote.items.find((x) => x.product_code == e.sku);
         e.quantity = temp ? temp.quantity : 0;
-        e.contract_length = e.price_plan.code == 'SINGLE' ? 1 : 12;
+        if (!e.renewal_terms_value) {
+            e.renewal_terms_value = e.price_plan.code == 'SINGLE' ? 1 : 12;
+            e.renewal_terms_unit = 'MONTHS';
+        }
+        if (!e.billing_frequency_value) {
+            e.billing_frequency_value = 1;
+            e.billing_frequency_unit = 'MONTHS';
+        }
     });
 
     products.value = res.data.data;

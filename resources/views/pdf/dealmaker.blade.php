@@ -105,8 +105,8 @@
 
         .column-quantity-body,
         .column-quantity-header,
-        .column-contract_length-header,
-        .column-contract_length-body {
+        .column-billing_frequency-header,
+        .column-billing_frequency-body {
             width: 10% !important;
             text-align: center;
         }
@@ -275,8 +275,8 @@
                                                 @endif
                                             </div>
                                         </td>
-                                        <td class="column-contract_length-body">
-                                            {{ $item['contract_length'] }}
+                                        <td class="column-billing_frequency-body">
+                                            {{ billingFrequencyLabel($item['renewal_terms_value'], $item['renewal_terms_unit'], $item['billing_frequency_value'], $item['billing_frequency_unit']) }}
                                         </td>
                                         @if ($isConnectivity)
                                             <td class="column-speed-body">
