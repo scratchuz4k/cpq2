@@ -18,9 +18,11 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 class UsersImport extends Import implements ToCollection, WithBatchInserts, WithHeadingRow
 {
+    protected string $model = User::class;
+
     public function __construct(protected User $actingUser, bool $isDryRun = false)
     {
-        parent::__construct($actingUser, $isDryRun);
+        parent::__construct($actingUser, $this->model, $isDryRun);
     }
 
     public function getResults(): array
@@ -36,19 +38,17 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
     /**
      * Insert a new user with a specific manager.
      */
-    private function insertUser(array $user, int $rowIndex): bool
+    private function insert(array $item, int $index): bool
     {
         try {
-            $user['groups'] = $user['groups']
-                ? array_map('trim', explode(',', $user['groups']))
+            $user['groups'] = $item['groups']
+                ? array_map('trim', explode(',', $item['groups']))
                 : [];
             $actingUser = $this->actingUser;
 
-            $validator = Validator::make($user, [
+            $validator = Validator::make($item, [
                 'name' => 'required|string|max:255',
-                'email' => $this->overwrite
-                    ? 'required|email'
-                    : ['required', 'email', Rule::unique('users')],
+                'email' => ['required', 'email', Rule::unique('users')],
                 'is_active' => ['boolean'],
                 'groups' => [
                     'nullable',
@@ -90,8 +90,8 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
             if ($validator->fails()) {
                 $this->results['skipped']++;
                 $this->results['errors'][] = [
-                    'row_index' => $rowIndex,
-                    'row' => $user,
+                    'row_index' => $index,
+                    'row' => $item,
                     'errors' => $validator->errors()->all(),
                 ];
 
@@ -105,12 +105,12 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
             }
 
             $newUser = User::create([
-                'is_active' => (int) $user['is_active'] ?? 1,
-                'name' => $user['name'] ?? '',
-                'email' => $user['email'] ?? '',
-                'password' => ! empty($user['password']) ? Hash::make($user['password']) : Hash::make(Str::random(12)),
-                'sso' => isset($user['sso']) && (int) $user['sso'] === 1 ? 1 : 0,
-                'commission_rate' => (int) $user['commission_rate'] ?? 0,
+                'is_active' => (int) $item['is_active'] ?? 1,
+                'name' => $item['name'] ?? '',
+                'email' => $item['email'] ?? '',
+                'password' => ! empty($item['password']) ? Hash::make($item['password']) : Hash::make(Str::random(12)),
+                'sso' => isset($item['sso']) && (int) $item['sso'] === 1 ? 1 : 0,
+                'commission_rate' => (int) $item['commission_rate'] ?? 0,
                 'tenant_id' => $this->tenant->id,
             ]);
 
@@ -123,15 +123,15 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
                 ]);
 
                 // Assign role
-                if ($user['role']) {
-                    $role = Role::find($user['role']);
+                if ($item['role']) {
+                    $role = Role::find($item['role']);
 
                     $newUser->assignRole($role);
                 }
 
                 // Assign group
                 $temp = [];
-                foreach ($user['groups'] as $group) {
+                foreach ($item['groups'] as $group) {
                     $temp[$group] = [
                         'tenant_id' => $actingUser->tenant_id,
                     ];
@@ -145,14 +145,14 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
         } catch (ValidationException $e) {
             $this->results['skipped']++;
             $this->results['errors'][] = [
-                'row_index' => $rowIndex,
+                'row_index' => $index,
                 'row' => $user,
                 'error' => $e->errors(),
             ];
         } catch (\Exception $e) {
             $this->results['skipped']++;
             $this->results['errors'][] = [
-                'row_index' => $rowIndex,
+                'row_index' => $index,
                 'row' => $user,
                 'error' => $e->getMessage(),
             ];
@@ -163,14 +163,14 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
 
     public function collection(Collection $collection): void
     {
-        foreach ($collection->values() as $rowIndex => $row) {
+        foreach ($collection->values() as $index => $row) {
             $row = array_map(fn ($value) => trim((string) $value), $row->toArray());
             $this->results['data'][] = [
-                'index' => $rowIndex,
+                'index' => $index,
                 ...$row,
             ];
             $this->results['processed']++;
-            $this->insertUser($row, $rowIndex);
+            $this->insert($row, $index);
         }
     }
 

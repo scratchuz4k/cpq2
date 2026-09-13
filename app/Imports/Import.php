@@ -45,7 +45,7 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
 
     public static function validateFile($file, $model, User $actingUser): array
     {
-        $import = new self($actingUser, $model, true);
+        $import = new static($actingUser, $model, true);
         Excel::import($import, $file);
 
         return $import->results;

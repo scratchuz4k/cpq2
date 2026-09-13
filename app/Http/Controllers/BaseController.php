@@ -92,10 +92,16 @@ class BaseController extends Controller
         $importHandler = new $importClass(auth()->user(), $this->model, $isDryRun);
 
         $results = $importHandler->validateFile($file, $this->model, $user);
-        $columns = array_combine(
-            getFillableColumns($this->model),
-            array_map(fn ($key) => Str::headline($key), getFillableColumns($this->model))
-        );
+
+        if (get_class($importHandler) !== Import::class) {
+            $helperFile = require app_path('Helpers/Import/'.mb_strtolower(class_basename($this->model)).'_import.php');
+            $columns = $helperFile['columns'];
+        } else {
+            $columns = array_combine(
+                getFillableColumns($this->model),
+                array_map(fn ($key) => Str::headline($key), getFillableColumns($this->model))
+            );
+        }
 
         if (! $isDryRun) {
             $filename = Str::random(40).'.'.$file->getClientOriginalExtension();
