@@ -38,6 +38,13 @@ enum ImportsEnum: string
         };
     }
 
+    public static function importClassFor(string $modelName): string
+    {
+        $case = collect(self::cases())->firstWhere('name', $modelName);
+
+        return $case?->importClasses() ?? Import::class;
+    }
+
     public static function asArray(): array
     {
         return array_map(fn ($case) => [

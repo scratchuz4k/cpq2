@@ -74,10 +74,14 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
     public function collection(Collection $collection): void
     {
         foreach ($collection->values() as $index => $item) {
-            $item = array_map(fn ($value) => trim((string) $value), $item->toArray());
+            $item = array_map(function ($value) {
+                $value = trim((string) $value);
+
+                return $value === '' ? null : $value;
+            }, $item->toArray());
 
             if (array_key_exists('is_active', $item)) {
-                $item['is_active'] = $item['is_active'] === '' ? 1 : (int) $item['is_active'];
+                $item['is_active'] = $item['is_active'] === null ? 1 : (int) $item['is_active'];
             }
 
             if (! array_key_exists('tenant_id', $item)) {
@@ -166,6 +170,7 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
     private function resolveModel(array $item): Model
     {
         $modelClass = $this->model;
+        $item = array_filter($item, fn ($value) => $value !== null);
 
         if (! in_array(SoftDeletes::class, class_uses_recursive($modelClass))) {
             return new $modelClass($item);

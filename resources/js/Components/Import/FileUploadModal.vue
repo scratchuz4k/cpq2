@@ -76,7 +76,7 @@ const submitFile = async () => {
                             class="w-100"
                         />
                     </div>
-                    <div :class="props.imports.length > 0 ? 'col-md-9' : ''" class="col-md-9 mb-1">
+                    <div :class="props.imports.length > 0 ? 'col-md-9' : ''" class="mb-1">
                         <label for="csv-file" class="form-label">CSV file:</label>
                         <input
                             id="csv-file"

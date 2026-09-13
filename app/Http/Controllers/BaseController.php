@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ImportsEnum;
 use App\Enums\ImportStatusesEnum;
 use App\Export\Export;
 use App\Export\ExportCSVTemplate;
@@ -81,11 +82,15 @@ class BaseController extends Controller
             );
         }
 
+        // TODO: Use custom import when it exists
+
         $file = array_key_exists('file', $request->all()) ? $request['file'] : null;
         $isDryRun = array_key_exists('dry_run', $request->all()) ? $request['dry_run'] : null;
         $user = auth()->user();
 
-        $importHandler = new Import(auth()->user(), $this->model, $isDryRun);
+        $importClass = ImportsEnum::importClassFor(class_basename($this->model));
+        $importHandler = new $importClass(auth()->user(), $this->model, $isDryRun);
+
         $results = $importHandler->validateFile($file, $this->model, $user);
         $columns = array_combine(
             getFillableColumns($this->model),
