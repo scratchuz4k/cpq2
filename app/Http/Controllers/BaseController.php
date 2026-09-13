@@ -85,7 +85,9 @@ class BaseController extends Controller
         // TODO: Use custom import when it exists
 
         $file = array_key_exists('file', $request->all()) ? $request['file'] : null;
-        $isDryRun = array_key_exists('dry_run', $request->all()) ? $request['dry_run'] : null;
+        $isDryRun = array_key_exists('dry_run', $request->all())
+            ? filter_var($request['dry_run'], FILTER_VALIDATE_BOOLEAN)
+            : null;
         $user = auth()->user();
 
         $importClass = ImportsEnum::importClassFor(class_basename($this->model));
