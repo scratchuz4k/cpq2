@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
+use App\Enums\ImportsEnum;
 use App\Enums\ImportStatusesEnum;
-use App\Imports\Import as ImportHandler;
 use App\Models\Import;
 use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -28,7 +28,8 @@ class ImportJob implements ShouldQueue, TenantAware
         public ?User $actingUser = null,
         public bool $overwrite = false
     ) {
-        $this->importHandler = new ImportHandler($actingUser, $this->import->model);
+        $importClass = ImportsEnum::importClassFor(class_basename($this->import->model));
+        $this->importHandler = new $importClass(auth()->user(), $this->import->model);
     }
 
     /**

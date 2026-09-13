@@ -41,7 +41,7 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
     private function insert(array $item, int $index): bool
     {
         try {
-            $user['groups'] = $item['groups']
+            $item['groups'] = $item['groups']
                 ? array_map('trim', explode(',', $item['groups']))
                 : [];
             $actingUser = $this->actingUser;
