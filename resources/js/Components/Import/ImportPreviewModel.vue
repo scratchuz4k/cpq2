@@ -42,12 +42,8 @@ const importData = async () => {
 
     try {
         let res = await importConfirm(props.importForm.file, props.model);
-
-        notyf.success('File imported successfully');
-
         if (res) {
-            emitter.emit('datatable-refresh');
-            emit('imported', res.data);
+            window.location.href = route('imports.index');
         }
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong');

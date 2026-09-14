@@ -52,4 +52,19 @@ enum ImportsEnum: string
             'value' => $case->value,
         ], self::cases());
     }
+
+    public static function importsWithPermissionAsArray(): array
+    {
+        $user = auth()->user();
+
+        return array_map(
+            fn ($case) => [
+                'name' => $case->name,
+                'value' => $case->value,
+            ],
+            array_filter(self::cases(), function ($case) use ($user) {
+                return $user->can('import '.strtolower($case->name));
+            })
+        );
+    }
 }

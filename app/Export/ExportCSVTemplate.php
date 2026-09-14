@@ -30,7 +30,7 @@ class ExportCSVTemplate implements FromCollection, ShouldAutoSize, WithCustomCsv
     public function headings(): array
     {
         if ($this->collection->isNotEmpty() && $this->collection->every(fn ($item) => $item instanceof $this->model)) {
-            return array_map(fn ($field) => Str::snake($field), $this->fillable);
+            return array_map(fn ($field) => Str::headline($field), $this->fillable);
         }
 
         return array_keys($this->collection->first());

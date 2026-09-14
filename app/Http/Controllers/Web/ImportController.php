@@ -29,7 +29,7 @@ class ImportController extends BaseController
     public function index()
     {
         return Inertia::render('Imports/Index', [
-            'imports' => ImportsEnum::asArray(),
+            'imports' => ImportsEnum::importsWithPermissionAsArray(),
         ]);
     }
 
