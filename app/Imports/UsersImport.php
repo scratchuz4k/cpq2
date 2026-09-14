@@ -18,11 +18,9 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 class UsersImport extends Import implements ToCollection, WithBatchInserts, WithHeadingRow
 {
-    protected string $model = User::class;
-
-    public function __construct(protected User $actingUser, bool $isDryRun = false)
+    public function __construct(protected User $actingUser, protected string $model, bool $isDryRun = false)
     {
-        parent::__construct($actingUser, $this->model, $isDryRun);
+        parent::__construct($actingUser, $model, $isDryRun);
     }
 
     public function getResults(): array
