@@ -18,7 +18,7 @@ class ShopBlocksCategoriesJob implements NotTenantAware, ShouldQueue
 {
     use Queueable;
 
-    public $timeout = 3600;
+    public $timeout = 900;
 
     public $products = [];
 

@@ -29,6 +29,7 @@ class CloudMarketAddonsProducts extends CloudMarket
         $time = Carbon::now()->addSeconds(86400);
 
         $this->started_at = now();
+        $cacheUpdated = false;
         $product = collect($this->quote->items)->where(function ($x) {
             return in_array(data_get($x, 'data.type'), ['Primary Product'], true);
         })->values();
@@ -57,7 +58,8 @@ class CloudMarketAddonsProducts extends CloudMarket
 
                 $temp['providerKey'] = $product[0]->data?->providerKey == 'pxc' ? 'virtual1' : $product[0]->data?->providerKey;
                 $this->prices[] = [...$temp, 'code' => md5(Str::slug($temp['code']))];
-                Product::write('addons', $this->file, $this->prices, false, null, $this->started_at, $this->tempFilters, $this->errors, $time);
+                Product::write('addons', $this->file, $this->prices, false, null, $this->started_at, $this->tempFilters, $this->errors, $time, [], ! $cacheUpdated);
+                $cacheUpdated = true;
             }
         }
 
