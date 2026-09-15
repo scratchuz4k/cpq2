@@ -42,7 +42,7 @@ class CloudMarketFailOverProducts extends CloudMarket
         $time = Carbon::now()->addSeconds(86400);
 
         $this->started_at = now();
-        $cacheUpdated = false;
+        $this->updateCloudMarketSearchCache($this->file);
 
         $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());
         foreach (Items::fromStream($stream) as $value) {
@@ -78,11 +78,11 @@ class CloudMarketFailOverProducts extends CloudMarket
 
             $this->prices[] = [...$temp, 'code' => md5(Str::slug($temp['code']))];
             $this->tempFilters = FilterProvider::process($this->tempFilters, $temp);
-            Product::write('fail_over', $this->file, $this->prices, false, null, $this->started_at, $this->tempFilters, $this->errors, $time, [], ! $cacheUpdated);
-            $cacheUpdated = true;
+            Product::write('fail_over', $this->file, $this->prices, false, null, $this->started_at, $this->tempFilters, $this->errors, $time);
         }
 
         Product::write('fail_over', $this->file, $this->prices, false, now(), $this->started_at, $this->tempFilters, $this->errors, $time);
+        $this->updateCloudMarketSearchCache($this->file);
     }
 
     /**

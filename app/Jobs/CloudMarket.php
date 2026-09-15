@@ -6,6 +6,7 @@ use App\Enums\CloudMarketSubprovidersEnum;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Spatie\Multitenancy\Jobs\TenantAware;
@@ -91,6 +92,7 @@ class CloudMarket implements ShouldQueue, TenantAware
             'Virgin' => ['Virgin Media', 'Virgin Media Business', 'Virgin'],
             'ITS' => ['ITS Technology Group', 'ITS'],
             'TalkTalk' => ['TalkTalk Business', 'TalkTalk', 'TTB'],
+            'Vodafone' => ['Vodafone', 'Voda'],
         ];
 
         foreach ($sub_provider_mapping as $consolidated_name => $sub_providers) {
@@ -131,5 +133,10 @@ class CloudMarket implements ShouldQueue, TenantAware
     protected function writeProductOnFailure($file, array $errors): void
     {
         // Override in subclasses if needed
+    }
+
+    protected function updateCloudMarketSearchCache(string $filename): void
+    {
+        Cache::put($filename, json_encode(['updated_at' => now()]), now()->addHours(24));
     }
 }

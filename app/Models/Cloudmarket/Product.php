@@ -2,7 +2,6 @@
 
 namespace App\Models\Cloudmarket;
 
-use Illuminate\Support\Facades\Cache;
 use MongoDB\Laravel\Eloquent\Model;
 
 class Product extends Model
@@ -15,7 +14,7 @@ class Product extends Model
 
     protected $guarded = [];
 
-    public static function write(string $key, string $filename, array $data, bool $wating_task, $finished_at, $created_at, $filters = [], $errors = [], $expire_at = null, $options = [], bool $updateCache = true)
+    public static function write(string $key, string $filename, array $data, bool $wating_task, $finished_at, $created_at, $filters = [], $errors = [], $expire_at = null, $options = [])
     {
         $content = [
             'data' => $data,
@@ -34,10 +33,6 @@ class Product extends Model
             'key' => $key,
             'filename' => $filename,
         ], $content);
-
-        if ($updateCache) {
-            Cache::put($filename, json_encode(['updated_at' => now()]), now()->addHours(24));
-        }
     }
 
     public static function addOptions(string $key, string $filename, array $data)
