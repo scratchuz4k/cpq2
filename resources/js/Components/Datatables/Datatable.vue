@@ -402,12 +402,7 @@ getData();
     >
     </Paginator>
     <FileUploadModal v-model:visible="showForm" :model="props.route" @preview="handlePreview" />
-    <ImportPreviewModel
-        v-model:visible="showImportPreview"
-        :model="props.route"
-        :preview-data="previewData"
-        :import-form="importForm"
-    />
+    <ImportPreviewModel v-model:visible="showImportPreview" :preview-data="previewData" :import-form="importForm" />
 </template>
 <style>
 .p-datatable {

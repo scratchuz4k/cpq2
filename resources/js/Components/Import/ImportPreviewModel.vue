@@ -18,10 +18,6 @@ const props = defineProps({
     importForm: {
         type: Object,
         default: null
-    },
-    model: {
-        type: String,
-        default: ''
     }
 });
 
@@ -41,7 +37,7 @@ const importData = async () => {
     isLoading.value = true;
 
     try {
-        let res = await importConfirm(props.importForm.file, props.model);
+        let res = await importConfirm(props.importForm.file, props.importForm.model);
         if (res) {
             window.location.href = route('imports.index');
         }
