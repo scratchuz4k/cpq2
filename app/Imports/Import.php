@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Unique;
 use Illuminate\Validation\ValidationException;
@@ -73,6 +74,9 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
 
     public function collection(Collection $collection): void
     {
+        // Set the auth user so is available on rules classes.
+        Auth::setUser($this->actingUser);
+
         foreach ($collection->values() as $index => $item) {
             $item = array_map(function ($value) {
                 $value = trim((string) $value);
