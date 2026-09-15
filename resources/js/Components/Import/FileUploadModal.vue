@@ -2,7 +2,7 @@
 import { reactive, ref, watch } from 'vue';
 import { Dialog, Checkbox, Select } from 'primevue';
 import SvgIcon from '@/Components/Custom/SvgIcon.vue';
-import { getTemplate, importPreview } from '@/Composables/import.js';
+import { checkImportType, getTemplate, importPreview } from '@/Composables/import.js';
 
 const props = defineProps({
     visible: {
@@ -33,6 +33,10 @@ const onFileChange = (event) => {
 };
 
 const submitFile = async () => {
+    if (!checkImportType(form.model)) {
+        return false;
+    }
+
     isLoading.value = true;
 
     try {
@@ -92,17 +96,21 @@ const submitFile = async () => {
                     <SvgIcon width="20" height="20" name="info" />
                     <i class="small">
                         Download a
-                        <a
-                            role="button"
-                            @click="getTemplate(form.model)"
-                            :class="['color-purple', { 'disabled-link': !form.model }]"
-                            id="products-import-template-link"
+                        <span
+                            class="disabled-link-wrapper"
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
                             title="You need to select an Import Type"
                             v-tooltip
-                            >sample CSV template</a
                         >
+                            <a
+                                role="button"
+                                @click="getTemplate(form.model)"
+                                :class="['color-purple', { 'disabled-link': !form.model }]"
+                                id="products-import-template-link"
+                                >sample CSV template</a
+                            >
+                        </span>
                         to see and example of the format required. Maximum file upload size is 2 MB.
                     </i>
                 </p>
@@ -119,7 +127,7 @@ const submitFile = async () => {
                     </label>
                 </div>
                 <hr />
-                <button type="submit" class="btn btn-primary" :disabled="isLoading">
+                <button type="submit" class="btn btn-primary" :disabled="isLoading || !form.model">
                     <span v-if="isLoading">
                         <font-awesome-icon :icon="['fa', 'spinner']" class="fa-spin"></font-awesome-icon>
                         Uploading...

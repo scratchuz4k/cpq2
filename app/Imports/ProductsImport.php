@@ -31,7 +31,7 @@ class ProductsImport extends Import implements ToCollection, WithBatchInserts, W
 
     protected ?int $ignorePriceId = null;
 
-    public function __construct(protected bool $overwrite, protected User $actingUser, bool $isDryRun = false)
+    public function __construct(protected User $actingUser, bool $isDryRun = false)
     {
         parent::__construct($this->actingUser, Product::class, $isDryRun);
     }

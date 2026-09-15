@@ -1,6 +1,17 @@
 import axios from 'axios';
 
+export const checkImportType = (model) => {
+    if (!model) {
+        notyf.error('An import type must be selected before importing.');
+        return false;
+    }
+    return true;
+};
+
 export const getTemplate = async (route) => {
+    if (!checkImportType(route)) {
+        return false;
+    }
     try {
         let res = await axios
             .get(route + '/import', {
