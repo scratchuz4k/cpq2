@@ -23,11 +23,11 @@ const emit = defineEmits(['update:visible', 'preview']);
 
 const form = reactive({
     file: null,
+    model: props.model ?? '',
     overwrite: 0
 });
 
 const isLoading = ref(false);
-
 const onFileChange = (event) => {
     form.file = event.target.files[0];
 };
@@ -36,7 +36,7 @@ const submitFile = async () => {
     isLoading.value = true;
 
     try {
-        const data = await importPreview(form.file, props.model);
+        const data = await importPreview(form.file, form.model);
         emit('preview', { data, form: { ...form } });
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong');
@@ -94,9 +94,13 @@ const submitFile = async () => {
                         Download a
                         <a
                             role="button"
-                            @click="getTemplate(props.model)"
-                            class="color-purple"
+                            @click="getTemplate(form.model)"
+                            :class="['color-purple', { 'disabled-link': !form.model }]"
                             id="products-import-template-link"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            title="You need to select an Import Type"
+                            v-tooltip
                             >sample CSV template</a
                         >
                         to see and example of the format required. Maximum file upload size is 2 MB.

@@ -92,6 +92,11 @@ body {
         cursor: not-allowed;
     }
 
+    .disabled-link {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
     .bg-primary {
         background-color: var(--color-primary) !important;
     }
