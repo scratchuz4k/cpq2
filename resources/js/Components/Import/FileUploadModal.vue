@@ -97,7 +97,7 @@ const submitFile = async () => {
                     <i class="small">
                         Download a
                         <span
-                            class="disabled-link-wrapper"
+                            :class="[!form.model ? 'disabled-link-wrapper' : '']"
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
                             v-tooltip="!form.model ? 'You need to select an Import Type' : null"
