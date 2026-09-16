@@ -47,6 +47,7 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
             $validator = Validator::make($item, [
                 'name' => 'required|string|max:255',
                 'email' => ['required', 'email', Rule::unique('users')],
+                'password' => ['required', 'string', 'min:8'],
                 'is_active' => ['boolean'],
                 'groups' => [
                     'nullable',
