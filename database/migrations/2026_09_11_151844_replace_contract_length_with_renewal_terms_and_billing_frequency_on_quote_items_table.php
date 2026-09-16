@@ -42,7 +42,7 @@ return new class extends Migration
         });
 
         DB::table('quote_items')->update([
-            'contract_length' => DB::raw('renewal_terms_value'),
+            'contract_length' => DB::raw('COALESCE(renewal_terms_value, 1)'),
         ]);
 
         Schema::table('quote_items', function (Blueprint $table) {
