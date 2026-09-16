@@ -100,8 +100,7 @@ const submitFile = async () => {
                             class="disabled-link-wrapper"
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
-                            title="You need to select an Import Type"
-                            v-tooltip
+                            v-tooltip="!form.model ? 'You need to select an Import Type' : null"
                         >
                             <a
                                 role="button"
