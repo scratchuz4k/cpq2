@@ -47,7 +47,7 @@ class BaseController extends Controller
 
         $date = now()->format('Y-m-d');
         $model_name = class_basename($this->model);
-        $filename = "Export_{$model_name}_{$date}.xlsx";
+        $filename = Str::lower("export_{$model_name}_{$date}.xlsx");
 
         try {
             if (! $data->count()) {
@@ -78,7 +78,7 @@ class BaseController extends Controller
 
             return Excel::download(
                 new ExportCSVTemplate($this->model, $data),
-                Str::lower(class_basename($this->model).'_import_template.csv')
+                Str::lower('import_'.class_basename($this->model).'_template.csv')
             );
         }
 

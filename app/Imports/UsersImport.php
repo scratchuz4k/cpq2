@@ -145,14 +145,14 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
             $this->results['skipped']++;
             $this->results['errors'][] = [
                 'row_index' => $index,
-                'row' => $user,
+                'row' => $item,
                 'error' => $e->errors(),
             ];
         } catch (\Exception $e) {
             $this->results['skipped']++;
             $this->results['errors'][] = [
                 'row_index' => $index,
-                'row' => $user,
+                'row' => $item,
                 'error' => $e->getMessage(),
             ];
         }

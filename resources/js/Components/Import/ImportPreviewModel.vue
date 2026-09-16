@@ -5,6 +5,7 @@ import Table from 'primevue/datatable';
 import Column from 'primevue/column';
 import CountUp from 'vue-countup-v3';
 import { importConfirm } from '@/Composables/import.js';
+import { formatResponseErrors } from '@composables/useApiErrors';
 
 const props = defineProps({
     visible: {
@@ -42,7 +43,7 @@ const importData = async () => {
             window.location.href = route('imports.index');
         }
     } catch (err) {
-        notyf.error(err?.response?.data?.message ?? 'Something went wrong');
+        notyf.error(formatResponseErrors(err));
         return false;
     } finally {
         emit('update:visible', false);
@@ -63,17 +64,22 @@ const importData = async () => {
         position="top"
         header="Import Preview"
     >
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 pb-2">
+        <div class="import-preview-body max-w-7xl mx-auto sm:px-6 lg:px-8 pb-2">
             <hr class="mt-0" />
-            <div v-if="previewData" class="mt-2 row row-cols-1 g-3 mb-2">
+            <div v-if="previewData" class="preview-table-scroll mt-2 mb-3">
                 <Table
                     :value="previewData.results?.data"
                     :rowClass="rowClass"
-                    tableStyle="min-width: 50rem"
+                    tableStyle="min-width: max-content"
                     :size="'small'"
                     class="p-datatable-sm preview-table"
                 >
-                    <Column v-for="(column, key) in previewData.columns" :field="key" :header="column"></Column>
+                    <Column
+                        v-for="(column, key) in previewData.columns"
+                        :key="key"
+                        :field="key"
+                        :header="column"
+                    ></Column>
                 </Table>
             </div>
             <div class="mt-2 row row-cols-1 row-cols-md-3 g-3 mb-2">
@@ -149,5 +155,29 @@ const importData = async () => {
 
 :deep(.row-has-error:hover) {
     background-color: #ffd9dd !important;
+}
+/* Keep the wide preview table inside the modal and scroll it horizontally */
+.import-preview-body {
+    min-width: 0;
+    max-width: 100%;
+}
+:deep(.p-dialog-content) {
+    overflow-x: hidden;
+}
+.preview-table-scroll {
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+}
+.preview-table-scroll :deep(.p-datatable) {
+    width: max-content;
+    min-width: 100%;
+}
+.preview-table-scroll :deep(.p-datatable-table-container) {
+    overflow: visible !important;
+}
+.preview-table-scroll :deep(th),
+.preview-table-scroll :deep(td) {
+    white-space: nowrap;
 }
 </style>

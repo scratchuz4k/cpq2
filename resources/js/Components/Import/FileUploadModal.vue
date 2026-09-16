@@ -1,6 +1,7 @@
 <script setup>
 import { reactive, ref, watch } from 'vue';
 import { Dialog, Checkbox, Select } from 'primevue';
+import { formatResponseErrors } from '@composables/useApiErrors';
 import SvgIcon from '@/Components/Custom/SvgIcon.vue';
 import { checkImportType, getTemplate, importPreview } from '@/Composables/import.js';
 
@@ -43,7 +44,7 @@ const submitFile = async () => {
         const data = await importPreview(form.file, form.model, form.overwrite);
         emit('preview', { data, form: { ...form } });
     } catch (err) {
-        notyf.error(err?.response?.data?.message ?? 'Something went wrong');
+        notyf.error(formatResponseErrors(err));
         return false;
     } finally {
         emit('update:visible', false);

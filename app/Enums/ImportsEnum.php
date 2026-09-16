@@ -5,12 +5,6 @@ namespace App\Enums;
 use App\Imports\Import;
 use App\Imports\ProductsImport;
 use App\Imports\UsersImport;
-use App\Models\Account;
-use App\Models\Category;
-use App\Models\Product;
-use App\Models\Step;
-use App\Models\Supplier;
-use App\Models\User;
 use App\Trait\EnumHelpers;
 
 enum ImportsEnum: string
@@ -21,7 +15,6 @@ enum ImportsEnum: string
     case User = 'users';
     case Category = 'categories';
     case Step = 'steps';
-    case Supplier = 'suppliers';
     case Account = 'accounts';
 
     public static function names(): array
@@ -58,7 +51,7 @@ enum ImportsEnum: string
         $user = auth()->user();
 
         $cases = array_filter(self::cases(), function ($case) use ($user) {
-            return $user->can('import '.strtolower($case->name));
+            return $user->can('create import') && $user->can('import '.strtolower($case->name));
         });
 
         return array_map(fn ($case) => [

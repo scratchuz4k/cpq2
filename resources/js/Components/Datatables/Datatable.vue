@@ -67,7 +67,8 @@ const has_export_permission =
     can(`export ${pluralize.singular(props.route.replace(/^\//, ''))}`) || hasRole('Super Admin');
 const has_import_permission =
     isImportable.value &&
-    (can(`import ${pluralize.singular(props.route.replace(/^\//, ''))}`) || hasRole('Super Admin'));
+    ((can('create import') && can(`import ${pluralize.singular(props.route.replace(/^\//, ''))}`)) ||
+        hasRole('Super Admin'));
 
 const form = reactive({
     filters: [],
@@ -235,6 +236,7 @@ getData();
                         type="button"
                         :class="['me-2']"
                         @click="() => (activeFilters = !activeFilters)"
+                        title="Filters"
                     >
                         <font-awesome-icon :icon="['fas', 'filter']" />
                     </Button>
@@ -244,6 +246,7 @@ getData();
                         :class="['me-2']"
                         :severity="form.filters.find((x) => x.value) ? 'primary' : 'secondary'"
                         @click="clearFilters()"
+                        title="Clear Filters"
                     >
                         <font-awesome-icon :icon="['fas', 'eraser']" />
                     </Button>
@@ -254,6 +257,7 @@ getData();
                         :class="['me-2']"
                         @click="getExportData()"
                         type="button"
+                        title="Export Data"
                     >
                         <font-awesome-icon :icon="['fas', 'file-export']" />
                     </Button>
@@ -264,6 +268,7 @@ getData();
                         :class="['me-2']"
                         @click="showForm = !showForm"
                         type="button"
+                        title="Import Data"
                     >
                         <font-awesome-icon :icon="['fas', 'file-import']" />
                     </Button>
