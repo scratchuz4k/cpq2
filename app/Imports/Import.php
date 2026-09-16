@@ -44,12 +44,12 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
         $this->model = $model;
     }
 
-    public static function validateFile($file, $model, User $actingUser): array
+    public function validateFile($file): array
     {
-        $import = new static($actingUser, $model, true);
-        Excel::import($import, $file);
+        $this->isDryRun = true;
+        Excel::import($this, $file);
 
-        return $import->results;
+        return $this->results;
     }
 
     public function batchSize(): int

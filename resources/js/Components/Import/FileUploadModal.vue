@@ -40,7 +40,7 @@ const submitFile = async () => {
     isLoading.value = true;
 
     try {
-        const data = await importPreview(form.file, form.model);
+        const data = await importPreview(form.file, form.model, form.overwrite);
         emit('preview', { data, form: { ...form } });
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong');
@@ -113,7 +113,7 @@ const submitFile = async () => {
                         to see and example of the format required. Maximum file upload size is 2 MB.
                     </i>
                 </p>
-                <div v-if="form.model === 'Product'" class="form-check px-0 pt-2">
+                <div v-if="form.model === 'products'" class="form-check px-0 pt-2">
                     <Checkbox
                         inputId="overwrite-products"
                         v-model="form.overwrite"

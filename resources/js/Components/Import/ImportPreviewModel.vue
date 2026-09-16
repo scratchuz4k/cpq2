@@ -37,7 +37,7 @@ const importData = async () => {
     isLoading.value = true;
 
     try {
-        let res = await importConfirm(props.importForm.file, props.importForm.model);
+        let res = await importConfirm(props.importForm.file, props.importForm.model, props.importForm.overwrite);
         if (res) {
             window.location.href = route('imports.index');
         }

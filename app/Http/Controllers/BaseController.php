@@ -82,18 +82,19 @@ class BaseController extends Controller
             );
         }
 
-        // TODO: Use custom import when it exists
-
         $file = array_key_exists('file', $request->all()) ? $request['file'] : null;
         $isDryRun = array_key_exists('dry_run', $request->all())
             ? filter_var($request['dry_run'], FILTER_VALIDATE_BOOLEAN)
             : null;
+        $overwrite = array_key_exists('overwrite', $request->all())
+            ? filter_var($request['overwrite'], FILTER_VALIDATE_BOOLEAN)
+            : null;
         $user = auth()->user();
 
         $importClass = ImportsEnum::importClassFor(class_basename($this->model));
-        $importHandler = new $importClass(auth()->user(), $this->model, $isDryRun);
+        $importHandler = new $importClass(auth()->user(), $this->model, $isDryRun, $overwrite);
 
-        $results = $importHandler->validateFile($file, $this->model, $user);
+        $results = $importHandler->validateFile($file);
 
         if (get_class($importHandler) !== Import::class) {
             $helperFile = require app_path('Helpers/Import/'.mb_strtolower(class_basename($this->model)).'_import.php');
@@ -127,7 +128,7 @@ class BaseController extends Controller
             ]);
 
             $import->model = $this->model;
-            ImportJob::dispatch($import, $user);
+            ImportJob::dispatch($import, $user, $overwrite);
 
             return $import;
         }

@@ -8,13 +8,15 @@ export const checkImportType = (model) => {
     return true;
 };
 
+const importUrl = (route) => `/${route.replace(/^\/+/, '')}/import`;
+
 export const getTemplate = async (route) => {
     if (!checkImportType(route)) {
         return false;
     }
     try {
         let res = await axios
-            .get(route + '/import', {
+            .get(importUrl(route), {
                 responseType: 'blob'
             })
             .then((res) => {
@@ -36,16 +38,17 @@ export const getTemplate = async (route) => {
         return false;
     }
 };
-const sendImport = async (file, route, dryRun) => {
+const sendImport = async (file, route, dryRun, overwrite = false) => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('dry_run', dryRun ? 1 : 0);
+    formData.append('overwrite', overwrite ? 1 : 0);
 
-    const res = await axios.post(route + '/import', formData, {
+    const res = await axios.post(importUrl(route), formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
     });
     return res.data;
 };
 
-export const importPreview = (file, route) => sendImport(file, route, true);
-export const importConfirm = (file, route) => sendImport(file, route, false);
+export const importPreview = (file, route, overwrite) => sendImport(file, route, true, overwrite);
+export const importConfirm = (file, route, overwrite) => sendImport(file, route, false, overwrite);

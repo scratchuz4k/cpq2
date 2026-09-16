@@ -30,7 +30,7 @@ class ImportJob implements ShouldQueue, TenantAware
         public bool $overwrite = false
     ) {
         $importClass = ImportsEnum::importClassFor(class_basename($this->import->model));
-        $this->importHandler = new $importClass(auth()->user(), $this->import->model);
+        $this->importHandler = new $importClass(auth()->user(), $this->import->model, false, $this->overwrite);
     }
 
     /**
