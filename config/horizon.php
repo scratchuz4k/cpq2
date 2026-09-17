@@ -190,7 +190,7 @@ return [
             'maxJobs' => 0,
             'memory' => 128,
             'tries' => 1,
-            'timeout' => 600,
+            'timeout' => 900,
             'nice' => 0,
         ],
         'supervisor-2' => [
@@ -203,7 +203,7 @@ return [
             'maxJobs' => 0,
             'memory' => 128,
             'tries' => 1,
-            'timeout' => 600,
+            'timeout' => 900,
             'nice' => 0,
         ],
     ],

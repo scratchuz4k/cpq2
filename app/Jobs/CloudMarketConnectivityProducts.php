@@ -40,6 +40,7 @@ class CloudMarketConnectivityProducts extends CloudMarket
 
         $this->started_at = now();
         $finished_at = null;
+        $this->updateCloudMarketSearchCache($this->file);
 
         $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());
         foreach (Items::fromStream($stream) as $value) {
@@ -79,6 +80,7 @@ class CloudMarketConnectivityProducts extends CloudMarket
         }
         $finished_at = now();
         Product::write('live_prices', $this->file, $this->prices, false, $finished_at, $this->started_at, $this->tempFilters, $this->errors, $time);
+        $this->updateCloudMarketSearchCache($this->file);
     }
 
     /**
