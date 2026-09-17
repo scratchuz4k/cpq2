@@ -40,7 +40,7 @@ const setStepProduct = async (product_id, step_id) => {
     }
     try {
         if (step_id) {
-            await axios.put('/api/products/' + product_id, { steps: [step_id] });
+            await axios.put('/api/products/' + product_id, { attach_steps: [step_id] });
         } else {
             await axios.put('/api/products/' + product_id, { detach_steps: [step.id] });
         }
