@@ -44,7 +44,7 @@ const setProductCategory = async (product_id, category_id) => {
     }
     try {
         if (category_id) {
-            await axios.put('/api/products/' + product_id, { categories: category_id });
+            await axios.put('/api/products/' + product_id, { attach_categories: [category_id] });
         } else {
             await axios.put('/api/products/' + product_id, { detach_categories: category.id });
         }
