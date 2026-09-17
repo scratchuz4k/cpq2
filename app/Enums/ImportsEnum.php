@@ -3,6 +3,9 @@
 namespace App\Enums;
 
 use App\Imports\Import;
+use App\Imports\ProductAddonImport;
+use App\Imports\ProductBundleImport;
+use App\Imports\ProductLinkImport;
 use App\Imports\ProductsImport;
 use App\Imports\UsersImport;
 use App\Trait\EnumHelpers;
@@ -16,6 +19,9 @@ enum ImportsEnum: string
     case Category = 'categories';
     case Step = 'steps';
     case Account = 'accounts';
+    case ProductLink = 'product-links';
+    case ProductAddon = 'product-addons';
+    case ProductBundle = 'product-bundles';
 
     public static function names(): array
     {
@@ -27,6 +33,9 @@ enum ImportsEnum: string
         return match ($this) {
             self::Product => ProductsImport::class,
             self::User => UsersImport::class,
+            self::ProductLink => ProductLinkImport::class,
+            self::ProductAddon => ProductAddonImport::class,
+            self::ProductBundle => ProductBundleImport::class,
             default => Import::class,
         };
     }
@@ -40,10 +49,18 @@ enum ImportsEnum: string
 
     public static function asArray(): array
     {
+        return self::asArrayFor(self::cases());
+    }
+
+    /**
+     * @param  self[]  $cases
+     */
+    public static function asArrayFor(array $cases): array
+    {
         return array_map(fn ($case) => [
             'name' => $case->name,
             'value' => $case->value,
-        ], self::cases());
+        ], $cases);
     }
 
     public static function importsWithPermissionAsArray(): array
