@@ -5,11 +5,11 @@ namespace App\Http\Controllers;
 use App\Enums\ImportsEnum;
 use App\Enums\ImportStatusesEnum;
 use App\Export\Export;
-use App\Export\ExportCSVTemplate;
 use App\Helpers\DataProvider;
 use App\Imports\Import;
 use App\Jobs\ImportJob;
 use App\Models\Resource;
+use App\Services\ImportService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -63,23 +63,9 @@ class BaseController extends Controller
     public function import(Request $request)
     {
         if ($request->isMethod('get')) {
-            $model = Str::lower(class_basename($this->model));
-            $template = app_path("Helpers/Import/{$model}_import.php");
-            if (file_exists($template)) {
-                $template = require $template;
+            $importService = new ImportService;
 
-                return Excel::download(
-                    new ExportCSVTemplate($this->model, collect($template['data'])),
-                    $template['filename']
-                );
-            }
-
-            $data = $this->model::factory(10)->make();
-
-            return Excel::download(
-                new ExportCSVTemplate($this->model, $data),
-                Str::lower('import_'.class_basename($this->model).'_template.csv')
-            );
+            return $importService->getImportTemplate($request->all(), $this->model);
         }
 
         $file = array_key_exists('file', $request->all()) ? $request['file'] : null;
