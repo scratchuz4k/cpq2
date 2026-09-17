@@ -17,7 +17,7 @@ class ShopBlocksCategoriesSyncJob implements NotTenantAware, ShouldQueue
 {
     use Batchable, Queueable;
 
-    public $timeout = 3600;
+    public $timeout = 900;
 
     /**
      * Create a new job instance.
@@ -49,16 +49,25 @@ class ShopBlocksCategoriesSyncJob implements NotTenantAware, ShouldQueue
             return;
         }
 
+        $categoryCodes = collect($res['data'])
+            ->flatMap(fn ($category) => [$category['id'], $category['parent_id']])
+            ->filter()
+            ->unique()
+            ->values();
+        $categories = Category::whereIn('code', $categoryCodes)->get()->keyBy('code');
+
         foreach ($res['data'] as $category) {
             $code = $category['id'];
             unset($category['id']);
 
             if (! is_null($category['parent_id'])) {
-                $temp = Category::where('code', $category['parent_id'])->first();
-                $category['parent_id'] = $temp?->id;
+                $category['parent_id'] = $categories->get($category['parent_id'])?->id;
             }
 
-            Category::updateOrCreate(['code' => $code], $category);
+            $categoryModel = $categories->get($code) ?? new Category(['code' => $code]);
+            $categoryModel->fill($category);
+            $categoryModel->save();
+            $categories[$code] = $categoryModel;
         }
     }
 

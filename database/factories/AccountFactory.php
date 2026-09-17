@@ -24,6 +24,7 @@ class AccountFactory extends Factory
             'tenant_id' => Tenant::where('name', 'CloudMarket')->value('id'),
             'reference' => strtoupper(substr($company_name, 0, 3)).fake()->randomNumber(5, true),
             'name' => $company_name,
+            'is_active' => fake()->randomElement([0, 1]),
         ];
     }
 

@@ -2,7 +2,6 @@
 
 namespace App\Models\Cloudmarket;
 
-use Illuminate\Support\Facades\Cache;
 use MongoDB\Laravel\Eloquent\Model;
 
 class Product extends Model
@@ -34,8 +33,6 @@ class Product extends Model
             'key' => $key,
             'filename' => $filename,
         ], $content);
-
-        Cache::put($filename, json_encode(['updated_at' => now()]), now()->addHours(24));
     }
 
     public static function addOptions(string $key, string $filename, array $data)

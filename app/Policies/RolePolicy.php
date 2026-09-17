@@ -149,6 +149,18 @@ class RolePolicy
         return true;
     }
 
+    /**
+     * Determine whether the user can import the model.
+     */
+    public function import(User $user): bool
+    {
+        if (! $user->can("import $this->model")) {
+            return false;
+        }
+
+        return true;
+    }
+
     private function hasRoleInChild(Role $role): bool
     {
         if (Auth::check() && Auth::user()->roles()->withoutGlobalScopes()->where('roles.name', 'Super Admin')->exists()) {

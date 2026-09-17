@@ -27,6 +27,7 @@ class CloudMarketAssignmentsProducts extends CloudMarket
         $time = Carbon::now()->addSeconds(86400);
 
         $this->started_at = now();
+        $this->updateCloudMarketSearchCache($this->file);
         $product = collect($this->quote->items)->where(function ($x) {
             return in_array(data_get($x, 'data.type'), ['Primary Product'], true);
         })->values();
@@ -57,6 +58,7 @@ class CloudMarketAssignmentsProducts extends CloudMarket
         }
 
         Product::write('assignments', $this->file, $this->prices, false, now(), $this->started_at, $this->tempFilters, $this->errors, $time);
+        $this->updateCloudMarketSearchCache($this->file);
     }
 
     /**

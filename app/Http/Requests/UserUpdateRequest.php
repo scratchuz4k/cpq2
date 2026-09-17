@@ -40,6 +40,7 @@ class UserUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique('users', 'email')->ignore($targetId),
             ],
+            'password' => ['nullable', 'string', 'min:8'],
             'parent_id' => [
                 'nullable',
                 'integer',
