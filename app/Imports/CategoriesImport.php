@@ -2,136 +2,45 @@
 
 namespace App\Imports;
 
-use App\Enums\FrequencyUnitsEnum;
-use App\Enums\PricePlanEnum;
-use App\Enums\ProductStatusesEnum;
-use App\Http\Requests\ProductCreateRequest;
-use App\Models\Price;
-use App\Models\PricePlan;
-use App\Models\Product;
-use App\Models\Tenant;
+use App\Http\Requests\CategoryCreateRequest;
+use App\Models\Category;
 use App\Models\User;
-use App\Rules\BillingFrequencyRule;
-use App\Rules\TenantUniqueRule;
-use App\Rules\ValidDateValidator;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
-use Maatwebsite\Excel\Concerns\SkipsErrors;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\WithBatchInserts;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Facades\Excel;
 
-class CategoriesImport implements ToCollection, WithBatchInserts, WithHeadingRow
+class CategoriesImport extends Import implements ToCollection
 {
-    use SkipsErrors;
+    protected ?array $availableCodes = [];
 
-    protected $results = [
-        'processed' => 0,
-        'success' => 0,
-        'skipped' => 0,
-        'errors' => [],
-        'data' => [],
-    ];
-
-    protected Tenant $tenant;
-
-    protected bool $isDryRun;
-
-    protected ?int $ignoreProductId = null;
-
-    public function __construct(
-        protected bool $overwrite = false,
-        protected ?User $actingUser = null,
-        bool $isDryRun = false
-    ) {
-        $this->tenant = Tenant::current();
-        $this->isDryRun = $isDryRun;
-    }
-
-    public function getResults(): array
+    public function __construct(protected User $actingUser, protected string $model, bool $isDryRun = false, protected bool $overwrite = false)
     {
-        return $this->results;
-    }
-
-    public function setDryRun(bool $isDryRun): void
-    {
-        $this->isDryRun = $isDryRun;
+        parent::__construct($this->actingUser, $model, $isDryRun);
     }
 
     /**
-     * Validate the import file.
+     * Insert a new Category
      */
-    public static function validateFile($file, ?User $actingUser, bool $overwrite): array
-    {
-        $import = new self($overwrite, $actingUser, true);
-        Excel::import($import, $file);
-
-        return $import->results;
-    }
-
-    /**
-     * Insert a new product
-     */
-    private function insertProduct(array $product): bool
+    private function insert(array $item, int $index, ?int $parentId = null): bool
     {
         try {
-            if (isset($product['status'])) {
-                $matchingCase = collect(ProductStatusesEnum::cases())
-                    ->first(fn ($case) => strtoupper($case->value) === strtoupper($product['status']));
+            request()->merge($item);
 
-                if ($matchingCase) {
-                    $product['status'] = $matchingCase->value;
-                }
-            }
-            if ($this->overwrite && ! empty($product['sku'])) {
-                $existingProduct = Product::where('sku', $product['sku'])->first();
-                if ($existingProduct) {
-                    $this->ignoreProductId = $existingProduct->id;
-
-                    if ($existingPrice = Price::firstWhere('product_id', $existingProduct['id'])) {
-                        $this->ignorePriceId = $existingPrice->id;
-                    }
-                }
-            }
-
-            $product['prices'] = [
-                'code' => $product['price_code'] ?? null,
-                'net' => $product['price_net'] ?? null,
-                'cost' => $product['price_cost'] ?? null,
-            ];
-
-            if (isset($product['categories']) && is_string($product['categories'])) {
-                $product['categories'] = array_filter(array_map('trim', explode(',', $product['categories'])));
-            }
-
-            if (isset($product['steps']) && is_string($product['steps'])) {
-                $product['steps'] = array_filter(array_map('trim', explode(',', $product['steps'])));
-            }
-
-            if (! $this->isRecurringPricePlan($product['price_plan_id'] ?? null)) {
-                $product['renewal_terms_value'] = null;
-                $product['renewal_terms_unit'] = null;
-                $product['billing_frequency_value'] = null;
-                $product['billing_frequency_unit'] = null;
-            }
-
-            $validator = Validator::make($product, $this->getValidationRules($product));
+            $validator = Validator::make($item, $this->rules());
 
             if ($validator->fails()) {
                 $this->results['skipped']++;
                 $this->results['errors'][] = [
-                    'row_index' => $product['index'] ?? null,
-                    'row' => $product,
+                    'row_index' => $index,
+                    'row' => $item,
                     'errors' => $validator->errors()->all(),
                 ];
 
                 return false;
             }
+
+            $this->availableCodes[] = $item['code'];
 
             if ($this->isDryRun) {
                 $this->results['success']++;
@@ -139,90 +48,30 @@ class CategoriesImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 return true;
             }
 
-            $productData = [
-                'name' => $product['name'] ?? '',
-                'description' => $product['description'] ?? '',
-                'expires_at' => (isset($product['expires_at']) && ! empty($product['expires_at']))
-                    ? Carbon::createFromFormat('d/m/Y', $product['expires_at'])->endOfDay()
-                    : null,
-                'status' => (isset($product['status']) && ! empty($product['status'])) ? $product['status'] : ProductStatusesEnum::ACTIVE->name,
-                'price_plan_id' => (isset($product['price_plan_id']) && ! empty($product['price_plan_id'])) ? PricePlan::find($product['price_plan_id'])->id : null,
-                'renewal_terms_value' => $product['renewal_terms_value'] ?? null,
-                'renewal_terms_unit' => $product['renewal_terms_unit'] ?? null,
-                'billing_frequency_value' => $product['billing_frequency_value'] ?? null,
-                'billing_frequency_unit' => $product['billing_frequency_unit'] ?? null,
-                'prices' => [
-                    'code' => $product['price_code'] ?? null,
-                    'net' => $product['price_net'] ?? null,
-                    'cost' => $product['price_cost'] ?? null,
+            unset($item['parent_code']);
 
-                ],
-                'categories' => $product['categories'] ?? null,
-                'steps' => $product['steps'] ?? null,
-                'tenant_id' => $this->tenant->id,
-                'is_active' => ucfirst(mb_strtolower($product['status'])) === ProductStatusesEnum::ACTIVE->value ? 1 : 0,
-            ];
+            $newItem = Category::create([
+                ...$item,
+                'parent_id' => $parentId,
+            ]);
 
-            if ($this->overwrite) {
-                $newProduct = Product::UpdateOrCreate(
-                    [
-                        'sku' => $product['sku'],
-                    ],
-                    $productData
-                );
-            } else {
-                if (Product::where('sku', $product['sku'])->exists()) {
-                    $this->results['skipped']++;
-                    $this->results['errors'][] = [
-                        'row_index' => $product['index'] ?? null,
-                        'row' => $product,
-                        'error' => 'Product already exists',
-                    ];
-
-                    return false;
-                }
-
-                $newProduct = Product::create([
-                    'sku' => $product['sku'] ?? '',
-                    ...$productData,
-                ]);
-            }
-
-            if (count(array_filter($productData['prices'])) > 0) {
-                Price::UpdateOrCreate(
-                    [
-                        'product_id' => $newProduct->id,
-                    ],
-                    [
-                        ...$productData['prices'],
-                        'tenant_id' => $this->tenant->id,
-                    ]);
-            }
-
-            if (array_key_exists('categories', $product) && ! empty($product['categories'])) {
-                $newProduct->categories()->sync(array_map('intval', $product['categories']));
-            }
-
-            if (array_key_exists('steps', $product) && ! empty($product['steps'])) {
-                $newProduct->steps()->sync(array_map('intval', $product['steps']));
-            }
+            $newItem->save();
 
             $this->results['success']++;
 
             return true;
-
         } catch (ValidationException $e) {
             $this->results['skipped']++;
             $this->results['errors'][] = [
-                'row_index' => $product['index'] ?? null,
-                'row' => $product,
+                'row_index' => $index,
+                'row' => $item,
                 'error' => $e->errors(),
             ];
         } catch (\Exception $e) {
             $this->results['skipped']++;
             $this->results['errors'][] = [
-                'row_index' => $product['index'] ?? null,
-                'row' => $product,
+                'row_index' => $index,
+                'row' => $item,
                 'error' => $e->getMessage(),
             ];
         }
@@ -232,119 +81,90 @@ class CategoriesImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
     public function collection(Collection $collection): void
     {
-        foreach ($collection as $rowIndex => $row) {
-            if ($row->filter()->isEmpty()) {
-                continue;
-            }
+        $pendingItems = [];
+        $fileCodes = $collection->pluck('code')->unique()->toArray();
 
-            $row = collect($row)->map(function ($value) {
+        foreach ($collection->values() as $index => $item) {
+            $item = array_map(function ($value) {
                 $value = trim((string) $value);
 
                 return $value === '' ? null : $value;
-            })->toArray();
+            }, $item->toArray());
 
-            $row['index'] = $rowIndex;
-            $row['renewal_terms_unit'] = $this->normalizeFrequencyUnit($row['renewal_terms_unit'] ?? null);
-            $row['billing_frequency_unit'] = $this->normalizeFrequencyUnit($row['billing_frequency_unit'] ?? null);
+            if (array_key_exists('is_active', $item)) {
+                $item['is_active'] = $item['is_active'] === null ? 1 : (int) $item['is_active'];
+            }
 
+            $this->results['data'][] = [
+                'index' => $index,
+                ...$item,
+            ];
             $this->results['processed']++;
-            $this->results['data'][] = $row;
-            $this->insertProduct($row);
-        }
-    }
 
-    /**
-     * Normalise a frequency unit to the FrequencyUnitsEnum name.
-     * Accepts singular or plural, any case ("day", "Months", "YEAR" -> "DAYS", "MONTHS", "YEARS").
-     */
-    private function normalizeFrequencyUnit(?string $value): ?string
-    {
-        if (empty($value)) {
-            return null;
+            if (! $item['parent_code']) {
+                $this->insert($item, $index);
+            } else {
+                $pendingItems[$index] = $item;
+
+            }
         }
 
-        $needle = strtoupper(Str::plural(trim($value)));
+        $fileCodeParentCodes = collect($pendingItems)->pluck('parent_code')->unique()->filter();
 
-        $match = collect(FrequencyUnitsEnum::cases())
-            ->first(fn ($case) => strtoupper($case->name) === $needle);
+        if ($fileCodeParentCodes->isNotEmpty()) {
+            $missingParentCodes = array_diff($fileCodeParentCodes->toArray(), $fileCodes);
 
-        return $match?->name ?? $value;
-    }
+            if (! empty($missingParentCodes)) {
+                $existingDbCodes = Category::query()
+                    ->whereIn('code', $missingParentCodes)
+                    ->pluck('code')
+                    ->toArray();
 
-    /**
-     * Whether the given price plan id refers to a recurring plan.
-     */
-    private function isRecurringPricePlan($pricePlanId): bool
-    {
-        if (empty($pricePlanId)) {
-            return false;
+                $this->availableCodes = array_unique(array_merge($this->availableCodes, $existingDbCodes));
+            }
         }
 
-        return PricePlan::where('id', $pricePlanId)
-            ->where('code', PricePlanEnum::MONTHLY->name)
-            ->exists();
+        $this->processDeferredChildren($pendingItems);
     }
 
-    public function batchSize(): int
+    public function rules(): array
     {
-        return 500;
+        return (new CategoryCreateRequest)->rules();
     }
 
-    public function chunkSize(): int
+    private function processDeferredChildren(array $pendingItems): void
     {
-        return 500;
-    }
+        $processedInLastIteration = true;
+        while (count($pendingItems) > 0 && $processedInLastIteration) {
+            $processedInLastIteration = false;
+            $remainingItems = [];
 
-    public function headingRow(): int
-    {
-        return 1;
-    }
+            foreach ($pendingItems as $index => $item) {
+                $parent = null;
+                if (in_array($item['parent_code'], $this->availableCodes)) {
+                    if (! $this->isDryRun) {
+                        $parent = Category::where('code', $item['parent_code'])->first();
+                    }
 
-    public static function getImportTemplate()
-    {
-        $template = require app_path('Helpers/Import/product_import.php');
+                    if ($this->insert($item, $index, $parent ? $parent->id : null)) {
+                        $processedInLastIteration = true;
+                    }
+                } else {
+                    $remainingItems[$index] = $item;
+                }
+            }
+            $pendingItems = $remainingItems;
+        }
 
-        return [
-            'data' => collect($template['data']),
-            'filename' => $template['filename'],
-        ];
-    }
-
-    private function getValidationRules(array $product): array
-    {
-        $rules = (new ProductCreateRequest)->rules();
-
-        unset(
-            $rules['prices.*.code'],
-            $rules['prices.*.cost'],
-            $rules['prices.*.net'],
-            $rules['renewal_terms_value'],
-            $rules['renewal_terms_unit'],
-            $rules['billing_frequency_value'],
-            $rules['billing_frequency_unit'],
-        );
-
-        $recurringRule = $this->isRecurringPricePlan($product['price_plan_id'] ?? null) ? 'required' : 'nullable';
-
-        return [
-            ...$rules,
-            'expires_at' => new ValidDateValidator,
-            'sku' => $this->overwrite
-                ? 'required|string|max:255'
-                : ['required', 'string', 'max:255', new TenantUniqueRule('products', 'sku', $this->ignoreProductId)],
-            'prices.code' => [
-                'nullable',
-                'numeric',
-                Rule::unique('prices', 'code')
-                    ->ignore($this->ignorePriceId)
-                    ->where(fn ($q) => $q->where('product_id', $this->ignoreProductId)),
-            ],
-            'prices.cost' => 'required|numeric',
-            'prices.net' => 'required|numeric',
-            'renewal_terms_value' => [$recurringRule, 'integer', 'between:1,100'],
-            'renewal_terms_unit' => [$recurringRule, Rule::in(FrequencyUnitsEnum::names())],
-            'billing_frequency_value' => [$recurringRule, 'integer', new BillingFrequencyRule],
-            'billing_frequency_unit' => [$recurringRule, Rule::in(FrequencyUnitsEnum::names())],
-        ];
+        if (count($pendingItems) > 0) {
+            foreach ($pendingItems as $index => $item) {
+                $this->results['skipped']++;
+                $this->results['errors'][] = [
+                    'row_index' => $index,
+                    'row' => $item,
+                    'error' => 'Parent Category with Code: "'.$item['parent_code'].'" not found!',
+                ];
+            }
+        }
     }
 }
