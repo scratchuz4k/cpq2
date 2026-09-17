@@ -59,6 +59,18 @@ class UserPolicy
     }
 
     /**
+     * Determine whether the user can import the model.
+     */
+    public function import(User $user): bool
+    {
+        if (! $user->can("import $this->model")) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Determine if the given user can update the specified user.
      *
      * @param  \App\Models\User  $user  The authenticated user

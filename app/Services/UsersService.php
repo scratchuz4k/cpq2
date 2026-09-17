@@ -61,7 +61,7 @@ class UsersService
 
     public function import(array $array)
     {
-        $import = new UsersImport;
+        $import = new UsersImport(false, auth()->user());
         Excel::import($import, $array['file']);
 
         return $import->results;

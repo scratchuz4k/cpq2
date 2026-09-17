@@ -28,6 +28,7 @@ class RolePermissionSeeder extends Seeder
         'restore' => 'Restore',
         'forceDelete' => 'Force Delete',
         'export' => 'Export',
+        'import' => 'Import',
     ];
 
     // Reset cached roles and permissions
@@ -88,7 +89,7 @@ class RolePermissionSeeder extends Seeder
                 'tenant' => 1,
                 'permissions' => ['account', 'contact', 'token', 'quote', 'quote_item', 'activity', 'price_plan', 'notification'],
                 'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category', 'viewAny step', 'view step'],
-                'deny_permission' => ['export'],
+                'deny_permission' => ['export', 'import'],
             ],
             'Sales Manager' => [
                 'parent' => 'Company Admin',
@@ -101,7 +102,7 @@ class RolePermissionSeeder extends Seeder
                 'tenant' => 1,
                 'permissions' => ['quote', 'quote_item', 'account', 'contact', 'supplier', 'activity', 'price_plan', 'notification', 'quote_discount'],
                 'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category', 'viewAny step', 'view step', 'viewAny quote_approval', 'view quote_approval', 'create quote_approval'],
-                'deny_permission' => ['export'],
+                'deny_permission' => ['export', 'import'],
             ],
         ];
 

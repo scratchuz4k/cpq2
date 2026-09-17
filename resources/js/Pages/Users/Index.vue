@@ -76,10 +76,6 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
             <tabs id="users">
                 <tab title="Users" :selected="true">
                     <div class="d-flex mt-3 justify-content-end">
-                        <Link href="/imports?model=User" id="product-import-btn" class="btn btn-secondary me-2">
-                            <font-awesome-icon :icon="['fas', 'file-import']"></font-awesome-icon>
-                            Import Users
-                        </Link>
                         <Link id="link-to-create-user" :href="route('users.create')" class="btn btn-primary me-2">
                             <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
                             New User
