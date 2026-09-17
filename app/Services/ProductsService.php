@@ -53,8 +53,8 @@ class ProductsService
             $product->categories()->detach($array['detach_categories']);
         }
 
-        if (array_key_exists('steps', $array) && ! is_null($array['steps'])) {
-            $product->steps()->syncWithoutDetaching($array['steps']);
+        if (array_key_exists('steps', $array) && is_array($array['steps'])) {
+            $product->steps()->sync($array['steps']);
         }
 
         if (array_key_exists('detach_steps', $array) && ! is_null($array['detach_steps'])) {
