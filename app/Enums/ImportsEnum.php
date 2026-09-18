@@ -16,6 +16,7 @@ enum ImportsEnum: string
     case Category = 'categories';
     case Step = 'steps';
     case Account = 'accounts';
+    case Contact = 'contacts';
 
     public static function names(): array
     {
