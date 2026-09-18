@@ -77,6 +77,22 @@ if (! function_exists('quoteQuantityPrice')) {
         return $total;
     }
 }
+if (! function_exists('frequencyLabel')) {
+    function frequencyLabel($value, $unit)
+    {
+        if (! $value || ! $unit) {
+            return '';
+        }
+
+        $abbreviations = [
+            'DAYS' => 'd',
+            'MONTHS' => 'mo',
+            'YEARS' => 'yr',
+        ];
+
+        return $value.($abbreviations[$unit] ?? '');
+    }
+}
 if (! function_exists('getCss')) {
     function getCss()
     {

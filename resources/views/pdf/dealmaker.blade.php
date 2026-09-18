@@ -105,8 +105,10 @@
 
         .column-quantity-body,
         .column-quantity-header,
-        .column-contract_length-header,
-        .column-contract_length-body {
+        .column-renewal_terms-header,
+        .column-renewal_terms-body,
+        .column-billing_frequency-header,
+        .column-billing_frequency-body {
             width: 10% !important;
             text-align: center;
         }
@@ -188,7 +190,8 @@
                                         <th class="column-subprovider-header d-xl-table-cell">SubProvider</th>
                                     @endif
                                     <th class="column-name-header">Name</th>
-                                    <th class="column-contract_lenght-header">Months</th>
+                                    <th class="column-renewal_terms-header">Term</th>
+                                    <th class="column-billing_frequency-header">Frequency</th>
                                     @if ($isConnectivity)
                                         <th class="column-speed-header">Speed</th>
                                         <th class="column-bearer-header">Bearer</th>
@@ -275,8 +278,11 @@
                                                 @endif
                                             </div>
                                         </td>
-                                        <td class="column-contract_length-body">
-                                            {{ $item['contract_length'] }}
+                                        <td class="column-renewal_terms-body">
+                                            {{ frequencyLabel($item['renewal_terms_value'], $item['renewal_terms_unit']) }}
+                                        </td>
+                                        <td class="column-billing_frequency-body">
+                                            {{ frequencyLabel($item['billing_frequency_value'], $item['billing_frequency_unit']) }}
                                         </td>
                                         @if ($isConnectivity)
                                             <td class="column-speed-body">
@@ -317,7 +323,7 @@
                                 @if ($discounts['monthly']['discount'])
                                     <tr class="item-row" style="vertical-align: middle;">
                                         <td class="column-name-body text-primary"
-                                            colspan="{{ $isConnectivity ? '8' : '4' }}">
+                                            colspan="{{ $isConnectivity ? '9' : '5' }}">
                                             Recurring Discount
                                         </td>
                                         <td class="text-center text-primary">
@@ -332,7 +338,7 @@
 
                             <tfoot>
                                 <tr>
-                                    <th class="text-start" colspan="{{ $isConnectivity ? '9' : '5' }}">
+                                    <th class="text-start" colspan="{{ $isConnectivity ? '10' : '6' }}">
                                         Monthly Subtotal
                                     </th>
                                     <th class="text-end">

@@ -204,9 +204,7 @@
 .column-price-body,
 .column-price-header,
 .column-quantity-body,
-.column-quantity-header,
-.column-contract_length-header,
-.column-contract_length-body {
+.column-quantity-header {
     width: 10% !important;
     text-align: center;
 }
@@ -220,7 +218,9 @@
 .column-margin-header,
 .column-margin-body,
 .column-price-header,
-.column-price-body {
+.column-price-body,
+.column-renewal_terms-header,
+.column-billing_frequency-header {
     text-align: center;
 }
 

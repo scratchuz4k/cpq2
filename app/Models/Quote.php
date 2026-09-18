@@ -195,7 +195,7 @@ class Quote extends Model
         }
 
         foreach ($this->items as $item) {
-            $total_cost += ($item->raw_price * $item->quantity * $item->contract_length);
+            $total_cost += ($item->raw_price * $item->quantity * $item->numberOfPayments());
 
             $itemPrice = $item->price;
 
@@ -210,7 +210,7 @@ class Quote extends Model
 
                 // accumulate into this discount (per item)
                 $lineDiscount = $discountValue * $item->quantity;
-                $lineTotal = $discountValue * $item->quantity * $item->contract_length;
+                $lineTotal = $discountValue * $item->quantity * $item->numberOfPayments();
 
                 $discount->value += $lineDiscount;
                 $discount->total += $lineTotal;

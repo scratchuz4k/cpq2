@@ -23,7 +23,10 @@ class ActivityController extends BaseController
         'price',
         'discount',
         'quantity',
-        'contract_length',
+        'renewal_terms_value',
+        'renewal_terms_unit',
+        'billing_frequency_value',
+        'billing_frequency_unit',
         'name',
         'status',
     ];

@@ -24,15 +24,15 @@ const totals = () => {
     } = quote?.items.reduce(
         (acc, item) => {
             if (item.data?.type === 'main_product') {
-                acc.productsTotal += item.original_price * item.contract_length * item.quantity;
+                acc.productsTotal += item.total;
             } else if (item.data?.type === 'addon_product') {
-                acc.addonTotal += item.original_price * item.contract_length * item.quantity;
+                acc.addonTotal += item.total;
             }
 
             if (item.price_plan?.code === 'MONTHLY') {
-                acc.recurringTotal += item.original_price * item.contract_length * item.quantity;
+                acc.recurringTotal += item.total;
             } else {
-                acc.oneOffTotal += item.original_price * item.contract_length * item.quantity;
+                acc.oneOffTotal += item.total;
             }
             return acc;
         },
@@ -78,7 +78,7 @@ watch(
                         </p>
                         <div>
                             <p v-if="item.price_plan?.code === 'MONTHLY'" class="small contract-length">
-                                {{ item.contract_length }} months
+                                {{ item.renewal_terms_value }} {{ format.friendlyString(item.renewal_terms_unit) }}
                             </p>
                         </div>
                     </div>
@@ -112,7 +112,7 @@ watch(
                                 v-if="addon.price_plan?.code === 'MONTHLY'"
                                 class="small text-muted contract-length ps-3"
                             >
-                                {{ addon.contract_length }} months
+                                {{ addon.renewal_terms_value }} {{ format.friendlyString(addon.renewal_terms_unit) }}
                             </p>
                         </div>
                     </div>

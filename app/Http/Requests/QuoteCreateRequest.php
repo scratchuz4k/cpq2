@@ -45,7 +45,10 @@ class QuoteCreateRequest extends FormRequest
             'items.*.price' => 'numeric',
             'items.*.discount' => 'numeric|min:0|max:100',
             'items.*.price_plan_id' => 'nullable|numeric|exists:price_plans,id',
-            'items.*.contract_length' => 'numeric|min:1',
+            'items.*.renewal_terms_value' => 'nullable|numeric|min:1',
+            'items.*.renewal_terms_unit' => 'nullable|string|in:DAYS,MONTHS,YEARS',
+            'items.*.billing_frequency_value' => 'nullable|numeric|min:1',
+            'items.*.billing_frequency_unit' => 'nullable|string|in:DAYS,MONTHS,YEARS',
             'status' => 'in:'.implode(',', $this->authorized_statues),
         ];
     }
