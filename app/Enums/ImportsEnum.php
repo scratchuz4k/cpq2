@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 
+use App\Imports\AccountsImport;
 use App\Imports\Import;
 use App\Imports\ProductsImport;
 use App\Imports\UsersImport;
@@ -28,6 +29,7 @@ enum ImportsEnum: string
         return match ($this) {
             self::Product => ProductsImport::class,
             self::User => UsersImport::class,
+            self::Account => AccountsImport::class,
             default => Import::class,
         };
     }

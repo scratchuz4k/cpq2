@@ -36,7 +36,7 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
     /**
      * Insert a new user with a specific manager.
      */
-    private function insert(array $item, int $index): bool
+    protected function insert(array $item, int $index): bool
     {
         try {
             $item['groups'] = $item['groups']
