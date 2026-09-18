@@ -5,10 +5,6 @@ import format from './format';
 const page = usePage();
 
 export const temp = reactive({
-    renewal_terms_value: 1,
-    renewal_terms_unit: 'MONTHS',
-    billing_frequency_value: 1,
-    billing_frequency_unit: 'MONTHS',
     discount: 0,
     quantity: 0
 });

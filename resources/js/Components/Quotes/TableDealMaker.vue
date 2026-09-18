@@ -45,7 +45,7 @@ const filterColumns = (columns, code) => {
 
 const editableColumns = (columns, code) => {
     let temp = filterColumns(columns, code);
-    let editable = ['name', 'price', 'discount', 'renewal_terms', 'billing_frequency', 'quantity'];
+    let editable = ['name', 'price', 'discount', 'quantity'];
     temp.forEach((e) => {
         e.is_editable = editable.includes(e.value);
     });

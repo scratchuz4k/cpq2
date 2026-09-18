@@ -27,10 +27,6 @@ const toggleBundleItems = () => {
 const edit = (p) => {
     temp.quantity = p.quantity;
     temp.discount = p.discount;
-    temp.renewal_terms_value = p.renewal_terms_value;
-    temp.renewal_terms_unit = p.renewal_terms_unit;
-    temp.billing_frequency_value = p.billing_frequency_value;
-    temp.billing_frequency_unit = p.billing_frequency_unit;
     emitter.emit('quote-items:toggle:is-editing');
     item.value.is_editing = true;
 };
@@ -38,11 +34,7 @@ const edit = (p) => {
 const save = async (p) => {
     let item = {
         quantity: temp.quantity,
-        discount: temp.discount,
-        renewal_terms_value: temp.renewal_terms_value,
-        renewal_terms_unit: temp.renewal_terms_unit,
-        billing_frequency_value: temp.billing_frequency_value,
-        billing_frequency_unit: temp.billing_frequency_unit
+        discount: temp.discount
     };
 
     if (await updateQuoteItem(p.id, item)) {
