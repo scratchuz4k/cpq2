@@ -21,6 +21,7 @@ class StepResource extends JsonResource
         return [
             ...$this->resource->toArray(),
             'solution_type' => SolutionTypeTenantResource::make($this->solutionType)->resolve(),
+            'products' => $this->whenLoaded('products', fn () => $this->products->pluck('id')->values()),
         ];
     }
 }

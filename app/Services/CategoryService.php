@@ -17,8 +17,8 @@ class CategoryService
     {
         $category->update($array);
 
-        if (array_key_exists('product_id', $array)) {
-            $category->products()->toggle($array['product_id']);
+        if (array_key_exists('products', $array) && is_array($array['products'])) {
+            $category->products()->sync($array['products']);
         }
 
         return $category->refresh();

@@ -17,6 +17,10 @@ class StepService
     {
         $step->update($array);
 
+        if (array_key_exists('products', $array) && is_array($array['products'])) {
+            $step->products()->sync($array['products']);
+        }
+
         return $step->refresh();
     }
 }
