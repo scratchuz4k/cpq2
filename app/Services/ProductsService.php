@@ -49,24 +49,8 @@ class ProductsService
             $product->categories()->sync($array['categories']);
         }
 
-        if (array_key_exists('attach_categories', $array) && is_array($array['attach_categories'])) {
-            $product->categories()->syncWithoutDetaching($array['attach_categories']);
-        }
-
-        if (array_key_exists('detach_categories', $array) && ! is_null($array['detach_categories'])) {
-            $product->categories()->detach($array['detach_categories']);
-        }
-
         if (array_key_exists('steps', $array) && is_array($array['steps'])) {
             $product->steps()->sync($array['steps']);
-        }
-
-        if (array_key_exists('attach_steps', $array) && is_array($array['attach_steps'])) {
-            $product->steps()->syncWithoutDetaching($array['attach_steps']);
-        }
-
-        if (array_key_exists('detach_steps', $array) && ! is_null($array['detach_steps'])) {
-            $product->steps()->detach($array['detach_steps']);
         }
 
         return $product->refresh();
