@@ -13,7 +13,7 @@ const item = defineModel();
 </script>
 <template>
     <template v-if="!isGroup">
-        <p class="small">
+        <p class="small text-center">
             {{
                 item.price_plan?.code == 'MONTHLY' && quote && item.renewal_terms_value
                     ? `${item.renewal_terms_value}${abbreviateUnit(item.renewal_terms_unit)}`
