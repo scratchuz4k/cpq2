@@ -6,6 +6,7 @@ use App\Http\Requests\CategoryCreateRequest;
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -81,6 +82,8 @@ class CategoriesImport extends Import implements ToCollection
 
     public function collection(Collection $collection): void
     {
+        Auth::setUser($this->actingUser);
+
         $pendingItems = [];
         $fileCodes = $collection->pluck('code')->unique()->toArray();
 
