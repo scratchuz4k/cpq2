@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\FrequencyUnitsEnum;
 use App\Enums\QuoteApprovalFlowEnum;
 use App\Models\Scopes\TenantScope;
 use App\Trait\RegisterActivity;
@@ -32,7 +33,10 @@ class QuoteItem extends Model
         'total',
         'total_tax',
         'total_gross',
-        'contract_length',
+        'renewal_terms_value',
+        'renewal_terms_unit',
+        'billing_frequency_value',
+        'billing_frequency_unit',
         'tenant_id',
         'group',
     ];
@@ -106,9 +110,27 @@ class QuoteItem extends Model
 
         $this->price = $price_line;
         $this->margin = $this->price - $this->raw_price;
-        $this->total = $this->price * $this->quantity * $this->contract_length;
+        $this->total = $this->price * $this->quantity * $this->numberOfPayments();
         $this->total_tax = $this->total * ($this->tax / 100);
         $this->total_gross = $this->total * (($this->tax / 100) + 1);
+    }
+
+    /**
+     * Number of payments over the renewal term, i.e. how many times the
+     * (discounted) price is charged: renewal term ÷ billing frequency.
+     */
+    public function numberOfPayments(): float
+    {
+        $daysPerUnit = FrequencyUnitsEnum::daysPerUnit();
+        $monthDays = $daysPerUnit[FrequencyUnitsEnum::MONTHS->name];
+
+        $renewalDays = ($this->renewal_terms_value ?: 1)
+            * ($daysPerUnit[$this->renewal_terms_unit] ?? $monthDays);
+
+        $billingDays = ($this->billing_frequency_value ?: 1)
+            * ($daysPerUnit[$this->billing_frequency_unit] ?? $monthDays);
+
+        return $billingDays > 0 ? $renewalDays / $billingDays : 1.0;
     }
 
     public function isWithinMarginThresholds(): bool

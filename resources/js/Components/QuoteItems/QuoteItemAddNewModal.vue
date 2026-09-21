@@ -23,7 +23,7 @@
             <div class="mb-3">
                 <label>Price Plan:</label>
                 <InputSelect
-                    @change="() => (newLine.contract_length = 1)"
+                    @change="() => resetFrequency()"
                     id="order-item-new-item"
                     url="/price-plans"
                     :fields="['name']"
@@ -32,11 +32,35 @@
                 >
                 </InputSelect>
             </div>
-            <div class="row mb-3">
-                <div class="col" v-if="newLine.price_plan?.code == 'MONTHLY'">
-                    <label>Contract Length:</label>
-                    <InputText class="w-100" type="number" v-model="newLine.contract_length" />
+            <div class="row mb-3" v-if="newLine.price_plan?.code == 'MONTHLY'">
+                <div class="col">
+                    <label>Renewal Term:</label>
+                    <div class="d-flex" style="gap: 4px">
+                        <InputText class="w-100" type="number" v-model="newLine.renewal_terms_value" />
+                        <Select
+                            v-model="newLine.renewal_terms_unit"
+                            :options="frequencyUnitOptions"
+                            optionLabel="value"
+                            optionValue="name"
+                            class="w-100"
+                        />
+                    </div>
                 </div>
+                <div class="col">
+                    <label>Billing Frequency:</label>
+                    <div class="d-flex" style="gap: 4px">
+                        <InputText class="w-100" type="number" v-model="newLine.billing_frequency_value" />
+                        <Select
+                            v-model="newLine.billing_frequency_unit"
+                            :options="frequencyUnitOptions"
+                            optionLabel="value"
+                            optionValue="name"
+                            class="w-100"
+                        />
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
                 <div class="col">
                     <label>Quantity:</label>
                     <InputText class="w-100" type="number" v-model="newLine.quantity" />
@@ -58,9 +82,10 @@
     </Dialog>
 </template>
 <script setup>
-import { Dialog, InputText } from 'primevue';
+import { Dialog, InputText, Select } from 'primevue';
 import { quote } from '@composables/useQuote';
 import { createQuoteItem } from '@/Composables/useQuoteItem';
+import { frequencyUnitOptions } from '@/Composables/billingFrequency';
 import { ref, reactive } from 'vue';
 
 const showModalNewItem = ref(false);
@@ -74,11 +99,21 @@ const newLine = reactive({
     discount: 0,
     quantity: 1,
     price: 0,
-    contract_length: 1,
+    renewal_terms_value: 1,
+    renewal_terms_unit: 'MONTHS',
+    billing_frequency_value: 1,
+    billing_frequency_unit: 'MONTHS',
     price_plan: null,
     price_plan_id: null,
     group: null
 });
+
+const resetFrequency = () => {
+    newLine.renewal_terms_value = 1;
+    newLine.renewal_terms_unit = 'MONTHS';
+    newLine.billing_frequency_value = 1;
+    newLine.billing_frequency_unit = 'MONTHS';
+};
 
 const submitForm = async () => {
     newLine.price_plan_id = newLine.price_plan?.id;

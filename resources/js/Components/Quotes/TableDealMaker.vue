@@ -30,7 +30,7 @@ const quoteTotal = (key) => {
 const quoteTotalMonths = (key) => {
     let total = quote.items
         .filter((x) => x.price_plan && x.price_plan.code == key)
-        .reduce((acc, item) => (acc += item.quantity * item.price * item.contract_length), 0);
+        .reduce((acc, item) => (acc += item.total), 0);
     let tempDiscount = quote.discounts.find((x) => x.entity?.code == key);
 
     return total ? total - (tempDiscount?.total ?? 0) : 0;
@@ -38,14 +38,14 @@ const quoteTotalMonths = (key) => {
 
 const filterColumns = (columns, code) => {
     if (code == 'SINGLE') {
-        return columns.filter((x) => x.value != 'contract_length');
+        return columns.filter((x) => x.value != 'renewal_terms' && x.value != 'billing_frequency');
     }
     return columns;
 };
 
 const editableColumns = (columns, code) => {
     let temp = filterColumns(columns, code);
-    let editable = ['name', 'price', 'discount', 'contract_length', 'quantity'];
+    let editable = ['name', 'price', 'discount', 'quantity'];
     temp.forEach((e) => {
         e.is_editable = editable.includes(e.value);
     });
@@ -89,6 +89,7 @@ const editableColumns = (columns, code) => {
                         "
                         :preview="props.preview"
                         :pricePlan="pricePlan"
+                        :columns="filterColumns(columns, pricePlan.code)"
                     ></QuoteDiscountRow>
                 </tbody>
                 <tfoot>

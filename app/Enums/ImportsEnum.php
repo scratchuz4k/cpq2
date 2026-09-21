@@ -4,6 +4,7 @@ namespace App\Enums;
 
 use App\Imports\AccountsImport;
 use App\Imports\ContactsImport;
+use App\Imports\CategoriesImport;
 use App\Imports\Import;
 use App\Imports\ProductsImport;
 use App\Imports\UsersImport;
@@ -32,6 +33,7 @@ enum ImportsEnum: string
             self::User => UsersImport::class,
             self::Account => AccountsImport::class,
             self::Contact => ContactsImport::class,
+            self::Category => CategoriesImport::class,
             default => Import::class,
         };
     }

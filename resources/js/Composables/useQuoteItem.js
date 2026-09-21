@@ -5,7 +5,6 @@ import format from './format';
 const page = usePage();
 
 export const temp = reactive({
-    contract_length: 1,
     discount: 0,
     quantity: 0
 });

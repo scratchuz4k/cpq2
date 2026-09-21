@@ -42,6 +42,10 @@ class CategoryUpdateRequest extends FormRequest
                 'integer',
                 new TenantExistsRule('categories'),
             ],
+            'products.*' => [
+                'integer',
+                new TenantExistsRule('products'),
+            ],
         ];
     }
 }
