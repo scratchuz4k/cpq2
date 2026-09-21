@@ -87,7 +87,7 @@ class ImportService
             $template = require $template;
 
             return Excel::download(
-                new ExportCSVTemplate($modelClass, collect($template['data'])),
+                new ExportCSVTemplate($modelClass, collect($template['data']), $template['columns'] ?? null),
                 $template['filename']
             );
         }
