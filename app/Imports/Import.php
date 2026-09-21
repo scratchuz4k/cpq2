@@ -16,6 +16,7 @@ use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Imports\HeadingRowFormatter;
 
 class Import implements ToCollection, WithBatchInserts, WithHeadingRow
 {
@@ -72,10 +73,27 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
         return $this->results;
     }
 
+    /**
+     * Trim a raw row into a null-blank associative array, tagged with its row index.
+     */
+    protected function normalizeRow(Collection $row, int $index): array
+    {
+        $item = collect($row)->map(function ($value) {
+            $value = trim((string) $value);
+
+            return $value === '' ? null : $value;
+        })->toArray();
+
+        $item['index'] = $index;
+
+        return $item;
+    }
+
     public function collection(Collection $collection): void
     {
-        // Set the auth user so is available on rules classes.
         Auth::setUser($this->actingUser);
+
+        $columnKeys = $this->templateColumnKeys();
 
         foreach ($collection->values() as $index => $item) {
             $item = array_map(function ($value) {
@@ -83,6 +101,8 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
 
                 return $value === '' ? null : $value;
             }, $item->toArray());
+
+            $item = $this->useTemplateColumnKeys($item, $columnKeys);
 
             if (array_key_exists('is_active', $item)) {
                 $item['is_active'] = $item['is_active'] === null ? 1 : (int) $item['is_active'];
@@ -99,6 +119,37 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
             $this->results['processed']++;
             $this->insert($item, $index);
         }
+    }
+
+    /**
+     * The keys of the model's import template (app/Helpers/Import), indexed by
+     * the heading WithHeadingRow reads for their label, e.g. "Post Code" => post_code.
+     */
+    private function templateColumnKeys(): array
+    {
+        $file = app_path('Helpers/Import/'.mb_strtolower(class_basename($this->model)).'_import.php');
+
+        if (! file_exists($file)) {
+            return [];
+        }
+
+        return collect((require $file)['columns'] ?? [])
+            ->mapWithKeys(fn ($label, $key) => [HeadingRowFormatter::format([$label])[0] => $key])
+            ->all();
+    }
+
+    /**
+     * Rename the row's headings to the template column keys.
+     */
+    private function useTemplateColumnKeys(array $item, array $columnKeys): array
+    {
+        $renamed = [];
+
+        foreach ($item as $heading => $value) {
+            $renamed[$columnKeys[$heading] ?? $heading] = $value;
+        }
+
+        return $renamed;
     }
 
     public function rules(): array

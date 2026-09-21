@@ -4,8 +4,9 @@ namespace App\Imports;
 
 use App\Http\Requests\ContactCreateRequest;
 use App\Models\Account;
+use App\Models\Contact;
 use App\Models\User;
-use App\Rules\TenantExistsRule;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -25,18 +26,11 @@ class ContactsImport extends Import implements ToCollection, WithBatchInserts, W
     }
 
     /**
-     * Insert a new Account
+     * Insert a new Contact, linked to the account matching the row's reference
      */
     protected function insert(array $item, int $index): bool
     {
         try {
-            $item['groups'] = $item['groups']
-                ? array_map('trim', explode(',', $item['groups']))
-                : [];
-            $actingUser = $this->actingUser;
-
-            request()->merge($item);
-
             $validator = Validator::make($item, $this->rules());
 
             if ($validator->fails()) {
@@ -50,28 +44,36 @@ class ContactsImport extends Import implements ToCollection, WithBatchInserts, W
                 return false;
             }
 
+            $accountIds = Account::visibleToGroups($this->actingUser)
+                ->where('reference', $item['reference'])
+                ->limit(2)
+                ->pluck('id');
+
+            if ($accountIds->isEmpty()) {
+                $this->results['skipped']++;
+                $this->results['errors'][] = [
+                    'row_index' => $index,
+                    'row' => $item,
+                    'error' => "No account was found with the reference {$item['reference']}.",
+                ];
+
+                return false;
+            }
+
             if ($this->isDryRun) {
                 $this->results['success']++;
 
                 return true;
             }
 
-            $newItem = Account::create($item);
+            Contact::create([
+                ...Arr::only($item, (new Contact)->getFillable()),
+                'account_id' => $accountIds->first(),
+            ]);
 
-            $newItem->save();
+            $this->results['success']++;
 
-            if (! empty($newItem->id)) {
-                $temp = [];
-                foreach ($item['groups'] as $group) {
-                    $temp[$group] = [
-                        'tenant_id' => $actingUser->tenant_id,
-                    ];
-                }
-                $newItem->groups()->sync($temp);
-                $this->results['success']++;
-
-                return true;
-            }
+            return true;
         } catch (ValidationException $e) {
             $this->results['skipped']++;
             $this->results['errors'][] = [
@@ -95,28 +97,10 @@ class ContactsImport extends Import implements ToCollection, WithBatchInserts, W
     {
         $rules = (new ContactCreateRequest)->rules();
 
-        unset($rules['groups.*'], $rules['groups']);
+        // The account is resolved from the reference column instead of an id.
+        unset($rules['account_id']);
 
-        $rules['groups'] = [
-            'nullable',
-            function ($attribute, $value, $fail) {
-                if (empty($value) || ! $this->actingUser->groups->count()) {
-                    return;
-                }
-
-                if (
-                    ! $this->actingUser->hasRole('Super Admin')
-                    && ! empty(array_diff($value, $this->actingUser->groups->pluck('id')->toArray()))
-                ) {
-                    $fail("The {$attribute} field contains group(s) the authenticated user does not belong to.");
-                }
-            },
-        ];
-
-        $rules['groups.*'] = [
-            'integer',
-            new TenantExistsRule('groups'),
-        ];
+        $rules['reference'] = ['required', 'string'];
 
         return $rules;
     }
