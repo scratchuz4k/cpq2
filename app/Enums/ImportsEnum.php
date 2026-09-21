@@ -3,8 +3,8 @@
 namespace App\Enums;
 
 use App\Imports\AccountsImport;
-use App\Imports\ContactsImport;
 use App\Imports\CategoriesImport;
+use App\Imports\ContactsImport;
 use App\Imports\Import;
 use App\Imports\ProductsImport;
 use App\Imports\UsersImport;
