@@ -13,7 +13,7 @@ class Category extends Model
 {
     use HasFactory, SetTenantId;
 
-    protected $fillable = ['code', 'name', 'sort_order', 'tenant_id', 'is_active', 'parent_id'];
+    protected $fillable = ['code', 'name', 'tenant_id', 'is_active', 'parent_id'];
 
     protected $casts = [
         'is_active' => 'boolean',
