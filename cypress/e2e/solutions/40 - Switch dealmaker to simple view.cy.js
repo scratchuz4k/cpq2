@@ -75,7 +75,8 @@ describe('Creates a Mobile Quote', () => {
         cy.get('#table-simple > thead').contains('Speed');
         cy.get('#table-simple > thead').contains('Bearer');
         cy.get('#table-simple > thead').contains('Price Plan');
-        cy.get('#table-simple > thead').contains('Months');
+        cy.get('#table-simple > thead').contains('Term');
+        cy.get('#table-simple > thead').contains('Frequency');
         cy.get('#table-simple > thead').contains('Price');
         cy.get('#table-simple > thead').contains('Total');
 
@@ -100,7 +101,8 @@ describe('Creates a Mobile Quote', () => {
 
         cy.get('.recurring-item').its('length').should('eq', 1);
         cy.get('#table-recurring > thead').contains('Name');
-        cy.get('#table-recurring > thead').contains('Months');
+        cy.get('#table-recurring > thead').contains('Term');
+        cy.get('#table-recurring > thead').contains('Frequency');
         cy.get('#table-recurring > thead').contains('Quantity');
         cy.get('#table-recurring > thead').contains('Price');
         cy.get('#table-recurring > thead').contains('Margin');

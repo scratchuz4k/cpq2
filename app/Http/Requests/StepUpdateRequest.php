@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\TenantExistsRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -42,6 +43,10 @@ class StepUpdateRequest extends FormRequest
                 //     ),
             ],
             'solution_type_id' => 'exists:solution_type_tenant,solution_type_id',
+            'products.*' => [
+                'integer',
+                new TenantExistsRule('products'),
+            ],
         ];
     }
 }

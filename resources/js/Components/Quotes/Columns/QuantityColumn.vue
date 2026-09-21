@@ -46,7 +46,7 @@ const getProductStock = async () => {
     });
     try {
         let res = await axios.get('/api/shop-blocks/products?' + query);
-        stock.value = res.data.data[0].stock;
+        stock.value = res.data.data[0]?.stock ?? null;
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong');
     } finally {

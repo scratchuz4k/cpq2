@@ -71,10 +71,22 @@ class UserPolicy
     }
 
     /**
+     * Determine whether the user can export the model.
+     */
+    public function export(User $user): bool
+    {
+        if (! $user->can("export $this->model")) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Determine if the given user can update the specified user.
      *
-     * @param  \App\Models\User  $user  The authenticated user
-     * @param  \App\Models\User  $model  The user model to be updated
+     * @param  User  $user  The authenticated user
+     * @param  User  $model  The user model to be updated
      * @return bool
      */
     public function update(User $user, User $model)

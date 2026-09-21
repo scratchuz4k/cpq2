@@ -46,7 +46,10 @@ class QuoteItemCreateRequest extends FormRequest
             'margin' => 'numeric|min:0|max:100',
             'discount' => 'numeric|min:0|max:100',
             'price_plan_id' => 'required|exists:price_plans,id',
-            'contract_length' => 'numeric|min:1',
+            'renewal_terms_value' => 'nullable|numeric|min:1',
+            'renewal_terms_unit' => 'nullable|string|in:DAYS,MONTHS,YEARS',
+            'billing_frequency_value' => 'nullable|numeric|min:1',
+            'billing_frequency_unit' => 'nullable|string|in:DAYS,MONTHS,YEARS',
             'data' => 'nullable|array',
             'data.type' => 'nullable|string|in:main_product,addon_product,Primary Product,Primary Hardware Product,Failover Product,Failover Hardware Product,Option Product',
         ];
