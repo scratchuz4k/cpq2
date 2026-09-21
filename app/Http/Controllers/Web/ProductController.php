@@ -42,7 +42,7 @@ class ProductController extends BaseController
             // Relationship imports (links/add-ons/bundles) are all gated behind the same
             // "import product" permission the corresponding policies already enforce.
             'productRelationshipImports' => $user->can('import product')
-                ? ImportsEnum::asArrayFor([ImportsEnum::ProductLink, ImportsEnum::ProductAddon, ImportsEnum::ProductBundle])
+                ? ImportsEnum::asArrayFor([ImportsEnum::Product, ImportsEnum::ProductLink, ImportsEnum::ProductAddon, ImportsEnum::ProductBundle])
                 : [],
         ]);
 

@@ -91,15 +91,6 @@ const totalProducts = ref(0);
                     <font-awesome-icon :icon="['fas', 'shop-lock']" />
                     Blacklisted Items
                 </Link>
-                <Link
-                    v-if="can(`viewAny import`) || hasRole('Super Admin')"
-                    href="/imports"
-                    id="product-import-btn"
-                    class="btn btn-outline-primary me-2"
-                >
-                    <font-awesome-icon :icon="['fas', 'file-import']"></font-awesome-icon>
-                    Import Products
-                </Link>
                 <a
                     v-if="can(`viewAny import`) || hasRole('Super Admin')"
                     href="#"
@@ -108,7 +99,7 @@ const totalProducts = ref(0);
                     @click.prevent="showRelationshipImportForm = true"
                 >
                     <font-awesome-icon :icon="['fas', 'file-import']"></font-awesome-icon>
-                    Import Product Relationships
+                    Import Product
                 </a>
                 <Link href="/products/create" id="product-create-btn" class="btn btn-primary me-2">
                     <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
