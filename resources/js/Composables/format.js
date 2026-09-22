@@ -183,7 +183,7 @@ const format = {
         const withoutLeadingZero = digits.startsWith('0') ? digits.slice(1) : digits;
         return `+44 (0)${withoutLeadingZero}`;
     },
-    rowLabel: (row) => {
+    rowLabel: (row, index) => {
         if (!row?.name) {
             const skus = Object.keys(row ?? {})
                 .filter((key) => key === 'sku' || key.endsWith('_sku'))
@@ -196,7 +196,7 @@ const format = {
         }
 
         const field = ['name', 'reference', 'primary_contact_name', 'email'].find((key) => row?.[key]);
-        return field ? row[field] : 'Unknown';
+        return field ? row[field] : 'Row #' + (index + 1);
     },
     productName: (rawName) => {
         if (!rawName?.includes('with router:')) {
