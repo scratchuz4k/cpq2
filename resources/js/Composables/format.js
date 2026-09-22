@@ -195,7 +195,8 @@ const format = {
             }
         }
 
-        return row?.name || 'Unknown';
+        const field = ['name', 'reference', 'primary_contact_name', 'email'].find((key) => row?.[key]);
+        return field ? row[field] : 'Unknown';
     },
     productName: (rawName) => {
         if (!rawName?.includes('with router:')) {
