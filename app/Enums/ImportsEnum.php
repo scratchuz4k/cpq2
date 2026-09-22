@@ -68,12 +68,25 @@ enum ImportsEnum: string
         $user = auth()->user();
 
         $cases = array_filter(self::cases(), function ($case) use ($user) {
-            return $user->can('create import') && $user->can('import '.strtolower($case->name));
+            return $user->can('create import') && $user->can('import '.$case->permissionGroup());
         });
 
         return array_map(fn ($case) => [
             'name' => $case->name,
             'value' => $case->value,
         ], array_values($cases));
+    }
+
+    /**
+     * The permission group each case is gated behind. Product relationship
+     * imports ride on the "product" permission, matching ProductLinkPolicy,
+     * ProductAddonPolicy and ProductBundlePolicy's `import()` checks.
+     */
+    private function permissionGroup(): string
+    {
+        return match ($this) {
+            self::ProductLink, self::ProductAddon, self::ProductBundle => 'product',
+            default => strtolower($this->name),
+        };
     }
 }

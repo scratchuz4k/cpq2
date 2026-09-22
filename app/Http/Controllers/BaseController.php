@@ -69,7 +69,7 @@ class BaseController extends Controller
                 $template = require $template;
 
                 return Excel::download(
-                    new ExportCSVTemplate($this->model, collect($template['data'])),
+                    new ExportCSVTemplate($this->model, collect($template['data']), $template['columns'] ?? null),
                     $template['filename']
                 );
             }
