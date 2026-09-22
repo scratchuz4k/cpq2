@@ -47,10 +47,18 @@ enum ImportsEnum: string
 
     public static function asArray(): array
     {
+        return self::asArrayFor(self::cases());
+    }
+
+    /**
+     * @param  self[]  $cases
+     */
+    public static function asArrayFor(array $cases): array
+    {
         return array_map(fn ($case) => [
             'name' => $case->name,
             'value' => $case->value,
-        ], self::cases());
+        ], $cases);
     }
 
     public static function importsWithPermissionAsArray(): array
