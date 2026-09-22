@@ -118,7 +118,8 @@ const importData = async () => {
             <p class="fw-semibold">Errors</p>
             <ul v-if="previewData?.results?.errors?.length > 0">
                 <li class="rows" v-for="(row, index) in previewData.results.errors" :key="index">
-                    {{ previewData.model }} {{ row.row?.name || 'Unknown' }}:
+                    {{ previewData.model }}
+                    {{ row.row?.name || row.row?.primary_contact_name || row.row?.email || 'Unknown' }}:
                     <ul>
                         <li v-if="row.errors" v-for="(error, key) in row.errors" :key="key">
                             {{ error }}
