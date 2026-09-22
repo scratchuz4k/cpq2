@@ -44,6 +44,18 @@ class ContactsImport extends Import implements ToCollection, WithBatchInserts, W
                 return false;
             }
 
+            // Check if row has any value other than reference
+            if (! $this->rowHasValues($item)) {
+                $this->results['skipped']++;
+                $this->results['errors'][] = [
+                    'row_index' => $index,
+                    'row' => $item,
+                    'error' => 'No Contact field is filled for this row.',
+                ];
+
+                return false;
+            }
+
             $accountIds = Account::visibleToGroups($this->actingUser)
                 ->where('reference', $item['reference'])
                 ->limit(2)
@@ -103,5 +115,19 @@ class ContactsImport extends Import implements ToCollection, WithBatchInserts, W
         $rules['reference'] = ['required', 'string'];
 
         return $rules;
+    }
+
+    public function rowHasValues(array $item): bool
+    {
+        foreach ($item as $key => $value) {
+            if (in_array($key, ['reference', 'tenant_id'], true)) {
+                continue;
+            }
+            if ($value !== null) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
