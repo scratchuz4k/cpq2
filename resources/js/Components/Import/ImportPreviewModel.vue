@@ -70,10 +70,17 @@ const importData = async () => {
                 <Table
                     :value="previewData.results?.data"
                     :rowClass="rowClass"
+                    scrollable
+                    scrollHeight="421px"
                     tableStyle="min-width: max-content"
                     :size="'small'"
                     class="p-datatable-sm preview-table"
                 >
+                    <Column header="#" style="width: 3rem">
+                        <template #body="{ index }">
+                            <span class="preview-row-number">{{ index + 1 }}</span>
+                        </template>
+                    </Column>
                     <Column
                         v-for="(column, key) in previewData.columns"
                         :key="key"
@@ -118,7 +125,7 @@ const importData = async () => {
             <p class="fw-semibold">Errors</p>
             <ul v-if="previewData?.results?.errors?.length > 0">
                 <li class="rows" v-for="(row, index) in previewData.results.errors" :key="index">
-                    {{ previewData.model }} {{ format.rowLabel(row.row, row.row_index) }}:
+                    {{ previewData.model }} Row #{{ row.row_index + 1 }}:
                     <ul>
                         <li v-if="row.errors" v-for="(error, key) in row.errors" :key="key">
                             {{ error }}
@@ -148,6 +155,26 @@ const importData = async () => {
     background-color: #a7e5b5 !important;
 }
 
+:deep(.preview-table thead th:first-child .p-datatable-column-title) {
+    width: 100%;
+    text-align: center;
+}
+
+:deep(.preview-table tbody td:first-child) {
+    background-color: #fff;
+    border-right: 1px solid #dee2e6;
+    color: #6c757d;
+    text-align: center;
+}
+
+.preview-row-number {
+    display: inline-block;
+    min-width: 1.5rem;
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+}
+
 :deep(.row-has-error) {
     background-color: #fff0f1 !important;
     color: #8c2b3a !important;
@@ -172,9 +199,6 @@ const importData = async () => {
 .preview-table-scroll :deep(.p-datatable) {
     width: max-content;
     min-width: 100%;
-}
-.preview-table-scroll :deep(.p-datatable-table-container) {
-    overflow: visible !important;
 }
 .preview-table-scroll :deep(th),
 .preview-table-scroll :deep(td) {

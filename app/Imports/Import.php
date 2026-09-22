@@ -145,7 +145,7 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
      * The keys of the model's import template (app/Helpers/Import), indexed by
      * the heading WithHeadingRow reads for their label, e.g. "Post Code" => post_code.
      */
-    private function templateColumnKeys(): array
+    protected function templateColumnKeys(): array
     {
         $file = app_path('Helpers/Import/'.mb_strtolower(class_basename($this->model)).'_import.php');
 
@@ -161,7 +161,7 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
     /**
      * Rename the row's headings to the template column keys.
      */
-    private function useTemplateColumnKeys(array $item, array $columnKeys): array
+    protected function useTemplateColumnKeys(array $item, array $columnKeys): array
     {
         $renamed = [];
 

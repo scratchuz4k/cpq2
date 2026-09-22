@@ -183,21 +183,6 @@ const format = {
         const withoutLeadingZero = digits.startsWith('0') ? digits.slice(1) : digits;
         return `+44 (0)${withoutLeadingZero}`;
     },
-    rowLabel: (row, index) => {
-        if (!row?.name) {
-            const skus = Object.keys(row ?? {})
-                .filter((key) => key === 'sku' || key.endsWith('_sku'))
-                .map((key) => row[key])
-                .filter(Boolean);
-
-            if (skus.length > 0) {
-                return skus.join(' → ');
-            }
-        }
-
-        const field = ['name', 'reference', 'primary_contact_name', 'email'].find((key) => row?.[key]);
-        return field ? row[field] : 'Row #' + (index + 1);
-    },
     productName: (rawName) => {
         if (!rawName?.includes('with router:')) {
             return { name: rawName, router: null };
