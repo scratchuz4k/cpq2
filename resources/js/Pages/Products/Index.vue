@@ -127,6 +127,7 @@ const totalProducts = ref(0);
 
         <FileUploadModal
             v-model:visible="showRelationshipImportForm"
+            model="/products"
             :imports="props.productRelationshipImports"
             @preview="handleRelationshipPreview"
         />

@@ -25,7 +25,7 @@ const emit = defineEmits(['update:visible', 'preview']);
 
 const form = reactive({
     file: null,
-    model: props.model ?? '',
+    model: props.model.replace('/', '') ?? '',
     overwrite: 0
 });
 

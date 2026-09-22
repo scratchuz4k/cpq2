@@ -2,7 +2,9 @@
 
 namespace App\Enums;
 
+use App\Imports\AccountsImport;
 use App\Imports\CategoriesImport;
+use App\Imports\ContactsImport;
 use App\Imports\Import;
 use App\Imports\ProductAddonImport;
 use App\Imports\ProductBundleImport;
@@ -20,6 +22,7 @@ enum ImportsEnum: string
     case Category = 'categories';
     case Step = 'steps';
     case Account = 'accounts';
+    case Contact = 'contacts';
     case ProductLink = 'product-links';
     case ProductAddon = 'product-addons';
     case ProductBundle = 'product-bundles';
@@ -34,6 +37,8 @@ enum ImportsEnum: string
         return match ($this) {
             self::Product => ProductsImport::class,
             self::User => UsersImport::class,
+            self::Account => AccountsImport::class,
+            self::Contact => ContactsImport::class,
             self::ProductLink => ProductLinkImport::class,
             self::ProductAddon => ProductAddonImport::class,
             self::ProductBundle => ProductBundleImport::class,
