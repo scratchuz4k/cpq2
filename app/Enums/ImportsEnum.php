@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 
+use App\Imports\CategoriesImport;
 use App\Imports\Import;
 use App\Imports\ProductAddonImport;
 use App\Imports\ProductBundleImport;
@@ -36,6 +37,7 @@ enum ImportsEnum: string
             self::ProductLink => ProductLinkImport::class,
             self::ProductAddon => ProductAddonImport::class,
             self::ProductBundle => ProductBundleImport::class,
+            self::Category => CategoriesImport::class,
             default => Import::class,
         };
     }

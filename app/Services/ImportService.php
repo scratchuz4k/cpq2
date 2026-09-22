@@ -4,10 +4,13 @@ namespace App\Services;
 
 use App\Enums\ImportsEnum;
 use App\Enums\ImportStatusesEnum;
+use App\Export\ExportCSVTemplate;
 use App\Jobs\ImportJob;
 use App\Models\Import;
 use App\Models\Resource;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 use RuntimeException;
 
 class ImportService
@@ -74,5 +77,26 @@ class ImportService
             'user' => $user,
             'columns' => $helperFile['columns'],
         ];
+    }
+
+    public function getImportTemplate(array $array, $modelClass)
+    {
+        $model = Str::lower(class_basename($modelClass));
+        $template = app_path("Helpers/Import/{$model}_import.php");
+        if (file_exists($template)) {
+            $template = require $template;
+
+            return Excel::download(
+                new ExportCSVTemplate($modelClass, collect($template['data'])),
+                $template['filename']
+            );
+        }
+
+        $data = $modelClass::factory(10)->make();
+
+        return Excel::download(
+            new ExportCSVTemplate($modelClass, $data),
+            Str::lower('import_'.class_basename($modelClass).'_template.csv')
+        );
     }
 }

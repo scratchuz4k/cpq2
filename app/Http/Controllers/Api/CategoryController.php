@@ -50,7 +50,7 @@ class CategoryController extends BaseController
         $stepId = $request->input('step_id');
 
         $dataProvider = new DataProvider(Category::class);
-        $all = $dataProvider->getCollection(['id', 'name', 'parent_id', 'sort_order']);
+        $all = $dataProvider->getCollection(['id', 'name', 'parent_id']);
 
         $map = [];
         foreach ($all as $c) {
