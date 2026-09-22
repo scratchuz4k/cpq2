@@ -104,4 +104,16 @@ class ImportPolicy
 
         return true;
     }
+
+    /**
+     * Determine whether the user can import the model.
+     */
+    public function import(User $user): bool
+    {
+        if (! $user->can("import $this->model")) {
+            return false;
+        }
+
+        return true;
+    }
 }

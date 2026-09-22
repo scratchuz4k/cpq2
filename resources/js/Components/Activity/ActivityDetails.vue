@@ -12,7 +12,8 @@ const fieldTypes = {
     price: 'price',
     discount: 'percentage',
     quantity: 'integer',
-    contract_length: 'integer',
+    renewal_terms_value: 'integer',
+    billing_frequency_value: 'integer',
     name: 'text',
     status: 'text'
 };
@@ -22,7 +23,7 @@ const typeConfigs = {
         fields: ['total', 'margin', 'status']
     },
     QuoteItem: {
-        fields: ['name', 'quantity', 'contract_length', 'price', 'discount']
+        fields: ['name', 'quantity', 'renewal_terms_value', 'billing_frequency_value', 'price', 'discount']
     },
     QuoteDiscount: {
         fields: ['discount']

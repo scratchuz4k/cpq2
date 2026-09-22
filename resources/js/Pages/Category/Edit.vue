@@ -15,12 +15,15 @@ const props = defineProps({
 
 const product = ref(null);
 const category = reactive(props.category);
+const productIds = ref([...(props.category.products ?? [])]);
 
 const saveCate = () => {
+    const { products, ...categoryFields } = category;
+
     router.put(
         `/categories/${category.id}`,
         {
-            ...category,
+            ...categoryFields,
             parent_id: category.parent.id ?? null
         },
         {
@@ -38,19 +41,21 @@ const saveCate = () => {
     );
 };
 
-const setProductCategory = async (product_id, category_id) => {
+const setProductCategory = async (product_id, add) => {
     if (!product_id) {
         return;
     }
+
+    const ids = add
+        ? [...new Set([...productIds.value, product_id])]
+        : productIds.value.filter((id) => id !== product_id);
+
     try {
-        if (category_id) {
-            await axios.put('/api/products/' + product_id, { categories: category_id });
-        } else {
-            await axios.put('/api/products/' + product_id, { detach_categories: category.id });
-        }
+        await axios.put('/api/categories/' + category.id, { products: ids });
+        productIds.value = ids;
         product.value = null;
 
-        notyf.success(category_id ? 'Product added with Success' : 'Product removed with success');
+        notyf.success(add ? 'Product added with Success' : 'Product removed with success');
 
         emitter.emit('datatable-refresh:category-products');
         emitter.emit('input-select-refresh:select-product');
@@ -121,7 +126,7 @@ const items = ref([
                     </div>
                 </tab>
                 <tab title="Products">
-                    <form class="mt-3 d-flex" @submit.prevent="setProductCategory(product?.id, category.id, 'add')">
+                    <form class="mt-3 d-flex" @submit.prevent="setProductCategory(product?.id, true)">
                         <div class="me-3" style="width: 100%">
                             <label class="form-label">Add Products:</label>
                             <InputSelect
@@ -170,7 +175,7 @@ const items = ref([
                                     <button
                                         class="btn px-2 py-0 mx-1 border-0"
                                         :id="'datatable-btn-' + index + '-delete'"
-                                        @click="setProductCategory(data.id, null)"
+                                        @click="setProductCategory(data.id, false)"
                                     >
                                         <font-awesome-icon :icon="['fas', 'trash-alt']"></font-awesome-icon>
                                     </button>

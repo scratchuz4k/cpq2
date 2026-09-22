@@ -39,6 +39,7 @@ class UpdateStatusExpiredQuotesJob implements ShouldQueue
             $notificationDate = today()->subDays($expirationDays - 2)->format('Y-m-d');
             $notificationQuotes = Quote::whereNotIn('status', $this->statusThatCantBeUpdated)
                 ->whereDate('created_at', '<=', $notificationDate)
+                ->with(['account', 'user'])
                 ->get();
 
             foreach ($notificationQuotes as $quote) {

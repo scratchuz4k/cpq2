@@ -63,6 +63,8 @@ class CategoryController extends BaseController
      */
     public function edit(Category $category)
     {
+        $category->load('products');
+
         return Inertia::render('Category/Edit', [
             'category' => (new CategoryResource($category))->resolve(),
         ]);

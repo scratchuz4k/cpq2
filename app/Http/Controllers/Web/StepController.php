@@ -75,6 +75,8 @@ class StepController extends BaseController
     {
         $solutionTypes = Auth::user()->currentTenant->solutionTypes->filter(fn ($solutionType) => $solutionType->pivot->is_active === 1)->makeHidden('pivot');
 
+        $step->load('products');
+
         return Inertia::render('Step/Edit', [
             'step' => (new StepResource($step))->resolve(),
             'solution_types' => (SolutionTypeTenantResource::collection($solutionTypes))->resolve(),

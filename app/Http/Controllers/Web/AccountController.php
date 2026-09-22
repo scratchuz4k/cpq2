@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Enums\ImportsEnum;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\AccountCreateRequest;
 use App\Http\Requests\AccountUpdateRequest;
@@ -26,7 +27,13 @@ class AccountController extends BaseController
      */
     public function index()
     {
-        return Inertia::render(component: 'Accounts/Index');
+        $user = auth()->user();
+
+        return Inertia::render('Accounts/Index', [
+            'imports' => $user->can('import account')
+                ? ImportsEnum::asArrayFor([ImportsEnum::Account, ImportsEnum::Contact])
+                : [],
+        ]);
     }
 
     /**

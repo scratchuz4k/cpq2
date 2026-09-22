@@ -83,28 +83,32 @@ const textToExclude = [
     'Delete',
     'Restore',
     'Force Delete',
-    'Export'
+    'Export',
+    'Import'
 ];
 
 function excludeText(inputString) {
-    // Create a regex that matches any of the textToExclude items
     const pattern = textToExclude.map((text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
-    const regex = new RegExp(`\\b(${pattern})\\b`, 'g');
+    // Only match the action phrase at the START of the string
+    const regex = new RegExp(`^(${pattern})\\b`);
 
-    // Replace occurrences with empty string and trim leftover spaces
-    return inputString
+    const stripped = inputString
         .replace(regex, '')
         .replace(/\s{2,}/g, ' ')
         .trim();
-}
-function keepExcludedText(inputString) {
-    // Build a regex pattern for all phrases in the list
-    const pattern = textToExclude.map((text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
-    const regex = new RegExp(`\\b(${pattern})\\b`, 'g');
 
-    // Match and return all occurrences
-    const matches = inputString.match(regex);
-    return matches ? matches.join(' ') : '';
+    // If nothing is left (title was just the action word itself, e.g. "Import"),
+    // keep the original title as the group name.
+    return stripped || inputString;
+}
+
+function keepExcludedText(inputString) {
+    const pattern = textToExclude.map((text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+    // Only grab the action phrase if it's at the START of the string
+    const regex = new RegExp(`^(${pattern})\\b`);
+
+    const match = inputString.match(regex);
+    return match ? match[1] : inputString;
 }
 
 const isAllowedByParent = (item) => {

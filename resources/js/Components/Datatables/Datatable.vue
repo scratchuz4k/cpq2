@@ -1,6 +1,6 @@
 <script setup>
 import _ from 'lodash';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
@@ -10,12 +10,16 @@ import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 
-import { reactive, ref, useSlots, watch } from 'vue';
+import { computed, reactive, ref, useSlots, watch } from 'vue';
 import queryString from 'qs';
 import axios from 'axios';
 import { can, hasRole } from '@/Composables/useAuth.js';
 import pluralize from 'pluralize';
 import { exportData } from '@/Composables/export.js';
+import FileUploadModal from '@/Components/Import/FileUploadModal.vue';
+import ImportPreviewModel from '@/Components/Import/ImportPreviewModel.vue';
+
+const page = usePage();
 
 const slots = useSlots();
 const usedSlots = Object.keys(slots);
@@ -37,7 +41,11 @@ const props = defineProps({
         type: Object,
         default: {}
     },
-    allow: Object
+    allow: Object,
+    imports: {
+        type: Array,
+        default: []
+    }
 });
 
 const activeFilters = ref(false);
@@ -45,8 +53,26 @@ const data = ref([]);
 const emptyData = ref(true);
 const global = ref(null);
 
+const showForm = ref(false);
+const showImportPreview = ref(false);
+const previewData = ref(null);
+const importForm = ref(null);
+
+const isImportable = computed(() =>
+    page.props.importModels.some((imp) => imp.value === props.route.replace(/^\//, ''))
+);
+const handlePreview = ({ data, form }) => {
+    previewData.value = data;
+    importForm.value = form;
+    showImportPreview.value = true;
+};
+
 const has_export_permission =
     can(`export ${pluralize.singular(props.route.replace(/^\//, ''))}`) || hasRole('Super Admin');
+const has_import_permission =
+    isImportable.value &&
+    ((can('create import') && can(`import ${pluralize.singular(props.route.replace(/^\//, ''))}`)) ||
+        hasRole('Super Admin'));
 
 const form = reactive({
     filters: [],
@@ -214,6 +240,7 @@ getData();
                         type="button"
                         :class="['me-2']"
                         @click="() => (activeFilters = !activeFilters)"
+                        title="Filters"
                     >
                         <font-awesome-icon :icon="['fas', 'filter']" />
                     </Button>
@@ -223,6 +250,7 @@ getData();
                         :class="['me-2']"
                         :severity="form.filters.find((x) => x.value) ? 'primary' : 'secondary'"
                         @click="clearFilters()"
+                        title="Clear Filters"
                     >
                         <font-awesome-icon :icon="['fas', 'eraser']" />
                     </Button>
@@ -233,8 +261,20 @@ getData();
                         :class="['me-2']"
                         @click="getExportData()"
                         type="button"
+                        title="Export Data"
                     >
                         <font-awesome-icon :icon="['fas', 'file-export']" />
+                    </Button>
+
+                    <Button
+                        v-if="has_import_permission"
+                        :severity="'secondary'"
+                        :class="['me-2']"
+                        @click="showForm = !showForm"
+                        type="button"
+                        title="Import Data"
+                    >
+                        <font-awesome-icon :icon="['fas', 'file-import']" />
                     </Button>
                 </div>
                 <IconField>
@@ -370,6 +410,13 @@ getData();
         @page="handlePaginator"
     >
     </Paginator>
+    <FileUploadModal
+        v-model:visible="showForm"
+        :model="props.route"
+        @preview="handlePreview"
+        :imports="props.imports"
+    />
+    <ImportPreviewModel v-model:visible="showImportPreview" :preview-data="previewData" :import-form="importForm" />
 </template>
 <style>
 .p-datatable {

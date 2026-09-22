@@ -25,6 +25,7 @@ enum CloudMarketSubprovidersEnum: string
     case TTB = 'TTB';
     case VIRGIN = 'Virgin';
     case VODAFONE = 'Vodafone';
+    case VODA = 'Voda';
     case VIRTUAL1 = 'Virtual1';
     case ZEN = 'Zen';
 

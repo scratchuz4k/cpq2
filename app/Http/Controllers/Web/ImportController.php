@@ -29,8 +29,7 @@ class ImportController extends BaseController
     public function index()
     {
         return Inertia::render('Imports/Index', [
-            'imports' => ImportsEnum::names(),
-            'model' => request()->get('model') ?? null,
+            'imports' => ImportsEnum::importsWithPermissionAsArray(),
         ]);
     }
 

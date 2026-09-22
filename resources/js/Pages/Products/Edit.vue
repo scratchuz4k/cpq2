@@ -208,6 +208,19 @@ const items = ref([
                                         </div>
 
                                         <div class="mb-3">
+                                            <label for="product-steps" class="form-label">Steps</label>
+                                            <InputSelectMultiple
+                                                id="product-steps"
+                                                v-model="steps"
+                                                url="/steps"
+                                                :fields="['name']"
+                                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                                                placeholder="Steps"
+                                            >
+                                            </InputSelectMultiple>
+                                        </div>
+
+                                        <div class="mb-3">
                                             <label for="product-expires_at" class="form-label">Expiration date</label>
                                             <DatePicker
                                                 id="expire-date"
