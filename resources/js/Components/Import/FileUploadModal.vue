@@ -1,9 +1,10 @@
 <script setup>
-import { reactive, ref, watch } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import { Dialog, Checkbox, Select } from 'primevue';
 import { formatResponseErrors } from '@composables/useApiErrors';
 import SvgIcon from '@/Components/Custom/SvgIcon.vue';
 import { checkImportType, getTemplate, importPreview } from '@/Composables/import.js';
+import format from '@/Composables/format.js';
 
 const props = defineProps({
     visible: {
@@ -27,6 +28,13 @@ const form = reactive({
     model: props.model ?? '',
     overwrite: 0
 });
+
+const importOptions = computed(() =>
+    props.imports.map((item) => ({
+        ...item,
+        label: format.friendlyString(format.toSnakeCase(item.name))
+    }))
+);
 
 const isLoading = ref(false);
 const onFileChange = (event) => {
@@ -74,8 +82,8 @@ const submitFile = async () => {
                         <Select
                             inputId="import"
                             v-model="form.model"
-                            :options="props.imports"
-                            optionLabel="name"
+                            :options="importOptions"
+                            optionLabel="label"
                             optionValue="value"
                             placeholder="Select a Import"
                             class="w-100"

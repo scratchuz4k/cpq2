@@ -4,6 +4,8 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { can, hasRole } from '@composables/useAuth';
+import FileUploadModal from '@/Components/Import/FileUploadModal.vue';
+import ImportPreviewModel from '@/Components/Import/ImportPreviewModel.vue';
 
 const props = defineProps({
     solution_types: {
@@ -13,8 +15,23 @@ const props = defineProps({
     statuses: {
         type: Array,
         default: []
+    },
+    productRelationshipImports: {
+        type: Array,
+        default: () => []
     }
 });
+
+const showRelationshipImportForm = ref(false);
+const showRelationshipImportPreview = ref(false);
+const relationshipPreviewData = ref(null);
+const relationshipImportForm = ref(null);
+
+const handleRelationshipPreview = ({ data, form }) => {
+    relationshipPreviewData.value = data;
+    relationshipImportForm.value = form;
+    showRelationshipImportPreview.value = true;
+};
 
 const options = new DatatableOptions('products', 'products-table');
 options.addColumn('name', 'Name', { isSticky: true });
@@ -74,15 +91,16 @@ const totalProducts = ref(0);
                     <font-awesome-icon :icon="['fas', 'shop-lock']" />
                     Blacklisted Items
                 </Link>
-                <Link
+                <a
                     v-if="can(`viewAny import`) || hasRole('Super Admin')"
-                    href="/imports"
-                    id="product-import-btn"
+                    href="#"
+                    id="product-relationship-import-btn"
                     class="btn btn-outline-primary me-2"
+                    @click.prevent="showRelationshipImportForm = true"
                 >
                     <font-awesome-icon :icon="['fas', 'file-import']"></font-awesome-icon>
-                    Import Products
-                </Link>
+                    Import Product
+                </a>
                 <Link href="/products/create" id="product-create-btn" class="btn btn-primary me-2">
                     <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
                     New Product
@@ -106,5 +124,16 @@ const totalProducts = ref(0);
                 <ToggleActive :data="data" :value="value" route="products" />
             </template>
         </NewDatatable>
+
+        <FileUploadModal
+            v-model:visible="showRelationshipImportForm"
+            :imports="props.productRelationshipImports"
+            @preview="handleRelationshipPreview"
+        />
+        <ImportPreviewModel
+            v-model:visible="showRelationshipImportPreview"
+            :preview-data="relationshipPreviewData"
+            :import-form="relationshipImportForm"
+        />
     </AuthenticatedLayout>
 </template>

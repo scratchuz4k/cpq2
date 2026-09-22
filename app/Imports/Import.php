@@ -72,6 +72,41 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
         return $this->results;
     }
 
+    /**
+     * Trim a raw row into a null-blank associative array, tagged with its row index.
+     */
+    protected function normalizeRow(Collection $row, int $index): array
+    {
+        $item = collect($row)->map(function ($value) {
+            $value = trim((string) $value);
+
+            return $value === '' ? null : $value;
+        })->toArray();
+
+        $item['index'] = $index;
+
+        return $item;
+    }
+
+    /**
+     * Record a row as skipped, with either a list of validation-style errors
+     * or a single explanatory message (e.g. "already exists").
+     */
+    protected function skip(array $row, array|string $errors): bool
+    {
+        $entry = [
+            'row_index' => $row['index'] ?? null,
+            'row' => $row,
+        ];
+
+        $entry += is_array($errors) ? ['errors' => $errors] : ['error' => $errors];
+
+        $this->results['skipped']++;
+        $this->results['errors'][] = $entry;
+
+        return false;
+    }
+
     public function collection(Collection $collection): void
     {
         // Set the auth user so is available on rules classes.
