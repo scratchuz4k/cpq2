@@ -27,7 +27,7 @@ class AccountsImport extends Import implements ToCollection, WithBatchInserts, W
     /**
      * Insert a new Account
      */
-    protected function insert(array $item, int $index): bool
+    public function insert(array $item, int $index): bool
     {
         try {
             $item['groups'] = $item['groups']

@@ -28,7 +28,7 @@ class ContactsImport extends Import implements ToCollection, WithBatchInserts, W
     /**
      * Insert a new Contact, linked to the account matching the row's reference
      */
-    protected function insert(array $item, int $index): bool
+    public function insert(array $item, int $index): bool
     {
         try {
             $validator = Validator::make($item, $this->rules());

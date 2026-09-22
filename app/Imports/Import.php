@@ -186,7 +186,7 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
         return $rules;
     }
 
-    protected function insert(array $item, int $index): bool
+    public function insert(array $item, int $index): bool
     {
         try {
             request()->merge($item);
