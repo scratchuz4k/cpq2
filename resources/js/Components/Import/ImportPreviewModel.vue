@@ -26,11 +26,6 @@ const emit = defineEmits(['update:visible', 'imported']);
 
 const isLoading = ref(false);
 
-const rowIdentifier = (row) => {
-    const field = ['name', 'reference', 'primary_contact_name', 'email'].find((key) => row?.[key]);
-    return field ? row[field] : 'Unknown';
-};
-
 const rowClass = (rowData) => {
     const errors = props.previewData?.results?.errors ?? [];
     const hasError = errors.some((errorItem) => errorItem.row_index === rowData.index);
@@ -123,8 +118,7 @@ const importData = async () => {
             <p class="fw-semibold">Errors</p>
             <ul v-if="previewData?.results?.errors?.length > 0">
                 <li class="rows" v-for="(row, index) in previewData.results.errors" :key="index">
-                    {{ previewData.model }}
-                    {{ rowIdentifier(row.row) }}:
+                    {{ previewData.model }} {{ format.rowLabel(row.row) }}:
                     <ul>
                         <li v-if="row.errors" v-for="(error, key) in row.errors" :key="key">
                             {{ error }}

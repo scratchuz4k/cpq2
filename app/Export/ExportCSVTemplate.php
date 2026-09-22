@@ -17,7 +17,7 @@ class ExportCSVTemplate implements FromCollection, ShouldAutoSize, WithCustomCsv
     public function __construct(
         protected string $model,
         protected Collection $collection,
-        protected ?array $columns = null
+        protected ?array $headings = null
     ) {
         $model = new $this->model;
         $this->fillable = getFillableColumns($model);
@@ -30,12 +30,12 @@ class ExportCSVTemplate implements FromCollection, ShouldAutoSize, WithCustomCsv
 
     public function headings(): array
     {
-        if ($this->collection->isNotEmpty() && $this->collection->every(fn ($item) => $item instanceof $this->model)) {
-            return array_map(fn ($field) => Str::headline($field), $this->fillable);
+        if ($this->headings) {
+            return array_values($this->headings);
         }
 
-        if ($this->columns) {
-            return array_values($this->columns);
+        if ($this->collection->isNotEmpty() && $this->collection->every(fn ($item) => $item instanceof $this->model)) {
+            return array_map(fn ($field) => Str::headline($field), $this->fillable);
         }
 
         return array_keys($this->collection->first());

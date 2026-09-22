@@ -98,5 +98,6 @@ class ImportService
             new ExportCSVTemplate($modelClass, $data),
             Str::lower('import_'.class_basename($modelClass).'_template.csv')
         );
+
     }
 }
