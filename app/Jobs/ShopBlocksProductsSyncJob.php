@@ -66,6 +66,8 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
             return;
         }
         $pricePlanId = PricePlan::where('code', PricePlanEnum::SINGLE->name)->value('id');
+        $brands = $this->syncBrands($res['data']);
+        $categories = $this->syncCategories($res['data']);
         $featureRows = [];
         foreach ($res['data'] as $product) {
             if (! is_array($product) || empty($product['children']) || ! is_array($product['children'][0])) {
@@ -79,8 +81,8 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
             $temp['price_plan_id'] = $pricePlanId;
             $temp['expire_at'] = $this->expire_at;
 
-            $temp = $this->getBrandAndModel($product, $temp);
-            $temp = $this->getCategory($product, $temp);
+            $temp = $this->getBrandAndModel($product, $temp, $brands);
+            $temp = $this->getCategory($product, $temp, $categories);
             $temp = Product::updateOrCreate(
                 ['sku' => $sku],
                 [...$temp]
@@ -140,21 +142,95 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         return $temp;
     }
 
-    private function getCategory($product, $temp)
+    private function syncCategories(array $products)
     {
-        $category = $product['category'];
-        $code = $category['id'];
-        unset($category['id']);
-        if (! is_null($category['parent_id'])) {
-            $cat = Category::where('code', $category['parent_id'])->first();
+        $categoryRows = collect($products)
+            ->filter(fn ($product) => is_array($product)
+                && is_array($product['category'] ?? null)
+                && array_key_exists('id', $product['category']))
+            ->map(function (array $product) {
+                $category = $product['category'];
+                $category['code'] = $category['id'];
+                unset($category['id']);
 
-            $category['parent_id'] = $cat?->id;
+                return $category;
+            })
+            ->keyBy('code');
+
+        if ($categoryRows->isEmpty()) {
+            return collect();
         }
 
-        $category = Category::updateOrCreate(['code' => $code], $category);
-        $temp['category_id'] = $category->id;
+        $codes = $categoryRows->keys()->merge(
+            $categoryRows->pluck('parent_id')->filter()->unique()
+        )->unique();
+        $categories = Category::whereIn('code', $codes)->get()->keyBy('code');
+        $missingCategories = $categoryRows->reject(fn (array $category) => $categories->has($category['code']));
+        $now = now();
+        $rows = $missingCategories->map(function (array $category) use ($categories, $now) {
+            $parentCode = $category['parent_id'] ?? null;
+            $category['parent_id'] = $categories->get($parentCode)?->id;
+
+            return [
+                ...$category,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        })->values()->all();
+
+        if ($rows !== []) {
+            Category::insert($rows);
+        }
+
+        return Category::whereIn('code', $categoryRows->keys())->get()->keyBy('code');
+    }
+
+    private function getCategory($product, $temp, $categories)
+    {
+        $category = $product['category'];
+        $code = $category['id'] ?? null;
+        $category = $categories->get($code);
+        $temp['category_id'] = $category?->id;
 
         return $temp;
+    }
+
+    private function syncBrands(array $products)
+    {
+        $brandRows = collect($products)
+            ->filter(fn ($product) => is_array($product)
+                && is_array($product['brand'] ?? null)
+                && ! empty($product['brand']['slug']))
+            ->map(function (array $product) {
+                $brand = $product['brand'];
+                unset($brand['id']);
+                $brand['code'] = $brand['slug'];
+
+                return $brand;
+            })
+            ->keyBy('code');
+
+        if ($brandRows->isEmpty()) {
+            return collect();
+        }
+
+        $brands = Brand::whereIn('code', $brandRows->keys())->get()->keyBy('code');
+        $missingBrands = $brandRows->reject(fn (array $brand) => $brands->has($brand['code']));
+
+        $now = now();
+        $rows = $missingBrands->map(fn (array $brand) => [
+            ...$brand,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ])->values()->all();
+
+        if ($rows !== []) {
+            Brand::insert($rows);
+        }
+
+        return $brands->merge(
+            Brand::whereIn('code', $missingBrands->keys())->get()->keyBy('code')
+        );
     }
 
     private function getFeaturesFromContent($product, $contents, array &$featureRows)
@@ -163,7 +239,7 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
             return;
         }
 
-        foreach ($contents as $key => $item) {
+        foreach ($contents as $item) {
             if (! is_array($item) || ! array_key_exists('content', $item)) {
                 continue;
             }
@@ -278,13 +354,12 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         ProductDimension::insertOrIgnore($pivotRows);
     }
 
-    private function getBrandAndModel($product, $temp)
+    private function getBrandAndModel($product, $temp, $brands)
     {
         $brand = null;
-        if (! is_null($product['brand'])) {
-            unset($product['brand']['id']);
-            $brand = Brand::updateOrCreate(['code' => $product['brand']['slug']], $product['brand']);
-            $temp['brand_id'] = $brand->id;
+        if (is_array($product['brand'] ?? null) && ! empty($product['brand']['slug'])) {
+            $brand = $brands->get($product['brand']['slug']);
+            $temp['brand_id'] = $brand?->id;
         }
 
         $modelName = (string) Str::of($product['name'])->words(3, '');
