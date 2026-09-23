@@ -32,7 +32,7 @@ function fakeProductLinkFile(string $content): UploadedFile
 }
 
 it('previews a product link import, reporting unknown SKUs as skipped', function () {
-    $csv = '"product_sku","linked_product_sku"
+    $csv = '"Product SKU","Linked Product SKU"
 "LINK-A","LINK-B"
 "LINK-A","does-not-exist"';
 
@@ -51,7 +51,7 @@ it('previews a product link import, reporting unknown SKUs as skipped', function
 });
 
 it('creates a product link on confirm', function () {
-    $csv = '"product_sku","linked_product_sku"
+    $csv = '"Product SKU","Linked Product SKU"
 "LINK-A","LINK-B"';
 
     $this->post('/product-links/import', [
@@ -64,7 +64,7 @@ it('creates a product link on confirm', function () {
 });
 
 it('rejects a self-referencing link', function () {
-    $csv = '"product_sku","linked_product_sku"
+    $csv = '"Product SKU","Linked Product SKU"
 "LINK-A","LINK-A"';
 
     $response = $this->post('/product-links/import', [
@@ -80,7 +80,7 @@ it('rejects a self-referencing link', function () {
 it('skips a link that already exists without erroring the rest of the file', function () {
     ProductLink::create(['product_id' => $this->productA->id, 'child_id' => $this->productB->id]);
 
-    $csv = '"product_sku","linked_product_sku"
+    $csv = '"Product SKU","Linked Product SKU"
 "LINK-A","LINK-B"
 "LINK-A","LINK-C"';
 
@@ -101,7 +101,7 @@ it('rejects a link between products that share a step', function () {
     $this->productA->steps()->sync([$step->id]);
     $this->productB->steps()->sync([$step->id]);
 
-    $csv = '"product_sku","linked_product_sku"
+    $csv = '"Product SKU","Linked Product SKU"
 "LINK-A","LINK-B"';
 
     $response = $this->post('/product-links/import', [

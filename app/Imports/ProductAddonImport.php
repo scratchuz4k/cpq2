@@ -25,8 +25,12 @@ class ProductAddonImport extends Import
 
     private function insertAddon(array $row): bool
     {
+        // Column keys must match Str::slug($label, '_') of the CSV header label
+        // (see app/Helpers/Import/productaddon_import.php's "columns"), which is
+        // how Laravel Excel's WithHeadingRow derives row keys from the uploaded
+        // file's header row — "Add-on Product SKU" slugs to "add_on_product_sku".
         $productSku = $row['product_sku'] ?? null;
-        $addonSku = $row['addon_product_sku'] ?? null;
+        $addonSku = $row['add_on_product_sku'] ?? null;
 
         $errors = [];
 

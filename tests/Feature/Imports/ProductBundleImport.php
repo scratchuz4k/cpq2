@@ -31,7 +31,7 @@ function fakeProductBundleFile(string $content): UploadedFile
 }
 
 it('previews a product bundle import, reporting unknown SKUs as skipped', function () {
-    $csv = '"product_sku","bundle_item_sku","quantity"
+    $csv = '"Product SKU","Bundle Item SKU","Bundle Item Quantity"
 "BUNDLE-A","BUNDLE-B","2"
 "BUNDLE-A","does-not-exist","1"';
 
@@ -50,7 +50,7 @@ it('previews a product bundle import, reporting unknown SKUs as skipped', functi
 });
 
 it('creates a bundle item with the given quantity on confirm', function () {
-    $csv = '"product_sku","bundle_item_sku","quantity"
+    $csv = '"Product SKU","Bundle Item SKU","Bundle Item Quantity"
 "BUNDLE-A","BUNDLE-B","3"';
 
     $this->post('/product-bundles/import', [
@@ -66,7 +66,7 @@ it('creates a bundle item with the given quantity on confirm', function () {
 });
 
 it('rejects a zero or non-integer quantity', function () {
-    $csv = '"product_sku","bundle_item_sku","quantity"
+    $csv = '"Product SKU","Bundle Item SKU","Bundle Item Quantity"
 "BUNDLE-A","BUNDLE-B","0"
 "BUNDLE-A","BUNDLE-C","not-a-number"';
 
@@ -81,7 +81,7 @@ it('rejects a zero or non-integer quantity', function () {
 });
 
 it('rejects a self-referencing bundle item', function () {
-    $csv = '"product_sku","bundle_item_sku","quantity"
+    $csv = '"Product SKU","Bundle Item SKU","Bundle Item Quantity"
 "BUNDLE-A","BUNDLE-A","1"';
 
     $response = $this->post('/product-bundles/import', [
@@ -97,7 +97,7 @@ it('rejects a self-referencing bundle item', function () {
 it('skips a bundle item that already exists and leaves its quantity untouched', function () {
     ProductBundle::create(['product_id' => $this->productA->id, 'item_id' => $this->productB->id, 'quantity' => 5]);
 
-    $csv = '"product_sku","bundle_item_sku","quantity"
+    $csv = '"Product SKU","Bundle Item SKU","Bundle Item Quantity"
 "BUNDLE-A","BUNDLE-B","1"
 "BUNDLE-A","BUNDLE-C","2"';
 
