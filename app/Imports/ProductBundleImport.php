@@ -25,9 +25,13 @@ class ProductBundleImport extends Import
 
     private function insertBundleItem(array $row): bool
     {
+        // Column keys must match Str::slug($label, '_') of the CSV header label
+        // (see app/Helpers/Import/productbundle_import.php's "columns"), which is
+        // how Laravel Excel's WithHeadingRow derives row keys from the uploaded
+        // file's header row — "Bundle Item Quantity" slugs to "bundle_item_quantity".
         $productSku = $row['product_sku'] ?? null;
         $itemSku = $row['bundle_item_sku'] ?? null;
-        $quantity = $row['quantity'] ?? null;
+        $quantity = $row['bundle_item_quantity'] ?? null;
 
         $errors = [];
 

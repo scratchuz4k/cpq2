@@ -31,7 +31,7 @@ function fakeProductAddonFile(string $content): UploadedFile
 }
 
 it('previews a product add-on import, reporting unknown SKUs as skipped', function () {
-    $csv = '"product_sku","addon_product_sku"
+    $csv = '"Product SKU","Add-on Product SKU"
 "ADDON-A","ADDON-B"
 "ADDON-A","does-not-exist"';
 
@@ -50,7 +50,7 @@ it('previews a product add-on import, reporting unknown SKUs as skipped', functi
 });
 
 it('creates a product add-on on confirm', function () {
-    $csv = '"product_sku","addon_product_sku"
+    $csv = '"Product SKU","Add-on Product SKU"
 "ADDON-A","ADDON-B"';
 
     $this->post('/product-addons/import', [
@@ -63,7 +63,7 @@ it('creates a product add-on on confirm', function () {
 });
 
 it('rejects a self-referencing add-on', function () {
-    $csv = '"product_sku","addon_product_sku"
+    $csv = '"Product SKU","Add-on Product SKU"
 "ADDON-A","ADDON-A"';
 
     $response = $this->post('/product-addons/import', [
@@ -79,7 +79,7 @@ it('rejects a self-referencing add-on', function () {
 it('skips an add-on that already exists without erroring the rest of the file', function () {
     ProductAddon::create(['product_id' => $this->productA->id, 'addon_id' => $this->productB->id]);
 
-    $csv = '"product_sku","addon_product_sku"
+    $csv = '"Product SKU","Add-on Product SKU"
 "ADDON-A","ADDON-B"
 "ADDON-A","ADDON-C"';
 
