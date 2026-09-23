@@ -66,9 +66,7 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
             return;
         }
         $pricePlanId = PricePlan::where('code', PricePlanEnum::SINGLE->name)->value('id');
-        $dimensionTypes = [];
-        $dimensions = [];
-        $productDimensions = [];
+        $featureRows = [];
         foreach ($res['data'] as $product) {
             if (! is_array($product) || empty($product['children']) || ! is_array($product['children'][0])) {
                 continue;
@@ -88,8 +86,10 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
                 [...$temp]
             );
 
-            $this->getFeaturesFromContent($temp, $product['tabbed_content'] ?? [], $this->expire_at, $dimensionTypes, $dimensions, $productDimensions);
+            $this->getFeaturesFromContent($temp, $product['tabbed_content'] ?? [], $featureRows);
         }
+
+        $this->syncFeatures($featureRows);
     }
 
     /**
@@ -157,11 +157,8 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         return $temp;
     }
 
-    private function getFeaturesFromContent($product, $contents, $expire_at, array &$dimensionTypes, array &$dimensions, array &$productDimensions)
+    private function getFeaturesFromContent($product, $contents, array &$featureRows)
     {
-        $result = [];
-        // ProductFeature::where('product_id', $product->id)->delete();
-
         if (is_null($contents)) {
             return;
         }
@@ -192,30 +189,93 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
                         $dimensionLabel = trim((string) $tds->item(0)->textContent);
                         $value = trim((string) $tds->item(1)->textContent);
                         $dimensionKey = Str::slug($dimensionLabel);
-                        $dimType = $dimensionTypes[$currentSection][$dimensionKey] ??= DimensionType::updateOrCreate(
-                            ['group' => $currentSection, 'key' => $dimensionKey],
-                            ['label' => $dimensionLabel]
-                        );
-
-                        $dimensionCacheKey = $dimType->id.'|'.$value;
-                        $dim = $dimensions[$dimensionCacheKey] ??= Dimension::updateOrCreate(
-                            ['dimension_type_id' => $dimType->id, 'value' => $value]
-                        );
-
-                        $productDimensionCacheKey = $product->id.'|'.$dimType->id;
-                        if (! array_key_exists($productDimensionCacheKey, $productDimensions)) {
-                            $productDimensions[$productDimensionCacheKey] = ProductDimension::firstOrCreate([
-                                'dimension_type_id' => $dimType->id,
-                                'product_id' => $product->id,
-                            ], [
-                                'dimension_id' => $dim->id,
-                            ]);
-                        }
+                        $featureRows[] = [
+                            'product_id' => $product->id,
+                            'group' => $currentSection,
+                            'key' => $dimensionKey,
+                            'label' => $dimensionLabel,
+                            'value' => $value,
+                        ];
                     }
                 }
             }
 
         }
+    }
+
+    private function syncFeatures(array $featureRows): void
+    {
+        if ($featureRows === []) {
+            return;
+        }
+
+        $now = now();
+        $typeKeys = collect($featureRows)->map(fn (array $row) => $row['group'].'|'.$row['key'])->unique();
+        $types = DimensionType::whereIn('group', $typeKeys->map(fn (string $key) => str($key)->before('|'))->unique())
+            ->whereIn('key', $typeKeys->map(fn (string $key) => str($key)->after('|'))->unique())
+            ->get()
+            ->keyBy(fn (DimensionType $type) => $type->group.'|'.$type->key);
+
+        $missingTypes = $typeKeys->filter(fn (string $key) => ! $types->has($key))->map(function (string $key) use ($featureRows, $now) {
+            $row = collect($featureRows)->first(fn (array $feature) => $key === $feature['group'].'|'.$feature['key']);
+
+            return [
+                'group' => $row['group'],
+                'key' => $row['key'],
+                'label' => $row['label'],
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        })->values()->all();
+
+        if ($missingTypes !== []) {
+            DimensionType::insert($missingTypes);
+            $types = DimensionType::whereIn('group', $typeKeys->map(fn (string $key) => str($key)->before('|'))->unique())
+                ->whereIn('key', $typeKeys->map(fn (string $key) => str($key)->after('|'))->unique())
+                ->get()
+                ->keyBy(fn (DimensionType $type) => $type->group.'|'.$type->key);
+        }
+
+        $dimensionKeys = collect($featureRows)->map(function (array $row) use ($types) {
+            $type = $types->get($row['group'].'|'.$row['key']);
+
+            return $type->id.'|'.$row['value'];
+        })->unique();
+        $dimensions = Dimension::whereIn('dimension_type_id', $types->pluck('id'))
+            ->get()
+            ->keyBy(fn (Dimension $dimension) => $dimension->dimension_type_id.'|'.$dimension->value);
+        $missingDimensions = $dimensionKeys->filter(fn (string $key) => ! $dimensions->has($key))->map(function (string $key) use ($now) {
+            [$typeId, $value] = explode('|', $key, 2);
+
+            return [
+                'dimension_type_id' => $typeId,
+                'value' => $value,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        })->values()->all();
+
+        if ($missingDimensions !== []) {
+            Dimension::insert($missingDimensions);
+            $dimensions = Dimension::whereIn('dimension_type_id', $types->pluck('id'))
+                ->get()
+                ->keyBy(fn (Dimension $dimension) => $dimension->dimension_type_id.'|'.$dimension->value);
+        }
+
+        $pivotRows = collect($featureRows)->map(function (array $row) use ($types, $dimensions, $now) {
+            $type = $types->get($row['group'].'|'.$row['key']);
+            $dimension = $dimensions->get($type->id.'|'.$row['value']);
+
+            return [
+                'dimension_type_id' => $type->id,
+                'product_id' => $row['product_id'],
+                'dimension_id' => $dimension->id,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        })->unique(fn (array $row) => $row['dimension_type_id'].'|'.$row['product_id'])->values()->all();
+
+        ProductDimension::insertOrIgnore($pivotRows);
     }
 
     private function getBrandAndModel($product, $temp)
