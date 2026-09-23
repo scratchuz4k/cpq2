@@ -67,6 +67,8 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         }
         $pricePlanId = PricePlan::where('code', PricePlanEnum::SINGLE->name)->value('id');
         $dimensionTypes = [];
+        $dimensions = [];
+        $productDimensions = [];
         foreach ($res['data'] as $product) {
             if (! is_array($product) || empty($product['children']) || ! is_array($product['children'][0])) {
                 continue;
@@ -86,7 +88,7 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
                 [...$temp]
             );
 
-            $this->getFeaturesFromContent($temp, $product['tabbed_content'] ?? [], $this->expire_at, $dimensionTypes);
+            $this->getFeaturesFromContent($temp, $product['tabbed_content'] ?? [], $this->expire_at, $dimensionTypes, $dimensions, $productDimensions);
         }
     }
 
@@ -155,7 +157,7 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         return $temp;
     }
 
-    private function getFeaturesFromContent($product, $contents, $expire_at, array &$dimensionTypes)
+    private function getFeaturesFromContent($product, $contents, $expire_at, array &$dimensionTypes, array &$dimensions, array &$productDimensions)
     {
         $result = [];
         // ProductFeature::where('product_id', $product->id)->delete();
@@ -195,11 +197,19 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
                             ['label' => $dimensionLabel]
                         );
 
-                        $dim = Dimension::updateOrCreate(
+                        $dimensionCacheKey = $dimType->id.'|'.$value;
+                        $dim = $dimensions[$dimensionCacheKey] ??= Dimension::updateOrCreate(
                             ['dimension_type_id' => $dimType->id, 'value' => $value]
                         );
-                        if (! ProductDimension::where('dimension_type_id', $dimType->id)->where('product_id', $product->id)->first()) {
-                            ProductDimension::updateOrCreate(['dimension_type_id' => $dimType->id, 'dimension_id' => $dim->id, 'product_id' => $product->id]);
+
+                        $productDimensionCacheKey = $product->id.'|'.$dimType->id;
+                        if (! array_key_exists($productDimensionCacheKey, $productDimensions)) {
+                            $productDimensions[$productDimensionCacheKey] = ProductDimension::firstOrCreate([
+                                'dimension_type_id' => $dimType->id,
+                                'product_id' => $product->id,
+                            ], [
+                                'dimension_id' => $dim->id,
+                            ]);
                         }
                     }
                 }
