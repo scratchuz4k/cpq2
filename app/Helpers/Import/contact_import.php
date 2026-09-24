@@ -3,7 +3,7 @@
 return [
     'data' => [
         [
-            'reference' => 'account_1',
+            'account_id' => '1',
             'primary_contact_name' => 'Contact 1',
             'email' => 'contact1@example.com',
             'phone' => '01632960142',
@@ -12,7 +12,7 @@ return [
             'postcode' => 'M14 6WP',
         ],
         [
-            'reference' => 'account_2',
+            'account_id' => '2',
             'primary_contact_name' => 'Contact 2',
             'email' => 'contact2@example.com',
             'phone' => '01632960285',
@@ -21,7 +21,7 @@ return [
             'postcode' => 'B17 9NZ',
         ],
         [
-            'reference' => 'account_3',
+            'account_id' => '3',
             'primary_contact_name' => 'Contact 3',
             'email' => 'contact3@example.com',
             'phone' => '01632960419',
@@ -30,7 +30,7 @@ return [
             'postcode' => 'LS6 3BE',
         ],
         [
-            'reference' => 'account_4',
+            'account_id' => '4',
             'primary_contact_name' => 'Contact 4',
             'email' => 'contact4@example.com',
             'phone' => '01632960531',
@@ -39,7 +39,7 @@ return [
             'postcode' => 'BS8 4TE',
         ],
         [
-            'reference' => 'account_5',
+            'account_id' => '5',
             'primary_contact_name' => 'Contact 5',
             'email' => 'contact5@example.com',
             'phone' => '01632960677',
@@ -48,7 +48,7 @@ return [
             'postcode' => 'EH9 2AX',
         ],
         [
-            'reference' => 'account_6',
+            'account_id' => '6',
             'primary_contact_name' => 'Contact 6',
             'email' => 'contact6@example.com',
             'phone' => '01632960783',
@@ -57,7 +57,7 @@ return [
             'postcode' => 'S11 8TN',
         ],
         [
-            'reference' => 'account_7',
+            'account_id' => '7',
             'primary_contact_name' => 'Contact 7',
             'email' => 'contact7@example.com',
             'phone' => '01632960840',
@@ -66,7 +66,7 @@ return [
             'postcode' => 'NE2 1JQ',
         ],
         [
-            'reference' => 'account_8',
+            'account_id' => '8',
             'primary_contact_name' => 'Contact 8',
             'email' => 'contact8@example.com',
             'phone' => '01632960912',
@@ -75,7 +75,7 @@ return [
             'postcode' => 'CF10 1DW',
         ],
         [
-            'reference' => 'account_9',
+            'account_id' => '9',
             'primary_contact_name' => 'Contact 9',
             'email' => 'contact9@example.com',
             'phone' => '01632960354',
@@ -84,7 +84,7 @@ return [
             'postcode' => 'NG7 2GW',
         ],
         [
-            'reference' => 'account_10',
+            'account_id' => '10',
             'primary_contact_name' => 'Contact 10',
             'email' => 'contact10@example.com',
             'phone' => '01632960198',
@@ -95,7 +95,7 @@ return [
     ],
     'filename' => 'import_contacts_template.csv',
     'columns' => [
-        'reference' => 'Reference',
+        'account_id' => 'Account ID',
         'primary_contact_name' => 'Primary Contact Name',
         'email' => 'Email',
         'phone' => 'Phone',
