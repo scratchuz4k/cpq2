@@ -100,9 +100,11 @@ const quoteTotalByPricePlan = (price_plan, column = 'total') => {
         }
     });
 
-    let tempDiscount = quote.discounts.find((x) => x.entity?.code == pricePlanskeys[price_plan]);
+    let tempDiscount = quote.discounts
+        .filter((x) => x.entity?.code == pricePlanskeys[price_plan])
+        .reduce((acc, item) => (acc += item.total), 0);
 
-    return total ? total - (tempDiscount?.total ?? 0) : 0;
+    return total ? total - tempDiscount : 0;
 };
 
 const getQuoteTotal = () => {

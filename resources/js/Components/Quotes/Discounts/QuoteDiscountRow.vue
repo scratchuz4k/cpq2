@@ -21,6 +21,10 @@ const discountIndex = () => {
 const labelColspan = () => discountIndex();
 const valueColspan = () => Math.max(props.columns.length - discountIndex() - 1, 1);
 
+// Price plan discount for all items; billing frequency discounts are in the Overall Totals
+const findDiscount = () =>
+    quote.discounts.find((x) => x.entity?.code == props.pricePlan.code && !x.billing_frequency_unit);
+
 const isEditing = ref(false);
 const isLoading = ref(false);
 
@@ -44,7 +48,7 @@ const edit = () => {
 const cancel = () => {
     isEditing.value = false;
 
-    let tempDiscount = quote.discounts.find((x) => x.entity?.code == props.pricePlan.code);
+    let tempDiscount = findDiscount();
     temp.value = tempDiscount ? tempDiscount.discount : 0;
 };
 
@@ -98,7 +102,7 @@ const init = () => {
     discount.value = 0;
     temp.value = 0;
 
-    let tempDiscount = quote.discounts.find((x) => x.entity?.code == props.pricePlan.code);
+    let tempDiscount = findDiscount();
     if (tempDiscount) {
         discount.id = tempDiscount.id;
         discount.discount = tempDiscount.discount;

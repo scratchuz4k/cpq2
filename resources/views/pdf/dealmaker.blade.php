@@ -35,6 +35,7 @@
             $temp = collect($quote['discounts'])
                 ->where('discountable_type', $model)
                 ->where('entity.code', $id)
+                ->whereNull('billing_frequency_unit')
                 ->first();
         }
 

@@ -116,6 +116,14 @@ class QuoteItem extends Model
     }
 
     /**
+     * Billing frequency unit, defaulting to months like numberOfPayments().
+     */
+    public function billingFrequencyUnit(): string
+    {
+        return $this->billing_frequency_unit ?: FrequencyUnitsEnum::MONTHS->name;
+    }
+
+    /**
      * Number of payments over the renewal term, i.e. how many times the
      * (discounted) price is charged: renewal term ÷ billing frequency.
      */
