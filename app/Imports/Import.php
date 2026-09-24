@@ -108,6 +108,14 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
         return false;
     }
 
+    /**
+     * Validation rule restricting the Is Active column to 1 or 0.
+     */
+    protected function isActiveRule(): array
+    {
+        return ['is_active' => ['required', 'in:0,1']];
+    }
+
     public function collection(Collection $collection): void
     {
         // Set the auth user so is available on rules classes.
@@ -137,6 +145,15 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
                 ...$item,
             ];
             $this->results['processed']++;
+
+            $duplicateOf = $this->isDuplicateRow($item, $index);
+
+            if (! empty($duplicateOf)) {
+                $this->skipDuplicate(['index' => $index, ...$item], $duplicateOf);
+
+                continue;
+            }
+
             $this->insert($item, $index);
         }
     }
@@ -183,7 +200,7 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
 
         $rules = (new $requestClass)->rules();
 
-        return $rules;
+        return [...$rules, ...$this->isActiveRule()];
     }
 
     public function insert(array $item, int $index): bool
@@ -287,5 +304,65 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
                 ->contains(fn ($r) => $r instanceof Unique))
             ->keys()
             ->all();
+    }
+
+    /**
+     * Whether a row with the same values for this group was already seen earlier
+     * in the file. The first occurrence is recorded and never flagged. Rows with
+     * a missing value are not checked, as their required-field errors cover them.
+     *
+     * Returns the index of the first row that had this key, or false if this is
+     * the first occurrence.
+     */
+    protected function isDuplicateInFile(string $group, array $values, int $index): int|false
+    {
+        if (in_array(null, $values, true) || in_array('', $values, true)) {
+            return false;
+        }
+
+        $key = implode('|', array_map(fn ($value) => mb_strtolower(trim((string) $value)), $values));
+
+        if (isset($this->seenRowKeys[$group][$key])) {
+            return $this->seenRowKeys[$group][$key];
+        }
+
+        $this->seenRowKeys[$group][$key] = $index;
+
+        return false;
+    }
+
+    /**
+     * Record a row as a duplicate, naming which earlier row(s) it collides with
+     * for each duplicate-key group.
+     */
+    protected function skipDuplicate(array $row, array $duplicateOf): bool
+    {
+        $messages = collect($duplicateOf)
+            ->map(fn ($firstIndex, $group) => "Duplicate {$group}: matches row ".($firstIndex + 2).'.')
+            ->all();
+
+        return $this->skip($row, $messages);
+    }
+
+    /**
+     * Check every duplicate-key group for this row. Returns an array mapping
+     * each group that duplicates an earlier row to that earlier row's index
+     * (empty array if the row is unique across all groups).
+     */
+    protected function isDuplicateRow(array $item, int $index): array
+    {
+        $duplicateOf = [];
+
+        foreach ($this->duplicateKeys() as $group => $columns) {
+            $values = array_map(fn ($column) => $item[$column] ?? null, $columns);
+
+            $firstIndex = $this->isDuplicateInFile($group, $values, $index);
+
+            if ($firstIndex !== false) {
+                $duplicateOf[$group] = $firstIndex;
+            }
+        }
+
+        return $duplicateOf;
     }
 }
