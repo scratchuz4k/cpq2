@@ -23,7 +23,7 @@ class CategoriesImport extends Import implements ToCollection
     /**
      * Insert a new Category
      */
-    private function insert(array $item, int $index, ?int $parentId = null): bool
+    public function insert(array $item, int $index, ?int $parentId = null): bool
     {
         try {
             request()->merge($item);

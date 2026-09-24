@@ -28,7 +28,7 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
 {
     use Batchable, Queueable;
 
-    public $timeout = 900;
+    public $timeout = 3600;
 
     public $products = [];
 
@@ -66,12 +66,11 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
             return;
         }
         $pricePlanId = PricePlan::where('code', PricePlanEnum::SINGLE->name)->value('id');
-        $dimensionTypes = [];
         foreach ($res['data'] as $product) {
-            if (! is_array($product) || empty($product['children']) || ! is_array($product['children'][0])) {
+            if (count($product['children']) == 0) {
                 continue;
             }
-            if (($product['children'][0]['stock'] ?? 0) == 0) {
+            if ($product['children'][0]['stock'] == 0) {
                 continue;
             }
             $sku = $product['children'][0]['sku'];
@@ -86,7 +85,7 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
                 [...$temp]
             );
 
-            $this->getFeaturesFromContent($temp, $product['tabbed_content'] ?? [], $this->expire_at, $dimensionTypes);
+            $this->getFeaturesFromContent($temp, $product['tabbed_content'], $this->expire_at);
         }
     }
 
@@ -155,7 +154,7 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         return $temp;
     }
 
-    private function getFeaturesFromContent($product, $contents, $expire_at, array &$dimensionTypes)
+    private function getFeaturesFromContent($product, $contents, $expire_at)
     {
         $result = [];
         // ProductFeature::where('product_id', $product->id)->delete();
@@ -165,10 +164,6 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         }
 
         foreach ($contents as $key => $item) {
-            if (! is_array($item) || ! array_key_exists('content', $item)) {
-                continue;
-            }
-
             $dom = new DOMDocument;
             libxml_use_internal_errors(true); // Suppress warnings for malformed HTML
             $content = '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">'.$item['content'];
@@ -187,12 +182,11 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
                 } else {
                     $tds = $tr->getElementsByTagName('td');
                     if ($tds->length == 2 && $currentSection) {
-                        $dimensionLabel = trim((string) $tds->item(0)->textContent);
+                        $key = trim((string) $tds->item(0)->textContent);
                         $value = trim((string) $tds->item(1)->textContent);
-                        $dimensionKey = Str::slug($dimensionLabel);
-                        $dimType = $dimensionTypes[$currentSection][$dimensionKey] ??= DimensionType::updateOrCreate(
-                            ['group' => $currentSection, 'key' => $dimensionKey],
-                            ['label' => $dimensionLabel]
+                        $dimType = DimensionType::updateOrCreate(
+                            ['group' => $currentSection, 'key' => Str::slug($key)],
+                            ['label' => $key]
                         );
 
                         $dim = Dimension::updateOrCreate(

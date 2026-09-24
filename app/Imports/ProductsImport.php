@@ -15,6 +15,7 @@ use App\Rules\TenantUniqueRule;
 use App\Rules\ValidDateValidator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -204,18 +205,16 @@ class ProductsImport extends Import implements ToCollection, WithBatchInserts, W
 
     public function collection(Collection $collection): void
     {
-        foreach ($collection as $rowIndex => $row) {
+        Auth::setUser($this->actingUser);
+        $columnKeys = $this->templateColumnKeys();
+
+        foreach ($collection->values() as $rowIndex => $row) {
             if ($row->filter()->isEmpty()) {
                 continue;
             }
 
-            $row = collect($row)->map(function ($value) {
-                $value = trim((string) $value);
-
-                return $value === '' ? null : $value;
-            })->toArray();
-
-            $row['index'] = $rowIndex;
+            $row = $this->normalizeRow($row, $rowIndex);
+            $row = $this->useTemplateColumnKeys($row, $columnKeys);
             $row['renewal_terms_unit'] = $this->normalizeFrequencyUnit($row['renewal_terms_unit'] ?? null);
             $row['billing_frequency_unit'] = $this->normalizeFrequencyUnit($row['billing_frequency_unit'] ?? null);
 

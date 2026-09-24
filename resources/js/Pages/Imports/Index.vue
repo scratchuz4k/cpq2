@@ -57,7 +57,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: `Imports` }]);
                     </template>
                     <template #model="{ value }">
                         <span class="badge border border-secondary text-secondary opacity-75 text-uppercase lh-sm">{{
-                            value
+                            format.friendlyString(format.toSnakeCase(value))
                         }}</span>
                     </template>
                     <template #created_at="{ value }">

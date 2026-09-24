@@ -41,7 +41,11 @@ const props = defineProps({
         type: Object,
         default: {}
     },
-    allow: Object
+    allow: Object,
+    imports: {
+        type: Array,
+        default: []
+    }
 });
 
 const activeFilters = ref(false);
@@ -406,7 +410,12 @@ getData();
         @page="handlePaginator"
     >
     </Paginator>
-    <FileUploadModal v-model:visible="showForm" :model="props.route" @preview="handlePreview" />
+    <FileUploadModal
+        v-model:visible="showForm"
+        :model="props.route"
+        @preview="handlePreview"
+        :imports="props.imports"
+    />
     <ImportPreviewModel v-model:visible="showImportPreview" :preview-data="previewData" :import-form="importForm" />
 </template>
 <style>
