@@ -1,8 +1,9 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import Header from '@/Components/Header.vue';
+import format from '@/Composables/format.js';
 
 const props = defineProps({
     imports: {
@@ -20,6 +21,11 @@ const handlePreview = ({ data, form }) => {
     importForm.value = form;
     showImportPreview.value = true;
 };
+
+const page = usePage();
+const modelLabel = (name) =>
+    page.props.importModels?.find((item) => item.name === name)?.label ??
+    format.friendlyString(format.toSnakeCase(name));
 
 const items = ref([{ label: 'Home', url: '/' }, { label: `Imports` }]);
 </script>
@@ -57,7 +63,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: `Imports` }]);
                     </template>
                     <template #model="{ value }">
                         <span class="badge border border-secondary text-secondary opacity-75 text-uppercase lh-sm">{{
-                            format.friendlyString(format.toSnakeCase(value))
+                            modelLabel(value)
                         }}</span>
                     </template>
                     <template #created_at="{ value }">

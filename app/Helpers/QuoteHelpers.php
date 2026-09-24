@@ -85,9 +85,9 @@ if (! function_exists('frequencyLabel')) {
         }
 
         $abbreviations = [
-            'DAYS' => 'd',
-            'MONTHS' => 'mo',
-            'YEARS' => 'yr',
+            'DAYS' => 'Days',
+            'MONTHS' => 'Months',
+            'YEARS' => 'Years',
         ];
 
         return $value.($abbreviations[$unit] ?? '');

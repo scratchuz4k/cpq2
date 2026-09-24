@@ -23,9 +23,9 @@ export const daysPerUnit = {
 };
 
 const unitAbbreviations = {
-    DAYS: 'd',
-    MONTHS: 'mo',
-    YEARS: 'yr'
+    DAYS: 'Day',
+    MONTHS: 'Month',
+    YEARS: 'Year'
 };
 
 export const abbreviateUnit = (unit) => unitAbbreviations[unit] ?? '';
