@@ -7,6 +7,7 @@ use App\Enums\ImportStatusesEnum;
 use App\Export\Export;
 use App\Helpers\DataProvider;
 use App\Imports\Import;
+use App\Imports\UsersImport;
 use App\Jobs\ImportJob;
 use App\Models\Resource;
 use App\Services\ImportService;
@@ -15,6 +16,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -94,7 +96,16 @@ class BaseController extends Controller
 
         if (! $isDryRun) {
             $filename = Str::random(40).'.'.$file->getClientOriginalExtension();
-            if ($path = $file->storeAs('imports', $filename, 'public')) {
+
+            if ($importHandler instanceof UsersImport) {
+                $path = $file->storeAs('imports', $filename, 'local') && Storage::disk('public')->put("imports/{$filename}", UsersImport::maskPasswordsInCsv($file->getRealPath()))
+                    ? "imports/{$filename}"
+                    : false;
+            } else {
+                $path = $file->storeAs('imports', $filename, 'public');
+            }
+
+            if ($path) {
                 $resource = Resource::create([
                     'title' => $file->getClientOriginalName(),
                     'mime_type' => $file->getClientMimeType(),

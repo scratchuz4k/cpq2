@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Enums\ImportsEnum;
 use App\Enums\ImportStatusesEnum;
+use App\Imports\UsersImport;
 use App\Models\Import;
 use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -42,7 +43,7 @@ class ImportJob implements ShouldQueue, TenantAware
             app(PermissionRegistrar::class)->setPermissionsTeamId($this->import->tenant_id);
 
             $resource = $this->import->file;
-            Excel::import($this->importHandler, Storage::disk('public')->path($resource->getRouteValue()));
+            Excel::import($this->importHandler, Storage::disk($this->sourceDisk())->path($resource->getRouteValue()));
 
             $this->import->update([
                 'status' => ImportStatusesEnum::COMPLETED->name,
@@ -51,9 +52,18 @@ class ImportJob implements ShouldQueue, TenantAware
         } catch (\Exception $e) {
             Log::error("[JOB] Import Job | Error processing: {$e->getMessage()}");
         } finally {
+            if ($this->sourceDisk() === 'local' && $this->import->file) {
+                Storage::disk('local')->delete($this->import->file->getRouteValue());
+            }
+
             app(PermissionRegistrar::class)->setPermissionsTeamId(null);
             Auth::forgetGuards();
         }
+    }
+
+    private function sourceDisk(): string
+    {
+        return $this->importHandler instanceof UsersImport ? 'local' : 'public';
     }
 
     public function failed()

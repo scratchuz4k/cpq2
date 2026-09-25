@@ -58,7 +58,7 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
                 $this->results['skipped']++;
                 $this->results['errors'][] = [
                     'row_index' => $index,
-                    'row' => $item,
+                    'row' => $this->maskPassword($item),
                     'errors' => $validator->errors()->all(),
                 ];
 
@@ -84,14 +84,14 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
             $this->results['skipped']++;
             $this->results['errors'][] = [
                 'row_index' => $index,
-                'row' => $item,
+                'row' => $this->maskPassword($item),
                 'error' => $e->errors(),
             ];
         } catch (\Exception $e) {
             $this->results['skipped']++;
             $this->results['errors'][] = [
                 'row_index' => $index,
-                'row' => $item,
+                'row' => $this->maskPassword($item),
                 'error' => $e->getMessage(),
             ];
         }
@@ -175,20 +175,32 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
         return true;
     }
 
+    /**
+     * Hide the plaintext password before a row is kept in the import results.
+     */
+    private function maskPassword(array $row): array
+    {
+        if (! empty($row['password'])) {
+            $row['password'] = '********';
+        }
+
+        return $row;
+    }
+
     public function collection(Collection $collection): void
     {
         foreach ($collection->values() as $index => $row) {
             $row = array_map(fn ($value) => trim((string) $value), $row->toArray());
             $this->results['data'][] = [
                 'index' => $index,
-                ...$row,
+                ...$this->maskPassword($row),
             ];
             $this->results['processed']++;
             $this->insert($row, $index);
         }
     }
 
-    public function rules(): array
+    public function rules(?User $existingUser = null): array
     {
         $actingUser = $this->actingUser;
         $retainableGroupIds = $existingUser ? $existingUser->groupIds()->all() : [];
@@ -255,6 +267,41 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
             'commission_rate' => 'nullable|integer|min:0|max:100',
             'sso' => ['boolean'],
         ];
+    }
+
+    /**
+     * Return the CSV at $filePath with every non-empty password replaced by '********'.
+     */
+    public static function maskPasswordsInCsv(string $filePath): string
+    {
+        $in = fopen($filePath, 'r');
+        $out = fopen('php://temp', 'r+');
+
+        // Imports auto-detect the delimiter, so do the same from the header line.
+        $firstLine = (string) fgets($in);
+        rewind($in);
+        $counts = array_map(fn ($d) => substr_count($firstLine, $d), [',' => ',', ';' => ';', "\t" => "\t", '|' => '|']);
+        $delimiter = array_search(max($counts), $counts, true) ?: ',';
+
+        $header = fgetcsv($in, null, $delimiter) ?: [];
+        // Match how WithHeadingRow slugs headings (and strip a UTF-8 BOM).
+        $keys = array_map(fn ($h) => Str::slug(preg_replace('/^\xEF\xBB\xBF/', '', (string) $h), '_'), $header);
+        $idx = array_search('password', $keys, true);
+
+        fputcsv($out, $header, $delimiter);
+        while (($row = fgetcsv($in, null, $delimiter)) !== false) {
+            if ($idx !== false && ($row[$idx] ?? '') !== '') {
+                $row[$idx] = '********';
+            }
+            fputcsv($out, $row, $delimiter);
+        }
+
+        rewind($out);
+        $contents = stream_get_contents($out);
+        fclose($in);
+        fclose($out);
+
+        return $contents;
     }
 
     public static function getImportTemplate()
