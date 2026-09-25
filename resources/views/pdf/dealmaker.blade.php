@@ -65,6 +65,30 @@
         'one_off' => getDiscount($quote, 'App\Models\PricePlan', 'SINGLE'),
         'monthly' => getDiscount($quote, 'App\Models\PricePlan', 'MONTHLY'),
     ];
+
+    // Recurring totals per billing frequency: the Recurring discount applies first, then the billing frequency discount
+    $recurringTotals = [];
+    foreach (['YEARS' => 'Annual', 'MONTHS' => 'Monthly', 'DAYS' => 'Daily'] as $unit => $name) {
+        $items = array_filter($monthly_items, fn($item) => (($item['billing_frequency_unit'] ?? null) ?: 'MONTHS') === $unit);
+
+        if (!count($items)) {
+            continue;
+        }
+
+        $discount = collect($quote['discounts'])
+            ->where('discountable_type', 'App\Models\PricePlan')
+            ->where('entity.code', 'MONTHLY')
+            ->where('billing_frequency_unit', $unit)
+            ->first() ?? ['discount' => 0, 'total' => 0];
+
+        $gross = array_sum(array_column($items, 'total'));
+
+        $recurringTotals[$unit] = [
+            'name' => $name,
+            'discount' => $discount['discount'],
+            'total' => $gross * (1 - $discounts['monthly']['discount'] / 100) - $discount['total'],
+        ];
+    }
 @endphp
 
 
@@ -508,15 +532,21 @@
                             </colgroup>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>
-                                    <p class="small text-start">Recurring Total</p>
-                                </td>
-                                <td></td>
-                                <td id="total_monthly_net">
-                                    <b>£{{ number_format(quoteTotal('MONTHLY', 'total', $quote['items']) - $discounts['monthly']['total'], 2) }}</b>
-                                </td>
-                            </tr>
+                            @foreach ($recurringTotals as $unit => $recurringTotal)
+                                <tr>
+                                    <td>
+                                        <p class="small text-start">{{ $recurringTotal['name'] }} Recurring Total</p>
+                                    </td>
+                                    <td class="text-end text-primary">
+                                        @if ($recurringTotal['discount'])
+                                            {{ number_format($recurringTotal['discount'], 2) }} %
+                                        @endif
+                                    </td>
+                                    <td id="total_{{ $unit }}_net">
+                                        <b>£{{ number_format($recurringTotal['total'], 2) }}</b>
+                                    </td>
+                                </tr>
+                            @endforeach
                             <tr>
                                 <td>
                                     <p class="small text-start">One-Off Total</p>

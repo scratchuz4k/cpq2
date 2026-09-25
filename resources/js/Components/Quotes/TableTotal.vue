@@ -107,6 +107,23 @@ const quoteTotalByPricePlan = (price_plan, column = 'total') => {
     return total ? total - tempDiscount : 0;
 };
 
+const billingFrequencies = [
+    { unit: 'YEARS', name: 'Annual' },
+    { unit: 'MONTHS', name: 'Monthly' },
+    { unit: 'DAYS', name: 'Daily' }
+];
+
+const recurringItems = (unit) => {
+    let items = group ? quote.items.flatMap((obj) => obj.items ?? obj) : quote.items;
+
+    return items.filter(
+        (x) =>
+            x.price_plan &&
+            x.price_plan.code == pricePlanskeys['Recurring'] &&
+            (x.billing_frequency_unit ?? 'MONTHS') == unit
+    );
+};
+
 const getQuoteTotal = () => {
     let total = quoteTotalByPricePlan('Recurring') + quoteTotalByPricePlan('One-Off');
     let tempDiscount = quote.discounts
@@ -158,16 +175,15 @@ watch(
             <col v-if="!props.preview" style="width: 60px" class="text-center" />
         </colgroup>
         <tbody>
-            <tr>
-                <td>
-                    <p class="small text-start">Recurring Total</p>
-                </td>
-                <td></td>
-                <td class="bold">
-                    {{ format.GBP(quoteTotalByPricePlan('Recurring')) }}
-                </td>
-                <td v-if="!props.preview"></td>
-            </tr>
+            <template v-for="frequency in billingFrequencies" :key="frequency.unit">
+                <RecurringTotalRow
+                    v-if="recurringItems(frequency.unit).length"
+                    :preview="props.preview"
+                    :isSimpleView="isSimpleView"
+                    :billingFrequency="frequency"
+                    :items="recurringItems(frequency.unit)"
+                ></RecurringTotalRow>
+            </template>
             <tr>
                 <td>
                     <p class="small text-start">One-Off Total</p>
