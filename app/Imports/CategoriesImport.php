@@ -100,6 +100,10 @@ class CategoriesImport extends Import implements ToCollection
             ];
             $this->results['processed']++;
 
+            if ($this->skipIfDuplicate($item, $index)) {
+                continue;
+            }
+
             if (! $item['parent_code']) {
                 $this->insert($item, $index);
             } else {

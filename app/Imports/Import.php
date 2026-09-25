@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use App\Models\Tenant;
 use App\Models\User;
+use App\Rules\TenantUniqueRule;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Collection;
@@ -33,6 +34,10 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
         'errors' => [],
         'data' => [],
     ];
+
+    protected array $processedItemsIndexes = [];
+
+    protected ?array $templateColumns = null;
 
     public function __construct(protected User $actingUser, protected string $model, bool $isDryRun = false)
     {
@@ -146,11 +151,7 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
             ];
             $this->results['processed']++;
 
-            $duplicateOf = $this->isDuplicateRow($item, $index);
-
-            if (! empty($duplicateOf)) {
-                $this->skipDuplicate(['index' => $index, ...$item], $duplicateOf);
-
+            if ($this->skipIfDuplicate($item, $index)) {
                 continue;
             }
 
@@ -164,15 +165,22 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
      */
     protected function templateColumnKeys(): array
     {
-        $file = app_path('Helpers/Import/'.mb_strtolower(class_basename($this->model)).'_import.php');
-
-        if (! file_exists($file)) {
-            return [];
-        }
-
-        return collect((require $file)['columns'] ?? [])
+        return collect($this->templateColumns())
             ->mapWithKeys(fn ($label, $key) => [HeadingRowFormatter::format([$label])[0] => $key])
             ->all();
+    }
+
+    protected function templateColumns(): array
+    {
+        if ($this->templateColumns !== null) {
+            return $this->templateColumns;
+        }
+
+        $file = app_path('Helpers/Import/'.mb_strtolower(class_basename($this->model)).'_import.php');
+
+        return $this->templateColumns = file_exists($file)
+            ? ((require $file)['columns'] ?? [])
+            : [];
     }
 
     /**
@@ -294,26 +302,18 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
     }
 
     /**
-     * Fields covered by a Rule::unique() validation rule for this import, i.e.
-     * the columns whose combination the model's DB unique constraint enforces.
+     * Fields covered by a Rule::unique() or TenantUniqueRule validation rule
      */
-    private function uniqueFields(): array
+    protected function uniqueFields(): array
     {
         return collect($this->rules())
-            ->filter(fn ($rule) => collect(is_array($rule) ? $rule : [$rule])
-                ->contains(fn ($r) => $r instanceof Unique))
+            ->filter(fn ($rule, $field) => ! str_contains($field, '.')
+                && collect(is_array($rule) ? $rule : [$rule])
+                    ->contains(fn ($r) => $r instanceof Unique || $r instanceof TenantUniqueRule))
             ->keys()
             ->all();
     }
 
-    /**
-     * Whether a row with the same values for this group was already seen earlier
-     * in the file. The first occurrence is recorded and never flagged. Rows with
-     * a missing value are not checked, as their required-field errors cover them.
-     *
-     * Returns the index of the first row that had this key, or false if this is
-     * the first occurrence.
-     */
     protected function isDuplicateInFile(string $group, array $values, int $index): int|false
     {
         if (in_array(null, $values, true) || in_array('', $values, true)) {
@@ -322,47 +322,51 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
 
         $key = implode('|', array_map(fn ($value) => mb_strtolower(trim((string) $value)), $values));
 
-        if (isset($this->seenRowKeys[$group][$key])) {
-            return $this->seenRowKeys[$group][$key];
+        if (isset($this->processedItemsIndexes[$group][$key])) {
+            return $this->processedItemsIndexes[$group][$key];
         }
 
-        $this->seenRowKeys[$group][$key] = $index;
+        $this->processedItemsIndexes[$group][$key] = $index;
 
         return false;
     }
 
-    /**
-     * Record a row as a duplicate, naming which earlier row(s) it collides with
-     * for each duplicate-key group.
-     */
     protected function skipDuplicate(array $row, array $duplicateOf): bool
     {
         $messages = collect($duplicateOf)
-            ->map(fn ($firstIndex, $group) => "Duplicate {$group}: matches row ".($firstIndex + 2).'.')
+            ->map(fn ($firstIndex, $group) => "Duplicate {$group}: matches row #".($firstIndex + 1).'.')
             ->all();
 
         return $this->skip($row, $messages);
     }
 
-    /**
-     * Check every duplicate-key group for this row. Returns an array mapping
-     * each group that duplicates an earlier row to that earlier row's index
-     * (empty array if the row is unique across all groups).
-     */
-    protected function isDuplicateRow(array $item, int $index): array
+    protected function skipIfDuplicate(array $item, int $index): bool
     {
-        $duplicateOf = [];
+        $duplicateOf = $this->isDuplicateRow($item, $index);
 
-        foreach ($this->duplicateKeys() as $group => $columns) {
-            $values = array_map(fn ($column) => $item[$column] ?? null, $columns);
-
-            $firstIndex = $this->isDuplicateInFile($group, $values, $index);
-
-            if ($firstIndex !== false) {
-                $duplicateOf[$group] = $firstIndex;
-            }
+        if (empty($duplicateOf)) {
+            return false;
         }
 
-        return $duplicateOf;
+        $this->skipDuplicate(['index' => $index, ...$item], $duplicateOf);
+
+        return true;
+    }
+
+    protected function isDuplicateRow(array $item, int $index): array
+    {
+        $uniqueFields = $this->uniqueFields();
+
+        if (empty($uniqueFields)) {
+            return [];
+        }
+
+        $columns = $this->templateColumns();
+        $group = implode(' and ', array_map(fn ($field) => $columns[$field] ?? $field, $uniqueFields));
+        $values = array_map(fn ($field) => $item[$field] ?? null, $uniqueFields);
+
+        $firstIndex = $this->isDuplicateInFile($group, $values, $index);
+
+        return $firstIndex === false ? [] : [$group => $firstIndex];
     }
 }

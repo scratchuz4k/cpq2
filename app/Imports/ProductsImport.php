@@ -220,6 +220,11 @@ class ProductsImport extends Import implements ToCollection, WithBatchInserts, W
 
             $this->results['processed']++;
             $this->results['data'][] = $row;
+
+            if ($this->skipIfDuplicate($row, $rowIndex)) {
+                continue;
+            }
+
             $this->insertProduct($row);
         }
     }

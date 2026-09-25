@@ -128,6 +128,11 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
                 ...$row,
             ];
             $this->results['processed']++;
+
+            if ($this->skipIfDuplicate($row, $index)) {
+                continue;
+            }
+
             $this->insert($row, $index);
         }
     }
