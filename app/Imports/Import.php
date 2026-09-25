@@ -137,10 +137,6 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
 
             $item = $this->useTemplateColumnKeys($item, $columnKeys);
 
-            if (array_key_exists('is_active', $item)) {
-                $item['is_active'] = $item['is_active'] === null ? 1 : (int) $item['is_active'];
-            }
-
             if (! array_key_exists('tenant_id', $item)) {
                 $item['tenant_id'] = $this->tenant->id;
             }
