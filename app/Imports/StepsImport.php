@@ -6,6 +6,7 @@ use App\Http\Requests\StepCreateRequest;
 use App\Models\SolutionTypeTenant;
 use App\Models\Step;
 use App\Models\User;
+use App\Rules\TenantExistsRule;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -46,7 +47,7 @@ class StepsImport extends Import implements ToCollection
 
             $newItem = Step::create([
                 ...$item,
-                '' => SolutionTypeTenant::find($item['solution_type_id'])->solution_type_id,
+                'solution_type_id' => SolutionTypeTenant::find($item['solution_type_id'])->solution_type_id,
             ]);
 
             $newItem->save();
@@ -75,6 +76,11 @@ class StepsImport extends Import implements ToCollection
 
     public function rules(): array
     {
-        return [...(new StepCreateRequest)->rules(), ...$this->isActiveRule()];
+        $rules = (new StepCreateRequest)->rules();
+
+        $rules['solution_type_id'] = ['required', 'integer', new TenantExistsRule('solution_type_tenant')];
+        $rules['sort_order'] = ['integer', 'min:0'];
+
+        return [...$rules, ...$this->isActiveRule()];
     }
 }
