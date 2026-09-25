@@ -22,19 +22,21 @@ export const daysPerUnit = {
     YEARS: 360
 };
 
-const unitAbbreviations = {
-    DAYS: 'Day',
-    MONTHS: 'Month',
-    YEARS: 'Year'
-};
-
-export const abbreviateUnit = (unit) => unitAbbreviations[unit] ?? '';
-
 export const frequencyUnitOptions = [
-    { name: 'DAYS', value: 'Days' },
-    { name: 'MONTHS', value: 'Months' },
-    { name: 'YEARS', value: 'Years' }
+    { name: 'DAYS', value: 'Day' },
+    { name: 'MONTHS', value: 'Month' },
+    { name: 'YEARS', value: 'Year' }
 ];
+
+export const formatFrequency = (value, unit) => {
+    const option = frequencyUnitOptions.find(({ name }) => name === unit);
+
+    if (!option || !value) {
+        return '';
+    }
+
+    return `${value} ${option.value}${value == 1 ? '' : 's'}`;
+};
 
 /**
  * Encapsulates contract length / billing frequency logic shared between the Product Create and Edit pages.

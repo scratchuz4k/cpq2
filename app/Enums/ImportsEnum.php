@@ -55,9 +55,9 @@ enum ImportsEnum: string
     public function label(): string
     {
         return match ($this) {
-            self::Contact => 'Account contact',
+            self::Contact => 'Account Contact',
             self::ProductLink => 'Product Link',
-            self::ProductAddon => 'Product Add-on',
+            self::ProductAddon => 'Product Addon',
             self::ProductBundle => 'Product Bundle',
             default => $this->name,
         };
