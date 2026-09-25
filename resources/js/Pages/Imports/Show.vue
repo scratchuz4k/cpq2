@@ -41,8 +41,8 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Imports', url: '/impor
                             {{ props.importObject.name }}
                         </a>
                     </p>
-                    <p v-if="props.importObject.model === 'Product'">
-                        <b>Update Existing Products:</b><br />
+                    <p v-if="['Product', 'User'].includes(props.importObject.model)">
+                        <b>Update Existing {{ props.importObject.model === 'User' ? 'Users' : 'Products' }}:</b><br />
                         <span class="text-secondary" v-if="props.importObject.overwrite">
                             <font-awesome-icon :icon="['fas', 'circle-check']" class="me-1 text-primary" size="lg" />
                             <i>true</i>
