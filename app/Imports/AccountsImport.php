@@ -118,6 +118,6 @@ class AccountsImport extends Import implements ToCollection, WithBatchInserts, W
             new TenantExistsRule('groups'),
         ];
 
-        return $rules;
+        return [...$rules, ...$this->isActiveRule()];
     }
 }

@@ -42,49 +42,8 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
             $item['groups'] = $item['groups']
                 ? array_map('trim', explode(',', $item['groups']))
                 : [];
-            $actingUser = $this->actingUser;
 
-            $validator = Validator::make($item, [
-                'name' => 'required|string|max:255',
-                'email' => ['required', 'email', Rule::unique('users')],
-                'password' => ['required', 'string', 'min:8'],
-                'is_active' => ['boolean'],
-                'groups' => [
-                    'nullable',
-                    function ($attribute, $value, $fail) use ($actingUser) {
-                        if (empty($value) || ! $actingUser->groups->count()) {
-                            return;
-                        }
-
-                        if (
-                            ! $this->actingUser->hasRole('Super Admin')
-                            && ! empty(array_diff($value, $actingUser->groups->pluck('id')->toArray()))
-                        ) {
-                            $fail("The {$attribute} field contains group(s) the authenticated user does not belong to.");
-                        }
-                    },
-                ],
-                'groups.*' => [
-                    'integer',
-                    new TenantExistsRule('groups'),
-                ],
-                'role' => [
-                    'integer',
-                    new TenantExistsRule('roles'),
-                    function ($attribute, $value, $fail) use ($actingUser) {
-                        $authRole = $actingUser->roles->first();
-
-                        if (
-                            ! $this->actingUser->hasRole('Super Admin')
-                            && ! in_array((int) $value, [$authRole->id, ...$authRole->getDescendantIds()])
-                        ) {
-                            $fail("The {$attribute} must be {$authRole->name} or a descendant.");
-                        }
-                    },
-                ],
-                'commission_rate' => 'nullable|integer|min:0|max:100',
-                'sso' => ['boolean'],
-            ]);
+            $validator = Validator::make($item, $this->rules());
 
             if ($validator->fails()) {
                 $this->results['skipped']++;
@@ -132,7 +91,7 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
                 $temp = [];
                 foreach ($item['groups'] as $group) {
                     $temp[$group] = [
-                        'tenant_id' => $actingUser->tenant_id,
+                        'tenant_id' => $this->actingUser->tenant_id,
                     ];
                 }
                 $newUser->groups()->sync($temp);
@@ -169,6 +128,11 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
                 ...$row,
             ];
             $this->results['processed']++;
+
+            if ($this->skipIfDuplicate($row, $index)) {
+                continue;
+            }
+
             $this->insert($row, $index);
         }
     }
@@ -176,8 +140,45 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
     public function rules(): array
     {
         return [
-            '*.email' => 'required|email|unique:users,email',
-            '*.name' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
+            'email' => ['required', 'email', Rule::unique('users')],
+            'password' => ['required', 'string', 'min:8'],
+            'groups' => [
+                'nullable',
+                function ($attribute, $value, $fail) {
+                    if (empty($value) || ! $this->actingUser->groups->count()) {
+                        return;
+                    }
+
+                    if (
+                        ! $this->actingUser->hasRole('Super Admin')
+                        && ! empty(array_diff($value, $this->actingUser->groups->pluck('id')->toArray()))
+                    ) {
+                        $fail("The {$attribute} field contains group(s) the authenticated user does not belong to.");
+                    }
+                },
+            ],
+            'groups.*' => [
+                'integer',
+                new TenantExistsRule('groups'),
+            ],
+            'role' => [
+                'integer',
+                new TenantExistsRule('roles'),
+                function ($attribute, $value, $fail) {
+                    $authRole = $this->actingUser->roles->first();
+
+                    if (
+                        ! $this->actingUser->hasRole('Super Admin')
+                        && ! in_array((int) $value, [$authRole->id, ...$authRole->getDescendantIds()])
+                    ) {
+                        $fail("The {$attribute} must be {$authRole->name} or a descendant.");
+                    }
+                },
+            ],
+            'commission_rate' => 'nullable|integer|min:0|max:100',
+            'sso' => ['boolean'],
+            ...$this->isActiveRule(),
         ];
     }
 

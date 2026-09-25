@@ -62,15 +62,7 @@ class CategoryPolicy
      */
     public function delete(User $user, Category $category): bool
     {
-        if (! $user->can("delete $this->model")) {
-            return false;
-        }
-
-        if (count($category->products)) {
-            return false;
-        }
-
-        return true;
+        return $user->can("delete $this->model");
     }
 
     /**
