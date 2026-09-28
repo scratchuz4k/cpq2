@@ -52,7 +52,7 @@ class ImportJob implements ShouldQueue, TenantAware
         } catch (\Exception $e) {
             Log::error("[JOB] Import Job | Error processing: {$e->getMessage()}");
         } finally {
-            if ($this->sourceDisk() === 'local' && $this->import->file) {
+            if ($this->sourceDisk() === 'local') {
                 Storage::disk('local')->delete($this->import->file->getRouteValue());
             }
 
@@ -63,7 +63,12 @@ class ImportJob implements ShouldQueue, TenantAware
 
     private function sourceDisk(): string
     {
-        return $this->importHandler instanceof UsersImport ? 'local' : 'public';
+        // User imports read the unmasked private copy; jobs queued before it existed only have the public file.
+        return $this->importHandler instanceof UsersImport
+            && $this->import->file
+            && Storage::disk('local')->exists($this->import->file->getRouteValue())
+            ? 'local'
+            : 'public';
     }
 
     public function failed()

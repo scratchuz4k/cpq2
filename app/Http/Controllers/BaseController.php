@@ -98,9 +98,14 @@ class BaseController extends Controller
             $filename = Str::random(40).'.'.$file->getClientOriginalExtension();
 
             if ($importHandler instanceof UsersImport) {
-                $path = $file->storeAs('imports', $filename, 'local') && Storage::disk('public')->put("imports/{$filename}", UsersImport::maskPasswordsInCsv($file->getRealPath()))
-                    ? "imports/{$filename}"
-                    : false;
+                $path = "imports/{$filename}";
+                $stored = $file->storeAs('imports', $filename, 'local')
+                    && Storage::disk('public')->put($path, UsersImport::maskPasswordsInCsv($file->getRealPath()));
+
+                if (! $stored) {
+                    Storage::disk('local')->delete($path);
+                    $path = false;
+                }
             } else {
                 $path = $file->storeAs('imports', $filename, 'public');
             }
@@ -121,6 +126,7 @@ class BaseController extends Controller
                 'status' => ImportStatusesEnum::IN_PROGRESS->name,
                 'model' => class_basename($this->model),
                 'user_id' => $user->id,
+                'overwrite' => (bool) $overwrite,
                 'tenant_id' => $user->tenant_id,
             ]);
 

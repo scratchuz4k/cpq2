@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Rules\TenantExistsRule;
 use App\Support\GroupAssignment;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -19,6 +20,8 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 class UsersImport extends Import implements ToCollection, WithBatchInserts, WithHeadingRow
 {
+    public const PASSWORD_MASK = '********';
+
     public function __construct(
         protected User $actingUser,
         protected string $model,
@@ -181,7 +184,7 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
     private function maskPassword(array $row): array
     {
         if (! empty($row['password'])) {
-            $row['password'] = '********';
+            $row['password'] = self::PASSWORD_MASK;
         }
 
         return $row;
@@ -189,6 +192,7 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
 
     public function collection(Collection $collection): void
     {
+        Auth::setUser($this->actingUser);
         foreach ($collection->values() as $index => $row) {
             $row = array_map(fn ($value) => trim((string) $value), $row->toArray());
             $this->results['data'][] = [
@@ -212,22 +216,16 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
                 'email',
                 Rule::unique('users')->ignore($existingUser?->id),
                 function ($attribute, $value, $fail) use ($actingUser, $existingUser) {
-                    $targetRole = $existingUser?->roles->first();
-
-                    if (! $targetRole || $actingUser->hasRole('Super Admin')) {
-                        return;
-                    }
-
-                    $authRole = $actingUser->roles->first();
-
-                    if (! $authRole || ! in_array($targetRole->id, [$authRole->id, ...$authRole->getDescendantIds()])) {
+                    if ($existingUser && ! $actingUser->can('update', $existingUser)) {
                         $fail('You are not allowed to update this user.');
                     }
                 },
             ],
-            'password' => $existingUser
-                ? ['nullable', 'string', 'min:8']
-                : ['required', 'string', 'min:8'],
+            'password' => [
+                $existingUser ? 'nullable' : 'required',
+                'string',
+                'min:8',
+            ],
             'is_active' => ['boolean'],
             'groups' => [
                 'nullable',
@@ -291,7 +289,7 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
         fputcsv($out, $header, $delimiter);
         while (($row = fgetcsv($in, null, $delimiter)) !== false) {
             if ($idx !== false && ($row[$idx] ?? '') !== '') {
-                $row[$idx] = '********';
+                $row[$idx] = self::PASSWORD_MASK;
             }
             fputcsv($out, $row, $delimiter);
         }
