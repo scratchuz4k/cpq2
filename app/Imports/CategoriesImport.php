@@ -94,15 +94,15 @@ class CategoriesImport extends Import implements ToCollection
                 return $value === '' ? null : $value;
             }, $item->toArray());
 
-            if (array_key_exists('is_active', $item)) {
-                $item['is_active'] = $item['is_active'] === null ? 1 : (int) $item['is_active'];
-            }
-
             $this->results['data'][] = [
                 'index' => $index,
                 ...$item,
             ];
             $this->results['processed']++;
+
+            if ($this->skipIfDuplicate($item, $index)) {
+                continue;
+            }
 
             if (! $item['parent_code']) {
                 $this->insert($item, $index);
@@ -132,7 +132,7 @@ class CategoriesImport extends Import implements ToCollection
 
     public function rules(): array
     {
-        return (new CategoryCreateRequest)->rules();
+        return [...(new CategoryCreateRequest)->rules(), ...$this->isActiveRule()];
     }
 
     private function processDeferredChildren(array $pendingItems): void

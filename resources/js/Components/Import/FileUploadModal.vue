@@ -32,7 +32,7 @@ const form = reactive({
 const importOptions = computed(() =>
     props.imports.map((item) => ({
         ...item,
-        label: format.friendlyString(format.toSnakeCase(item.name))
+        label: item.label ?? format.friendlyString(format.toSnakeCase(item.name))
     }))
 );
 

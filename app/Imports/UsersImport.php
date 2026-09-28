@@ -200,6 +200,11 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
                 ...$this->maskPassword($row),
             ];
             $this->results['processed']++;
+
+            if ($this->skipIfDuplicate($row, $index)) {
+                continue;
+            }
+
             $this->insert($row, $index);
         }
     }

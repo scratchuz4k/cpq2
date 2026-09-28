@@ -1,6 +1,6 @@
 <script setup>
 import { quote } from '@composables/useQuote';
-import { abbreviateUnit } from '@/Composables/billingFrequency';
+import { formatFrequency } from '@/Composables/billingFrequency';
 
 defineProps({
     code: String,
@@ -16,7 +16,7 @@ const item = defineModel();
         <p class="small text-center">
             {{
                 item.price_plan?.code == 'MONTHLY' && quote && item.billing_frequency_value
-                    ? `${item.billing_frequency_value}${abbreviateUnit(item.billing_frequency_unit)}`
+                    ? formatFrequency(item.billing_frequency_value, item.billing_frequency_unit)
                     : ''
             }}
         </p>

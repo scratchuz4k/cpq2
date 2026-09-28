@@ -19,7 +19,7 @@ return [
             'password' => 'password',
             'role' => '58',
             'commission_rate' => '0',
-            'groups' => '15, 16',
+            'groups' => '"15, 16"',
             'sso' => '1',
         ],
         [
@@ -39,7 +39,7 @@ return [
             'password' => 'password',
             'role' => '12',
             'commission_rate' => '0',
-            'groups' => '19, 20',
+            'groups' => '"19, 20"',
             'sso' => '0',
         ],
         [
@@ -69,7 +69,7 @@ return [
             'password' => 'password',
             'role' => '58',
             'commission_rate' => '0',
-            'groups' => '15, 16, 19, 20, 22, 23',
+            'groups' => '"15, 16, 19, 20, 22, 23"',
             'sso' => '1',
         ],
         [
@@ -99,7 +99,7 @@ return [
             'password' => 'password',
             'role' => '12',
             'commission_rate' => '0',
-            'groups' => '15, 20, 23',
+            'groups' => '"15, 20, 23"',
             'sso' => '0',
         ],
     ],
