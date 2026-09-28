@@ -26,7 +26,7 @@ class ContactsImport extends Import implements ToCollection, WithBatchInserts, W
     }
 
     /**
-     * Insert a new Contact, linked to the account matching the row's reference
+     * Insert a new Contact, linked to the account matching the row's Account ID
      */
     public function insert(array $item, int $index): bool
     {
@@ -44,7 +44,7 @@ class ContactsImport extends Import implements ToCollection, WithBatchInserts, W
                 return false;
             }
 
-            // Check if row has any value other than reference
+            // Check if row has any value other than the account id
             if (! $this->rowHasValues($item)) {
                 $this->results['skipped']++;
                 $this->results['errors'][] = [
@@ -56,17 +56,16 @@ class ContactsImport extends Import implements ToCollection, WithBatchInserts, W
                 return false;
             }
 
-            $accountIds = Account::visibleToGroups($this->actingUser)
-                ->where('reference', $item['reference'])
-                ->limit(2)
-                ->pluck('id');
+            $accountId = Account::visibleToGroups($this->actingUser)
+                ->whereKey($item['account_id'])
+                ->value('id');
 
-            if ($accountIds->isEmpty()) {
+            if (! $accountId) {
                 $this->results['skipped']++;
                 $this->results['errors'][] = [
                     'row_index' => $index,
                     'row' => $item,
-                    'error' => "No account was found with the reference {$item['reference']}.",
+                    'error' => "No account was found with the ID {$item['account_id']}.",
                 ];
 
                 return false;
@@ -80,7 +79,7 @@ class ContactsImport extends Import implements ToCollection, WithBatchInserts, W
 
             Contact::create([
                 ...Arr::only($item, (new Contact)->getFillable()),
-                'account_id' => $accountIds->first(),
+                'account_id' => $accountId,
             ]);
 
             $this->results['success']++;
@@ -109,10 +108,8 @@ class ContactsImport extends Import implements ToCollection, WithBatchInserts, W
     {
         $rules = (new ContactCreateRequest)->rules();
 
-        // The account is resolved from the reference column instead of an id.
-        unset($rules['account_id']);
-
-        $rules['reference'] = ['required', 'string'];
+        $rules['account_id'] = ['required', 'integer'];
+        $rules['phone'] = ['nullable', 'regex:/^[0-9]+$/', 'max_digits:12'];
 
         return $rules;
     }
@@ -120,7 +117,7 @@ class ContactsImport extends Import implements ToCollection, WithBatchInserts, W
     public function rowHasValues(array $item): bool
     {
         foreach ($item as $key => $value) {
-            if (in_array($key, ['reference', 'tenant_id'], true)) {
+            if (in_array($key, ['account_id', 'tenant_id'], true)) {
                 continue;
             }
             if ($value !== null) {

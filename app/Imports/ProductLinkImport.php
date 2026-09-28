@@ -20,8 +20,18 @@ class ProductLinkImport extends Import
 
             $this->results['processed']++;
             $this->results['data'][] = $item;
+
+            if ($this->skipIfDuplicate($item, $rowIndex)) {
+                continue;
+            }
+
             $this->insertLink($item);
         }
+    }
+
+    protected function uniqueFields(): array
+    {
+        return ['product_sku', 'linked_product_sku'];
     }
 
     private function insertLink(array $row): bool

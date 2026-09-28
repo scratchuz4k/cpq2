@@ -19,8 +19,18 @@ class ProductBundleImport extends Import
 
             $this->results['processed']++;
             $this->results['data'][] = $item;
+
+            if ($this->skipIfDuplicate($item, $rowIndex)) {
+                continue;
+            }
+
             $this->insertBundleItem($item);
         }
+    }
+
+    protected function uniqueFields(): array
+    {
+        return ['product_sku', 'bundle_item_sku'];
     }
 
     private function insertBundleItem(array $row): bool
