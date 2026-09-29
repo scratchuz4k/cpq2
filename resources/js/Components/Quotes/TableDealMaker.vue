@@ -19,11 +19,14 @@ if (props.preview) {
     });
 }
 
+// Price plan discount for all items; billing frequency discounts are in the Overall Totals
+const pricePlanDiscount = (key) => quote.discounts.find((x) => x.entity?.code == key && !x.billing_frequency_unit);
+
 const quoteTotal = (key) => {
     let total = quote.items
         .filter((x) => x.price_plan && x.price_plan.code == key)
         .reduce((acc, item) => (acc += item.quantity * item.price), 0);
-    let tempDiscount = quote.discounts.find((x) => x.entity?.code == key);
+    let tempDiscount = pricePlanDiscount(key);
     return total ? total - (tempDiscount?.value ?? 0) : 0;
 };
 
@@ -31,7 +34,7 @@ const quoteTotalMonths = (key) => {
     let total = quote.items
         .filter((x) => x.price_plan && x.price_plan.code == key)
         .reduce((acc, item) => (acc += item.total), 0);
-    let tempDiscount = quote.discounts.find((x) => x.entity?.code == key);
+    let tempDiscount = pricePlanDiscount(key);
 
     return total ? total - (tempDiscount?.total ?? 0) : 0;
 };

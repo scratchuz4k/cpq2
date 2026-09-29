@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\FrequencyUnitsEnum;
 use App\Enums\QuoteStatusesEnum;
 use App\Helpers\DataProvider;
 use App\Http\Resources\QuoteItemResource;
@@ -66,6 +67,10 @@ class QuoteService
                 $quote->discounts()->updateOrCreate([
                     'discountable_type' => $model,
                     'discountable_id' => $object->id,
+                    // Recurring discount for a single billing frequency (Annual, Monthly, Daily)
+                    'billing_frequency_unit' => in_array($discount['billing_frequency_unit'] ?? null, FrequencyUnitsEnum::names())
+                        ? $discount['billing_frequency_unit']
+                        : null,
                 ], [
                     'discount' => $discount['value'],
                 ]);

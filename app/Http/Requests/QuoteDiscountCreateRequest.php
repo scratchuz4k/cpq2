@@ -26,6 +26,8 @@ class QuoteDiscountCreateRequest extends FormRequest
             'entity' => 'required|in:price_plans,quote',
             'entity_id' => 'required|numeric',
             'discount' => 'required|numeric|min:0|max:100',
+            // Recurring discount for a single billing frequency (Annual, Monthly, Daily)
+            'billing_frequency_unit' => 'nullable|string|in:DAYS,MONTHS,YEARS',
         ];
     }
 }
