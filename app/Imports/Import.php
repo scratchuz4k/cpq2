@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Rules\TenantUniqueRule;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -364,5 +365,10 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
         $firstIndex = $this->isDuplicateInFile($group, $values, $index);
 
         return $firstIndex === false ? [] : [$group => $firstIndex];
+    }
+
+    public function storeFile(?UploadedFile $file, string $filename)
+    {
+        return $file->storeAs('imports', $filename, 'public');
     }
 }

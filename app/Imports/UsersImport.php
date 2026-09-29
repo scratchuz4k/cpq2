@@ -6,10 +6,12 @@ use App\Models\Role;
 use App\Models\User;
 use App\Rules\TenantExistsRule;
 use App\Support\GroupAssignment;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -54,6 +56,10 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
             $existingUser = $this->overwrite && ! empty($item['email'])
                 ? User::where('email', $item['email'])->where('tenant_id', $this->tenant->id)->first()
                 : null;
+
+            if ($this->overwrite && $existingUser) {
+                unset($item['password']);
+            }
 
             $validator = Validator::make($item, $this->rules($existingUser));
 
@@ -287,7 +293,7 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
         $delimiter = array_search(max($counts), $counts, true) ?: ',';
 
         $header = fgetcsv($in, null, $delimiter) ?: [];
-        // Match how WithHeadingRow slugs headings (and strip a UTF-8 BOM).
+
         if (isset($header[0])) {
             $header[0] = preg_replace('/^\xEF\xBB\xBF/', '', (string) $header[0]);
         }
@@ -318,5 +324,20 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
             'data' => collect($template['data']),
             'filename' => $template['filename'],
         ];
+    }
+
+    public function storeFile(?UploadedFile $file, string $filename)
+    {
+        $path = "imports/{$filename}";
+        $stored = $file->storeAs('imports', $filename, 'local')
+            && Storage::disk('public')->put($path, UsersImport::maskPasswordsInCsv($file->getRealPath()));
+
+        if (! $stored) {
+            Storage::disk('local')->delete($path);
+
+            return false;
+        }
+
+        return $path;
     }
 }
