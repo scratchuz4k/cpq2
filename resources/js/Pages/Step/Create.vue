@@ -17,10 +17,7 @@ const step = reactive({
 });
 
 const saveStep = () => {
-    let temp = step;
-    temp.solution_type_id = step.solution_type ?? null;
-
-    router.post(`/steps`, temp, {
+    router.post(`/steps`, step, {
         onSuccess: (page) => {
             notyf.success('Created with Success');
         },
@@ -75,7 +72,7 @@ const items = ref([
                     <label for="step-solution-type" class="form-label">Solution Type:</label>
                     <Select
                         inputId="step-solution-type"
-                        v-model="step.solution_type"
+                        v-model="step.solution_type_id"
                         :options="props.solution_types"
                         optionLabel="name"
                         optionValue="id"
