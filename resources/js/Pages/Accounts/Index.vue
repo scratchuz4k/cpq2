@@ -3,6 +3,12 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
+const props = defineProps({
+    imports: {
+        type: Array,
+        default: []
+    }
+});
 const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/settings' }, { label: 'Accounts' }]);
 </script>
 
@@ -34,6 +40,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                         { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
                     ]"
                     route="/accounts"
+                    :imports="props.imports"
                 >
                     <template #updated_at="{ value }">
                         {{ format.date(value) }}

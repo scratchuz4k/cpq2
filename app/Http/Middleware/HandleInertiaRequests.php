@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\ImportsEnum;
 use App\Http\Resources\TenantResource;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
@@ -50,6 +51,7 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'status' => $request->session()->get('status'),
             ],
+            'importModels' => fn () => ImportsEnum::asArray(),
         ];
     }
 }

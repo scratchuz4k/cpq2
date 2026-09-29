@@ -55,7 +55,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Imports', url: '/impor
                     <p>
                         <b>Model:</b><br />
                         <span class="badge border border-secondary text-secondary opacity-75 lh-sm text-uppercase">
-                            {{ props.importObject.model }}</span
+                            {{ format.friendlyString(format.toSnakeCase(props.importObject.model)) }}</span
                         >
                     </p>
                     <p>
@@ -107,7 +107,8 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Imports', url: '/impor
                 <p class="fw-semibold">Errors</p>
                 <ul v-if="props.importObject.data?.errors?.length > 0">
                     <li class="rows" v-for="(row, index) in props.importObject.data.errors" :key="index">
-                        {{ importObject.model }} {{ row.row?.name || 'Unknown' }}:
+                        {{ format.friendlyString(format.toSnakeCase(importObject.model)) }}
+                        Row #{{ row.row_index + 1 }}:
                         <ul>
                             <li v-if="row.errors" v-for="(error, key) in row.errors" :key="key">
                                 {{ error }}

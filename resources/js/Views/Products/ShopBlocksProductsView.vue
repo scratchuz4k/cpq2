@@ -177,7 +177,14 @@ const getProductsShopBlocks = async () => {
         productsHardware.value.forEach((e) => {
             let temp = quote.items.find((x) => x.product_code == e.code);
             e.quantity = temp ? temp.quantity : 0;
-            e.contract_length = 1;
+            if (!e.renewal_terms_value) {
+                e.renewal_terms_value = 1;
+                e.renewal_terms_unit = 'MONTHS';
+            }
+            if (!e.billing_frequency_value) {
+                e.billing_frequency_value = 1;
+                e.billing_frequency_unit = 'MONTHS';
+            }
         });
 
         meta.first = (meta.page - 1) * meta.limit;

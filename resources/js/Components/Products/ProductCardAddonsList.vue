@@ -43,9 +43,6 @@ const appendPage = (items) => {
         const quoteItem = quote.items?.find(
             (x) => x.product_code == item.addon.sku && x.data?.type == 'addon_product' && x.group == parentItem?.group
         );
-        if (!item.addon.contract_length) {
-            item.addon.contract_length = item.addon.price_plan?.code == 'SINGLE' ? 1 : 12;
-        }
         item.addon.quantity = quoteItem ? quoteItem.quantity : 0;
         addons.value.push(item);
     });
@@ -148,7 +145,10 @@ const checkQuantity = _.throttle(async (addon, val) => {
                         product_code: addon.sku,
                         product_id: addon.id,
                         quantity: quantity,
-                        contract_length: addon.contract_length,
+                        renewal_terms_value: addon.renewal_terms_value,
+                        renewal_terms_unit: addon.renewal_terms_unit,
+                        billing_frequency_value: addon.billing_frequency_value,
+                        billing_frequency_unit: addon.billing_frequency_unit,
                         name: addon.name,
                         raw_price: addon.price ? addon.price.net : 0,
                         price: addon.price ? addon.price.net_spa : 0,

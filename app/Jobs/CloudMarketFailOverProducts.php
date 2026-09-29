@@ -42,13 +42,14 @@ class CloudMarketFailOverProducts extends CloudMarket
         $time = Carbon::now()->addSeconds(86400);
 
         $this->started_at = now();
+        $this->updateCloudMarketSearchCache($this->file);
 
         $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());
         foreach (Items::fromStream($stream) as $value) {
             if (! is_object($value) && ! is_array($value)) {
                 continue;
             }
-            if ($value->hasErrors && $value->quoteResponseError) {
+            if (($value->hasErrors ?? false) && ($value->quoteResponseError ?? null)) {
                 $error = $this->processErrors($value->quoteResponseError->requestInfo->supplier, $value->quoteResponseError->errorMessage);
 
                 if (! in_array($error, $this->errors)) {
@@ -56,7 +57,7 @@ class CloudMarketFailOverProducts extends CloudMarket
                 }
             }
 
-            if (empty($value->providerKey) || ! $value->quoteId || $value->priceMonthly == 0) {
+            if (empty($value->providerKey) || ! ($value->quoteId ?? null) || ($value->priceMonthly ?? 0) == 0) {
                 continue;
             }
 
@@ -81,6 +82,7 @@ class CloudMarketFailOverProducts extends CloudMarket
         }
 
         Product::write('fail_over', $this->file, $this->prices, false, now(), $this->started_at, $this->tempFilters, $this->errors, $time);
+        $this->updateCloudMarketSearchCache($this->file);
     }
 
     /**

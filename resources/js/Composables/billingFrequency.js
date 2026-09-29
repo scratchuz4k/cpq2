@@ -16,10 +16,26 @@ const dividers = (num) => {
     return divisors.sort((a, b) => a - b);
 };
 
-const daysPerUnit = {
+export const daysPerUnit = {
     DAYS: 1,
     MONTHS: 30,
     YEARS: 360
+};
+
+export const frequencyUnitOptions = [
+    { name: 'DAYS', value: 'Day' },
+    { name: 'MONTHS', value: 'Month' },
+    { name: 'YEARS', value: 'Year' }
+];
+
+export const formatFrequency = (value, unit) => {
+    const option = frequencyUnitOptions.find(({ name }) => name === unit);
+
+    if (!option || !value) {
+        return '';
+    }
+
+    return `${value} ${option.value}${value == 1 ? '' : 's'}`;
 };
 
 /**

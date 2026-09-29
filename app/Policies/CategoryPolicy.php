@@ -62,15 +62,7 @@ class CategoryPolicy
      */
     public function delete(User $user, Category $category): bool
     {
-        if (! $user->can("delete $this->model")) {
-            return false;
-        }
-
-        if (count($category->products)) {
-            return false;
-        }
-
-        return true;
+        return $user->can("delete $this->model");
     }
 
     /**
@@ -103,6 +95,18 @@ class CategoryPolicy
     public function export(User $user): bool
     {
         if (! $user->can("export $this->model")) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Determine whether the user can import the model.
+     */
+    public function import(User $user): bool
+    {
+        if (! $user->can("import $this->model")) {
             return false;
         }
 

@@ -92,6 +92,16 @@ body {
         cursor: not-allowed;
     }
 
+    .disabled-link-wrapper {
+        cursor: not-allowed;
+        display: inline-block;
+    }
+
+    .disabled-link {
+        pointer-events: none;
+        opacity: 0.6;
+    }
+
     .bg-primary {
         background-color: var(--color-primary) !important;
     }

@@ -27,7 +27,6 @@ const toggleBundleItems = () => {
 const edit = (p) => {
     temp.quantity = p.quantity;
     temp.discount = p.discount;
-    temp.contract_length = p.contract_length;
     emitter.emit('quote-items:toggle:is-editing');
     item.value.is_editing = true;
 };
@@ -35,8 +34,7 @@ const edit = (p) => {
 const save = async (p) => {
     let item = {
         quantity: temp.quantity,
-        discount: temp.discount,
-        contract_length: temp.contract_length
+        discount: temp.discount
     };
 
     if (await updateQuoteItem(p.id, item)) {

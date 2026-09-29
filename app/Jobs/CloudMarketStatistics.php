@@ -18,7 +18,7 @@ class CloudMarketStatistics implements NotTenantAware, ShouldQueue
 {
     use Queueable;
 
-    public $timeout = 3600;
+    public $timeout = 900;
 
     /**
      * Create a new job instance.

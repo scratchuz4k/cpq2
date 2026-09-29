@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Enums\FrequencyUnitsEnum;
+use App\Enums\ImportsEnum;
 use App\Enums\ProductStatusesEnum;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\ProductCreateRequest;
@@ -32,11 +33,17 @@ class ProductController extends BaseController
      */
     public function index()
     {
-        $solutionTypes = Auth::user()->currentTenant->solutionTypes->filter(fn ($solutionType) => $solutionType->pivot->is_active === 1)->makeHidden('pivot');
+        $user = Auth::user();
+        $solutionTypes = $user->currentTenant->solutionTypes->filter(fn ($solutionType) => $solutionType->pivot->is_active === 1)->makeHidden('pivot');
 
         return Inertia::render('Products/Index', [
             'solution_types' => (SolutionTypeTenantResource::collection($solutionTypes))->resolve(),
             'statuses' => ProductStatusesEnum::cases(),
+            // Relationship imports (links/add-ons/bundles) are all gated behind the same
+            // "import product" permission the corresponding policies already enforce.
+            'productRelationshipImports' => $user->can('import product')
+                ? ImportsEnum::asArrayFor([ImportsEnum::Product, ImportsEnum::ProductLink, ImportsEnum::ProductAddon, ImportsEnum::ProductBundle])
+                : [],
         ]);
 
     }

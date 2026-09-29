@@ -43,7 +43,10 @@ export const add = async (article) => {
                 ...item,
                 name: article.productName,
                 price_plan_code: 'monthly',
-                contract_length: article.contractTermMonths,
+                renewal_terms_value: article.contractTermMonths,
+                renewal_terms_unit: 'MONTHS',
+                billing_frequency_value: 1,
+                billing_frequency_unit: 'MONTHS',
                 raw_price: article.priceMonthly,
                 price: article.priceMonthly_spa
             });
@@ -85,7 +88,10 @@ export const addAddon = async (article) => {
                 ...item,
                 name: article.productName,
                 price_plan_code: 'monthly',
-                contract_length: article.contractTermMonths,
+                renewal_terms_value: article.contractTermMonths,
+                renewal_terms_unit: 'MONTHS',
+                billing_frequency_value: 1,
+                billing_frequency_unit: 'MONTHS',
                 raw_price: article.priceMonthly,
                 price: article.priceMonthly_spa
             });

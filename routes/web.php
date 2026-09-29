@@ -5,6 +5,7 @@ use App\Http\Controllers\Web\AccountController;
 use App\Http\Controllers\Web\ActivityController;
 use App\Http\Controllers\Web\ApiController;
 use App\Http\Controllers\Web\CategoryController;
+use App\Http\Controllers\Web\ContactController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\EmailHistoryController;
 use App\Http\Controllers\Web\EmailTemplateController;
@@ -78,6 +79,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/users/import', [UserController::class, 'index'])->name('users.import');
     Route::post('/users/import', [UserController::class, 'importUsers'])->name('users.import');
+
+    Route::resource('contacts', ContactController::class)->only(['import']);
 
     Route::resources([
         'email-templates' => EmailTemplateController::class,

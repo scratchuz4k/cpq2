@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\TenantExistsRule;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -19,7 +21,7 @@ class StepUpdateRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -41,7 +43,14 @@ class StepUpdateRequest extends FormRequest
                 //          ->where('solution_type_id', $this->input('solution_type_id'))
                 //     ),
             ],
-            'solution_type_id' => 'exists:solution_type_tenant,solution_type_id',
+            'solution_type_id' => [
+                Rule::exists('solution_type_tenant', 'solution_type_id')
+                    ->where('tenant_id', $user->tenant_id),
+            ],
+            'products.*' => [
+                'integer',
+                new TenantExistsRule('products'),
+            ],
         ];
     }
 }

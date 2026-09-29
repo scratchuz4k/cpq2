@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Log;
 
 class ShopBlocksApi
 {
-    protected $requestTimeout = 600;
+    protected $requestTimeout = 900;
 
     public function getArticles($limit = 10, $page = 1, $filters = [])
     {

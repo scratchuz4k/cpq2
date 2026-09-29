@@ -8,6 +8,7 @@ use App\Models\Import;
 use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
@@ -28,8 +29,8 @@ class ImportJob implements ShouldQueue, TenantAware
         public ?User $actingUser = null,
         public bool $overwrite = false
     ) {
-        $importClass = ImportsEnum::tryFromName($this->import->model)->value;
-        $this->importHandler = new $importClass($overwrite, $actingUser);
+        $importClass = ImportsEnum::importClassFor(class_basename($this->import->model));
+        $this->importHandler = new $importClass(auth()->user(), $this->import->model, false, $this->overwrite);
     }
 
     /**
@@ -51,6 +52,7 @@ class ImportJob implements ShouldQueue, TenantAware
             Log::error("[JOB] Import Job | Error processing: {$e->getMessage()}");
         } finally {
             app(PermissionRegistrar::class)->setPermissionsTeamId(null);
+            Auth::forgetGuards();
         }
     }
 

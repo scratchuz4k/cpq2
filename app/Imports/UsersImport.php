@@ -3,7 +3,6 @@
 namespace App\Imports;
 
 use App\Models\Role;
-use App\Models\Tenant;
 use App\Models\User;
 use App\Rules\TenantExistsRule;
 use Illuminate\Support\Collection;
@@ -13,32 +12,15 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
-use Maatwebsite\Excel\Concerns\SkipsErrors;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Facades\Excel;
 
-class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
+class UsersImport extends Import implements ToCollection, WithBatchInserts, WithHeadingRow
 {
-    use SkipsErrors;
-
-    public $results = [
-        'processed' => 0,
-        'success' => 0,
-        'skipped' => 0,
-        'errors' => [],
-        'data' => [],
-    ];
-
-    protected Tenant $tenant;
-
-    protected $isDryRun;
-
-    public function __construct(protected bool $overwrite, protected User $actingUser, bool $isDryRun = false)
+    public function __construct(protected User $actingUser, protected string $model, bool $isDryRun = false)
     {
-        $this->tenant = Tenant::current();
-        $this->isDryRun = $isDryRun;
+        parent::__construct($actingUser, $model, $isDryRun);
     }
 
     public function getResults(): array
@@ -52,75 +34,22 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
     }
 
     /**
-     * Validate the import file.
-     */
-    public static function validateFile($file, User $actingUser, bool $overwrite): array
-    {
-        $import = new self($overwrite, $actingUser, true);
-        Excel::import($import, $file);
-
-        return $import->results;
-    }
-
-    /**
      * Insert a new user with a specific manager.
      */
-    private function insertUser(array $user, int $rowIndex): bool
+    public function insert(array $item, int $index): bool
     {
         try {
-            $user['groups'] = $user['groups']
-                ? array_map('trim', explode(',', $user['groups']))
+            $item['groups'] = $item['groups']
+                ? array_map('trim', explode(',', $item['groups']))
                 : [];
-            $actingUser = $this->actingUser;
 
-            $validator = Validator::make($user, [
-                'name' => 'required|string|max:255',
-                'email' => $this->overwrite
-                    ? 'required|email'
-                    : ['required', 'email', Rule::unique('users')],
-                'is_active' => ['boolean'],
-                'groups' => [
-                    'nullable',
-                    function ($attribute, $value, $fail) use ($actingUser) {
-                        if (empty($value) || ! $actingUser->groups->count()) {
-                            return;
-                        }
-
-                        if (
-                            ! $this->actingUser->hasRole('Super Admin')
-                            && ! empty(array_diff($value, $actingUser->groups->pluck('id')->toArray()))
-                        ) {
-                            $fail("The {$attribute} field contains group(s) the authenticated user does not belong to.");
-                        }
-                    },
-                ],
-                'groups.*' => [
-                    'integer',
-                    new TenantExistsRule('groups'),
-                ],
-                'role' => [
-                    'integer',
-                    new TenantExistsRule('roles'),
-                    function ($attribute, $value, $fail) use ($actingUser) {
-                        $authRole = $actingUser->roles->first();
-
-                        if (
-                            ! $this->actingUser->hasRole('Super Admin')
-                            && ! in_array((int) $value, [$authRole->id, ...$authRole->getDescendantIds()])
-                        ) {
-                            $fail("The {$attribute} must be {$authRole->name} or a descendant.");
-                        }
-                    },
-                ],
-                'commission_rate' => 'nullable|integer|min:0|max:100',
-                'sso' => ['boolean'],
-            ]);
+            $validator = Validator::make($item, $this->rules());
 
             if ($validator->fails()) {
                 $this->results['skipped']++;
                 $this->results['errors'][] = [
-                    'row_index' => $rowIndex,
-                    'row' => $user,
+                    'row_index' => $index,
+                    'row' => $item,
                     'errors' => $validator->errors()->all(),
                 ];
 
@@ -134,12 +63,12 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
             }
 
             $newUser = User::create([
-                'is_active' => (int) $user['is_active'] ?? 1,
-                'name' => $user['name'] ?? '',
-                'email' => $user['email'] ?? '',
-                'password' => ! empty($user['password']) ? Hash::make($user['password']) : Hash::make(Str::random(12)),
-                'sso' => isset($user['sso']) && (int) $user['sso'] === 1 ? 1 : 0,
-                'commission_rate' => (int) $user['commission_rate'] ?? 0,
+                'is_active' => (int) $item['is_active'] ?? 1,
+                'name' => $item['name'] ?? '',
+                'email' => $item['email'] ?? '',
+                'password' => ! empty($item['password']) ? Hash::make($item['password']) : Hash::make(Str::random(12)),
+                'sso' => isset($item['sso']) && (int) $item['sso'] === 1 ? 1 : 0,
+                'commission_rate' => (int) $item['commission_rate'] ?? 0,
                 'tenant_id' => $this->tenant->id,
             ]);
 
@@ -152,17 +81,17 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 ]);
 
                 // Assign role
-                if ($user['role']) {
-                    $role = Role::find($user['role']);
+                if ($item['role']) {
+                    $role = Role::find($item['role']);
 
                     $newUser->assignRole($role);
                 }
 
                 // Assign group
                 $temp = [];
-                foreach ($user['groups'] as $group) {
+                foreach ($item['groups'] as $group) {
                     $temp[$group] = [
-                        'tenant_id' => $actingUser->tenant_id,
+                        'tenant_id' => $this->actingUser->tenant_id,
                     ];
                 }
                 $newUser->groups()->sync($temp);
@@ -174,15 +103,15 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
         } catch (ValidationException $e) {
             $this->results['skipped']++;
             $this->results['errors'][] = [
-                'row_index' => $rowIndex,
-                'row' => $user,
+                'row_index' => $index,
+                'row' => $item,
                 'error' => $e->errors(),
             ];
         } catch (\Exception $e) {
             $this->results['skipped']++;
             $this->results['errors'][] = [
-                'row_index' => $rowIndex,
-                'row' => $user,
+                'row_index' => $index,
+                'row' => $item,
                 'error' => $e->getMessage(),
             ];
         }
@@ -192,37 +121,64 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
     public function collection(Collection $collection): void
     {
-        foreach ($collection->values() as $rowIndex => $row) {
+        foreach ($collection->values() as $index => $row) {
             $row = array_map(fn ($value) => trim((string) $value), $row->toArray());
             $this->results['data'][] = [
-                'index' => $rowIndex,
+                'index' => $index,
                 ...$row,
             ];
             $this->results['processed']++;
-            $this->insertUser($row, $rowIndex);
+
+            if ($this->skipIfDuplicate($row, $index)) {
+                continue;
+            }
+
+            $this->insert($row, $index);
         }
-    }
-
-    public function batchSize(): int
-    {
-        return 500;
-    }
-
-    public function chunkSize(): int
-    {
-        return 500;
-    }
-
-    public function headingRow(): int
-    {
-        return 1;
     }
 
     public function rules(): array
     {
         return [
-            '*.email' => 'required|email|unique:users,email',
-            '*.name' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
+            'email' => ['required', 'email', Rule::unique('users')],
+            'password' => ['required', 'string', 'min:8'],
+            'groups' => [
+                'nullable',
+                function ($attribute, $value, $fail) {
+                    if (empty($value) || ! $this->actingUser->groups->count()) {
+                        return;
+                    }
+
+                    if (
+                        ! $this->actingUser->hasRole('Super Admin')
+                        && ! empty(array_diff($value, $this->actingUser->groups->pluck('id')->toArray()))
+                    ) {
+                        $fail("The {$attribute} field contains group(s) the authenticated user does not belong to.");
+                    }
+                },
+            ],
+            'groups.*' => [
+                'integer',
+                new TenantExistsRule('groups'),
+            ],
+            'role' => [
+                'integer',
+                new TenantExistsRule('roles'),
+                function ($attribute, $value, $fail) {
+                    $authRole = $this->actingUser->roles->first();
+
+                    if (
+                        ! $this->actingUser->hasRole('Super Admin')
+                        && ! in_array((int) $value, [$authRole->id, ...$authRole->getDescendantIds()])
+                    ) {
+                        $fail("The {$attribute} must be {$authRole->name} or a descendant.");
+                    }
+                },
+            ],
+            'commission_rate' => 'nullable|integer|min:0|max:100',
+            'sso' => ['boolean'],
+            ...$this->isActiveRule(),
         ];
     }
 

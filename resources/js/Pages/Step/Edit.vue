@@ -15,12 +15,16 @@ const props = defineProps({
 });
 
 const product = ref(null);
-const step = reactive(props.step);
+const step = reactive({
+    ...props.step,
+    solution_type_id: props.step.solution_type?.id ?? null
+});
+delete step.solution_type;
+const productIds = ref([...(props.step.products ?? [])]);
 
 const saveStep = () => {
-    let temp = step;
-    temp.solution_type_id = step.solution_type?.id ?? null;
-    router.put(`/steps/${step.id}`, step, {
+    const { products, ...stepFields } = step;
+    router.put(`/steps/${step.id}`, stepFields, {
         onSuccess: (page) => {
             notyf.success('Updated with Success');
         },
@@ -34,19 +38,21 @@ const saveStep = () => {
     });
 };
 
-const setStepProduct = async (product_id, step_id) => {
+const setStepProduct = async (product_id, add) => {
     if (!product_id) {
         return;
     }
+
+    const ids = add
+        ? [...new Set([...productIds.value, product_id])]
+        : productIds.value.filter((id) => id !== product_id);
+
     try {
-        if (step_id) {
-            await axios.put('/api/products/' + product_id, { steps: [step_id] });
-        } else {
-            await axios.put('/api/products/' + product_id, { detach_steps: [step.id] });
-        }
+        await axios.put('/api/steps/' + step.id, { products: ids });
+        productIds.value = ids;
         product.value = null;
 
-        notyf.success(step_id ? 'Product added with Success' : 'Product removed with success');
+        notyf.success(add ? 'Product added with Success' : 'Product removed with success');
 
         emitter.emit('datatable-refresh:step-products');
         emitter.emit('input-select-refresh:select-product');
@@ -100,9 +106,10 @@ const items = ref([
                             <label for="step-solution-type" class="form-label">Solution Type:</label>
                             <Select
                                 inputId="step-solution-type"
-                                v-model="step.solution_type"
+                                v-model="step.solution_type_id"
                                 :options="props.solution_types"
                                 optionLabel="name"
+                                optionValue="id"
                                 placeholder="Select a Solution Type"
                                 class="w-100"
                             />
@@ -110,7 +117,7 @@ const items = ref([
                     </div>
                 </tab>
                 <tab title="Products">
-                    <form @submit.prevent="setStepProduct(product?.id, step.id)" class="mt-3 d-flex">
+                    <form @submit.prevent="setStepProduct(product?.id, true)" class="mt-3 d-flex">
                         <div class="me-3" style="width: 100%">
                             <label class="form-label">Add Products:</label>
                             <InputSelect
@@ -158,7 +165,7 @@ const items = ref([
                                     <button
                                         class="btn px-2 py-0 mx-1 border-0"
                                         :id="'datatable-btn-' + index + '-delete'"
-                                        @click="setStepProduct(data.id, null)"
+                                        @click="setStepProduct(data.id, false)"
                                     >
                                         <font-awesome-icon :icon="['fas', 'trash-alt']"></font-awesome-icon>
                                     </button>

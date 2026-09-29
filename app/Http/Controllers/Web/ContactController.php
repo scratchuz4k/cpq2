@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 
 class ContactController extends BaseController
 {
+    protected $model = Contact::class;
+
     /**
      * Display a listing of the resource.
      */
