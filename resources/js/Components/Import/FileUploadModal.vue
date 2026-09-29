@@ -32,8 +32,22 @@ const form = reactive({
 const importOptions = computed(() =>
     props.imports.map((item) => ({
         ...item,
-        label: format.friendlyString(format.toSnakeCase(item.name))
+        label: item.label ?? format.friendlyString(format.toSnakeCase(item.name))
     }))
+);
+
+const overwriteLabels = {
+    products: 'Update existing products that have the same SKU',
+    users: 'Update existing users that have the same email'
+};
+
+const overwriteLabel = computed(() => overwriteLabels[form.model] ?? null);
+
+watch(
+    () => form.model,
+    () => {
+        form.overwrite = 0;
+    }
 );
 
 const isLoading = ref(false);
@@ -122,16 +136,16 @@ const submitFile = async () => {
                         to see and example of the format required. Maximum file upload size is 2 MB.
                     </i>
                 </p>
-                <div v-if="form.model === 'products'" class="form-check px-0 pt-2">
+                <div v-if="overwriteLabel" class="form-check px-0 pt-2">
                     <Checkbox
-                        inputId="overwrite-products"
+                        inputId="overwrite-records"
                         v-model="form.overwrite"
                         binary
                         trueValue="1"
                         falseValue="0"
                     />
-                    <label class="form-check-label ms-2" for="overwrite-products">
-                        Update existing products that have the same SKU
+                    <label class="form-check-label ms-2" for="overwrite-records">
+                        {{ overwriteLabel }}
                     </label>
                 </div>
                 <hr />

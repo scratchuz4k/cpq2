@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Str;
+
 if (! function_exists('findLeaves')) {
     function findLeaves(array $items, &$leaves)
     {
@@ -84,13 +86,15 @@ if (! function_exists('frequencyLabel')) {
             return '';
         }
 
-        $abbreviations = [
-            'DAYS' => 'd',
-            'MONTHS' => 'mo',
-            'YEARS' => 'yr',
+        $labels = [
+            'DAYS' => 'Day',
+            'MONTHS' => 'Month',
+            'YEARS' => 'Year',
         ];
 
-        return $value.($abbreviations[$unit] ?? '');
+        $label = $labels[$unit] ?? '';
+
+        return $value.' '.Str::plural($label, $value);
     }
 }
 if (! function_exists('getCss')) {

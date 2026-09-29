@@ -19,8 +19,18 @@ class ProductAddonImport extends Import
 
             $this->results['processed']++;
             $this->results['data'][] = $item;
+
+            if ($this->skipIfDuplicate($item, $rowIndex)) {
+                continue;
+            }
+
             $this->insertAddon($item);
         }
+    }
+
+    protected function uniqueFields(): array
+    {
+        return ['product_sku', 'add_on_product_sku'];
     }
 
     private function insertAddon(array $row): bool

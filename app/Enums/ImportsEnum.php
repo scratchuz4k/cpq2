@@ -10,6 +10,7 @@ use App\Imports\ProductAddonImport;
 use App\Imports\ProductBundleImport;
 use App\Imports\ProductLinkImport;
 use App\Imports\ProductsImport;
+use App\Imports\StepsImport;
 use App\Imports\UsersImport;
 use App\Trait\EnumHelpers;
 
@@ -43,7 +44,22 @@ enum ImportsEnum: string
             self::ProductAddon => ProductAddonImport::class,
             self::ProductBundle => ProductBundleImport::class,
             self::Category => CategoriesImport::class,
+            self::Step => StepsImport::class,
             default => Import::class,
+        };
+    }
+
+    /**
+     * The label shown for this import type in the import dropdowns.
+     */
+    public function label(): string
+    {
+        return match ($this) {
+            self::Contact => 'Account Contact',
+            self::ProductLink => 'Product Link',
+            self::ProductAddon => 'Product Addon',
+            self::ProductBundle => 'Product Bundle',
+            default => $this->name,
         };
     }
 
@@ -64,10 +80,15 @@ enum ImportsEnum: string
      */
     public static function asArrayFor(array $cases): array
     {
-        return array_map(fn ($case) => [
+        $items = array_map(fn ($case) => [
             'name' => $case->name,
             'value' => $case->value,
+            'label' => $case->label(),
         ], $cases);
+
+        usort($items, fn ($a, $b) => strcasecmp($a['label'], $b['label']));
+
+        return $items;
     }
 
     public static function importsWithPermissionAsArray(): array
@@ -78,10 +99,7 @@ enum ImportsEnum: string
             return $user->can('create import') && $user->can('import '.$case->permissionGroup());
         });
 
-        return array_map(fn ($case) => [
-            'name' => $case->name,
-            'value' => $case->value,
-        ], array_values($cases));
+        return self::asArrayFor(array_values($cases));
     }
 
     /**

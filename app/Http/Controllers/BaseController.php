@@ -82,8 +82,13 @@ class BaseController extends Controller
 
         $results = $importHandler->validateFile($file);
 
-        if (get_class($importHandler) !== Import::class) {
-            $helperFile = require app_path('Helpers/Import/'.mb_strtolower(class_basename($this->model)).'_import.php');
+        $filePath = app_path('Helpers/Import/'.mb_strtolower(class_basename($this->model)).'_import.php');
+
+        if (
+            get_class($importHandler) !== Import::class
+            && file_exists($filePath)
+        ) {
+            $helperFile = require $filePath;
             $columns = $helperFile['columns'];
         } else {
             $columns = array_combine(
@@ -94,7 +99,10 @@ class BaseController extends Controller
 
         if (! $isDryRun) {
             $filename = Str::random(40).'.'.$file->getClientOriginalExtension();
-            if ($path = $file->storeAs('imports', $filename, 'public')) {
+
+            $path = $importHandler->storeFile($file, $filename);
+
+            if ($path) {
                 $resource = Resource::create([
                     'title' => $file->getClientOriginalName(),
                     'mime_type' => $file->getClientMimeType(),
@@ -110,6 +118,7 @@ class BaseController extends Controller
                 'status' => ImportStatusesEnum::IN_PROGRESS->name,
                 'model' => class_basename($this->model),
                 'user_id' => $user->id,
+                'overwrite' => (bool) $overwrite,
                 'tenant_id' => $user->tenant_id,
             ]);
 

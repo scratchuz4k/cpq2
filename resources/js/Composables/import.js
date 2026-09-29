@@ -42,7 +42,7 @@ const sendImport = async (file, route, dryRun, overwrite = false) => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('dry_run', dryRun ? 1 : 0);
-    formData.append('overwrite', overwrite ? 1 : 0);
+    formData.append('overwrite', Number(overwrite) ? 1 : 0);
 
     const res = await axios.post(importUrl(route), formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
