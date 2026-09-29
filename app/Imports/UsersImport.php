@@ -288,7 +288,10 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
 
         $header = fgetcsv($in, null, $delimiter) ?: [];
         // Match how WithHeadingRow slugs headings (and strip a UTF-8 BOM).
-        $keys = array_map(fn ($h) => Str::slug(preg_replace('/^\xEF\xBB\xBF/', '', (string) $h), '_'), $header);
+        if (isset($header[0])) {
+            $header[0] = preg_replace('/^\xEF\xBB\xBF/', '', (string) $header[0]);
+        }
+        $keys = array_map(fn ($h) => Str::slug((string) $h, '_'), $header);
         $idx = array_search('password', $keys, true);
 
         fputcsv($out, $header, $delimiter);
