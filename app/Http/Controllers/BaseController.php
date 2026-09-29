@@ -99,7 +99,10 @@ class BaseController extends Controller
 
         if (! $isDryRun) {
             $filename = Str::random(40).'.'.$file->getClientOriginalExtension();
-            if ($path = $file->storeAs('imports', $filename, 'public')) {
+
+            $path = $importHandler->storeFile($file, $filename);
+
+            if ($path) {
                 $resource = Resource::create([
                     'title' => $file->getClientOriginalName(),
                     'mime_type' => $file->getClientMimeType(),
@@ -115,6 +118,7 @@ class BaseController extends Controller
                 'status' => ImportStatusesEnum::IN_PROGRESS->name,
                 'model' => class_basename($this->model),
                 'user_id' => $user->id,
+                'overwrite' => (bool) $overwrite,
                 'tenant_id' => $user->tenant_id,
             ]);
 
