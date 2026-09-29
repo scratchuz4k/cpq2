@@ -15,11 +15,14 @@ const props = defineProps({
 });
 
 const product = ref(null);
-const step = reactive(props.step);
+const step = reactive({
+    ...props.step,
+    solution_type_id: props.step.solution_type?.id ?? null
+});
+delete step.solution_type;
 const productIds = ref([...(props.step.products ?? [])]);
 
 const saveStep = () => {
-    step.solution_type_id = step.solution_type?.id ?? null;
     const { products, ...stepFields } = step;
     router.put(`/steps/${step.id}`, stepFields, {
         onSuccess: (page) => {
@@ -103,9 +106,10 @@ const items = ref([
                             <label for="step-solution-type" class="form-label">Solution Type:</label>
                             <Select
                                 inputId="step-solution-type"
-                                v-model="step.solution_type"
+                                v-model="step.solution_type_id"
                                 :options="props.solution_types"
                                 optionLabel="name"
+                                optionValue="id"
                                 placeholder="Select a Solution Type"
                                 class="w-100"
                             />
