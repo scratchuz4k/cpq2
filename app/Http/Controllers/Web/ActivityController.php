@@ -125,7 +125,9 @@ class ActivityController extends BaseController
             case 'App\\Models\\QuoteItem':
                 return $item->activitable->name;
             case 'App\\Models\\QuoteDiscount':
-                return 'Global discount';
+                $unit = $item->activitable?->billing_frequency_unit;
+
+                return $unit ? billingFrequencyDiscountLabel($unit) : 'Global discount';
             default:
                 return '#';
         }

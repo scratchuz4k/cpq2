@@ -20,7 +20,12 @@ class QuoteDiscountService
             $array['discountable_id'] = $array['entity_id'];
         }
 
-        $discount = QuoteDiscount::create($array);
+        $discount = QuoteDiscount::updateOrCreate([
+            'quote_id' => $array['quote_id'] ?? null,
+            'discountable_type' => $array['discountable_type'],
+            'discountable_id' => $array['discountable_id'],
+            'billing_frequency_unit' => $array['billing_frequency_unit'] ?? null,
+        ], $array);
 
         return $discount;
     }
