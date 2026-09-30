@@ -1,0 +1,301 @@
+/* Hide number input arrows (Chrome, Safari, Edge, Opera) */
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Hide number input arrows (Firefox) */
+input[type='number'] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+[role='button']:hover {
+    opacity: 0.75;
+}
+
+/* Quote summary (dealmaker view) */
+.quote-summary-panel {
+    background-color: var(--white);
+    border: 1px solid var(--light-grey);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 20px;
+
+    p {
+        margin-bottom: 0;
+    }
+}
+
+.quote-summary-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--dark-purple);
+    margin-bottom: 16px;
+}
+
+.quote-summary-sidebar-panel {
+    .quote-summary-title {
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+
+    .small {
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+    .btn-sm {
+        font-size: 12px;
+        font-weight: 600;
+        padding: 6px 14px;
+    }
+
+    .profitability-values {
+        background: var(--lighter-grey);
+        border: 1px solid var(--light-grey);
+        border-radius: var(--radius);
+        padding: 4px 12px;
+
+        > div {
+            padding: 8px 0;
+            font-size: 13px;
+
+            &:not(:last-child) {
+                border-bottom: 1px solid var(--light-grey);
+            }
+        }
+
+        .label {
+            font-weight: 600;
+        }
+
+        .label span {
+            font-weight: 400;
+            color: var(--dark-grey);
+        }
+
+        .value {
+            font-weight: 700;
+            text-align: right;
+        }
+    }
+}
+
+.quote-summary-table {
+    margin-bottom: 0;
+    font-size: 13px;
+
+    th,
+    td {
+        vertical-align: middle;
+        padding: 12px 8px;
+        white-space: nowrap;
+    }
+
+    thead th {
+        background: var(--table-header-grey);
+        color: var(--table-header-dark-grey);
+        font-size: 12px;
+        font-weight: 700;
+        border: none;
+        text-align: right;
+
+        &:first-child {
+            text-align: left;
+            border-top-left-radius: var(--radius);
+            border-bottom-left-radius: var(--radius);
+        }
+
+        &:last-child {
+            border-top-right-radius: var(--radius);
+            border-bottom-right-radius: var(--radius);
+        }
+    }
+
+    tbody td {
+        text-align: right;
+        border-bottom: 1px solid var(--light-grey);
+
+        &:first-child {
+            text-align: left;
+        }
+    }
+
+    tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .column-name-header,
+    .column-name-body {
+        width: 100%;
+        max-width: 0;
+        white-space: normal;
+    }
+
+    .column-billing_frequency-header,
+    .column-billing_frequency-body,
+    .column-renewal_terms-header,
+    .column-renewal_terms-body {
+        text-align: center !important;
+    }
+
+    .column-discount-body,
+    .column-quantity-body {
+        min-width: 70px;
+
+        input {
+            max-width: 70px;
+            margin-left: auto;
+        }
+    }
+
+    .column-actions-header,
+    .column-actions-body {
+        width: 56px;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .product-name {
+        color: var(--color-purple);
+        font-weight: 600;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+    }
+
+    .add-on-reference {
+        font-size: 11px;
+        color: var(--dark-grey);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-top: 2px;
+
+        span {
+            font-weight: 600;
+        }
+    }
+
+    .badge-bundle {
+        flex-shrink: 0;
+        margin-bottom: 0;
+    }
+
+    .router-model,
+    .is-burstable,
+    .addon-ipv4 {
+        font-size: 0.75rem !important;
+    }
+}
+
+.quote-summary-totals-table {
+    tbody td:first-child {
+        font-weight: 700;
+    }
+
+    .discount-value {
+        color: var(--bs-success);
+        font-weight: 600;
+    }
+
+    .column-total-body {
+        font-weight: 700;
+    }
+}
+
+.quote-final-total {
+    tbody td {
+        font-size: 16px;
+    }
+
+    tbody td:first-child {
+        font-size: 18px;
+    }
+}
+
+.frequency-pill {
+    display: inline-block;
+    border-radius: 16px;
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--color-purple-light);
+    color: var(--color-purple);
+
+    &.frequency-pill-months {
+        background: #e3f6e8;
+        color: #1e7b3a;
+    }
+
+    &.frequency-pill-days {
+        background: #fff4d6;
+        color: #8a6100;
+    }
+}
+
+.hover-tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: default;
+
+    .hover-tooltip-text {
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        z-index: 5;
+        bottom: calc(100% + 8px);
+        left: 50%;
+        transform: translateX(-50%);
+        width: max-content;
+        max-width: 240px;
+        padding: 4px 10px;
+        border-radius: 4px;
+        background: var(--dark-purple);
+        color: var(--white);
+        font-size: 11px;
+        font-weight: 500;
+        transition: opacity 0.2s;
+        pointer-events: none;
+
+        &:after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: var(--dark-purple);
+        }
+    }
+
+    &:hover .hover-tooltip-text,
+    &:focus .hover-tooltip-text {
+        visibility: visible;
+        opacity: 1;
+    }
+}
+
+.kebab-menu {
+    display: flex;
+    justify-content: center;
+
+    .btn-kebab {
+        border: none;
+        padding: 4px 10px;
+        color: var(--color-purple);
+
+        &:hover,
+        &.show {
+            background: var(--color-purple-light);
+        }
+    }
+
+    .dropdown-menu {
+        font-size: 13px;
+        min-width: 160px;
+    }
+}
