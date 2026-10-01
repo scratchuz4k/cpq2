@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 
 class CloudMarketApi
 {
-    private static int $requestTimeout = 900;
+    private static int $requestTimeout = 600;
 
     public static function getQuotes(Quote $quote, CloudMarketAddress $address)
     {
@@ -296,7 +296,7 @@ class CloudMarketApi
         return Http::withOptions([
             'stream' => true,
             'timeout' => self::$requestTimeout,
-            'connect_timeout' => 90,
+            'connect_timeout' => 30,
         ])
             ->timeout(self::$requestTimeout)
             ->withToken(config('services.alpnet.api_token'))
@@ -309,7 +309,7 @@ class CloudMarketApi
 
         return Http::withOptions([
             'timeout' => self::$requestTimeout,
-            'connect_timeout' => 90,
+            'connect_timeout' => 30,
         ])
             ->timeout(self::$requestTimeout)
             ->withToken(config('services.alpnet.api_token'))

@@ -15,11 +15,7 @@ class CloudMarket implements ShouldQueue, TenantAware
 {
     use Queueable;
 
-    public $timeout = 900;
-
-    public $tries = 1;
-
-    public $failOnTimeout = true;
+    public $timeout = 3600;
 
     public $prices = [];
 

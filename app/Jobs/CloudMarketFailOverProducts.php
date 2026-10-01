@@ -79,6 +79,7 @@ class CloudMarketFailOverProducts extends CloudMarket
             $this->prices[] = [...$temp, 'code' => md5(Str::slug($temp['code']))];
             $this->tempFilters = FilterProvider::process($this->tempFilters, $temp);
             Product::write('fail_over', $this->file, $this->prices, false, null, $this->started_at, $this->tempFilters, $this->errors, $time);
+            $this->updateCloudMarketSearchCache($this->file);
         }
 
         Product::write('fail_over', $this->file, $this->prices, false, now(), $this->started_at, $this->tempFilters, $this->errors, $time);
