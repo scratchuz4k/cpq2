@@ -59,6 +59,7 @@ class CloudMarketAddonsProducts extends CloudMarket
                 $temp['providerKey'] = $product[0]->data?->providerKey == 'pxc' ? 'virtual1' : $product[0]->data?->providerKey;
                 $this->prices[] = [...$temp, 'code' => md5(Str::slug($temp['code']))];
                 Product::write('addons', $this->file, $this->prices, false, null, $this->started_at, $this->tempFilters, $this->errors, $time);
+                $this->updateCloudMarketSearchCache($this->file);
             }
         }
 

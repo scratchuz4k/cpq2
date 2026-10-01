@@ -77,6 +77,7 @@ class CloudMarketConnectivityProducts extends CloudMarket
             $this->prices[] = [...$temp, 'code' => md5(Str::slug($temp['code']))];
             $this->tempFilters = FilterProvider::process($this->tempFilters, $temp);
             Product::write('live_prices', $this->file, $this->prices, false, $finished_at, $this->started_at, $this->tempFilters, $this->errors, $time);
+            $this->updateCloudMarketSearchCache($this->file);
         }
         $finished_at = now();
         Product::write('live_prices', $this->file, $this->prices, false, $finished_at, $this->started_at, $this->tempFilters, $this->errors, $time);
