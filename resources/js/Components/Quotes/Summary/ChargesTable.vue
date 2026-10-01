@@ -4,8 +4,7 @@ import { quote } from '@composables/useQuote';
 
 const props = defineProps({
     // 'one_off' | 'recurring'
-    code: String,
-    hideDiscounts: Boolean
+    code: String
 });
 
 const pricePlanCodes = { one_off: 'SINGLE', recurring: 'MONTHLY' };
@@ -22,7 +21,7 @@ const items = computed(() => quote.items.filter((x) => x.price_plan?.code == pri
                 <thead>
                     <tr>
                         <th class="column-name-header">Product</th>
-                        <th v-if="!hideDiscounts" class="column-discount-header">Discount</th>
+                        <th class="column-discount-header">Discount</th>
                         <th class="column-margin-header">Margin</th>
                         <th class="column-price-header">Unit price</th>
                         <th class="column-quantity-header">Qty</th>
@@ -35,14 +34,7 @@ const items = computed(() => quote.items.filter((x) => x.price_plan?.code == pri
                     </tr>
                 </thead>
                 <tbody>
-                    <ChargeRow
-                        v-for="(item, index) in items"
-                        :key="item.id"
-                        :item="item"
-                        :index="index"
-                        :code="code"
-                        :hideDiscounts="hideDiscounts"
-                    />
+                    <ChargeRow v-for="(item, index) in items" :key="item.id" :item="item" :index="index" :code="code" />
                 </tbody>
             </table>
         </div>

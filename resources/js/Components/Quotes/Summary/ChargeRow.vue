@@ -8,8 +8,7 @@ import format from '@/Composables/format';
 const props = defineProps({
     // 'one_off' | 'recurring'
     code: String,
-    index: Number,
-    hideDiscounts: Boolean
+    index: Number
 });
 const item = defineModel('item');
 
@@ -123,7 +122,7 @@ onUnmounted(() => emitter.off('quote-items:toggle:is-editing', stopEditing));
                 <span>Add-on of:</span> {{ mainProduct.name }}
             </p>
         </td>
-        <td v-if="!hideDiscounts" class="column-discount-body">
+        <td class="column-discount-body">
             <DiscountColumn :column="{ value: 'discount' }" v-model="item" :index="index" :code="code" />
         </td>
         <td class="column-margin-body" :id="`${code}-${index}-margin`">{{ format.GBP(item.margin) }}</td>

@@ -14,7 +14,6 @@ const props = defineProps({
     // unique key used for element ids, e.g. YEARS, one_off, quote
     code: String,
     label: String,
-    hideDiscounts: Boolean,
     // returns the existing discount from quote.discounts
     find: Function,
     // base payload for creating / updating the discount
@@ -30,7 +29,7 @@ const { discount, isEditing, isLoading, temp, edit, cancel, save, destroy } = us
     props.payload
 );
 
-const showDiscount = computed(() => !props.hideDiscounts && canViewDiscounts());
+const showDiscount = computed(() => canViewDiscounts());
 
 const actions = computed(() => {
     let list = [];

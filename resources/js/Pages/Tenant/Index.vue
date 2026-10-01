@@ -510,7 +510,7 @@ watch(
                                                 <div class="col">
                                                     <div class="mb-3">
                                                         <label for="quote-simple-view" class="d-block mb-2">
-                                                            Simple view (hide discount columns)
+                                                            Simple view (plain items table instead of the dealmaker)
                                                         </label>
                                                         <ToggleSwitch
                                                             id="quote-simple-view"
@@ -532,7 +532,7 @@ watch(
                                                             </template>
                                                         </ToggleSwitch>
                                                     </div>
-                                                    <div>
+                                                    <div v-if="tenant.configurations.quote_simple_view !== '1'">
                                                         <label>
                                                             Profitability Calculator Layout
                                                             <span

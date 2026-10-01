@@ -3,10 +3,6 @@ import { computed } from 'vue';
 import { quote } from '@composables/useQuote';
 import { canViewDiscounts } from '@/Composables/useQuoteDiscount';
 
-const props = defineProps({
-    hideDiscounts: Boolean
-});
-
 const billingFrequencies = [
     { unit: 'YEARS', label: 'Annually recurring total' },
     { unit: 'MONTHS', label: 'Monthly recurring total' },
@@ -33,7 +29,7 @@ const pricePlanPayload = (items, unit = null) => {
     };
 };
 
-const showDiscounts = computed(() => !props.hideDiscounts && canViewDiscounts());
+const showDiscounts = computed(() => canViewDiscounts());
 const hasRows = computed(
     () => oneOffItems.value.length || billingFrequencies.some((x) => recurringItems(x.unit).length)
 );
@@ -60,7 +56,6 @@ const hasRows = computed(
                             v-if="recurringItems(frequency.unit).length"
                             :code="frequency.unit"
                             :label="frequency.label"
-                            :hideDiscounts="hideDiscounts"
                             :find="() => pricePlanDiscount('MONTHLY', frequency.unit)"
                             :payload="() => pricePlanPayload(recurringItems(frequency.unit), frequency.unit)"
                             :discountValue="(discount) => discount?.value ?? 0"
@@ -71,7 +66,6 @@ const hasRows = computed(
                         v-if="oneOffItems.length"
                         code="one_off"
                         label="One-off total"
-                        :hideDiscounts="hideDiscounts"
                         :find="() => pricePlanDiscount('SINGLE')"
                         :payload="() => pricePlanPayload(oneOffItems)"
                         :discountValue="(discount) => discount?.value ?? 0"

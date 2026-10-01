@@ -9,8 +9,8 @@ return new class extends Migration
     /**
      * Run the migrations.
      *
-     * The quote summary has a single layout now; the old "Simple" view becomes a
-     * setting that hides the discount columns.
+     * The DealMaker / Simple view selector becomes a quote_simple_view toggle;
+     * tenants on the old "Simple" view keep it.
      */
     public function up(): void
     {

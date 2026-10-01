@@ -3,11 +3,7 @@ import { computed } from 'vue';
 import { quote } from '@composables/useQuote';
 import { canViewDiscounts } from '@/Composables/useQuoteDiscount';
 
-const props = defineProps({
-    hideDiscounts: Boolean
-});
-
-const showDiscounts = computed(() => !props.hideDiscounts && canViewDiscounts());
+const showDiscounts = computed(() => canViewDiscounts());
 </script>
 <template>
     <div class="quote-summary-panel" v-if="quote.items.length">
@@ -29,7 +25,6 @@ const showDiscounts = computed(() => !props.hideDiscounts && canViewDiscounts())
             <tbody>
                 <BreakdownRow
                     code="quote"
-                    :hideDiscounts="hideDiscounts"
                     :find="() => quote.discounts.find((x) => x.entity?.uuid == quote.uuid)"
                     :payload="() => ({ code: 'quote-' + quote.id, entity: 'quote', entity_id: quote.id })"
                     :discountValue="(discount) => discount?.total ?? 0"

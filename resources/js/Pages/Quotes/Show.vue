@@ -16,8 +16,8 @@ const props = defineProps({
 
 setQuote(props.quote);
 
-// Simple view hides the discount columns
-const hideDiscounts = tenant.configurations?.quote_simple_view == '1';
+// Simple view swaps the dealmaker summary for the plain items table
+const simpleView = tenant.configurations?.quote_simple_view == '1';
 
 const breadcrumbs = [
     { label: 'Home', url: '/' },
@@ -57,12 +57,17 @@ const showApprovals = computed(
             <InfoBox v-if="quote.items.some((x) => !x.is_margin_valid)" class="mb-4 py-0" severity="danger">
                 <p class="small">{{ getMarginThreshHoldWarning() }}</p>
             </InfoBox>
-            <div class="row g-4">
+            <template v-if="simpleView">
+                <p class="fs-4 mb-4"><b>Your quote</b></p>
+                <TableCustom v-if="quote.solution_type.configurations?.has_custom_table == 1"></TableCustom>
+                <TableSimple v-else :preview="false"></TableSimple>
+            </template>
+            <div v-else class="row g-4">
                 <div class="col-xl-9 price-summary">
-                    <ChargesTable code="one_off" :hideDiscounts="hideDiscounts" />
-                    <ChargesTable code="recurring" :hideDiscounts="hideDiscounts" />
-                    <ChargesBreakdown :hideDiscounts="hideDiscounts" />
-                    <FinalTotal :hideDiscounts="hideDiscounts" />
+                    <ChargesTable code="one_off" />
+                    <ChargesTable code="recurring" />
+                    <ChargesBreakdown />
+                    <FinalTotal />
                 </div>
                 <div class="col-xl-3">
                     <QuoteApprovalsPanel v-if="showApprovals"></QuoteApprovalsPanel>
