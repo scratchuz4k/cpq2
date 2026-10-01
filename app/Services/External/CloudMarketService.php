@@ -24,6 +24,7 @@ class CloudMarketService
         $time = Carbon::now()->addSeconds(86400);
         if (! Cache::has($filename)) {
             Product::write($key, $filename, [], true, null, now(), [], [], $time);
+            $this->updateCloudMarketSearchCache($filename);
             $dispatchJob::dispatch($quote, $filename, $address);
         }
 
@@ -32,6 +33,7 @@ class CloudMarketService
 
         if (! $content || (is_null($content?->finished_at) && $createdAt->addMinutes(20)->isPast())) {
             Product::write($key, $filename, [], true, null, now(), [], [], $time);
+            $this->updateCloudMarketSearchCache($filename);
             $dispatchJob::dispatch($quote, $filename, $address);
         }
     }
@@ -168,5 +170,10 @@ class CloudMarketService
         }
 
         return array_values($unique);
+    }
+
+    protected function updateCloudMarketSearchCache(string $filename): void
+    {
+        Cache::put($filename, json_encode(['updated_at' => now()]), now()->addHours(24));
     }
 }
