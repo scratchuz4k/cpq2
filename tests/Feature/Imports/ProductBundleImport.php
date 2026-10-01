@@ -113,3 +113,21 @@ it('skips a bundle item that already exists and leaves its quantity untouched', 
         ->and(ProductBundle::where('product_id', $this->productA->id)->where('item_id', $this->productB->id)->first()->quantity)->toBe(5)
         ->and(ProductBundle::where('product_id', $this->productA->id)->where('item_id', $this->productC->id)->first()->quantity)->toBe(2);
 });
+
+it('updates the quantity of an existing bundle item when overwriting', function () {
+    ProductBundle::create(['product_id' => $this->productA->id, 'item_id' => $this->productB->id, 'quantity' => 1]);
+
+    $csv = '"Product SKU","Bundle Item SKU","Bundle Item Quantity"
+"BUNDLE-A","BUNDLE-B","5"';
+
+    $this->post('/product-bundles/import', [
+        'file' => fakeProductBundleFile($csv),
+        'dry_run' => 0,
+        'overwrite' => 1,
+    ])->assertSuccessful();
+
+    $items = ProductBundle::where('product_id', $this->productA->id)->where('item_id', $this->productB->id)->get();
+
+    expect($items)->toHaveCount(1)
+        ->and($items->first()->quantity)->toBe(5);
+});
