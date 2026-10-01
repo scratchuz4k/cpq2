@@ -53,9 +53,7 @@ const selectedImport = computed(() =>
     [...props.imports, ...(page.props.importModels ?? [])].find((item) => item.value === form.model)
 );
 
-const overwriteLabel = computed(() =>
-    selectedImport.value?.canOverwrite ? (overwriteLabels[form.model] ?? 'Update existing records') : null
-);
+const showOverwriteLabel = computed(() => selectedImport.value?.canOverwrite);
 
 watch(
     () => form.model,
@@ -150,7 +148,7 @@ const submitFile = async () => {
                         to see and example of the format required. Maximum file upload size is 2 MB.
                     </i>
                 </p>
-                <div v-if="overwriteLabel" class="form-check px-0 pt-2">
+                <div v-if="showOverwriteLabel" class="form-check px-0 pt-2">
                     <Checkbox
                         inputId="overwrite-records"
                         v-model="form.overwrite"
@@ -159,7 +157,7 @@ const submitFile = async () => {
                         falseValue="0"
                     />
                     <label class="form-check-label ms-2" for="overwrite-records">
-                        {{ overwriteLabel }}
+                        Update items that already exist in the system
                     </label>
                 </div>
                 <hr />
