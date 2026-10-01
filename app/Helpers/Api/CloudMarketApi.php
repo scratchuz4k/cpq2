@@ -296,6 +296,7 @@ class CloudMarketApi
         return Http::withOptions([
             'stream' => true,
             'timeout' => self::$requestTimeout,
+            'read_timeout' => self::$requestTimeout,
             'connect_timeout' => 90,
         ])
             ->timeout(self::$requestTimeout)
