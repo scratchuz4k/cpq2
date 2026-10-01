@@ -4,21 +4,16 @@ namespace App\Imports;
 
 use App\Http\Requests\CategoryCreateRequest;
 use App\Models\Category;
-use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Concerns\ToCollection;
 
 class CategoriesImport extends Import implements ToCollection
 {
     protected ?array $availableCodes = [];
-
-    public function __construct(protected User $actingUser, protected string $model, bool $isDryRun = false, protected bool $overwrite = false)
-    {
-        parent::__construct($this->actingUser, $model, $isDryRun);
-    }
 
     /**
      * Insert a new Category
@@ -28,7 +23,11 @@ class CategoriesImport extends Import implements ToCollection
         try {
             request()->merge($item);
 
-            $validator = Validator::make($item, $this->rules());
+            $existingCategory = $this->overwrite && ! empty($item['code'])
+                ? Category::where('code', $item['code'])->first()
+                : null;
+
+            $validator = Validator::make($item, $this->rules($existingCategory));
 
             if ($validator->fails()) {
                 $this->results['skipped']++;
@@ -50,6 +49,17 @@ class CategoriesImport extends Import implements ToCollection
             }
 
             unset($item['parent_code']);
+
+            if ($existingCategory) {
+                $existingCategory->update([
+                    ...$item,
+                    'parent_id' => $parentId,
+                ]);
+
+                $this->results['success']++;
+
+                return true;
+            }
 
             $newItem = Category::create([
                 ...$item,
@@ -130,9 +140,19 @@ class CategoriesImport extends Import implements ToCollection
         $this->processDeferredChildren($pendingItems);
     }
 
-    public function rules(): array
+    public function rules(?Category $existingCategory = null): array
     {
-        return [...(new CategoryCreateRequest)->rules(), ...$this->isActiveRule()];
+        $rules = (new CategoryCreateRequest)->rules();
+
+        if ($existingCategory) {
+            $rules['code'] = [
+                'required',
+                Rule::unique('categories')->where(fn ($query) => $query->where('tenant_id', $this->actingUser->tenant_id))
+                    ->ignore($existingCategory->id),
+            ];
+        }
+
+        return [...$rules, ...$this->isActiveRule()];
     }
 
     private function processDeferredChildren(array $pendingItems): void

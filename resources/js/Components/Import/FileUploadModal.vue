@@ -1,5 +1,6 @@
 <script setup>
 import { computed, reactive, ref, watch } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import { Dialog, Checkbox, Select } from 'primevue';
 import { formatResponseErrors } from '@composables/useApiErrors';
 import SvgIcon from '@/Components/Custom/SvgIcon.vue';
@@ -36,12 +37,25 @@ const importOptions = computed(() =>
     }))
 );
 
+const page = usePage();
+
 const overwriteLabels = {
+    accounts: 'Update existing accounts that have the same reference',
+    categories: 'Update existing categories that have the same code',
     products: 'Update existing products that have the same SKU',
+    'product-addons': 'Keep existing product add-ons instead of skipping them',
+    'product-bundles': 'Update the quantity of existing bundle items',
+    'product-links': 'Keep existing product links instead of skipping them',
     users: 'Update existing users that have the same email'
 };
 
-const overwriteLabel = computed(() => overwriteLabels[form.model] ?? null);
+const selectedImport = computed(() =>
+    [...props.imports, ...(page.props.importModels ?? [])].find((item) => item.value === form.model)
+);
+
+const overwriteLabel = computed(() =>
+    selectedImport.value?.canOverwrite ? (overwriteLabels[form.model] ?? 'Update existing records') : null
+);
 
 watch(
     () => form.model,

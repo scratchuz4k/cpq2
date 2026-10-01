@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use App\Enums\ImportsEnum;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Rules\TenantUniqueRule;
@@ -40,10 +41,15 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
 
     protected ?array $templateColumns = null;
 
-    public function __construct(protected User $actingUser, protected string $model, bool $isDryRun = false)
-    {
+    public function __construct(
+        protected User $actingUser,
+        protected string $model,
+        bool $isDryRun = false,
+        protected bool $overwrite = false
+    ) {
         $this->tenant = Tenant::current();
         $this->isDryRun = $isDryRun;
+        $this->overwrite = $overwrite && (bool) ImportsEnum::forModel(class_basename($model))?->canOverwrite();
     }
 
     public function setModel(string $model): void

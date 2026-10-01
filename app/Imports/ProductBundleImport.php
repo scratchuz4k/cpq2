@@ -82,7 +82,9 @@ class ProductBundleImport extends Import
             return $this->skip($row, $errors);
         }
 
-        if (ProductBundle::where('product_id', $product->id)->where('item_id', $itemProduct->id)->exists()) {
+        $existingItem = ProductBundle::where('product_id', $product->id)->where('item_id', $itemProduct->id)->first();
+
+        if ($existingItem && ! $this->overwrite) {
             return $this->skip($row, 'This bundle item already exists.');
         }
 
@@ -92,11 +94,15 @@ class ProductBundleImport extends Import
             return true;
         }
 
-        ProductBundle::create([
-            'product_id' => $product->id,
-            'item_id' => $itemProduct->id,
-            'quantity' => (int) $quantity,
-        ]);
+        if ($existingItem) {
+            $existingItem->update(['quantity' => (int) $quantity]);
+        } else {
+            ProductBundle::create([
+                'product_id' => $product->id,
+                'item_id' => $itemProduct->id,
+                'quantity' => (int) $quantity,
+            ]);
+        }
 
         $this->results['success']++;
 
