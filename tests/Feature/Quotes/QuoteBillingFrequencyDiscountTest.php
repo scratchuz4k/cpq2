@@ -7,6 +7,7 @@ use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 uses(RefreshDatabase::class);
 
@@ -104,23 +105,57 @@ it('updates the existing discount for a billing frequency instead of duplicating
     expect($this->get('api/quotes/1')->json('total'))->toEqual(520.0);
 });
 
-it('applies the recurring discount to all recurring items before the billing frequency discount', function () {
-    $this->post('api/quote-discounts', [
+it('rejects a recurring discount without a billing frequency', function () {
+    $this->postJson('api/quote-discounts', [
         'quote_id' => 1,
         'code' => 'MONTHLY',
         'entity' => 'price_plans',
         'entity_id' => $this->monthly_price_plan_id,
         'discount' => 10,
-    ])->assertSuccessful();
-    ($this->recurringDiscount)('YEARS', 10)->assertSuccessful();
+    ])->assertUnprocessable()->assertJsonValidationErrors('billing_frequency_unit');
 
-    $quote = $this->get('api/quotes/1')->json();
-    $recurring = collect($quote['discounts'])->firstWhere('billing_frequency_unit', null);
-    $annual = collect($quote['discounts'])->firstWhere('billing_frequency_unit', 'YEARS');
+    expect(QuoteDiscount::count())->toBe(0);
+});
 
-    expect($recurring['total'])->toEqual(58.0);
-    expect($annual['total'])->toEqual(9.0);
-    expect($quote['total'])->toEqual(513.0);
+it('converts existing recurring discounts into monthly discounts', function () {
+    DB::table('quote_discounts')->insert([
+        'quote_id' => 1,
+        'tenant_id' => 1,
+        'discountable_type' => PricePlan::class,
+        'discountable_id' => $this->monthly_price_plan_id,
+        'discount' => 20,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    (require database_path('migrations/2026_09_29_100000_convert_recurring_price_plan_discounts_to_monthly.php'))->up();
+
+    $discount = QuoteDiscount::sole();
+    expect($discount->billing_frequency_unit)->toBe('MONTHS');
+    expect($discount->total)->toEqual(24.0);
+    expect($this->get('api/quotes/1')->json('total'))->toEqual(556.0);
+});
+
+it('merges an existing recurring discount into the monthly discount', function () {
+    ($this->recurringDiscount)('MONTHS', 20)->assertSuccessful();
+
+    DB::table('quote_discounts')->insert([
+        'quote_id' => 1,
+        'tenant_id' => 1,
+        'discountable_type' => PricePlan::class,
+        'discountable_id' => $this->monthly_price_plan_id,
+        'discount' => 50,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+
+    (require database_path('migrations/2026_09_29_100000_convert_recurring_price_plan_discounts_to_monthly.php'))->up();
+
+    $discount = QuoteDiscount::sole();
+    expect($discount->billing_frequency_unit)->toBe('MONTHS');
+    expect($discount->discount)->toEqual(60.0);
+    expect($discount->total)->toEqual(72.0);
+    expect($this->get('api/quotes/1')->json('total'))->toEqual(508.0);
 });
 
 it('removes a billing frequency discount when no items with that billing frequency remain', function () {

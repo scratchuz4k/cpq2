@@ -15,8 +15,7 @@ const props = defineProps({
     tenant: Object,
     quote_approval_flows: Array,
     social_links: Array,
-    calculator_layouts: Array,
-    available_tables: Array
+    calculator_layouts: Array
 });
 
 const defaultCustomizationColors = {
@@ -53,7 +52,7 @@ const tenant = reactive({
         calculator_layout: props.tenant.configurations.calculator_layout
             ? JSON.parse(props.tenant.configurations.calculator_layout)
             : [],
-        component: props.tenant.configurations.component ?? 'DealMaker',
+        quote_simple_view: props.tenant.configurations.quote_simple_view ?? '0',
         customization_header: JSON.parse(props.tenant.configurations.customization_header ?? '[]'),
         customization_footer: JSON.parse(props.tenant.configurations.customization_footer ?? '[]'),
         customization_social: JSON.parse(props.tenant.configurations.customization_social ?? '[]'),
@@ -72,7 +71,7 @@ const parseTenantConfigurations = (data) => {
             ? JSON.parse(data.configurations.customization_colors)
             : defaultCustomizationColors;
         data.configurations.calculator_layout = JSON.parse(data.configurations.calculator_layout ?? '[]');
-        data.configurations.component = data.configurations.component ?? 'DealMaker';
+        data.configurations.quote_simple_view = data.configurations.quote_simple_view ?? '0';
     }
     return data;
 };
@@ -510,18 +509,30 @@ watch(
                                             <div class="row g-3 mb-3">
                                                 <div class="col">
                                                     <div class="mb-3">
-                                                        <label>Choose the view:</label>
-                                                        <Select
-                                                            id="solution-type-component"
-                                                            class="form-select"
-                                                            v-model="tenant.configurations.component"
-                                                            @change="submitTenantSettings()"
-                                                            :options="available_tables"
-                                                            placeholder="Select a View"
+                                                        <label for="quote-simple-view" class="d-block mb-2">
+                                                            Simple view (plain items table instead of the dealmaker)
+                                                        </label>
+                                                        <ToggleSwitch
+                                                            id="quote-simple-view"
+                                                            v-model="tenant.configurations.quote_simple_view"
+                                                            @change="submitTenantSettings"
+                                                            trueValue="1"
+                                                            falseValue="0"
+                                                            binary
                                                         >
-                                                        </Select>
+                                                            <template #handle>
+                                                                <font-awesome-icon
+                                                                    :icon="
+                                                                        tenant.configurations.quote_simple_view === '1'
+                                                                            ? ['fas', 'circle-check']
+                                                                            : ['far', 'circle-xmark']
+                                                                    "
+                                                                    class="text-primary"
+                                                                />
+                                                            </template>
+                                                        </ToggleSwitch>
                                                     </div>
-                                                    <div v-if="tenant.configurations.component === 'DealMaker'">
+                                                    <div v-if="tenant.configurations.quote_simple_view !== '1'">
                                                         <label>
                                                             Profitability Calculator Layout
                                                             <span

@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\PricePlan;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class QuoteDiscountUpdateRequest extends FormRequest
 {
@@ -26,8 +28,19 @@ class QuoteDiscountUpdateRequest extends FormRequest
             'entity' => 'required|in:price_plans,quote',
             'entity_id' => 'required|numeric',
             'discount' => 'required|numeric|min:0|max:100',
-            // Recurring discount for a single billing frequency (Annual, Monthly, Daily)
-            'billing_frequency_unit' => 'nullable|string|in:DAYS,MONTHS,YEARS',
+            // Recurring discounts always apply to a single billing frequency (Annual, Monthly, Daily)
+            'billing_frequency_unit' => [
+                Rule::requiredIf(fn () => $this->isRecurringPricePlanDiscount()),
+                'nullable',
+                'string',
+                'in:DAYS,MONTHS,YEARS',
+            ],
         ];
+    }
+
+    private function isRecurringPricePlanDiscount(): bool
+    {
+        return $this->input('entity') === 'price_plans'
+            && PricePlan::whereKey($this->input('entity_id'))->value('code') === 'MONTHLY';
     }
 }

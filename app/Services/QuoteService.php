@@ -107,30 +107,18 @@ class QuoteService
             throw new \Exception('Could not create directory for PDFs');
         }
 
-        $group = $quote->solutionType->tables->first()?->group ?? null;
-        $groupName = $quote->solutionType->tables->first()?->group_name ?? null;
         $solutionType = SolutionTypeResource::make($quote->solutionType)->resolve();
         $quote = QuoteResource::make($quote->load(['items']))->resolve();
-
-        if ($group) {
-            $request->merge(['group' => $group]);
-        }
 
         $request->merge(['limit' => 300]);
         $request->merge(['filters' => json_encode([['column' => 'quote_id', 'operator' => 'equals', 'value' => $quote['id']]])]);
         $dataProvider = new DataProvider(QuoteItem::class);
         $items = $dataProvider->group(QuoteItemResource::class);
 
-        $columns = json_decode(json_encode($solutionType['table']['columns']), true);
         $view = array_key_exists('component', $solutionType['configurations']) ? strtolower((string) $solutionType['configurations']['component']) : 'dealmaker';
-        if (array_key_exists('has_custom_table', $solutionType['configurations']) && $solutionType['configurations']['has_custom_table'] == '1') {
-            $view = 'custom';
-        }
-
-        // return view("pdf.$view", compact('quote', 'tenant', 'columns', 'items', 'group', 'groupName'))->render();
 
         return pdf()
-            ->view("pdf.$view", compact('quote', 'tenant', 'items', 'group', 'groupName'))
+            ->view("pdf.$view", compact('quote', 'tenant', 'items'))
             ->format(Format::A4)
             ->withBrowsershot(function (Browsershot $browsershot) {
                 if (app()->environment(['local', 'testing'])) {

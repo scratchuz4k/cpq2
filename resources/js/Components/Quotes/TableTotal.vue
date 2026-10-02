@@ -11,7 +11,6 @@ const props = defineProps({
 const quoteTotal = ref(0);
 const isEditing = ref(false);
 const isLoading = ref(false);
-const group = quote.solution_type?.table?.group ?? null;
 const pricePlanskeys = { 'One-Off': 'SINGLE', Recurring: 'MONTHLY' };
 
 const discount = reactive({
@@ -26,6 +25,10 @@ const discount = reactive({
 });
 
 const temp = ref(0);
+
+const oneOffDiscount = () => quote.discounts.find((x) => x.entity?.code == 'SINGLE' && !x.billing_frequency_unit);
+const showOneOffDiscount = () =>
+    !props.isSimpleView && (can('viewAny quote_discount') || hasRole('Super Admin')) && oneOffDiscount()?.discount;
 
 const edit = () => {
     isEditing.value = true;
@@ -84,13 +87,7 @@ const destroy = async () => {
 
 const quoteTotalByPricePlan = (price_plan, column = 'total') => {
     let total = 0;
-    let items = quote.items;
-
-    if (group) {
-        items = quote.items.flatMap((obj) => obj.items ?? obj);
-    }
-
-    items.forEach((e) => {
+    quote.items.forEach((e) => {
         if (e.children?.lenght) {
             total += e.children
                 .filter((x) => x.price_plan && x.price_plan.code == pricePlanskeys[price_plan])
@@ -114,9 +111,7 @@ const billingFrequencies = [
 ];
 
 const recurringItems = (unit) => {
-    let items = group ? quote.items.flatMap((obj) => obj.items ?? obj) : quote.items;
-
-    return items.filter(
+    return quote.items.filter(
         (x) =>
             x.price_plan &&
             x.price_plan.code == pricePlanskeys['Recurring'] &&
@@ -165,7 +160,7 @@ watch(
 </script>
 <template>
     <div class="mobile-price-group-heading d-flex justify-content-between align-items-center">
-        <h3>Overall Totals</h3>
+        <h3>Charges breakdown</h3>
     </div>
     <table id="table-totals" class="table-dealmaker table table-bordered text-end">
         <colgroup>
@@ -188,7 +183,11 @@ watch(
                 <td>
                     <p class="small text-start">One-Off Total</p>
                 </td>
-                <td></td>
+                <td>
+                    <p class="small text-center text-primary" v-if="showOneOffDiscount()" id="global-SINGLE-discount">
+                        {{ oneOffDiscount().discount }} %
+                    </p>
+                </td>
                 <td id="total_net" class="bold">
                     {{ format.GBP(quoteTotalByPricePlan('One-Off')) }}
                 </td>
