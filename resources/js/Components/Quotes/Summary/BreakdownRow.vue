@@ -80,7 +80,7 @@ const actions = computed(() => {
         <td class="column-total-body" :id="`${code}-total`">{{ format.GBP(total(discount)) }}</td>
         <td class="column-actions-body">
             <template v-if="showDiscount && !quote.is_blocked">
-                <div v-if="isEditing" class="d-flex justify-content-end">
+                <div v-if="isEditing" class="d-flex justify-content-center">
                     <font-awesome-icon
                         :id="`btn-${code}-discount-cancel`"
                         role="button"

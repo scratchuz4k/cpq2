@@ -18,7 +18,6 @@ input[type='number'] {
 /* Quote summary (dealmaker view) */
 .quote-summary-panel {
     background-color: var(--white);
-    border: 1px solid var(--light-grey);
     border-radius: var(--radius);
     padding: 20px;
     margin-bottom: 20px;
@@ -54,7 +53,6 @@ input[type='number'] {
 
     .profitability-values {
         background: var(--lighter-grey);
-        border: 1px solid var(--light-grey);
         border-radius: var(--radius);
         padding: 4px 12px;
 
@@ -63,10 +61,6 @@ input[type='number'] {
 
             p {
                 font-size: 12px;
-            }
-
-            &:not(:last-child) {
-                border-bottom: 1px solid var(--light-grey);
             }
         }
 
@@ -98,7 +92,7 @@ input[type='number'] {
     }
 
     thead th {
-        background: var(--table-header-grey);
+        background: var(--light-grey);
         color: var(--table-header-dark-grey);
         font-size: 12px;
         font-weight: 700;
@@ -108,12 +102,10 @@ input[type='number'] {
         &:first-child {
             text-align: left;
             border-top-left-radius: var(--radius);
-            border-bottom-left-radius: var(--radius);
         }
 
         &:last-child {
             border-top-right-radius: var(--radius);
-            border-bottom-right-radius: var(--radius);
         }
     }
 
@@ -154,9 +146,19 @@ input[type='number'] {
         }
     }
 
+    // fixed widths keep the total / actions columns aligned across tables
+    // and stop the cells from growing while a row is being edited
+    .column-total-header,
+    .column-total-body {
+        width: 110px;
+        min-width: 110px;
+    }
+
     .column-actions-header,
     .column-actions-body {
         width: 56px;
+        min-width: 56px;
+        max-width: 56px;
         padding-left: 0;
         padding-right: 0;
     }
@@ -214,7 +216,7 @@ input[type='number'] {
 .quote-final-total {
     tbody td {
         font-size: 16px;
-        background: var(--table-header-grey);
+        background: var(--light-grey);
         border: none;
 
         &:first-child {
@@ -257,6 +259,11 @@ input[type='number'] {
     position: relative;
     display: inline-block;
     cursor: default;
+
+    &.has-tooltip {
+        text-decoration: underline dotted;
+        text-underline-offset: 3px;
+    }
 
     .hover-tooltip-text {
         visibility: hidden;

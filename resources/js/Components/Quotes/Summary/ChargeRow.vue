@@ -161,7 +161,7 @@ onUnmounted(() => emitter.off('quote-items:toggle:is-editing', stopEditing));
         </td>
         <td class="column-actions-body">
             <template v-if="!quote.is_blocked">
-                <div v-if="item.is_editing" class="d-flex justify-content-end">
+                <div v-if="item.is_editing" class="d-flex justify-content-center">
                     <font-awesome-icon
                         :id="`btn-${code}-${index}-cancel`"
                         role="button"

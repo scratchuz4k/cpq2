@@ -4,7 +4,7 @@ defineProps({
 });
 </script>
 <template>
-    <span class="hover-tooltip" :tabindex="text ? 0 : undefined">
+    <span class="hover-tooltip" :class="{ 'has-tooltip': text }" :tabindex="text ? 0 : undefined">
         <slot></slot>
         <span v-if="text" class="hover-tooltip-text" role="tooltip">{{ text }}</span>
     </span>
