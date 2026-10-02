@@ -333,7 +333,7 @@
                         </table>
                     </div>
                     <div class="mobile-price-group-heading mt-3 d-flex justify-content-between align-items-center">
-                        <h3>Overall Totals</h3>
+                        <h3>Charges breakdown</h3>
                     </div>
                     <table class="table table-dealmaker table-bordered text-end">
                         <thead>

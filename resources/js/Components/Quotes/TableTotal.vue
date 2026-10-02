@@ -26,6 +26,10 @@ const discount = reactive({
 
 const temp = ref(0);
 
+const oneOffDiscount = () => quote.discounts.find((x) => x.entity?.code == 'SINGLE' && !x.billing_frequency_unit);
+const showOneOffDiscount = () =>
+    !props.isSimpleView && (can('viewAny quote_discount') || hasRole('Super Admin')) && oneOffDiscount()?.discount;
+
 const edit = () => {
     isEditing.value = true;
 };
@@ -156,7 +160,7 @@ watch(
 </script>
 <template>
     <div class="mobile-price-group-heading d-flex justify-content-between align-items-center">
-        <h3>Overall Totals</h3>
+        <h3>Charges breakdown</h3>
     </div>
     <table id="table-totals" class="table-dealmaker table table-bordered text-end">
         <colgroup>
@@ -179,7 +183,11 @@ watch(
                 <td>
                     <p class="small text-start">One-Off Total</p>
                 </td>
-                <td></td>
+                <td>
+                    <p class="small text-center text-primary" v-if="showOneOffDiscount()" id="global-SINGLE-discount">
+                        {{ oneOffDiscount().discount }} %
+                    </p>
+                </td>
                 <td id="total_net" class="bold">
                     {{ format.GBP(quoteTotalByPricePlan('One-Off')) }}
                 </td>

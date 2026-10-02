@@ -494,34 +494,20 @@
                                         @endforeach
                                     @endif
                                 @endforeach
-                                @if ($discounts['one_off']['discount'])
-                                    <tr class="item-row" style="vertical-align: middle;"></tr>
-                                    <td class="column-name-body text-primary"
-                                        colspan="{{ $isConnectivity ? '7' : '3' }}">
-                                        One-Off Discount
-                                    </td>
-                                    <td class="text-center text-primary">
-                                        {{ number_format($discounts['one_off']['discount'], 2) }} %
-                                    </td>
-                                    <td class="text-end  text-primary">
-                                        <b>-£{{ number_format((float) $discounts['one_off']['value'], 2) }}</b>
-                                    </td>
-                                    </tr>
-                                @endif
                             </tbody>
                             <tfoot>
                                 <tr>
                                     <th class="text-start" colspan="{{ $isConnectivity ? '8' : '4' }}">Subtotal
                                     </th>
                                     <th class="text-end">
-                                        £{{ number_format(quoteTotal('SINGLE', 'total', $quote['items']) - $discounts['one_off']['value'], 2) }}
+                                        £{{ number_format(quoteTotal('SINGLE', 'total', $quote['items']), 2) }}
                                     </th>
                                 </tr>
                             </tfoot>
                         </table>
                     </div>
                     <div class="mobile-price-group-heading mt-3 d-flex justify-content-between align-items-center">
-                        <h3>Overall Totals</h3>
+                        <h3>Charges breakdown</h3>
                     </div>
                     <table class="table table-dealmaker table-bordered text-end">
                         <thead>
@@ -551,7 +537,10 @@
                                 <td>
                                     <p class="small text-start">One-Off Total</p>
                                 </td>
-                                <td>
+                                <td class="text-end text-primary">
+                                    @if ($discounts['one_off']['discount'])
+                                        {{ number_format($discounts['one_off']['discount'], 2) }} %
+                                    @endif
                                 </td>
                                 <td id="total_single_net">
                                     <b>£{{ number_format(quoteTotal('SINGLE', 'total', $quote['items']) - $discounts['one_off']['total'], 2) }}</b>
