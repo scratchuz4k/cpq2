@@ -24,15 +24,6 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
 {
     public const PASSWORD_MASK = '********';
 
-    public function __construct(
-        protected User $actingUser,
-        protected string $model,
-        bool $isDryRun = false,
-        protected bool $overwrite = false
-    ) {
-        parent::__construct($actingUser, $model, $isDryRun);
-    }
-
     public function getResults(): array
     {
         return $this->results;

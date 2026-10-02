@@ -5,7 +5,6 @@ namespace App\Imports;
 use App\Http\Requests\StepCreateRequest;
 use App\Models\SolutionTypeTenant;
 use App\Models\Step;
-use App\Models\User;
 use App\Rules\TenantExistsRule;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -13,11 +12,6 @@ use Maatwebsite\Excel\Concerns\ToCollection;
 
 class StepsImport extends Import implements ToCollection
 {
-    public function __construct(protected User $actingUser, protected string $model, bool $isDryRun = false, protected bool $overwrite = false)
-    {
-        parent::__construct($this->actingUser, $model, $isDryRun);
-    }
-
     /**
      * Insert a new Step
      */

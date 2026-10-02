@@ -1,5 +1,6 @@
 <script setup>
 import { computed, reactive, ref, watch } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import { Dialog, Checkbox, Select } from 'primevue';
 import { formatResponseErrors } from '@composables/useApiErrors';
 import SvgIcon from '@/Components/Custom/SvgIcon.vue';
@@ -36,12 +37,23 @@ const importOptions = computed(() =>
     }))
 );
 
+const page = usePage();
+
 const overwriteLabels = {
+    accounts: 'Update existing accounts that have the same reference',
+    categories: 'Update existing categories that have the same code',
     products: 'Update existing products that have the same SKU',
+    'product-addons': 'Keep existing product add-ons instead of skipping them',
+    'product-bundles': 'Update the quantity of existing bundle items',
+    'product-links': 'Keep existing product links instead of skipping them',
     users: 'Update existing users that have the same email'
 };
 
-const overwriteLabel = computed(() => overwriteLabels[form.model] ?? null);
+const selectedImport = computed(() =>
+    [...props.imports, ...(page.props.importModels ?? [])].find((item) => item.value === form.model)
+);
+
+const showOverwriteLabel = computed(() => selectedImport.value?.canOverwrite);
 
 watch(
     () => form.model,
@@ -136,7 +148,7 @@ const submitFile = async () => {
                         to see and example of the format required. Maximum file upload size is 2 MB.
                     </i>
                 </p>
-                <div v-if="overwriteLabel" class="form-check px-0 pt-2">
+                <div v-if="showOverwriteLabel" class="form-check px-0 pt-2">
                     <Checkbox
                         inputId="overwrite-records"
                         v-model="form.overwrite"
@@ -145,7 +157,7 @@ const submitFile = async () => {
                         falseValue="0"
                     />
                     <label class="form-check-label ms-2" for="overwrite-records">
-                        {{ overwriteLabel }}
+                        Update items that already exist in the system
                     </label>
                 </div>
                 <hr />

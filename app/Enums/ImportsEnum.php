@@ -63,11 +63,31 @@ enum ImportsEnum: string
         };
     }
 
+    /**
+     * Whether this import type supports update
+     */
+    public function canOverwrite(): bool
+    {
+        return match ($this) {
+            self::Account,
+            self::Category,
+            self::Product,
+            self::ProductAddon,
+            self::ProductBundle,
+            self::ProductLink,
+            self::User => true,
+            default => false,
+        };
+    }
+
+    public static function forModel(string $modelName): ?self
+    {
+        return collect(self::cases())->firstWhere('name', $modelName);
+    }
+
     public static function importClassFor(string $modelName): string
     {
-        $case = collect(self::cases())->firstWhere('name', $modelName);
-
-        return $case?->importClasses() ?? Import::class;
+        return self::forModel($modelName)?->importClasses() ?? Import::class;
     }
 
     public static function asArray(): array
@@ -84,6 +104,7 @@ enum ImportsEnum: string
             'name' => $case->name,
             'value' => $case->value,
             'label' => $case->label(),
+            'canOverwrite' => $case->canOverwrite(),
         ], $cases);
 
         usort($items, fn ($a, $b) => strcasecmp($a['label'], $b['label']));
