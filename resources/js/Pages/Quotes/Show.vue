@@ -59,8 +59,7 @@ const showApprovals = computed(
             </InfoBox>
             <template v-if="simpleView">
                 <p class="fs-4 mb-4"><b>Your quote</b></p>
-                <TableCustom v-if="quote.solution_type.configurations?.has_custom_table == 1"></TableCustom>
-                <TableSimple v-else :preview="false"></TableSimple>
+                <TableSimple :preview="false"></TableSimple>
             </template>
             <div v-else class="row g-4">
                 <div class="col-xl-9 price-summary">

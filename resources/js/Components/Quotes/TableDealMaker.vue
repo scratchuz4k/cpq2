@@ -11,7 +11,16 @@ const props = defineProps({
 });
 
 const pricePlanskeys = { SINGLE: 'one_off', MONTHLY: 'recurring' };
-let columns = quote.solution_type?.table?.columns ?? [];
+let columns = [
+    { name: 'Name', value: 'name' },
+    { name: 'Term', value: 'renewal_terms' },
+    { name: 'Frequency', value: 'billing_frequency' },
+    { name: 'Quantity', value: 'quantity' },
+    { name: 'Price', value: 'price' },
+    { name: 'Discount', value: 'discount' },
+    { name: 'Margin', value: 'margin' },
+    { name: 'Total', value: 'total' }
+];
 
 if (props.preview) {
     columns = columns.filter((x) => {

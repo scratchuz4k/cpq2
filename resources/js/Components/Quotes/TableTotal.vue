@@ -11,7 +11,6 @@ const props = defineProps({
 const quoteTotal = ref(0);
 const isEditing = ref(false);
 const isLoading = ref(false);
-const group = quote.solution_type?.table?.group ?? null;
 const pricePlanskeys = { 'One-Off': 'SINGLE', Recurring: 'MONTHLY' };
 
 const discount = reactive({
@@ -84,13 +83,7 @@ const destroy = async () => {
 
 const quoteTotalByPricePlan = (price_plan, column = 'total') => {
     let total = 0;
-    let items = quote.items;
-
-    if (group) {
-        items = quote.items.flatMap((obj) => obj.items ?? obj);
-    }
-
-    items.forEach((e) => {
+    quote.items.forEach((e) => {
         if (e.children?.lenght) {
             total += e.children
                 .filter((x) => x.price_plan && x.price_plan.code == pricePlanskeys[price_plan])
@@ -114,9 +107,7 @@ const billingFrequencies = [
 ];
 
 const recurringItems = (unit) => {
-    let items = group ? quote.items.flatMap((obj) => obj.items ?? obj) : quote.items;
-
-    return items.filter(
+    return quote.items.filter(
         (x) =>
             x.price_plan &&
             x.price_plan.code == pricePlanskeys['Recurring'] &&
