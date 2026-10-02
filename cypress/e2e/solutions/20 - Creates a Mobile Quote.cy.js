@@ -151,12 +151,13 @@ describe('Creates a Mobile Quote', () => {
         items.forEach((key) => {
             cy.scrollTo('top', { duration: 500 });
             let total = null;
-            cy.get('#' + key + '-total').then(($title) => {
+            cy.get('#' + key + '-total-0').then(($title) => {
                 total = $title.text().trim();
             });
 
             cy.wait(200);
             let line1 = { qty: null, discount: null, margin: null };
+            cy.get('#btn-' + key + '-0-actions').click();
             cy.get('#btn-' + key + '-0-edit').click();
             cy.wait(200);
             cy.get('#input-' + key + '-0-quantity')
@@ -178,6 +179,7 @@ describe('Creates a Mobile Quote', () => {
 
             cy.get('#btn-' + key + '-0-save').click();
             cy.wait(500);
+            cy.get('#btn-' + key + '-0-actions').click();
             cy.get('#btn-' + key + '-0-edit').click();
             cy.get('#input-' + key + '-0-quantity', { force: true })
                 .invoke('val')
@@ -190,7 +192,7 @@ describe('Creates a Mobile Quote', () => {
                     expect(inputValue).to.not.equal(line1.discount);
                 });
 
-            cy.get('#' + key + '-total')
+            cy.get('#' + key + '-total-0')
                 .invoke('text')
                 .then((text) => {
                     expect(text).to.not.equal(total);
@@ -210,16 +212,17 @@ describe('Creates a Mobile Quote', () => {
             });
         cy.scrollTo('top', { duration: 500 });
 
-        cy.get('#btn-MONTHLY-edit').click();
+        cy.get('#btn-MONTHS-discount-actions').click();
+        cy.get('#btn-MONTHS-discount-edit').click();
 
-        cy.get('#input-global-MONTHLY-discount')
+        cy.get('#input-MONTHS-discount')
             .then(($input) => {
                 quote.global = $input.val().trim();
             })
             .clear()
             .type(rand(quote.global));
 
-        cy.get('#btn-MONTHLY-save').click({ force: true });
+        cy.get('#btn-MONTHS-discount-save').click({ force: true });
 
         cy.wait(1000);
 
@@ -230,7 +233,8 @@ describe('Creates a Mobile Quote', () => {
                 expect(text).to.not.equal(quote.margin);
             });
 
-        cy.get('#btn-MONTHLY-remove').click();
+        cy.get('#btn-MONTHS-discount-actions').click();
+        cy.get('#btn-MONTHS-discount-remove').click();
         cy.get('#swal-btn-confirm').click();
 
         cy.get(`#recurring-discount-0`)
