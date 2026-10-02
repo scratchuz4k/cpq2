@@ -47,3 +47,11 @@ onBeforeUnmount(() => {
         </ul>
     </div>
 </template>
+
+<style scoped>
+.dropdown-item.active,
+.dropdown-item:active {
+    color: var(--bs-dropdown-link-color);
+    --bs-dropdown-link-active-bg: var(--bs-dropdown-border-color);
+}
+</style>

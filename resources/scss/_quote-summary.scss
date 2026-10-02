@@ -28,7 +28,7 @@ input[type='number'] {
 }
 
 .quote-summary-title {
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 700;
     color: var(--dark-purple);
     margin-bottom: 16px;
@@ -36,7 +36,7 @@ input[type='number'] {
 
 .quote-summary-sidebar-panel {
     .quote-summary-title {
-        font-size: 16px;
+        font-size: 20px;
         margin-bottom: 8px;
     }
 
@@ -141,6 +141,8 @@ input[type='number'] {
         min-width: 70px;
 
         input {
+            font-size: 14px;
+            line-height: 26px;
             max-width: 70px;
             margin-left: auto;
         }
@@ -215,7 +217,9 @@ input[type='number'] {
 
 .quote-final-total {
     tbody td {
-        font-size: 16px;
+        &.column-total-body {
+            font-size: 16px;
+        }
         background: var(--light-grey);
         border: none;
 
@@ -231,8 +235,12 @@ input[type='number'] {
     }
 
     tbody td:first-child {
-        font-size: 18px;
+        font-size: 20px;
     }
+}
+
+#table-final-total tbody td {
+    background: var(--lighter-grey);
 }
 
 .frequency-pill {
@@ -275,11 +283,11 @@ input[type='number'] {
         transform: translateX(-50%);
         width: max-content;
         max-width: 240px;
-        padding: 4px 10px;
+        padding: 10px 10px;
         border-radius: 4px;
-        background: var(--dark-purple);
+        background: #101828;
         color: var(--white);
-        font-size: 11px;
+        font-size: 12px;
         font-weight: 500;
         transition: opacity 0.2s;
         pointer-events: none;
@@ -291,7 +299,7 @@ input[type='number'] {
             left: 50%;
             transform: translateX(-50%);
             border: 5px solid transparent;
-            border-top-color: var(--dark-purple);
+            border-top-color: #101828;
         }
     }
 

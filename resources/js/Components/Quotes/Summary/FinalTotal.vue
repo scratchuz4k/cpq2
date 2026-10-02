@@ -7,6 +7,12 @@ import { quote } from '@composables/useQuote';
             id="table-final-total"
             class="quote-summary-table quote-summary-totals-table quote-final-total table mb-0"
         >
+            <colgroup>
+                <col class="column-name-header text-start" style="width: 72%" />
+                <col class="column-discount-header" style="width: 8%" />
+                <col class="column-total-header" style="width: 17%" />
+                <col style="width: 60px" class="text-center" />
+            </colgroup>
             <tbody>
                 <BreakdownRow
                     code="quote"

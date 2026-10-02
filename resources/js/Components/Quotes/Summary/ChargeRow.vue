@@ -165,7 +165,7 @@ onUnmounted(() => emitter.off('quote-items:toggle:is-editing', stopEditing));
                     <font-awesome-icon
                         :id="`btn-${code}-${index}-cancel`"
                         role="button"
-                        class="px-1 py-2 text-primary"
+                        class="px-2 py-2 text-primary"
                         :icon="['fas', 'xmark']"
                         title="Cancel"
                         @click="cancel()"
@@ -173,7 +173,7 @@ onUnmounted(() => emitter.off('quote-items:toggle:is-editing', stopEditing));
                     <font-awesome-icon
                         :id="`btn-${code}-${index}-save`"
                         role="button"
-                        class="px-1 py-2 text-primary"
+                        class="px-2 py-2 text-primary"
                         :icon="['fas', 'check']"
                         title="Save"
                         @click="save()"

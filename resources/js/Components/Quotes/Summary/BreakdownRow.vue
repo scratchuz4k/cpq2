@@ -60,7 +60,7 @@ const actions = computed(() => {
         </td>
         <template v-if="showDiscount">
             <td class="column-discount-body">
-                <p v-if="!isEditing" :id="`${code}-discount`">{{ discount?.discount ?? 0 }}%</p>
+                <p class="small" v-if="!isEditing" :id="`${code}-discount`">{{ discount?.discount ?? 0 }}%</p>
                 <input
                     v-else
                     :id="`input-${code}-discount`"
@@ -84,7 +84,7 @@ const actions = computed(() => {
                     <font-awesome-icon
                         :id="`btn-${code}-discount-cancel`"
                         role="button"
-                        class="px-1 py-2 text-primary"
+                        class="px-2 py-2 text-primary"
                         :icon="['fas', 'xmark']"
                         title="Cancel"
                         @click="cancel()"
@@ -92,7 +92,7 @@ const actions = computed(() => {
                     <font-awesome-icon
                         :id="`btn-${code}-discount-save`"
                         role="button"
-                        class="px-1 py-2 text-primary"
+                        class="px-2 py-2 text-primary"
                         :class="{ 'pe-none opacity-50': isLoading }"
                         :icon="['fas', 'check']"
                         title="Save"
