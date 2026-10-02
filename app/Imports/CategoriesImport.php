@@ -95,7 +95,6 @@ class CategoriesImport extends Import implements ToCollection
         Auth::setUser($this->actingUser);
 
         $pendingItems = [];
-        $fileCodes = $collection->pluck('code')->unique()->toArray();
 
         foreach ($collection->values() as $index => $item) {
             $item = array_map(function ($value) {
@@ -122,22 +121,21 @@ class CategoriesImport extends Import implements ToCollection
             }
         }
 
-        $fileCodeParentCodes = collect($pendingItems)->pluck('parent_code')->unique()->filter();
+        $parentCodes = collect($pendingItems)->pluck('parent_code')->unique()->filter();
 
-        if ($fileCodeParentCodes->isNotEmpty()) {
-            $missingParentCodes = array_diff($fileCodeParentCodes->toArray(), $fileCodes);
+        if ($parentCodes->isNotEmpty()) {
+            $existingDbCodes = Category::query()
+                ->whereIn('code', $parentCodes->all())
+                ->pluck('code')
+                ->toArray();
 
-            if (! empty($missingParentCodes)) {
-                $existingDbCodes = Category::query()
-                    ->whereIn('code', $missingParentCodes)
-                    ->pluck('code')
-                    ->toArray();
-
-                $this->availableCodes = array_unique(array_merge($this->availableCodes, $existingDbCodes));
-            }
+            $this->availableCodes = array_unique(array_merge($this->availableCodes, $existingDbCodes));
         }
 
         $this->processDeferredChildren($pendingItems);
+
+        // Children are processed after parents, so restore the file's row order.
+        usort($this->results['errors'], fn ($a, $b) => $a['row_index'] <=> $b['row_index']);
     }
 
     public function rules(?Category $existingCategory = null): array
