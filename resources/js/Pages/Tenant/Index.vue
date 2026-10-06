@@ -34,6 +34,11 @@ const defaultCustomizationColors = {
     }
 };
 
+const quoteSummaryViews = [
+    { name: 'DealMaker', value: '0' },
+    { name: 'Simple', value: '1' }
+];
+
 const isLoading = ref(false);
 const tenant = reactive({
     ...props.tenant,
@@ -509,28 +514,19 @@ watch(
                                             <div class="row g-3 mb-3">
                                                 <div class="col">
                                                     <div class="mb-3">
-                                                        <label for="quote-simple-view" class="d-block mb-2">
-                                                            Simple view (plain items table instead of the dealmaker)
+                                                        <label for="quote-simple-view" class="form-label">
+                                                            Quote Summary View
                                                         </label>
-                                                        <ToggleSwitch
+                                                        <Select
                                                             id="quote-simple-view"
                                                             v-model="tenant.configurations.quote_simple_view"
+                                                            :options="quoteSummaryViews"
+                                                            optionLabel="name"
+                                                            optionValue="value"
+                                                            placeholder="Select a View"
+                                                            class="w-100"
                                                             @change="submitTenantSettings"
-                                                            trueValue="1"
-                                                            falseValue="0"
-                                                            binary
-                                                        >
-                                                            <template #handle>
-                                                                <font-awesome-icon
-                                                                    :icon="
-                                                                        tenant.configurations.quote_simple_view === '1'
-                                                                            ? ['fas', 'circle-check']
-                                                                            : ['far', 'circle-xmark']
-                                                                    "
-                                                                    class="text-primary"
-                                                                />
-                                                            </template>
-                                                        </ToggleSwitch>
+                                                        />
                                                     </div>
                                                     <div v-if="tenant.configurations.quote_simple_view !== '1'">
                                                         <label>

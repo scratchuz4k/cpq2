@@ -14,7 +14,7 @@ const isRecurring = computed(() => props.code == 'recurring');
 const items = computed(() => quote.items.filter((x) => x.price_plan?.code == pricePlanCodes[props.code]));
 </script>
 <template>
-    <div class="quote-summary-panel" v-if="items.length">
+    <div class="quote-summary-panel">
         <h3 class="quote-summary-title">{{ titles[code] }}</h3>
         <div class="table-responsive-lg">
             <table :id="`table-${code}`" class="quote-summary-table table">

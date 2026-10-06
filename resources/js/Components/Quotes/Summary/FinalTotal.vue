@@ -2,7 +2,7 @@
 import { quote } from '@composables/useQuote';
 </script>
 <template>
-    <div class="quote-summary-panel" v-if="quote.items.length">
+    <div class="quote-summary-panel">
         <table
             id="table-final-total"
             class="quote-summary-table quote-summary-totals-table quote-final-total table mb-0"

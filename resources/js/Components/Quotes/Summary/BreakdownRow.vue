@@ -33,7 +33,7 @@ const showDiscount = computed(() => canViewDiscounts());
 
 const actions = computed(() => {
     let list = [];
-    if (canUpdateDiscounts()) {
+    if (canUpdateDiscounts() && quote.items?.length) {
         list.push({
             id: `btn-${props.code}-discount-edit`,
             label: 'Edit discount',
@@ -99,7 +99,7 @@ const actions = computed(() => {
                         @click="save()"
                     />
                 </div>
-                <KebabMenu v-else :id="`btn-${code}-discount-actions`" :actions="actions" />
+                <KebabMenu v-else-if="actions.length" :id="`btn-${code}-discount-actions`" :actions="actions" />
             </template>
         </td>
     </tr>

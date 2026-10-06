@@ -35,13 +35,13 @@ const hasRows = computed(
 );
 </script>
 <template>
-    <div class="quote-summary-panel" v-if="hasRows">
+    <div class="quote-summary-panel">
         <h3 class="quote-summary-title">Charges breakdown</h3>
         <div class="table-responsive-lg">
             <table id="table-breakdown" class="quote-summary-table quote-summary-totals-table table">
                 <thead>
                     <tr>
-                        <th class="column-name-header">Product</th>
+                        <th class="column-name-header"></th>
                         <template v-if="showDiscounts">
                             <th class="column-discount-header">Discount</th>
                             <th class="column-discount-value-header">Discount value</th>
