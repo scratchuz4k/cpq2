@@ -13,7 +13,7 @@ class QuoteDiscount extends Model
 {
     use RegisterActivity, SetTenantId, SoftDeletes;
 
-    protected $fillable = ['quote_id', 'discountable_type', 'discountable_id', 'discount', 'tenant_id', 'total'];
+    protected $fillable = ['quote_id', 'discountable_type', 'discountable_id', 'billing_frequency_unit', 'discount', 'tenant_id', 'total'];
 
     protected function casts(): array
     {

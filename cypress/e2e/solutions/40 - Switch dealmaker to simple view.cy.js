@@ -8,13 +8,13 @@ describe('Creates a Mobile Quote', () => {
         cy.login('companyadmin@example.com', 'werwerwer');
     });
 
-    it('Formats solution types table to simple view (tenant settings)', () => {
+    it('Turns on the quote summary simple view (tenant settings)', () => {
         cy.visit('/quotes');
         cy.get('#settings').click();
         cy.get('#link-tenant').click();
         cy.get('#1-1').click();
 
-        cy.selectOption('#solution-type-component', 'Simple');
+        cy.selectOption('#quote-summary-view', 'Simple');
         cy.wait(1000);
 
         cy.get('.notyf').contains('Content updated successfully');
@@ -80,16 +80,17 @@ describe('Creates a Mobile Quote', () => {
         cy.get('#table-simple > thead').contains('Price');
         cy.get('#table-simple > thead').contains('Total');
 
+        cy.get('#table-recurring').should('not.exist');
         cy.get('.commission-calculator').should('not.exist');
     });
 
-    it('Formats solution types table to DealMaker view (tenant settings)', () => {
+    it('Turns off the quote summary simple view (tenant settings)', () => {
         cy.visit('/quotes');
         cy.get('#settings').click();
         cy.get('#link-tenant').click();
         cy.get('#1-1').click();
 
-        cy.selectOption('#solution-type-component', 'DealMaker');
+        cy.selectOption('#quote-summary-view', 'DealMaker');
         cy.wait(1000);
 
         cy.get('.notyf').contains('Content updated successfully');
@@ -100,14 +101,15 @@ describe('Creates a Mobile Quote', () => {
         cy.get('#datatable-btn-0-show').click();
 
         cy.get('.recurring-item').its('length').should('eq', 1);
-        cy.get('#table-recurring > thead').contains('Name');
-        cy.get('#table-recurring > thead').contains('Term');
-        cy.get('#table-recurring > thead').contains('Frequency');
-        cy.get('#table-recurring > thead').contains('Quantity');
-        cy.get('#table-recurring > thead').contains('Price');
-        cy.get('#table-recurring > thead').contains('Margin');
+        cy.get('#table-recurring > thead').contains('Product');
         cy.get('#table-recurring > thead').contains('Discount');
+        cy.get('#table-recurring > thead').contains('Margin');
+        cy.get('#table-recurring > thead').contains('Unit price');
+        cy.get('#table-recurring > thead').contains('Qty');
+        cy.get('#table-recurring > thead').contains('Billing freq');
+        cy.get('#table-recurring > thead').contains('Term');
         cy.get('#table-recurring > thead').contains('Total');
+        cy.get('#table-breakdown > thead').contains('Discount value');
 
         cy.get('.commission-calculator').first().should('be.visible');
     });

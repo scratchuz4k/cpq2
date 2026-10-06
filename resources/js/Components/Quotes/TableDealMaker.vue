@@ -11,7 +11,16 @@ const props = defineProps({
 });
 
 const pricePlanskeys = { SINGLE: 'one_off', MONTHLY: 'recurring' };
-let columns = quote.solution_type?.table?.columns ?? [];
+let columns = [
+    { name: 'Name', value: 'name' },
+    { name: 'Term', value: 'renewal_terms' },
+    { name: 'Frequency', value: 'billing_frequency' },
+    { name: 'Quantity', value: 'quantity' },
+    { name: 'Price', value: 'price' },
+    { name: 'Discount', value: 'discount' },
+    { name: 'Margin', value: 'margin' },
+    { name: 'Total', value: 'total' }
+];
 
 if (props.preview) {
     columns = columns.filter((x) => {
@@ -19,11 +28,15 @@ if (props.preview) {
     });
 }
 
+// Price plan discount for all items; billing frequency discounts are in the Overall Totals
+const pricePlanDiscount = (key) => quote.discounts.find((x) => x.entity?.code == key && !x.billing_frequency_unit);
+
 const quoteTotal = (key) => {
     let total = quote.items
         .filter((x) => x.price_plan && x.price_plan.code == key)
         .reduce((acc, item) => (acc += item.quantity * item.price), 0);
-    let tempDiscount = quote.discounts.find((x) => x.entity?.code == key);
+    // one-off discount is shown in the Charges breakdown, so the one-off subtotal stays gross
+    let tempDiscount = key == 'SINGLE' ? null : pricePlanDiscount(key);
     return total ? total - (tempDiscount?.value ?? 0) : 0;
 };
 
@@ -31,7 +44,7 @@ const quoteTotalMonths = (key) => {
     let total = quote.items
         .filter((x) => x.price_plan && x.price_plan.code == key)
         .reduce((acc, item) => (acc += item.total), 0);
-    let tempDiscount = quote.discounts.find((x) => x.entity?.code == key);
+    let tempDiscount = pricePlanDiscount(key);
 
     return total ? total - (tempDiscount?.total ?? 0) : 0;
 };
@@ -84,6 +97,7 @@ const editableColumns = (columns, code) => {
                     </template>
                     <QuoteDiscountRow
                         v-if="
+                            pricePlan.code != 'SINGLE' &&
                             quote.items.filter((x) => x.price_plan.code == pricePlan.code).length > 0 &&
                             (can('viewAny quote_discount') || hasRole('Super Admin'))
                         "

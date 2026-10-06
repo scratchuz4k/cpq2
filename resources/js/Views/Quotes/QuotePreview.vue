@@ -21,14 +21,6 @@ const showDate = (days = 0) => {
     const currentDate = dateObj.getDate() + '/' + (dateObj.getMonth() + 1) + '/' + dateObj.getFullYear();
     return currentDate;
 };
-
-const solutionsViews = {
-    Simple: 'TableSimple',
-    DealMaker: 'TableDealMaker'
-};
-
-let component = props.modelValue.solution_type.configurations?.component;
-let view = component && Object.keys(solutionsViews).includes(component) ? solutionsViews[component] : 'TableDealMaker';
 </script>
 <template>
     <div class="panel d-flex justify-content-center">
@@ -59,19 +51,7 @@ let view = component && Object.keys(solutionsViews).includes(component) ? soluti
                     </p>
                 </div>
             </div>
-            <TableCustom
-                v-if="quote.solution_type.configurations?.has_custom_table == 1"
-                :preview="true"
-                :blockedColumns="['margin']"
-            ></TableCustom>
-            <component
-                v-else
-                :is="view"
-                v-bind="{
-                    pricePlans: props.pricePlans,
-                    preview: true
-                }"
-            ></component>
+            <TableDealMaker :pricePlans="props.pricePlans" :preview="true"></TableDealMaker>
         </div>
     </div>
 </template>

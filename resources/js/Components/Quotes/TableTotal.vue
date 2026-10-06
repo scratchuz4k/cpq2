@@ -11,7 +11,6 @@ const props = defineProps({
 const quoteTotal = ref(0);
 const isEditing = ref(false);
 const isLoading = ref(false);
-const group = quote.solution_type?.table?.group ?? null;
 const pricePlanskeys = { 'One-Off': 'SINGLE', Recurring: 'MONTHLY' };
 
 const discount = reactive({
@@ -26,6 +25,10 @@ const discount = reactive({
 });
 
 const temp = ref(0);
+
+const oneOffDiscount = () => quote.discounts.find((x) => x.entity?.code == 'SINGLE' && !x.billing_frequency_unit);
+const showOneOffDiscount = () =>
+    !props.isSimpleView && (can('viewAny quote_discount') || hasRole('Super Admin')) && oneOffDiscount()?.discount;
 
 const edit = () => {
     isEditing.value = true;
@@ -84,13 +87,7 @@ const destroy = async () => {
 
 const quoteTotalByPricePlan = (price_plan, column = 'total') => {
     let total = 0;
-    let items = quote.items;
-
-    if (group) {
-        items = quote.items.flatMap((obj) => obj.items ?? obj);
-    }
-
-    items.forEach((e) => {
+    quote.items.forEach((e) => {
         if (e.children?.lenght) {
             total += e.children
                 .filter((x) => x.price_plan && x.price_plan.code == pricePlanskeys[price_plan])
@@ -100,9 +97,26 @@ const quoteTotalByPricePlan = (price_plan, column = 'total') => {
         }
     });
 
-    let tempDiscount = quote.discounts.find((x) => x.entity?.code == pricePlanskeys[price_plan]);
+    let tempDiscount = quote.discounts
+        .filter((x) => x.entity?.code == pricePlanskeys[price_plan])
+        .reduce((acc, item) => (acc += item.total), 0);
 
-    return total ? total - (tempDiscount?.total ?? 0) : 0;
+    return total ? total - tempDiscount : 0;
+};
+
+const billingFrequencies = [
+    { unit: 'YEARS', name: 'Annual' },
+    { unit: 'MONTHS', name: 'Monthly' },
+    { unit: 'DAYS', name: 'Daily' }
+];
+
+const recurringItems = (unit) => {
+    return quote.items.filter(
+        (x) =>
+            x.price_plan &&
+            x.price_plan.code == pricePlanskeys['Recurring'] &&
+            (x.billing_frequency_unit ?? 'MONTHS') == unit
+    );
 };
 
 const getQuoteTotal = () => {
@@ -146,7 +160,7 @@ watch(
 </script>
 <template>
     <div class="mobile-price-group-heading d-flex justify-content-between align-items-center">
-        <h3>Overall Totals</h3>
+        <h3>Charges breakdown</h3>
     </div>
     <table id="table-totals" class="table-dealmaker table table-bordered text-end">
         <colgroup>
@@ -156,21 +170,24 @@ watch(
             <col v-if="!props.preview" style="width: 60px" class="text-center" />
         </colgroup>
         <tbody>
-            <tr>
-                <td>
-                    <p class="small text-start">Recurring Total</p>
-                </td>
-                <td></td>
-                <td class="bold">
-                    {{ format.GBP(quoteTotalByPricePlan('Recurring')) }}
-                </td>
-                <td v-if="!props.preview"></td>
-            </tr>
+            <template v-for="frequency in billingFrequencies" :key="frequency.unit">
+                <RecurringTotalRow
+                    v-if="recurringItems(frequency.unit).length"
+                    :preview="props.preview"
+                    :isSimpleView="isSimpleView"
+                    :billingFrequency="frequency"
+                    :items="recurringItems(frequency.unit)"
+                ></RecurringTotalRow>
+            </template>
             <tr>
                 <td>
                     <p class="small text-start">One-Off Total</p>
                 </td>
-                <td></td>
+                <td>
+                    <p class="small text-center text-primary" v-if="showOneOffDiscount()" id="global-SINGLE-discount">
+                        {{ oneOffDiscount().discount }} %
+                    </p>
+                </td>
                 <td id="total_net" class="bold">
                     {{ format.GBP(quoteTotalByPricePlan('One-Off')) }}
                 </td>

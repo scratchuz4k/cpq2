@@ -79,6 +79,18 @@ if (! function_exists('quoteQuantityPrice')) {
         return $total;
     }
 }
+if (! function_exists('billingFrequencyDiscountLabel')) {
+    function billingFrequencyDiscountLabel($unit)
+    {
+        $labels = [
+            'YEARS' => 'Annual',
+            'MONTHS' => 'Monthly',
+            'DAYS' => 'Daily',
+        ];
+
+        return ($labels[$unit] ?? 'Recurring').' Discount';
+    }
+}
 if (! function_exists('frequencyLabel')) {
     function frequencyLabel($value, $unit)
     {

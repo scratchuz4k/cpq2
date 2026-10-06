@@ -178,7 +178,18 @@ class Quote extends Model
             $temp = $this->items->where('pricePlan.code', $priceplan->code);
             if (! $temp->count()) {
                 $this->discounts->where('discountable_type', "App\Models\PricePlan")->where('discountable_id', $priceplan->id)->each->deleteQuietly();
+
+                continue;
             }
+
+            // billing frequency discounts (Annual, Monthly, Daily) without matching items
+            $units = $temp->map->billingFrequencyUnit()->unique();
+            $this->discounts
+                ->where('discountable_type', "App\Models\PricePlan")
+                ->where('discountable_id', $priceplan->id)
+                ->whereNotNull('billing_frequency_unit')
+                ->whereNotIn('billing_frequency_unit', $units)
+                ->each->deleteQuietly();
         }
 
         if (! $this->items->count()) {
@@ -202,6 +213,10 @@ class Quote extends Model
             foreach ($discounts as $discount) {
                 // sequential percentage discount
                 if ($discount->discountable_type == 'App\Models\PricePlan' && $discount->discountable_id != $item->pricePlan->id) {
+                    continue;
+                }
+
+                if ($discount->billing_frequency_unit && $discount->billing_frequency_unit != $item->billingFrequencyUnit()) {
                     continue;
                 }
 

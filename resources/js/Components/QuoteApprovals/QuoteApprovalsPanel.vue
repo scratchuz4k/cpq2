@@ -1,11 +1,21 @@
 <template>
-    <div class="panel" v-if="approval.flow != 'Client review'">
-        <p class="big bold">Action Required:</p>
-        <p class="small mt-2">Approve or reject this quote to move the deal forward.</p>
+    <div class="quote-summary-panel quote-summary-sidebar-panel" v-if="approval.flow != 'Client review'">
+        <h3 class="quote-summary-title">Action required</h3>
+        <p class="small">Approve or reject this quote to move the deal forward.</p>
         <template v-if="can('update quote_approval') || hasRole('Super Admin')">
-            <div class="d-flex mt-2">
-                <button class="btn btn-primary me-2" @click="() => updateQuoteApproval('approved')">Approve</button>
-                <button class="btn btn-outline-danger bold" @click="() => updateQuoteApproval('rejected')">
+            <div class="d-flex mt-3">
+                <button
+                    id="btn-approve-quote"
+                    class="btn btn-sm btn-primary me-2"
+                    @click="() => updateQuoteApproval('approved')"
+                >
+                    Approve
+                </button>
+                <button
+                    id="btn-reject-quote"
+                    class="btn btn-sm btn-outline-danger"
+                    @click="() => updateQuoteApproval('rejected')"
+                >
                     Reject
                 </button>
             </div>
@@ -39,8 +49,8 @@
             </div>
         </Dialog>
     </div>
-    <div v-else class="panel">
-        <p class="big bold">Action Required:</p>
+    <div v-else class="quote-summary-panel quote-summary-sidebar-panel">
+        <h3 class="quote-summary-title">Action required</h3>
         <div class="my-3">
             <label for="expiration_data" class="form-label"
                 >The quote is currently under client review. You can access it here:

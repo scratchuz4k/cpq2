@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { Head, Link, usePage } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
 import Panel from 'primevue/panel';
 import CountUp from 'vue-countup-v3';
 
@@ -9,6 +9,10 @@ const props = defineProps({
     importObject: Object,
     resources: Object
 });
+
+const page = usePage();
+
+const importType = computed(() => page.props.importModels?.find((item) => item.name === props.importObject.model));
 
 const items = ref([{ label: 'Home', url: '/' }, { label: 'Imports', url: '/imports' }, { label: 'Show Import' }]);
 </script>
@@ -41,8 +45,8 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Imports', url: '/impor
                             {{ props.importObject.name }}
                         </a>
                     </p>
-                    <p v-if="props.importObject.model === 'Product'">
-                        <b>Update Existing Products:</b><br />
+                    <p v-if="importType?.canOverwrite">
+                        <b>Update Existing Records:</b><br />
                         <span class="text-secondary" v-if="props.importObject.overwrite">
                             <font-awesome-icon :icon="['fas', 'circle-check']" class="me-1 text-primary" size="lg" />
                             <i>true</i>

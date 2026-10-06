@@ -36,28 +36,13 @@ class SolutionTypeResource extends JsonResource
             ? "$solutionType->name.php"
             : 'Default.php';
         $file = app_path("Helpers/Tables/$fileName");
-        $columns = [];
-        if (file_exists($file)) {
-            $data = require $file;
-            if (
-                $this->resource->tenant()
-                && array_key_exists('component', $this->tenant()->configs)
-                && array_key_exists($this->tenant()->configs['component'], $data)
-            ) {
-                $columns = $data[$this->tenant()->configs['component']];
-            } else {
-                $columns = $data['DealMaker'];
-            }
-        }
-
-        $table = $this->tables->first() ? $this->tables->first()->toArray() : [];
-        $table['columns'] = (array) $columns;
+        $columns = file_exists($file) ? require $file : [];
 
         return [
             ...$this->resource->toArray(),
             ...$info,
             'configurations' => $this->configs,
-            'table' => $table,
+            'table' => ['columns' => $columns],
             'steps' => $this->steps,
         ];
     }

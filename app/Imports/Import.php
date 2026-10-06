@@ -2,11 +2,13 @@
 
 namespace App\Imports;
 
+use App\Enums\ImportsEnum;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Rules\TenantUniqueRule;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -39,10 +41,15 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
 
     protected ?array $templateColumns = null;
 
-    public function __construct(protected User $actingUser, protected string $model, bool $isDryRun = false)
-    {
+    public function __construct(
+        protected User $actingUser,
+        protected string $model,
+        bool $isDryRun = false,
+        protected bool $overwrite = false
+    ) {
         $this->tenant = Tenant::current();
         $this->isDryRun = $isDryRun;
+        $this->overwrite = $overwrite && (bool) ImportsEnum::forModel(class_basename($model))?->canOverwrite();
     }
 
     public function setModel(string $model): void
@@ -364,5 +371,10 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
         $firstIndex = $this->isDuplicateInFile($group, $values, $index);
 
         return $firstIndex === false ? [] : [$group => $firstIndex];
+    }
+
+    public function storeFile(?UploadedFile $file, string $filename)
+    {
+        return $file->storeAs('imports', $filename, 'public');
     }
 }

@@ -94,11 +94,12 @@ describe('Creates a Mobile Quote', () => {
 
         items.forEach((key) => {
             let total = null;
-            cy.get('#' + key + '-total').then(($title) => {
+            cy.get('#' + key + '-total-0').then(($title) => {
                 total = $title.text().trim();
             });
 
             let line1 = { qty: null, discount: null, margin: null };
+            cy.get('#btn-' + key + '-0-actions').click();
             cy.get('#btn-' + key + '-0-edit').click();
             cy.get('#input-' + key + '-0-quantity')
                 .then(($input) => {
@@ -118,6 +119,7 @@ describe('Creates a Mobile Quote', () => {
 
             cy.get('#btn-' + key + '-0-save').click();
             cy.wait(500);
+            cy.get('#btn-' + key + '-0-actions').click();
             cy.get('#btn-' + key + '-0-edit').click();
             cy.get('#input-' + key + '-0-quantity')
                 .invoke('val')
@@ -131,7 +133,7 @@ describe('Creates a Mobile Quote', () => {
                 });
             cy.get('#btn-' + key + '-0-cancel').click();
 
-            cy.get('#' + key + '-total')
+            cy.get('#' + key + '-total-0')
                 .invoke('text')
                 .then((text) => {
                     expect(text).to.not.equal(total);
