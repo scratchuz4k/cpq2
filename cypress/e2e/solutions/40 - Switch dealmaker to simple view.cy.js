@@ -14,7 +14,7 @@ describe('Creates a Mobile Quote', () => {
         cy.get('#link-tenant').click();
         cy.get('#1-1').click();
 
-        cy.selectOption('#quote-simple-view', 'Simple');
+        cy.selectOption('#quote-summary-view', 'Simple');
         cy.wait(1000);
 
         cy.get('.notyf').contains('Content updated successfully');
@@ -90,7 +90,7 @@ describe('Creates a Mobile Quote', () => {
         cy.get('#link-tenant').click();
         cy.get('#1-1').click();
 
-        cy.selectOption('#quote-simple-view', 'DealMaker');
+        cy.selectOption('#quote-summary-view', 'DealMaker');
         cy.wait(1000);
 
         cy.get('.notyf').contains('Content updated successfully');

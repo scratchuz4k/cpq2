@@ -514,11 +514,11 @@ watch(
                                             <div class="row g-3 mb-3">
                                                 <div class="col">
                                                     <div class="mb-3">
-                                                        <label for="quote-simple-view" class="form-label">
+                                                        <label for="quote-summary-view" class="form-label">
                                                             Quote Summary View
                                                         </label>
                                                         <Select
-                                                            id="quote-simple-view"
+                                                            id="quote-summary-view"
                                                             v-model="tenant.configurations.quote_simple_view"
                                                             :options="quoteSummaryViews"
                                                             optionLabel="name"
