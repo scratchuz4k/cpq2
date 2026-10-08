@@ -77,11 +77,11 @@ class ProductAddonImport extends Import
 
         $exists = ProductAddon::where('product_id', $product->id)->where('addon_id', $addonProduct->id)->exists();
 
-        if ($exists && ! $this->overwrite) {
+        if ($exists) {
             return $this->skip($row, 'This product add-on already exists.');
         }
 
-        if ($this->isDryRun || $exists) {
+        if ($this->isDryRun) {
             $this->results['success']++;
 
             return true;

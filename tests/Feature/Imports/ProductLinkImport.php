@@ -114,19 +114,26 @@ it('rejects a link between products that share a step', function () {
         ->and($response->json('results.success'))->toBe(0);
 });
 
-it('accepts an existing link without duplicating it when overwriting', function () {
+it('ignores the overwrite flag and still skips existing links', function () {
     ProductLink::create(['product_id' => $this->productA->id, 'child_id' => $this->productB->id]);
 
     $csv = '"Product SKU","Linked Product SKU"
 "LINK-A","LINK-B"';
 
-    $response = $this->post('/product-links/import', [
+    $preview = $this->post('/product-links/import', [
         'file' => fakeProductLinkFile($csv),
-        'dry_run' => 0,
+        'dry_run' => 1,
         'overwrite' => 1,
     ]);
 
-    $response->assertSuccessful();
+    expect($preview->json('results.skipped'))->toBe(1)
+        ->and($preview->json('results.success'))->toBe(0);
+
+    $this->post('/product-links/import', [
+        'file' => fakeProductLinkFile($csv),
+        'dry_run' => 0,
+        'overwrite' => 1,
+    ])->assertSuccessful();
 
     expect(ProductLink::where('product_id', $this->productA->id)->count())->toBe(1);
 });

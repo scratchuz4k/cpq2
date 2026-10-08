@@ -72,9 +72,7 @@ enum ImportsEnum: string
             self::Account,
             self::Category,
             self::Product,
-            self::ProductAddon,
             self::ProductBundle,
-            self::ProductLink,
             self::User => true,
             default => false,
         };

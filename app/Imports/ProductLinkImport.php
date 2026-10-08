@@ -78,11 +78,11 @@ class ProductLinkImport extends Import
 
         $exists = ProductLink::where('product_id', $product->id)->where('child_id', $linkedProduct->id)->exists();
 
-        if ($exists && ! $this->overwrite) {
+        if ($exists) {
             return $this->skip($row, 'This product link already exists.');
         }
 
-        if ($this->isDryRun || $exists) {
+        if ($this->isDryRun) {
             $this->results['success']++;
 
             return true;
