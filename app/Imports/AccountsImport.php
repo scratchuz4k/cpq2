@@ -66,9 +66,22 @@ class AccountsImport extends Import implements ToCollection, WithBatchInserts, W
                 return true;
             }
 
-            $newItem = Account::create($item);
+            $newItem = DB::transaction(function () use ($item) {
+                $trashed = Account::onlyTrashed()
+                    ->where('tenant_id', $this->actingUser->tenant_id)
+                    ->where('name', $item['name'])
+                    ->where('reference', $item['reference'])
+                    ->first();
 
-            $newItem->save();
+                if (! $trashed) {
+                    return Account::create($item);
+                }
+
+                $trashed->restore();
+                $trashed->update($item);
+
+                return $trashed;
+            });
 
             if (! empty($newItem->id)) {
                 $temp = [];
