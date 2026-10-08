@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Unique;
 use Illuminate\Validation\ValidationException;
@@ -99,6 +100,17 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
         $item['index'] = $index;
 
         return $item;
+    }
+
+    protected function exceptionMessage(\Exception $e, ?int $index = null): string
+    {
+        Log::error(static::class.' row '.($index + 1 ?? '?').': '.$e->getMessage());
+
+        if (config('app.debug')) {
+            return $e->getMessage();
+        }
+
+        return 'Something went wrong while importing this row.';
     }
 
     /**
@@ -257,7 +269,7 @@ class Import implements ToCollection, WithBatchInserts, WithHeadingRow
             $this->results['errors'][] = [
                 'row_index' => $index,
                 'row' => $item,
-                'error' => $e->getMessage(),
+                'error' => $this->exceptionMessage($e, $index),
             ];
         }
 

@@ -190,7 +190,7 @@ class ProductsImport extends Import implements ToCollection, WithBatchInserts, W
             $this->results['errors'][] = [
                 'row_index' => $product['index'] ?? null,
                 'row' => $product,
-                'error' => $e->getMessage(),
+                'error' => $this->exceptionMessage($e, $product['index'] ?? null),
             ];
         }
 

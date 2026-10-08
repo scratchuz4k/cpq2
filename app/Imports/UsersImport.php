@@ -92,7 +92,7 @@ class UsersImport extends Import implements ToCollection, WithBatchInserts, With
             $this->results['errors'][] = [
                 'row_index' => $index,
                 'row' => $this->maskPassword($item),
-                'error' => $e->getMessage(),
+                'error' => $this->exceptionMessage($e, $index),
             ];
         }
 
