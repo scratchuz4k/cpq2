@@ -61,7 +61,7 @@ class StepsImport extends Import implements ToCollection
             $this->results['errors'][] = [
                 'row_index' => $index,
                 'row' => $item,
-                'error' => $e->getMessage(),
+                'error' => $this->exceptionMessage($e, $index),
             ];
         }
 
