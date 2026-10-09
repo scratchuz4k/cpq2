@@ -38,7 +38,11 @@ const getPdf = () => {
         </div>
         <div class="row">
             <div class="col mb-5 price-summary">
-                <QuotePreview v-model="props.model" :pricePlans="pricePlans"></QuotePreview>
+                <div class="panel d-flex justify-content-center">
+                    <div class="quote-preview-page">
+                        <QuotePreview v-model="props.model" :pricePlans="pricePlans"></QuotePreview>
+                    </div>
+                </div>
             </div>
             <div
                 class="col-4 ps-xl-5"

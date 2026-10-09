@@ -4,7 +4,9 @@ import { quote } from '@composables/useQuote';
 
 const props = defineProps({
     // 'one_off' | 'recurring'
-    code: String
+    code: String,
+    // read-only customer view (preview / shared link / PDF): no margin, no actions
+    preview: Boolean
 });
 
 const pricePlanCodes = { one_off: 'SINGLE', recurring: 'MONTHLY' };
@@ -20,9 +22,9 @@ const items = computed(() => quote.items.filter((x) => x.price_plan?.code == pri
             <table :id="`table-${code}`" class="quote-summary-table table">
                 <thead>
                     <tr>
-                        <th class="column-name-header">Product</th>
+                        <th class="column-name-header">{{ preview ? 'Product name' : 'Product' }}</th>
                         <th class="column-discount-header">Discount</th>
-                        <th class="column-margin-header">Margin</th>
+                        <th v-if="!preview" class="column-margin-header">Margin</th>
                         <th class="column-price-header">Unit price</th>
                         <th class="column-quantity-header">Qty</th>
                         <template v-if="isRecurring">
@@ -30,11 +32,18 @@ const items = computed(() => quote.items.filter((x) => x.price_plan?.code == pri
                             <th class="column-renewal_terms-header">Term</th>
                         </template>
                         <th class="column-total-header">Total</th>
-                        <th class="column-actions-header"></th>
+                        <th v-if="!preview" class="column-actions-header"></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <ChargeRow v-for="(item, index) in items" :key="item.id" :item="item" :index="index" :code="code" />
+                    <ChargeRow
+                        v-for="(item, index) in items"
+                        :key="item.id"
+                        :item="item"
+                        :index="index"
+                        :code="code"
+                        :preview="preview"
+                    />
                 </tbody>
             </table>
         </div>

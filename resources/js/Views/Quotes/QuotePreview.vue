@@ -1,10 +1,11 @@
 <script setup>
-import { ref } from 'vue';
+import { computed } from 'vue';
 import { setQuote, quote } from '@composables/useQuote';
 import format from '@/Composables/format.js';
 import { usePage } from '@inertiajs/vue3';
 import dayjs from 'dayjs';
 
+// Customer facing quote document, used by the preview page, shared links and the PDF (Quotes/Pdf)
 const page = usePage();
 const tenant = page.props.tenant;
 
@@ -15,43 +16,42 @@ const props = defineProps({
 
 setQuote(props.modelValue);
 
-const showDate = (days = 0) => {
-    const dateObj = new Date();
-    dateObj.setDate(dateObj.getDate() + days);
-    const currentDate = dateObj.getDate() + '/' + (dateObj.getMonth() + 1) + '/' + dateObj.getFullYear();
-    return currentDate;
-};
+const contact = computed(() => quote.account?.main_contact ?? {});
+const hasItems = (code) => quote.items.some((x) => x.price_plan?.code == code);
 </script>
 <template>
-    <div class="panel d-flex justify-content-center">
-        <div id="print" class="page">
-            <div class="row">
-                <div class="col" id="header_left">
-                    <AppLogo type="logo_docs" :class="'preview-logo'"></AppLogo>
-                </div>
-                <div class="col text-end" id="header_right">
-                    <p>
-                        {{ quote.account?.main_contact?.primary_contact_name ?? quote.account?.name }}
-                        <br />
-                        {{ quote.address_data?.label }}
-                    </p>
-                    <p v-if="quote.account?.main_contact?.phone">Tel: {{ quote.account.main_contact.phone }}</p>
-                    <p v-if="quote.account?.main_contact?.email">Email: {{ quote.account.main_contact.email }}</p>
-                </div>
+    <div id="quote-preview" class="quote-preview">
+        <div class="quote-preview-header">
+            <div id="header_left">
+                <AppLogo type="logo_docs" class="preview-logo"></AppLogo>
             </div>
-            <div class="mt-4 d-flex">
-                <h1 class="mb-1 w-auto">Quote #{{ quote.id }}</h1>
+            <div id="header_right" class="text-end">
+                <h1 class="quote-preview-number">Quote #{{ quote.id }}</h1>
+                <p id="quote-preview-date">
+                    <span>Quotation Date:</span> {{ dayjs(quote.created_at).format('DD/MM/YYYY') }}
+                </p>
+                <p id="quote-preview-expiry-date">
+                    <span>Quote Expiry Date:</span>
+                    {{ format.expireDate(quote.created_at, tenant.configurations?.quote_expiration_days) }}
+                </p>
             </div>
-            <div class="row mb-3">
-                <div class="col">
-                    <p>
-                        Quotation Date: {{ dayjs(quote.created_at).format('DD/MM/YYYY') }}<br />
-                        Valid Date:
-                        {{ format.expireDate(quote.created_at, tenant.configurations?.quote_expiration_days) }}
-                    </p>
-                </div>
-            </div>
-            <TableDealMaker :pricePlans="props.pricePlans" :preview="true"></TableDealMaker>
         </div>
+        <div class="quote-preview-details">
+            <div id="quote-preview-account">
+                <p class="quote-preview-label">Account</p>
+                <p class="fw-bold">{{ quote.account?.name }}</p>
+                <p v-if="quote.address_data?.label">{{ quote.address_data.label }}</p>
+            </div>
+            <div id="quote-preview-contact" v-if="contact.primary_contact_name || contact.phone || contact.email">
+                <p class="quote-preview-label">Contact</p>
+                <p v-if="contact.primary_contact_name" class="fw-bold">{{ contact.primary_contact_name }}</p>
+                <p v-if="contact.phone">Tel: {{ contact.phone }}</p>
+                <p v-if="contact.email">Email: {{ contact.email }}</p>
+            </div>
+        </div>
+        <ChargesTable v-if="hasItems('SINGLE')" code="one_off" :preview="true" />
+        <ChargesTable v-if="hasItems('MONTHLY')" code="recurring" :preview="true" />
+        <ChargesBreakdown v-if="quote.items.length" :preview="true" />
+        <FinalTotal :preview="true" />
     </div>
 </template>

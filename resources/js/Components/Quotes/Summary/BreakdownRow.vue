@@ -21,7 +21,9 @@ const props = defineProps({
     // (discount) => discount value shown in the "Discount value" column
     discountValue: Function,
     // (discount) => row total
-    total: Function
+    total: Function,
+    // read-only customer view (preview / shared link / PDF): discounts always shown, no actions
+    preview: Boolean
 });
 
 const { discount, isEditing, isLoading, temp, edit, cancel, save, destroy } = useQuoteDiscount(
@@ -29,7 +31,7 @@ const { discount, isEditing, isLoading, temp, edit, cancel, save, destroy } = us
     props.payload
 );
 
-const showDiscount = computed(() => canViewDiscounts());
+const showDiscount = computed(() => props.preview || canViewDiscounts());
 
 const actions = computed(() => {
     let list = [];
@@ -78,7 +80,7 @@ const actions = computed(() => {
             </td>
         </template>
         <td class="column-total-body" :id="`${code}-total`">{{ format.GBP(total(discount)) }}</td>
-        <td class="column-actions-body">
+        <td v-if="!preview" class="column-actions-body">
             <template v-if="showDiscount && !quote.is_blocked">
                 <div v-if="isEditing" class="d-flex justify-content-center">
                     <font-awesome-icon

@@ -35,5 +35,14 @@ export default defineConfig({
         minify: true,
         cssCodeSplit: true,
         modulePreload: false
+    },
+    // the headless Chrome rendering quote PDFs runs in the Sail container and reaches this dev server
+    // through host.docker.internal, so listen on all interfaces and keep "localhost" in the hot file URL
+    // (QuoteService maps localhost to host.docker.internal for Chrome)
+    server: {
+        host: '0.0.0.0',
+        hmr: {
+            host: 'localhost'
+        }
     }
 });

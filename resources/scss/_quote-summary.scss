@@ -330,3 +330,96 @@ input[type='number'] {
         min-width: 160px;
     }
 }
+
+/* Customer facing quote document (preview page, shared links and PDF) */
+.quote-preview {
+    color: var(--dark-purple);
+
+    p {
+        margin-bottom: 0;
+    }
+
+    .quote-preview-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 24px;
+        margin-bottom: 24px;
+    }
+
+    .quote-preview-number {
+        font-size: 24px;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .quote-preview-header p span,
+    .quote-preview-label {
+        font-weight: 600;
+        color: var(--dark-grey);
+    }
+
+    .quote-preview-label {
+        font-size: 12px;
+        text-transform: uppercase;
+        margin-bottom: 2px !important;
+    }
+
+    .quote-preview-details {
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        padding: 16px 0;
+        margin-bottom: 24px;
+        border-top: 1px solid var(--light-grey);
+        border-bottom: 1px solid var(--light-grey);
+
+        > div:last-child:not(:first-child) {
+            text-align: right;
+        }
+    }
+
+    // tables use the full width of the page, in line with the header text
+    .quote-summary-panel {
+        padding: 0;
+        margin-bottom: 24px;
+        border-radius: 0;
+        background: none;
+    }
+
+    .quote-summary-title {
+        font-size: 18px;
+        margin-bottom: 8px;
+        break-after: avoid;
+    }
+
+    .table-responsive-lg {
+        overflow: visible;
+    }
+
+    .quote-summary-table {
+        tr {
+            break-inside: avoid;
+        }
+
+        .product-name {
+            white-space: normal;
+        }
+
+        .child-bg > td {
+            background-color: var(--lighter-grey) !important;
+            white-space: normal;
+            padding-top: 6px;
+            padding-bottom: 6px;
+        }
+    }
+}
+
+// A4 sheet around the quote document on the preview and shared link pages
+.quote-preview-page {
+    background: var(--white);
+    border: 1px solid lightgray;
+    width: 210mm;
+    max-width: 100%;
+    padding: 10mm;
+}

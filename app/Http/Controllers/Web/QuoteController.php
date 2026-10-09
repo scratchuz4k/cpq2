@@ -12,10 +12,12 @@ use App\Http\Requests\QuoteCreateRequest;
 use App\Http\Requests\QuoteUpdateRequest;
 use App\Http\Resources\QuoteResource;
 use App\Http\Resources\SolutionTypeResource;
+use App\Http\Resources\TenantResource;
 use App\Models\Account;
 use App\Models\PricePlan;
 use App\Models\Quote;
 use App\Models\SolutionType;
+use App\Models\Tenant;
 use App\Models\User;
 use App\Services\QuoteService;
 use Exception;
@@ -23,6 +25,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class QuoteController extends BaseController
@@ -152,9 +155,29 @@ class QuoteController extends BaseController
 
     public function preview(Quote $quote)
     {
-        $t = new QuoteResource($quote->load(['items']));
-
         return Inertia::render('Quotes/Preview', [
+            'pricePlans' => PricePlan::all(),
+            'quote' => new QuoteResource($quote->load(['items'])),
+        ]);
+    }
+
+    /**
+     * Bare quote preview page that headless Chrome prints to PDF (see QuoteService::generatePdf).
+     * Reached without a session through a short-lived signed URL.
+     */
+    public function pdf(Quote $quote)
+    {
+        $tenant = Tenant::findOrFail($quote->tenant_id);
+        $tenant->makeCurrent();
+
+        // shared props are resolved before the quote tenant is known, override them with the quote's tenant
+        $configs = $tenant->configs ?? [];
+        Inertia::share('tenant', (new TenantResource($tenant))->resolve());
+        Inertia::share('customization', [
+            'colors' => json_decode($configs['customization_colors'] ?? '[]'),
+        ]);
+
+        return Inertia::render('Quotes/Pdf', [
             'pricePlans' => PricePlan::all(),
             'quote' => new QuoteResource($quote->load(['items'])),
         ]);
@@ -195,20 +218,17 @@ class QuoteController extends BaseController
             return response()->json(['message' => 'Quote not available or not shared.'], 404);
         }
 
-        $quote->tenant?->makeCurrent();
+        $pdf = $this->quoteService->generatePdf($quote);
 
-        $pdf = $this->quoteService->generatePdf($request, $quote);
-
-        return $pdf
-            ->name('quote-'.$quote['id'].'.pdf')
-            ->download();
-
+        return response($pdf, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="quote-'.$quote->id.'.pdf"',
+        ]);
     }
 
     public function email(EmailSendRequest $request, Quote $quote)
     {
-        $pdf = $this->quoteService->generatePdf($request, $quote);
-        $pdf->save(storage_path('app/temp/quote-'.$quote['id'].'.pdf'));
+        Storage::disk('temp')->put('quote-'.$quote['id'].'.pdf', $this->quoteService->generatePdf($quote));
 
         Mail::queue(
             new DynamicEmail(

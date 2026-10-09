@@ -8,11 +8,29 @@ import format from '@/Composables/format';
 const props = defineProps({
     // 'one_off' | 'recurring'
     code: String,
-    index: Number
+    index: Number,
+    // read-only customer view (preview / shared link / PDF): no margin, cost price or actions
+    preview: Boolean
 });
 const item = defineModel('item');
 
 const isRecurring = computed(() => props.code == 'recurring');
+
+// connectivity details, shown in the preview as a sub row (same as bundle items)
+const connectivityDetails = computed(() => {
+    let data = item.value.data;
+    if (!data || (data.speed == null && data.bearer == null && !data.connectivitySupplierGroup)) {
+        return [];
+    }
+
+    return [
+        { label: 'Provider', value: data.providerName ?? data.providerKey },
+        { label: 'Subprovider', value: data.connectivitySupplierGroup },
+        { label: 'Speed', value: data.speed != null ? format.speed(data.speed) : null },
+        { label: 'Bearer', value: data.bearer != null ? format.speed(data.bearer) : null },
+        { label: 'Quote Reference', value: quote.data?.quoteReference ?? data.quoteId }
+    ].filter((x) => x.value);
+});
 
 const mainProduct = computed(() => {
     if (!item.value.data || item.value.data?.type === 'main_product') {
@@ -79,7 +97,7 @@ emitter.on('quote-items:toggle:is-editing', stopEditing);
 onUnmounted(() => emitter.off('quote-items:toggle:is-editing', stopEditing));
 </script>
 <template>
-    <tr :class="['item-row', code + '-item', !item.is_margin_valid ? 'red-bg' : '']">
+    <tr :class="['item-row', code + '-item', !preview && !item.is_margin_valid ? 'red-bg' : '']">
         <td class="column-name-body">
             <div class="d-flex align-items-center gap-2">
                 <span class="product-name" :title="item.name">{{ item.name }}</span>
@@ -123,16 +141,21 @@ onUnmounted(() => emitter.off('quote-items:toggle:is-editing', stopEditing));
             </p>
         </td>
         <td class="column-discount-body">
-            <DiscountColumn :column="{ value: 'discount' }" v-model="item" :index="index" :code="code" />
+            <p v-if="preview" class="small" :id="`${code}-discount-${index}`">{{ item.discount ?? 0 }}%</p>
+            <DiscountColumn v-else :column="{ value: 'discount' }" v-model="item" :index="index" :code="code" />
         </td>
-        <td class="column-margin-body" :id="`${code}-${index}-margin`">{{ format.GBP(item.margin) }}</td>
-        <td class="column-price-body">
-            <HoverTooltip :text="`Cost price: ${format.GBP(item.raw_price)}`">
+        <td v-if="!preview" class="column-margin-body" :id="`${code}-${index}-margin`">
+            {{ format.GBP(item.margin) }}
+        </td>
+        <td class="column-price-body" :id="`${code}-${index}-price`">
+            <template v-if="preview">{{ format.GBP(item.original_price) }}</template>
+            <HoverTooltip v-else :text="`Cost price: ${format.GBP(item.raw_price)}`">
                 {{ format.GBP(item.original_price) }}
             </HoverTooltip>
         </td>
         <td class="column-quantity-body">
-            <QuantityColumn :column="{ value: 'quantity' }" v-model="item" :index="index" :code="code" />
+            <p v-if="preview" class="small" :id="`${code}-${index}-quantity`">{{ item.quantity }}</p>
+            <QuantityColumn v-else :column="{ value: 'quantity' }" v-model="item" :index="index" :code="code" />
         </td>
         <template v-if="isRecurring">
             <td class="column-billing_frequency-body">
@@ -155,11 +178,12 @@ onUnmounted(() => emitter.off('quote-items:toggle:is-editing', stopEditing));
             </td>
         </template>
         <td class="column-total-body" :id="`${code}-total-${index}`">
-            <HoverTooltip :text="isRecurring ? `Overall cost: ${format.GBP(item.total)}` : null">
+            <template v-if="preview">{{ format.GBP(item.quantity * item.price) }}</template>
+            <HoverTooltip v-else :text="isRecurring ? `Overall cost: ${format.GBP(item.total)}` : null">
                 {{ format.GBP(item.quantity * item.price) }}
             </HoverTooltip>
         </td>
-        <td class="column-actions-body">
+        <td v-if="!preview" class="column-actions-body">
             <template v-if="!quote.is_blocked">
                 <div v-if="item.is_editing" class="d-flex justify-content-center">
                     <font-awesome-icon
@@ -183,4 +207,24 @@ onUnmounted(() => emitter.off('quote-items:toggle:is-editing', stopEditing));
             </template>
         </td>
     </tr>
+    <template v-if="preview">
+        <tr v-if="connectivityDetails.length" class="child-bg connectivity-details">
+            <td colspan="100%">
+                <p class="small ps-2">
+                    <span
+                        v-for="detail in connectivityDetails"
+                        :key="detail.label"
+                        class="d-inline-block text-nowrap me-4"
+                    >
+                        <b>{{ detail.label }}:</b> {{ detail.value }}
+                    </span>
+                </p>
+            </td>
+        </tr>
+        <tr v-for="(bundleItem, bundleIndex) in item.data?.bundle_items ?? []" :key="bundleIndex" class="child-bg">
+            <td colspan="100%">
+                <p class="small ps-2">{{ bundleItem.name }} x{{ bundleItem.quantity }}</p>
+            </td>
+        </tr>
+    </template>
 </template>

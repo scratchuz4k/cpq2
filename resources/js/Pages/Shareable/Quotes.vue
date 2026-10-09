@@ -34,6 +34,10 @@ const getPdf = () => {
                 </button>
             </div>
         </div>
-        <QuotePreview v-model="props.model" :pricePlans="pricePlans"></QuotePreview>
+        <div class="panel d-flex justify-content-center">
+            <div class="quote-preview-page">
+                <QuotePreview v-model="props.model" :pricePlans="pricePlans"></QuotePreview>
+            </div>
+        </div>
     </ShareLayout>
 </template>

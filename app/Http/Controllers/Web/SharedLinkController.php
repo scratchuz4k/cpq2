@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\QuoteResource;
+use App\Http\Resources\TenantResource;
 use App\Models\PricePlan;
 use App\Models\Quote;
 use App\Models\QuoteApproval;
@@ -88,6 +89,9 @@ class SharedLinkController extends Controller
         }
 
         $configs = $tenant->configs ?? [];
+
+        // shared links are opened without a session, expose the quote tenant (logo, quote expiration days...)
+        Inertia::share('tenant', (new TenantResource($tenant))->resolve());
 
         return match ($component) {
             'Quotes' => [

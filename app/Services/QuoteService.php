@@ -4,20 +4,11 @@ namespace App\Services;
 
 use App\Enums\FrequencyUnitsEnum;
 use App\Enums\QuoteStatusesEnum;
-use App\Helpers\DataProvider;
-use App\Http\Resources\QuoteItemResource;
-use App\Http\Resources\QuoteResource;
-use App\Http\Resources\SolutionTypeResource;
-use App\Http\Resources\TenantResource;
 use App\Models\PricePlan;
 use App\Models\Quote;
-use App\Models\QuoteItem;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Vite;
 use Spatie\Browsershot\Browsershot;
-use Spatie\LaravelPdf\Enums\Format;
-
-use function Spatie\LaravelPdf\Support\pdf;
 
 class QuoteService
 {
@@ -98,34 +89,40 @@ class QuoteService
         return $quote->refresh();
     }
 
-    public function generatePdf(Request $request, Quote $quote, $disk = 'temp')
+    /**
+     * Render the quote PDF with headless Chrome from the Vue quote preview (quotes.pdf route),
+     * so the PDF always matches the preview / shared link view.
+     */
+    public function generatePdf(Quote $quote): string
     {
-        $tenant = (new TenantResource($quote->tenant))->resolve();
-        $dir = 'pdf/'.$quote->tenant->id;
+        $path = URL::temporarySignedRoute(
+            'quotes.pdf',
+            now()->addMinutes(config('cpq.pdf.link_ttl')),
+            ['quote' => $quote->id],
+            absolute: false
+        );
 
-        if (! Storage::makeDirectory($dir)) {
-            throw new \Exception('Could not create directory for PDFs');
+        $browsershot = Browsershot::url(rtrim(config('cpq.pdf.render_url'), '/').$path)
+            ->format('A4')
+            ->margins(10, 10, 10, 10)
+            ->showBackground()
+            ->waitUntilNetworkIdle()
+            ->waitForSelector('#quote-preview')
+            ->timeout(60);
+
+        if ($chromePath = config('cpq.pdf.chrome_path')) {
+            $browsershot->setChromePath($chromePath);
         }
 
-        $solutionType = SolutionTypeResource::make($quote->solutionType)->resolve();
-        $quote = QuoteResource::make($quote->load(['items']))->resolve();
+        if (app()->environment(['local', 'testing'])) {
+            $browsershot->noSandbox();
+        }
 
-        $request->merge(['limit' => 300]);
-        $request->merge(['filters' => json_encode([['column' => 'quote_id', 'operator' => 'equals', 'value' => $quote['id']]])]);
-        $dataProvider = new DataProvider(QuoteItem::class);
-        $items = $dataProvider->group(QuoteItemResource::class);
+        // `npm run dev` runs outside the container, point Chrome's "localhost" (hot file URL) to it
+        if (Vite::isRunningHot() && $viteHost = config('cpq.pdf.vite_host')) {
+            $browsershot->addChromiumArguments(['host-resolver-rules' => "MAP localhost $viteHost"]);
+        }
 
-        $view = array_key_exists('component', $solutionType['configurations']) ? strtolower((string) $solutionType['configurations']['component']) : 'dealmaker';
-
-        return pdf()
-            ->view("pdf.$view", compact('quote', 'tenant', 'items'))
-            ->format(Format::A4)
-            ->withBrowsershot(function (Browsershot $browsershot) {
-                if (app()->environment(['local', 'testing'])) {
-                    $browsershot->noSandbox();
-                }
-                $browsershot->waitUntilNetworkIdle();
-            });
-
+        return $browsershot->pdf();
     }
 }

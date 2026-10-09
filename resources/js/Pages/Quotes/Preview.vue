@@ -52,7 +52,11 @@ const items = ref([
                 </Header>
             </div>
         </div>
-        <QuotePreview v-model="props.quote" :pricePlans="pricePlans"></QuotePreview>
+        <div class="panel d-flex justify-content-center">
+            <div class="quote-preview-page">
+                <QuotePreview v-model="props.quote" :pricePlans="pricePlans"></QuotePreview>
+            </div>
+        </div>
         <template #actionBar>
             <div class="left">
                 <a
@@ -73,14 +77,3 @@ const items = ref([
         </template>
     </AuthenticatedLayout>
 </template>
-<style scoped>
-.w-5 {
-    width: 5% !important;
-}
-.w-10 {
-    width: 10% !important;
-}
-.w-20 {
-    width: 20% !important;
-}
-</style>

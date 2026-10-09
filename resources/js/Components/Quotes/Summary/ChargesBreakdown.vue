@@ -29,7 +29,12 @@ const pricePlanPayload = (items, unit = null) => {
     };
 };
 
-const showDiscounts = computed(() => canViewDiscounts());
+const props = defineProps({
+    // read-only customer view (preview / shared link / PDF): discounts always shown, no actions
+    preview: Boolean
+});
+
+const showDiscounts = computed(() => props.preview || canViewDiscounts());
 const hasRows = computed(
     () => oneOffItems.value.length || billingFrequencies.some((x) => recurringItems(x.unit).length)
 );
@@ -47,7 +52,7 @@ const hasRows = computed(
                             <th class="column-discount-value-header">Discount value</th>
                         </template>
                         <th class="column-total-header">Total</th>
-                        <th class="column-actions-header"></th>
+                        <th v-if="!preview" class="column-actions-header"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -56,6 +61,7 @@ const hasRows = computed(
                             v-if="recurringItems(frequency.unit).length"
                             :code="frequency.unit"
                             :label="frequency.label"
+                            :preview="preview"
                             :find="() => pricePlanDiscount('MONTHLY', frequency.unit)"
                             :payload="() => pricePlanPayload(recurringItems(frequency.unit), frequency.unit)"
                             :discountValue="(discount) => discount?.value ?? 0"
@@ -66,6 +72,7 @@ const hasRows = computed(
                         v-if="oneOffItems.length"
                         code="one_off"
                         label="One-off total"
+                        :preview="preview"
                         :find="() => pricePlanDiscount('SINGLE')"
                         :payload="() => pricePlanPayload(oneOffItems)"
                         :discountValue="(discount) => discount?.value ?? 0"
