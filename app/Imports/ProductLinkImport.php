@@ -76,7 +76,9 @@ class ProductLinkImport extends Import
             return $this->skip($row, 'The linked product cannot be added to the same step as the parent product.');
         }
 
-        if (ProductLink::where('product_id', $product->id)->where('child_id', $linkedProduct->id)->exists()) {
+        $exists = ProductLink::where('product_id', $product->id)->where('child_id', $linkedProduct->id)->exists();
+
+        if ($exists) {
             return $this->skip($row, 'This product link already exists.');
         }
 

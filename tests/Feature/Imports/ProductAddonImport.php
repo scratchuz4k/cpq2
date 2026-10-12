@@ -94,3 +94,28 @@ it('skips an add-on that already exists without erroring the rest of the file', 
     expect(ProductAddon::query()->count())->toBe(2)
         ->and(ProductAddon::where('product_id', $this->productA->id)->where('addon_id', $this->productC->id)->exists())->toBeTrue();
 });
+
+it('ignores the overwrite flag and still skips existing add-ons', function () {
+    ProductAddon::create(['product_id' => $this->productA->id, 'addon_id' => $this->productB->id]);
+
+    $csv = '"Product SKU","Add-on Product SKU"
+"ADDON-A","ADDON-B"
+"ADDON-A","ADDON-C"';
+
+    $response = $this->post('/product-addons/import', [
+        'file' => fakeProductAddonFile($csv),
+        'dry_run' => 1,
+        'overwrite' => 1,
+    ]);
+
+    expect($response->json('results.success'))->toBe(1)
+        ->and($response->json('results.skipped'))->toBe(1);
+
+    $this->post('/product-addons/import', [
+        'file' => fakeProductAddonFile($csv),
+        'dry_run' => 0,
+        'overwrite' => 1,
+    ])->assertSuccessful();
+
+    expect(ProductAddon::where('product_id', $this->productA->id)->count())->toBe(2);
+});

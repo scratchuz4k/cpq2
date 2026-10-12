@@ -5,7 +5,6 @@ namespace App\Imports;
 use App\Http\Requests\ContactCreateRequest;
 use App\Models\Account;
 use App\Models\Contact;
-use App\Models\User;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -15,11 +14,6 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 class ContactsImport extends Import implements ToCollection, WithBatchInserts, WithHeadingRow
 {
-    public function __construct(protected User $actingUser, protected string $model, bool $isDryRun = false)
-    {
-        parent::__construct($actingUser, $model, $isDryRun);
-    }
-
     public function getResults(): array
     {
         return $this->results;
@@ -97,7 +91,7 @@ class ContactsImport extends Import implements ToCollection, WithBatchInserts, W
             $this->results['errors'][] = [
                 'row_index' => $index,
                 'row' => $item,
-                'error' => $e->getMessage(),
+                'error' => $this->exceptionMessage($e, $index),
             ];
         }
 

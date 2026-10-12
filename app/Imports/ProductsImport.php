@@ -9,7 +9,6 @@ use App\Http\Requests\ProductCreateRequest;
 use App\Models\Price;
 use App\Models\PricePlan;
 use App\Models\Product;
-use App\Models\User;
 use App\Rules\BillingFrequencyRule;
 use App\Rules\TenantUniqueRule;
 use App\Rules\ValidDateValidator;
@@ -31,11 +30,6 @@ class ProductsImport extends Import implements ToCollection, WithBatchInserts, W
     protected ?int $ignoreProductId = null;
 
     protected ?int $ignorePriceId = null;
-
-    public function __construct(protected User $actingUser, protected string $model, bool $isDryRun = false, protected bool $overwrite = false)
-    {
-        parent::__construct($this->actingUser, $model, $isDryRun);
-    }
 
     public function getResults(): array
     {
@@ -196,7 +190,7 @@ class ProductsImport extends Import implements ToCollection, WithBatchInserts, W
             $this->results['errors'][] = [
                 'row_index' => $product['index'] ?? null,
                 'row' => $product,
-                'error' => $e->getMessage(),
+                'error' => $this->exceptionMessage($e, $product['index'] ?? null),
             ];
         }
 

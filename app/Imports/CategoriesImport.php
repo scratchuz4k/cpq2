@@ -4,21 +4,16 @@ namespace App\Imports;
 
 use App\Http\Requests\CategoryCreateRequest;
 use App\Models\Category;
-use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Concerns\ToCollection;
 
 class CategoriesImport extends Import implements ToCollection
 {
     protected ?array $availableCodes = [];
-
-    public function __construct(protected User $actingUser, protected string $model, bool $isDryRun = false, protected bool $overwrite = false)
-    {
-        parent::__construct($this->actingUser, $model, $isDryRun);
-    }
 
     /**
      * Insert a new Category
@@ -28,7 +23,11 @@ class CategoriesImport extends Import implements ToCollection
         try {
             request()->merge($item);
 
-            $validator = Validator::make($item, $this->rules());
+            $existingCategory = $this->overwrite && ! empty($item['code'])
+                ? Category::where('code', $item['code'])->first()
+                : null;
+
+            $validator = Validator::make($item, $this->rules($existingCategory));
 
             if ($validator->fails()) {
                 $this->results['skipped']++;
@@ -50,6 +49,17 @@ class CategoriesImport extends Import implements ToCollection
             }
 
             unset($item['parent_code']);
+
+            if ($existingCategory) {
+                $existingCategory->update([
+                    ...$item,
+                    'parent_id' => $parentId,
+                ]);
+
+                $this->results['success']++;
+
+                return true;
+            }
 
             $newItem = Category::create([
                 ...$item,
@@ -73,7 +83,7 @@ class CategoriesImport extends Import implements ToCollection
             $this->results['errors'][] = [
                 'row_index' => $index,
                 'row' => $item,
-                'error' => $e->getMessage(),
+                'error' => $this->exceptionMessage($e, $index),
             ];
         }
 
@@ -85,7 +95,6 @@ class CategoriesImport extends Import implements ToCollection
         Auth::setUser($this->actingUser);
 
         $pendingItems = [];
-        $fileCodes = $collection->pluck('code')->unique()->toArray();
 
         foreach ($collection->values() as $index => $item) {
             $item = array_map(function ($value) {
@@ -112,27 +121,36 @@ class CategoriesImport extends Import implements ToCollection
             }
         }
 
-        $fileCodeParentCodes = collect($pendingItems)->pluck('parent_code')->unique()->filter();
+        $parentCodes = collect($pendingItems)->pluck('parent_code')->unique()->filter();
 
-        if ($fileCodeParentCodes->isNotEmpty()) {
-            $missingParentCodes = array_diff($fileCodeParentCodes->toArray(), $fileCodes);
+        if ($parentCodes->isNotEmpty()) {
+            $existingDbCodes = Category::query()
+                ->whereIn('code', $parentCodes->all())
+                ->pluck('code')
+                ->toArray();
 
-            if (! empty($missingParentCodes)) {
-                $existingDbCodes = Category::query()
-                    ->whereIn('code', $missingParentCodes)
-                    ->pluck('code')
-                    ->toArray();
-
-                $this->availableCodes = array_unique(array_merge($this->availableCodes, $existingDbCodes));
-            }
+            $this->availableCodes = array_unique(array_merge($this->availableCodes, $existingDbCodes));
         }
 
         $this->processDeferredChildren($pendingItems);
+
+        // Children are processed after parents, so restore the file's row order.
+        usort($this->results['errors'], fn ($a, $b) => $a['row_index'] <=> $b['row_index']);
     }
 
-    public function rules(): array
+    public function rules(?Category $existingCategory = null): array
     {
-        return [...(new CategoryCreateRequest)->rules(), ...$this->isActiveRule()];
+        $rules = (new CategoryCreateRequest)->rules();
+
+        if ($existingCategory) {
+            $rules['code'] = [
+                'required',
+                Rule::unique('categories')->where(fn ($query) => $query->where('tenant_id', $this->actingUser->tenant_id))
+                    ->ignore($existingCategory->id),
+            ];
+        }
+
+        return [...$rules, ...$this->isActiveRule()];
     }
 
     private function processDeferredChildren(array $pendingItems): void

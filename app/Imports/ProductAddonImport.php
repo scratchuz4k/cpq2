@@ -75,7 +75,9 @@ class ProductAddonImport extends Import
             return $this->skip($row, $errors);
         }
 
-        if (ProductAddon::where('product_id', $product->id)->where('addon_id', $addonProduct->id)->exists()) {
+        $exists = ProductAddon::where('product_id', $product->id)->where('addon_id', $addonProduct->id)->exists();
+
+        if ($exists) {
             return $this->skip($row, 'This product add-on already exists.');
         }
 

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Web;
 use App\Enums\CalculatorLayoutsEnum;
 use App\Enums\QuoteApprovalFlowEnum;
 use App\Enums\SocialLinksEnum;
-use App\Enums\TablesEnum;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\TenantUpdateRequest;
 use App\Http\Resources\TenantResource;
@@ -37,7 +36,6 @@ class TenantController extends BaseController
             'tenant' => (new TenantResource($user->currentTenant))->resolve(),
             'quote_approval_flows' => QuoteApprovalFlowEnum::availableFlows(),
             'social_links' => SocialLinksEnum::asArray(),
-            'available_tables' => TablesEnum::cases(),
             'calculator_layouts' => CalculatorLayoutsEnum::asArray(),
         ]);
     }

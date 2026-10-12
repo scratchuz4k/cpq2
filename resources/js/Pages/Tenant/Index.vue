@@ -15,8 +15,7 @@ const props = defineProps({
     tenant: Object,
     quote_approval_flows: Array,
     social_links: Array,
-    calculator_layouts: Array,
-    available_tables: Array
+    calculator_layouts: Array
 });
 
 const defaultCustomizationColors = {
@@ -34,6 +33,11 @@ const defaultCustomizationColors = {
         footer: ''
     }
 };
+
+const quoteSummaryViews = [
+    { name: 'DealMaker', value: '0' },
+    { name: 'Simple', value: '1' }
+];
 
 const isLoading = ref(false);
 const tenant = reactive({
@@ -53,7 +57,7 @@ const tenant = reactive({
         calculator_layout: props.tenant.configurations.calculator_layout
             ? JSON.parse(props.tenant.configurations.calculator_layout)
             : [],
-        component: props.tenant.configurations.component ?? 'DealMaker',
+        quote_simple_view: props.tenant.configurations.quote_simple_view ?? '0',
         customization_header: JSON.parse(props.tenant.configurations.customization_header ?? '[]'),
         customization_footer: JSON.parse(props.tenant.configurations.customization_footer ?? '[]'),
         customization_social: JSON.parse(props.tenant.configurations.customization_social ?? '[]'),
@@ -72,7 +76,7 @@ const parseTenantConfigurations = (data) => {
             ? JSON.parse(data.configurations.customization_colors)
             : defaultCustomizationColors;
         data.configurations.calculator_layout = JSON.parse(data.configurations.calculator_layout ?? '[]');
-        data.configurations.component = data.configurations.component ?? 'DealMaker';
+        data.configurations.quote_simple_view = data.configurations.quote_simple_view ?? '0';
     }
     return data;
 };
@@ -510,18 +514,21 @@ watch(
                                             <div class="row g-3 mb-3">
                                                 <div class="col">
                                                     <div class="mb-3">
-                                                        <label>Choose the view:</label>
+                                                        <label for="quote-summary-view" class="form-label">
+                                                            Quote Summary View
+                                                        </label>
                                                         <Select
-                                                            id="solution-type-component"
-                                                            class="form-select"
-                                                            v-model="tenant.configurations.component"
-                                                            @change="submitTenantSettings()"
-                                                            :options="available_tables"
+                                                            id="quote-summary-view"
+                                                            v-model="tenant.configurations.quote_simple_view"
+                                                            :options="quoteSummaryViews"
+                                                            optionLabel="name"
+                                                            optionValue="value"
                                                             placeholder="Select a View"
-                                                        >
-                                                        </Select>
+                                                            class="w-100"
+                                                            @change="submitTenantSettings"
+                                                        />
                                                     </div>
-                                                    <div v-if="tenant.configurations.component === 'DealMaker'">
+                                                    <div v-if="tenant.configurations.quote_simple_view !== '1'">
                                                         <label>
                                                             Profitability Calculator Layout
                                                             <span
