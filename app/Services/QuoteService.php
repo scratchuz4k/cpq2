@@ -104,7 +104,7 @@ class QuoteService
 
         $browsershot = Browsershot::url(rtrim(config('cpq.pdf.render_url'), '/').$path)
             ->format('A4')
-            ->margins(10, 10, 10, 10)
+            ->margins(10, 6, 10, 6)
             ->showBackground()
             ->waitUntilNetworkIdle()
             ->waitForSelector('#quote-preview')

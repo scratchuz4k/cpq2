@@ -69,8 +69,10 @@ const showApprovals = computed(
                     <FinalTotal />
                 </div>
                 <div class="col-xl-3">
-                    <QuoteApprovalsPanel v-if="showApprovals"></QuoteApprovalsPanel>
-                    <ProfitabilityPanel />
+                    <div class="quote-summary-sidebar">
+                        <QuoteApprovalsPanel v-if="showApprovals"></QuoteApprovalsPanel>
+                        <ProfitabilityPanel />
+                    </div>
                 </div>
             </div>
         </div>

@@ -14,6 +14,12 @@ const props = defineProps({
 </template>
 
 <style>
+/* narrower side margins than the global print @page (_print.scss) for wider tables, keep in sync with
+   QuoteService::generatePdf margins and the .quote-preview-page padding */
+@page {
+    margin: 10mm 6mm;
+}
+
 body {
     background: #fff !important;
     -webkit-print-color-adjust: exact !important;

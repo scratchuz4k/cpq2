@@ -5,6 +5,7 @@ import { checkValue } from '@/Composables/input.js';
 import {
     useQuoteDiscount,
     canViewDiscounts,
+    showPreviewDiscounts,
     canUpdateDiscounts,
     canDeleteDiscounts
 } from '@/Composables/useQuoteDiscount';
@@ -22,7 +23,7 @@ const props = defineProps({
     discountValue: Function,
     // (discount) => row total
     total: Function,
-    // read-only customer view (preview / shared link / PDF): discounts always shown, no actions
+    // read-only customer view (preview / shared link / PDF): discounts shown unless on the simple view, no actions
     preview: Boolean
 });
 
@@ -31,7 +32,7 @@ const { discount, isEditing, isLoading, temp, edit, cancel, save, destroy } = us
     props.payload
 );
 
-const showDiscount = computed(() => props.preview || canViewDiscounts());
+const showDiscount = computed(() => (props.preview ? showPreviewDiscounts() : canViewDiscounts()));
 
 const actions = computed(() => {
     let list = [];

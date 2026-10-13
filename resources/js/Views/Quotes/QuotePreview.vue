@@ -25,29 +25,18 @@ const hasItems = (code) => quote.items.some((x) => x.price_plan?.code == code);
             <div id="header_left">
                 <AppLogo type="logo_docs" class="preview-logo"></AppLogo>
             </div>
-            <div id="header_right" class="text-end">
-                <h1 class="quote-preview-number">Quote #{{ quote.id }}</h1>
-                <p id="quote-preview-date">
-                    <span>Quotation Date:</span> {{ dayjs(quote.created_at).format('DD/MM/YYYY') }}
-                </p>
-                <p id="quote-preview-expiry-date">
-                    <span>Quote Expiry Date:</span>
-                    {{ format.expireDate(quote.created_at, tenant.configurations?.quote_expiration_days) }}
-                </p>
-            </div>
-        </div>
-        <div class="quote-preview-details">
-            <div id="quote-preview-account">
-                <p class="quote-preview-label">Account</p>
-                <p class="fw-bold">{{ quote.account?.name }}</p>
-                <p v-if="quote.address_data?.label">{{ quote.address_data.label }}</p>
-            </div>
-            <div id="quote-preview-contact" v-if="contact.primary_contact_name || contact.phone || contact.email">
-                <p class="quote-preview-label">Contact</p>
-                <p v-if="contact.primary_contact_name" class="fw-bold">{{ contact.primary_contact_name }}</p>
+            <div id="quote-preview-account" class="text-end">
+                <p>{{ quote.account?.name }}</p>
                 <p v-if="contact.phone">Tel: {{ contact.phone }}</p>
                 <p v-if="contact.email">Email: {{ contact.email }}</p>
             </div>
+        </div>
+        <div class="quote-preview-details">
+            <h1 class="quote-preview-number">Quote #{{ quote.id }}</h1>
+            <p id="quote-preview-date">Quotation date: {{ dayjs(quote.created_at).format('DD/MM/YYYY') }}</p>
+            <p id="quote-preview-expiry-date">
+                Valid date: {{ format.expireDate(quote.created_at, tenant.configurations?.quote_expiration_days) }}
+            </p>
         </div>
         <ChargesTable v-if="hasItems('SINGLE')" code="one_off" :preview="true" />
         <ChargesTable v-if="hasItems('MONTHLY')" code="recurring" :preview="true" />

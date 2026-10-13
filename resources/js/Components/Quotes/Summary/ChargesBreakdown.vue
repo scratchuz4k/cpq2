@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import { quote } from '@composables/useQuote';
-import { canViewDiscounts } from '@/Composables/useQuoteDiscount';
+import { canViewDiscounts, showPreviewDiscounts } from '@/Composables/useQuoteDiscount';
 
 const billingFrequencies = [
     { unit: 'YEARS', label: 'Annually recurring total' },
@@ -30,11 +30,11 @@ const pricePlanPayload = (items, unit = null) => {
 };
 
 const props = defineProps({
-    // read-only customer view (preview / shared link / PDF): discounts always shown, no actions
+    // read-only customer view (preview / shared link / PDF): discounts shown unless on the simple view, no actions
     preview: Boolean
 });
 
-const showDiscounts = computed(() => props.preview || canViewDiscounts());
+const showDiscounts = computed(() => (props.preview ? showPreviewDiscounts() : canViewDiscounts()));
 const hasRows = computed(
     () => oneOffItems.value.length || billingFrequencies.some((x) => recurringItems(x.unit).length)
 );

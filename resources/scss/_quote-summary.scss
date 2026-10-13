@@ -34,6 +34,12 @@ input[type='number'] {
     margin-bottom: 16px;
 }
 
+// sidebar follows the scroll, same as the cart on the previous steps (OrderSummary)
+.quote-summary-sidebar {
+    position: sticky;
+    top: 1rem;
+}
+
 .quote-summary-sidebar-panel {
     .quote-summary-title {
         font-size: 20px;
@@ -81,6 +87,10 @@ input[type='number'] {
 }
 
 .quote-summary-table {
+    --quote-summary-column-width: 80px;
+    --quote-summary-frequency-width: 96px;
+    // fixed layout so the declared widths are used as-is, the product name takes what is left
+    table-layout: fixed;
     margin-bottom: 0;
     font-size: 13px;
 
@@ -124,22 +134,42 @@ input[type='number'] {
 
     .column-name-header,
     .column-name-body {
-        width: 100%;
-        max-width: 0;
+        width: auto !important;
         white-space: normal;
     }
 
+    // recurring only columns, wider for the pills; they sit before the shared columns so don't affect the alignment
     .column-billing_frequency-header,
     .column-billing_frequency-body,
     .column-renewal_terms-header,
     .column-renewal_terms-body {
+        width: var(--quote-summary-frequency-width);
         text-align: center !important;
+    }
+
+    // every value column shares the same fixed width so the columns line up vertically
+    // across all the summary tables, and the cells don't grow while a row is being edited
+    .column-price-header,
+    .column-price-body,
+    .column-quantity-header,
+    .column-quantity-body,
+    .column-discount-header,
+    .column-discount-body,
+    .column-margin-header,
+    .column-margin-body,
+    .column-discount-value-header,
+    .column-discount-value-body {
+        // !important to beat the generic datatable percentage widths
+        width: var(--quote-summary-column-width) !important;
+    }
+
+    // the only header too long for its column, wraps instead of widening it
+    .column-discount-value-header {
+        white-space: normal;
     }
 
     .column-discount-body,
     .column-quantity-body {
-        min-width: 70px;
-
         input {
             font-size: 14px;
             line-height: 26px;
@@ -148,19 +178,14 @@ input[type='number'] {
         }
     }
 
-    // fixed widths keep the total / actions columns aligned across tables
-    // and stop the cells from growing while a row is being edited
     .column-total-header,
     .column-total-body {
-        width: 110px;
-        min-width: 110px;
+        width: 96px;
     }
 
     .column-actions-header,
     .column-actions-body {
         width: 56px;
-        min-width: 56px;
-        max-width: 56px;
         padding-left: 0;
         padding-right: 0;
     }
@@ -347,36 +372,29 @@ input[type='number'] {
         margin-bottom: 24px;
     }
 
+    // account and contact details, top right next to the logo
+    #quote-preview-account {
+        font-size: 15px;
+        line-height: 1.5;
+    }
+
+    // quote number and dates, under the logo
+    .quote-preview-details {
+        margin-bottom: 32px;
+
+        p {
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.7;
+        }
+    }
+
     .quote-preview-number {
         font-size: 24px;
         font-weight: 700;
-        margin-bottom: 4px;
-    }
-
-    .quote-preview-header p span,
-    .quote-preview-label {
-        font-weight: 600;
-        color: var(--dark-grey);
-    }
-
-    .quote-preview-label {
-        font-size: 12px;
-        text-transform: uppercase;
-        margin-bottom: 2px !important;
-    }
-
-    .quote-preview-details {
-        display: flex;
-        justify-content: space-between;
-        gap: 24px;
-        padding: 16px 0;
-        margin-bottom: 24px;
-        border-top: 1px solid var(--light-grey);
-        border-bottom: 1px solid var(--light-grey);
-
-        > div:last-child:not(:first-child) {
-            text-align: right;
-        }
+        line-height: 1.3;
+        // !important to beat the global #app h1 margin
+        margin-bottom: 8px !important;
     }
 
     // tables use the full width of the page, in line with the header text
@@ -398,12 +416,20 @@ input[type='number'] {
     }
 
     .quote-summary-table {
+        // narrower on the A4 page so the product name keeps enough room
+        --quote-summary-column-width: 76px;
+        --quote-summary-frequency-width: 88px;
+
         tr {
             break-inside: avoid;
         }
 
         .product-name {
             white-space: normal;
+        }
+
+        .frequency-pill {
+            padding: 2px 6px;
         }
 
         .child-bg > td {
@@ -421,5 +447,6 @@ input[type='number'] {
     border: 1px solid lightgray;
     width: 210mm;
     max-width: 100%;
-    padding: 10mm;
+    // same as the PDF page margins (Quotes/Pdf.vue)
+    padding: 10mm 6mm;
 }

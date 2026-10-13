@@ -1,10 +1,14 @@
 import { computed, onUnmounted, ref } from 'vue';
 import { getQuote, quote } from '@composables/useQuote';
 import { can, hasRole } from '@/Composables/useAuth';
+import { usePage } from '@inertiajs/vue3';
 
 export const canViewDiscounts = () => can('viewAny quote_discount') || hasRole('Super Admin');
 export const canUpdateDiscounts = () => can('update quote_discount') || hasRole('Super Admin');
 export const canDeleteDiscounts = () => can('delete quote_discount') || hasRole('Super Admin');
+
+// customer facing documents (preview / shared link / PDF) hide the discounts when the tenant uses the simple view
+export const showPreviewDiscounts = () => usePage().props.tenant?.configurations?.quote_simple_view != '1';
 
 /**
  * Inline edit / delete of a quote discount (one-off, billing frequency or quote discount).
