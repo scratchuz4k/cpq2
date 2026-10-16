@@ -1,12 +1,16 @@
 <script setup>
 import _, { chain } from 'lodash';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 
 import { IconField, InputIcon, InputText } from 'primevue';
 
 import { computed, nextTick, reactive, ref, useSlots, watch, onMounted, onUnmounted } from 'vue';
 import axios from 'axios';
+import pluralize from 'pluralize';
 import { exportData } from '@/Composables/export.js';
+import { can, hasRole } from '@/Composables/useAuth.js';
+import FileUploadModal from '@/Components/Import/FileUploadModal.vue';
+import ImportPreviewModel from '@/Components/Import/ImportPreviewModel.vue';
 import { useDatatableColumns } from '@composables/useDatatableColumns.js';
 import { useDatatableTooltip } from '@composables/useDatatableTooltip.js';
 import { DatatableOptions } from './DatatableOptions';
@@ -32,6 +36,17 @@ const props = defineProps({
     filterable: {
         type: Boolean,
         default: true
+    },
+    // Import types offered by the import modal (see ImportsEnum::asArrayFor). Only used when
+    // options.allow.import is set.
+    imports: {
+        type: Array,
+        default: () => []
+    },
+    // Active filters applied by the page itself through the `filters` slot, added to the Filter badge.
+    extraFilterCount: {
+        type: Number,
+        default: 0
     }
 });
 
@@ -76,9 +91,42 @@ const getEffectiveColWidth = (col) => {
     return getDisplayColWidth(col);
 };
 
-const nativeActionsColumnWidth = computed(() =>
-    props.options.allow.update || props.options.allow.link || props.options.allow.destroy ? 35 : 0
+const slots = useSlots();
+const usedSlots = Object.keys(slots);
+
+// Pages with per-row actions that don't fit edit/view/delete (e.g. conditional on the row's status)
+// supply them through the `row-actions` slot, rendered inside the same ellipsis menu.
+const hasRowActions = computed(
+    () =>
+        !!slots['row-actions'] ||
+        !!(
+            props.options.allow.update ||
+            props.options.allow.link ||
+            props.options.allow.destroy ||
+            props.options.allow.duplicate
+        )
 );
+
+const nativeActionsColumnWidth = computed(() => (hasRowActions.value ? 35 : 0));
+
+const page = usePage();
+const singularRoute = pluralize.singular(props.options.route);
+const isImportable = (page.props.importModels ?? []).some((imp) => imp.value === props.options.route);
+const canImport =
+    !!props.options.allow.import &&
+    isImportable &&
+    ((can('create import') && can(`import ${singularRoute}`)) || hasRole('Super Admin'));
+
+const showImportForm = ref(false);
+const showImportPreview = ref(false);
+const importPreviewData = ref(null);
+const importForm = ref(null);
+
+const handleImportPreview = ({ data, form }) => {
+    importPreviewData.value = data;
+    importForm.value = form;
+    showImportPreview.value = true;
+};
 
 const tableWidth = computed(
     () => visibleColumns.value.reduce((sum, col) => sum + getEffectiveColWidth(col), 0) + nativeActionsColumnWidth.value
@@ -90,9 +138,6 @@ const tableWidth = computed(
 const containerWidth = ref(0);
 const fillerWidth = computed(() => Math.max(0, containerWidth.value - tableWidth.value));
 const hasActionsDataColumn = computed(() => visibleColumns.value.some((col) => col.column === 'actions'));
-
-const slots = useSlots();
-const usedSlots = Object.keys(slots);
 
 const tableContainer = ref(null);
 const isScrolled = ref(false);
@@ -124,7 +169,7 @@ const onScroll = () => {
     hideTooltip();
 };
 
-const emit = defineEmits(['update:meta']);
+const emit = defineEmits(['update:meta', 'clear-filters']);
 const activeFilters = ref(false);
 const activeMenuIndex = ref(null);
 const api = reactive(new Api(props.options.route));
@@ -150,7 +195,7 @@ const setFilters = () => {
 setFilters();
 
 const activeFilterCount = computed(
-    () => Object.values(form.filters).filter((x) => x.value != null && x.value !== '').length
+    () => Object.values(form.filters).filter((x) => x.value != null && x.value !== '').length + props.extraFilterCount
 );
 
 let pollTimeoutId = null;
@@ -172,7 +217,7 @@ const getData = async () => {
         });
 
     props.options.query.forEach((x) => {
-        api.addFilter(x.column, x.operator, x.value);
+        api.addFilter(x.column, x.operator, x.value, x.function ?? 'where');
     });
 
     api.setOrder(form.orderBy, form.order);
@@ -246,7 +291,7 @@ const deleteRecord = async (id) => {
             return;
         }
         try {
-            let res = await axios.delete('/api/' + props.options.route + '/' + id);
+            await axios.delete('/api/' + props.options.route + '/' + id);
             getData();
             notyf.success('Removed with success');
         } catch (err) {
@@ -330,9 +375,10 @@ const getExportData = async () => {
     }, 5000);
 };
 
-emitter.on('datatable-refresh' + (props.options.id ? ':' + props.options.id : ''), () => {
-    getData();
-});
+// Pages refresh a specific table with 'datatable-refresh:<id>'; the bare event (e.g. from ToggleActive)
+// refreshes every table on the page.
+const refreshEvents = ['datatable-refresh', 'datatable-refresh:' + props.options.id];
+refreshEvents.forEach((event) => emitter.on(event, getData));
 
 watch(
     () => [form.order, form.orderBy],
@@ -368,49 +414,50 @@ onMounted(() => {
         });
         containerResizeObserver.observe(tableContainer.value);
     }
-    window.addEventListener(
-        'scroll',
-        () => {
-            hideTooltip();
-        },
-        { passive: true }
-    );
-    var select = document.getElementById(props.options.id + '-tooltip');
-    var selectColumns = document.getElementById(props.options.id + '-column-select');
-    var selectSettings = document.getElementById(props.options.id + '-settings-select');
-    document.addEventListener('click', (ev) => {
-        const isTooltipClick = Array.from(document.getElementsByClassName('tooltip-indicator')).some((x) =>
-            x.contains(ev.target)
-        );
-        if (!select.contains(ev.target) && !isTooltipClick) {
-            hideTooltip();
-        }
-
-        if (!selectColumns.contains(ev.target)) {
-            activeColumnsDropdown.value = false;
-        }
-
-        if (!selectSettings.contains(ev.target)) {
-            activeSettingsDropdown.value = false;
-        }
-
-        const isMenuClick = Array.from(document.getElementsByClassName('datatable-actions-menu')).some((x) =>
-            x.contains(ev.target)
-        );
-        if (!isMenuClick) {
-            activeMenuIndex.value = null;
-        }
-    });
+    window.addEventListener('scroll', hideTooltip, { passive: true });
+    document.addEventListener('click', handleDocumentClick);
 });
+
+const handleDocumentClick = (ev) => {
+    const select = document.getElementById(props.options.id + '-tooltip');
+    const selectColumns = document.getElementById(props.options.id + '-column-select');
+    const selectSettings = document.getElementById(props.options.id + '-settings-select');
+
+    const isTooltipClick = Array.from(document.getElementsByClassName('tooltip-indicator')).some((x) =>
+        x.contains(ev.target)
+    );
+    if (!select?.contains(ev.target) && !isTooltipClick) {
+        hideTooltip();
+    }
+
+    if (!selectColumns?.contains(ev.target)) {
+        activeColumnsDropdown.value = false;
+    }
+
+    if (!selectSettings?.contains(ev.target)) {
+        activeSettingsDropdown.value = false;
+    }
+
+    const isMenuClick = Array.from(document.getElementsByClassName('datatable-actions-menu')).some((x) =>
+        x.contains(ev.target)
+    );
+    if (!isMenuClick) {
+        activeMenuIndex.value = null;
+    }
+};
 
 onUnmounted(() => {
     clearTimeout(pollTimeoutId);
     containerResizeObserver?.disconnect();
+    window.removeEventListener('scroll', hideTooltip);
+    document.removeEventListener('click', handleDocumentClick);
+    refreshEvents.forEach((event) => emitter.off(event, getData));
 });
 </script>
 <template>
-    <div class="datatable-header d-flex justify-content-between p-2">
-        <div>
+    <!-- Below md: search takes the first row and the buttons, icon-only, share the second row equally. -->
+    <div class="datatable-header d-flex flex-wrap justify-content-between p-2">
+        <div class="datatable-header-search">
             <IconField>
                 <InputIcon>
                     <font-awesome-icon :icon="['fas', 'search']" />
@@ -424,26 +471,32 @@ onUnmounted(() => {
                 />
             </IconField>
         </div>
-        <div class="d-flex">
-            <div v-if="props.filterable" class="me-1">
+        <div class="datatable-header-actions d-flex">
+            <div v-if="props.filterable">
                 <button
                     type="button"
                     class="btn d-flex justify-content-center align-items-center"
                     :class="[activeFilters ? 'btn-primary' : 'btn-outline-primary']"
+                    title="Filter"
+                    aria-label="Filter"
                     @click="() => (activeFilters = !activeFilters)"
                 >
-                    <font-awesome-icon :icon="['fas', 'filter']" class="me-1" />
-                    <p class="small">Filter</p>
+                    <font-awesome-icon :icon="['fas', 'filter']" class="me-md-1" />
+                    <p class="small d-none d-md-block">Filter</p>
                     <span v-if="activeFilterCount" class="datatable-filter-count">{{ activeFilterCount }}</span>
                 </button>
             </div>
-            <div class="me-1 position-relative" :id="props.options.id + '-column-select'">
+            <div class="datatable-dropdown-anchor" :id="props.options.id + '-column-select'">
                 <button
+                    type="button"
                     @click="activeColumnsDropdown = !activeColumnsDropdown"
                     class="btn btn-outline-primary d-flex justify-content-center align-items-center"
+                    title="Columns"
+                    aria-label="Columns"
                 >
-                    <p class="small">Columns</p>
-                    <font-awesome-icon :icon="['fas', 'chevron-down']" class="ms-1" />
+                    <font-awesome-icon :icon="['fas', 'table-columns']" class="me-md-1" />
+                    <p class="small d-none d-md-block">Columns</p>
+                    <font-awesome-icon :icon="['fas', 'chevron-down']" class="ms-1 d-none d-md-inline-block" />
                 </button>
                 <div v-show="activeColumnsDropdown" class="datatable-columns-dropdown p-2">
                     <div
@@ -462,24 +515,39 @@ onUnmounted(() => {
                     </div>
                 </div>
             </div>
-            <div class="me-1">
+            <div v-if="props.options.allow.export">
                 <button
-                    v-if="props.options.allow.export"
                     :disabled="!api.items.length || exportDisabled"
                     :severity="'secondary'"
                     class="btn btn-outline-primary d-flex justify-content-center align-items-center"
+                    title="Export"
+                    aria-label="Export"
                     @click="getExportData()"
                     type="button"
                 >
-                    <font-awesome-icon :icon="['fas', 'file-export']" class="me-1" />
-                    <p class="small">Export</p>
+                    <font-awesome-icon :icon="['fas', 'file-export']" class="me-md-1" />
+                    <p class="small d-none d-md-block">Export</p>
                 </button>
             </div>
-            <div class="position-relative" :id="props.options.id + '-settings-select'">
+            <div v-if="canImport">
                 <button
                     type="button"
-                    class="btn btn-outline-primary h-100 d-flex justify-content-center align-items-center datatable-settings-trigger"
+                    class="btn btn-outline-primary d-flex justify-content-center align-items-center"
+                    :id="props.options.id + '-import-btn'"
+                    title="Import"
+                    aria-label="Import"
+                    @click="showImportForm = true"
+                >
+                    <font-awesome-icon :icon="['fas', 'file-import']" class="me-md-1" />
+                    <p class="small d-none d-md-block">Import</p>
+                </button>
+            </div>
+            <div class="datatable-dropdown-anchor" :id="props.options.id + '-settings-select'">
+                <button
+                    type="button"
+                    class="btn btn-outline-primary d-flex justify-content-center align-items-center datatable-settings-trigger"
                     title="Table settings"
+                    aria-label="Table settings"
                     @click="activeSettingsDropdown = !activeSettingsDropdown"
                 >
                     <font-awesome-icon :icon="['fas', 'gear']" />
@@ -554,7 +622,7 @@ onUnmounted(() => {
                                         class="datatable-table-header-text d-inline-flex align-items-center"
                                         @click="sortBy(data)"
                                         :style="{
-                                            cursor: data.isSearchable ? 'pointer' : 'default',
+                                            cursor: data.isSortable ? 'pointer' : 'default',
                                             textDecoration: data.column == form.orderBy ? 'underline' : 'none'
                                         }"
                                         style="height: 100% !important"
@@ -585,7 +653,7 @@ onUnmounted(() => {
                             :style="{ width: fillerWidth + 'px' }"
                         ></th>
                         <th
-                            v-if="props.options.allow.update || props.options.allow.link || props.options.allow.destroy"
+                            v-if="hasRowActions"
                             class="datatable-table-header datatable-col-actions-sticky"
                             :class="['datatable-col', 'p-0']"
                             style="
@@ -661,7 +729,7 @@ onUnmounted(() => {
                             :style="{ width: fillerWidth + 'px' }"
                         ></td>
                         <td
-                            v-if="props.options.allow.update || props.options.allow.link || props.options.allow.destroy"
+                            v-if="hasRowActions"
                             :class="['datatable-col', 'p-0', 'datatable-col-actions-sticky']"
                             :style="{
                                 width: '35px',
@@ -689,7 +757,7 @@ onUnmounted(() => {
                                     <template v-if="props.options.allow.update">
                                         <Link
                                             :id="'datatable-btn-' + index + '-edit'"
-                                            :href="props.options.route + '/' + item.id + '/edit'"
+                                            :href="'/' + props.options.route + '/' + item.id + '/edit'"
                                             class="datatable-actions-item"
                                         >
                                             <font-awesome-icon :icon="['fas', 'pen-to-square']" class="me-2" />
@@ -699,13 +767,35 @@ onUnmounted(() => {
                                     <template v-if="props.options.allow.link">
                                         <Link
                                             :id="'datatable-btn-' + index + '-show'"
-                                            :href="props.options.route + '/' + item.id"
+                                            :href="'/' + props.options.route + '/' + item.id"
                                             class="datatable-actions-item"
                                         >
                                             <font-awesome-icon :icon="['fas', 'eye']" class="me-2" />
                                             View
                                         </Link>
                                     </template>
+                                    <template v-if="props.options.allow.duplicate">
+                                        <button
+                                            type="button"
+                                            :id="'datatable-btn-' + index + '-duplicate'"
+                                            class="datatable-actions-item"
+                                            @click="
+                                                () => {
+                                                    props.options.allow.duplicate(item);
+                                                    activeMenuIndex = null;
+                                                }
+                                            "
+                                        >
+                                            <font-awesome-icon :icon="['fas', 'copy']" class="me-2" />
+                                            Duplicate
+                                        </button>
+                                    </template>
+                                    <slot
+                                        name="row-actions"
+                                        :data="item"
+                                        :index="index"
+                                        :close="() => (activeMenuIndex = null)"
+                                    />
                                     <template v-if="props.options.allow.destroy">
                                         <button
                                             type="button"
@@ -751,7 +841,12 @@ onUnmounted(() => {
             :filters="form.filters"
             :column-filters="props.options.columnFilters"
             :facets="api.meta.filters"
-        />
+            @clear="emit('clear-filters')"
+        >
+            <template v-if="slots.filters" #default>
+                <slot name="filters" />
+            </template>
+        </DatatableFilterPanel>
     </div>
     <div
         :id="props.options.id + '-tooltip'"
@@ -819,6 +914,19 @@ onUnmounted(() => {
             </button>
         </div>
     </div>
+    <template v-if="canImport">
+        <FileUploadModal
+            v-model:visible="showImportForm"
+            :model="props.options.route"
+            :imports="props.imports"
+            @preview="handleImportPreview"
+        />
+        <ImportPreviewModel
+            v-model:visible="showImportPreview"
+            :preview-data="importPreviewData"
+            :import-form="importForm"
+        />
+    </template>
 </template>
 <style scoped>
 .relation-table {
@@ -830,8 +938,54 @@ onUnmounted(() => {
 }
 
 .datatable-header {
+    --datatable-control-height: 34px;
+    position: relative;
+    row-gap: 0.25rem;
     background-color: white;
     border-radius: 4px 4px 0 0;
+}
+
+.datatable-header-search {
+    min-width: 0;
+    flex: 0 1 auto;
+}
+
+.datatable-dropdown-anchor {
+    position: relative;
+}
+
+/* Bootstrap md breakpoint - matches the d-md-* classes that hide the button labels. */
+@media (max-width: 767.98px) {
+    .datatable-header-search,
+    .datatable-header-actions {
+        flex: 1 1 100%;
+    }
+
+    /* Equal-width icon buttons filling the row, whatever the number of actions. */
+    .datatable-header-actions > div {
+        flex: 1 1 0;
+    }
+
+    .datatable-header-actions .btn,
+    .datatable-settings-trigger {
+        width: 100%;
+    }
+
+    .datatable-header-search :deep(.p-iconfield),
+    .datatable-header-search :deep(input) {
+        width: 100%;
+    }
+
+    /* Icon-only buttons sit close to the screen edge, so anchor their dropdowns to the header's
+       right edge instead of the button, and keep them inside the viewport. */
+    .datatable-dropdown-anchor {
+        position: static;
+    }
+
+    .datatable-columns-dropdown {
+        right: 0.5rem;
+        max-width: calc(100vw - 2rem);
+    }
 }
 
 .datatable-filter-count {
@@ -997,8 +1151,23 @@ onUnmounted(() => {
     font-size: 12px;
 }
 
+/* Every header control (search included) shares one height so the row lines up. */
+.datatable-header-actions {
+    gap: 0.25rem;
+}
+
+.datatable-header-actions .btn {
+    height: var(--datatable-control-height);
+    padding: 0 0.625rem;
+}
+
 .datatable-settings-trigger {
-    line-height: 24px;
+    width: var(--datatable-control-height);
+    padding: 0 !important;
+}
+
+.datatable-header-search :deep(input) {
+    height: var(--datatable-control-height);
 }
 
 .datatable-settings-dropdown {
@@ -1039,35 +1208,6 @@ onUnmounted(() => {
 .datatable-actions-dropdown-up {
     top: auto;
     bottom: 100%;
-}
-
-.datatable-actions-item {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    padding: 8px 16px;
-    font-size: 14px;
-    color: #343a40;
-    background: transparent;
-    border: none;
-    text-align: left;
-    text-decoration: none;
-    cursor: pointer;
-    transition: background-color 0.15s;
-}
-
-.datatable-actions-item:hover {
-    background-color: #f8f9fa;
-    color: #343a40;
-}
-
-.datatable-actions-item-danger {
-    color: #dc3545;
-}
-
-.datatable-actions-item-danger:hover {
-    background-color: #fff5f5;
-    color: #dc3545;
 }
 
 .datatable-tooltip {
@@ -1215,5 +1355,37 @@ onUnmounted(() => {
 
 .datatable-table-header.datatable-col-actions-sticky {
     background-color: #e8e8e8;
+}
+</style>
+<style>
+/* Unscoped: also styles items passed in through the `row-actions` slot, which are compiled
+   in the parent and so never receive this component's scoped attribute. */
+.datatable-actions-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 8px 16px;
+    font-size: 14px;
+    color: #343a40;
+    background: transparent;
+    border: none;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.datatable-actions-item:hover {
+    background-color: #f8f9fa;
+    color: #343a40;
+}
+
+.datatable-actions-item-danger {
+    color: #dc3545;
+}
+
+.datatable-actions-item-danger:hover {
+    background-color: #fff5f5;
+    color: #dc3545;
 }
 </style>

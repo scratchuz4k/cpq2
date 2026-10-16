@@ -8,14 +8,24 @@ export class DatatableOptions {
      */
     constructor(route, id = null) {
         this.id = id ? id : uuid();
-        this.route = route;
+        // Routes are used both for the api ('/api/' + route) and for absolute row links ('/' + route),
+        // so a leading slash is stripped to keep either form working.
+        this.route = route.replace(/^\/+/, '');
         this.filters = [];
         this.columns = [];
         this.columnFilters = {};
         this.query = [];
         this.groupedfilters = []; // item 5: was missing, addGroupQuery crashed on first call
         this.sort = { order: 'desc', orderBy: 'updated_at' };
-        this.allow = { create: false, update: false, destroy: false, link: false, export: false, duplicate: false };
+        this.allow = {
+            create: false,
+            update: false,
+            destroy: false,
+            link: false,
+            export: false,
+            import: false,
+            duplicate: false
+        };
     }
 
     /**
@@ -132,7 +142,9 @@ export class DatatableOptions {
      * @param {boolean} destroy - Whether the destroy action is allowed
      * @param {boolean} link - Whether the link action is allowed
      * @param {boolean} allowExport - Whether the export action is allowed
-     * @param {Function|false} duplicate - Callback fn receiving item id, or false to disable
+     * @param {boolean} allowImport - Whether the import action is allowed (still gated by the route being
+     *  importable and the user's import permissions)
+     * @param {Function|false} duplicate - Callback fn receiving the row item, or false to disable
      * @returns {DatatableOptions}
      */
     setAllowedActions({
@@ -141,9 +153,10 @@ export class DatatableOptions {
         destroy = false,
         link = false,
         allowExport = false,
+        allowImport = false,
         duplicate = false
     } = {}) {
-        this.allow = { create, update, destroy, link, export: allowExport, duplicate };
+        this.allow = { create, update, destroy, link, export: allowExport, import: allowImport, duplicate };
         return this;
     }
 }

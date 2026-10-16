@@ -1,12 +1,13 @@
 <template>
-    <div class="d-flex justify-content-between align-items-center pb-1">
+    <!-- Below lg the buttons drop under the title instead of squeezing it. -->
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center pb-1">
         <div class="d-flex justify-content-between" style="justify-content: space-between">
             <h1 id="page-title" class="m-0 font-bold text-break truncate-2-lines">{{ title }}</h1>
             <div class="d-block my-auto ms-3">
                 <slot name="badge"></slot>
             </div>
         </div>
-        <div>
+        <div class="page-header-buttons d-flex flex-wrap mt-2 mt-lg-0">
             <slot name="buttons"></slot>
         </div>
     </div>
@@ -35,6 +36,15 @@ defineProps({
 .font-bold {
     font-weight: bold;
 }
+.page-header-buttons {
+    row-gap: 0.5rem;
+}
+
+/* No buttons passed (or an empty/v-if'd slot - comments don't count): drop the stacked-layout gap. */
+.page-header-buttons:empty {
+    display: none !important;
+}
+
 #page-title.truncate-2-lines {
     line-height: 48px;
     height: auto;

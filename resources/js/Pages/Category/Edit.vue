@@ -1,5 +1,8 @@
 <script setup>
 import { reactive, ref } from 'vue';
+import { DatatableOptions } from '@/Components/Datatables/DatatableOptions.js';
+import { FilterOperators } from '@composables/useApi';
+import { can, hasRole } from '@composables/useAuth';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
@@ -64,6 +67,17 @@ const setProductCategory = async (product_id, add) => {
         notyf.error(ex.response?.data?.message ?? ex.response?.data);
     }
 };
+
+const productOptions = new DatatableOptions('products', 'category-products');
+productOptions.addColumn('id', '#');
+productOptions.addColumn('sku', 'Sku');
+productOptions.addColumn('name', 'Name');
+productOptions.addColumn('supplier.name', 'Supplier');
+productOptions.addColumn('updated_at', 'Updated At');
+productOptions.addQuery('categories.id', FilterOperators.EQUALS, category.id);
+productOptions.setAllowedActions({
+    allowExport: can('export product') || hasRole('Super Admin')
+});
 
 const items = ref([
     { label: 'Home', url: '/' },
@@ -152,35 +166,27 @@ const items = ref([
                     <div class="row mt-3">
                         <div class="col">
                             <!-- <label class="form-label">Products:</label> -->
-                            <Datatable
-                                id="category-products"
-                                :columns="[
-                                    { data: 'id', title: '#', style: 'width:5%' },
-                                    { data: 'sku', title: 'Sku', style: 'width:20%' },
-                                    { data: 'name', title: 'Name', style: 'width:30%' },
-                                    { data: 'supplier.name', title: 'Supplier', style: 'width:12%' },
-                                    { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
-                                    { data: 'actions', title: ' At', style: 'width:5%' }
-                                ]"
-                                :query="[{ column: 'categories.id', operator: 'equals', value: category.id }]"
-                                route="/products"
-                            >
+                            <NewDatatable :options="productOptions">
                                 <template #updated_at="{ value }">
-                                    {{ format.date(value) }}
+                                    <p class="small">{{ format.date(value) }}</p>
                                 </template>
-                                <template #created_at="{ value }">
-                                    {{ format.date(value) }}
-                                </template>
-                                <template #actions="{ data, value, index }">
+                                <template #row-actions="{ data, index, close }">
                                     <button
-                                        class="btn px-2 py-0 mx-1 border-0"
+                                        type="button"
                                         :id="'datatable-btn-' + index + '-delete'"
-                                        @click="setProductCategory(data.id, false)"
+                                        class="datatable-actions-item datatable-actions-item-danger"
+                                        @click="
+                                            () => {
+                                                setProductCategory(data.id, false);
+                                                close();
+                                            }
+                                        "
                                     >
-                                        <font-awesome-icon :icon="['fas', 'trash-alt']"></font-awesome-icon>
+                                        <font-awesome-icon :icon="['fas', 'trash']" class="me-2" />
+                                        Remove
                                     </button>
                                 </template>
-                            </Datatable>
+                            </NewDatatable>
                         </div>
                     </div>
                 </tab>

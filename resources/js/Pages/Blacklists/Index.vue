@@ -1,11 +1,30 @@
 <script setup>
+import { DatatableOptions } from '@/Components/Datatables/DatatableOptions.js';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import { can, hasRole } from '@composables/useAuth';
 
 const props = defineProps({
     operators: Array
 });
+const options = new DatatableOptions('blacklists', 'blacklists-table');
+options.addColumn('is_active', 'Active');
+options.addColumn('productName', 'Name');
+options.addColumn('providerKey', 'Provider');
+options.addColumn('connectivitySupplierGroup', 'Subprovider');
+options.addColumn('bearer', 'Bearer');
+options.addColumn('speed', 'Speed');
+options.addColumn('contractTermMonths', 'Renewal Term');
+options.addColumn('created_at', 'Created At');
+options.addColumn('updated_at', 'Updated At');
+options.addColumnFilter('is_active', 'checkbox');
+options.setAllowedActions({
+    update: true,
+    destroy: true,
+    allowExport: can('export blacklist') || hasRole('Super Admin')
+});
+
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'Settings', url: '/settings' },
@@ -16,119 +35,97 @@ const items = ref([
 <template>
     <Head title="Blacklist" />
     <AuthenticatedLayout>
-        <div class="panel">
-            <Header title="Blacklist" :breadcrumbs="items">
-                <template #buttons>
-                    <Link href="/blacklists/create" id="blacklist-create-btn" class="btn btn-primary me-2">
-                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
-                        New Item
-                    </Link>
-                </template>
-            </Header>
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <Datatable
-                    :allow="{
-                        update: true,
-                        delete: true,
-                        link: false
-                    }"
-                    :columns="[
-                        { data: 'is_active', title: 'Active', style: 'width:5%' },
-                        { data: 'productName', title: 'Name', style: 'width:10%' },
-                        { data: 'providerKey', title: 'Provider', style: 'width:5%' },
-                        { data: 'connectivitySupplierGroup', title: 'Subprovider', style: 'width:5%' },
-                        { data: 'bearer', title: 'Bearer', style: 'width:5%' },
-                        { data: 'speed', title: 'Speed', style: 'width:5%' },
-                        { data: 'contractTermMonths', title: 'Renewal Term', style: 'width:24%' },
-                        { data: 'created_at', title: 'created At', style: 'width:15%' },
-                        { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
-                    ]"
-                    route="/blacklists"
+        <Header title="Blacklist" :breadcrumbs="items">
+            <template #buttons>
+                <Link href="/blacklists/create" id="blacklist-create-btn" class="btn btn-primary me-2">
+                    <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                    New Item
+                </Link>
+            </template>
+        </Header>
+        <NewDatatable :options="options">
+            <template #bearer="{ value }">
+                <span
+                    v-if="!Array.isArray(value.value)"
+                    v-tooltip
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    :title="
+                        operators.find((op) => op.name === value?.operator)?.description +
+                        ' ' +
+                        value.value +
+                        ' ' +
+                        value.unit
+                    "
                 >
-                    <template #bearer="{ value }">
-                        <span
-                            v-if="!Array.isArray(value.value)"
-                            v-tooltip
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="top"
-                            :title="
-                                operators.find((op) => op.name === value?.operator)?.description +
-                                ' ' +
-                                value.value +
-                                ' ' +
-                                value.unit
-                            "
-                        >
-                            {{ value.value }} {{ value.unit }}
-                        </span>
+                    {{ value.value }} {{ value.unit }}
+                </span>
 
-                        <span
-                            v-else
-                            v-tooltip
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="top"
-                            :title="
-                                operators.find((op) => op.name === value?.operator)?.description +
-                                ' ' +
-                                value.value[0] +
-                                ' and ' +
-                                value.value[1] +
-                                ' ' +
-                                value.unit
-                            "
-                        >
-                            {{ value.value[0] }} to {{ value.value[1] }} {{ value.unit }}
-                        </span>
-                    </template>
-                    <template #speed="{ value }">
-                        <span
-                            v-if="!Array.isArray(value.value)"
-                            v-tooltip
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="top"
-                            :title="
-                                operators.find((op) => op.name === value?.operator)?.description +
-                                ' ' +
-                                value.value +
-                                ' ' +
-                                value.unit
-                            "
-                        >
-                            {{ value.value }} {{ value.unit }}
-                        </span>
+                <span
+                    v-else
+                    v-tooltip
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    :title="
+                        operators.find((op) => op.name === value?.operator)?.description +
+                        ' ' +
+                        value.value[0] +
+                        ' and ' +
+                        value.value[1] +
+                        ' ' +
+                        value.unit
+                    "
+                >
+                    {{ value.value[0] }} to {{ value.value[1] }} {{ value.unit }}
+                </span>
+            </template>
+            <template #speed="{ value }">
+                <span
+                    v-if="!Array.isArray(value.value)"
+                    v-tooltip
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    :title="
+                        operators.find((op) => op.name === value?.operator)?.description +
+                        ' ' +
+                        value.value +
+                        ' ' +
+                        value.unit
+                    "
+                >
+                    {{ value.value }} {{ value.unit }}
+                </span>
 
-                        <span
-                            v-else
-                            v-tooltip
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="top"
-                            :title="
-                                operators.find((op) => op.name === value?.operator)?.description +
-                                ' ' +
-                                value.value[0] +
-                                ' and ' +
-                                value.value[1] +
-                                ' ' +
-                                value.unit
-                            "
-                        >
-                            {{ value.value[0] }} to {{ value.value[1] }} {{ value.unit }}
-                        </span>
-                    </template>
-                    <template #contractTermMonths="{ value }">
-                        {{ value ? value + ' months' : '' }}
-                    </template>
-                    <template #updated_at="{ value }">
-                        {{ format.date(value) }}
-                    </template>
-                    <template #created_at="{ value }">
-                        {{ format.date(value) }}
-                    </template>
-                    <template #is_active="{ data, value }">
-                        <ToggleActive :data="data" :value="value" route="blacklists" />
-                    </template>
-                </Datatable>
-            </div>
-        </div>
+                <span
+                    v-else
+                    v-tooltip
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    :title="
+                        operators.find((op) => op.name === value?.operator)?.description +
+                        ' ' +
+                        value.value[0] +
+                        ' and ' +
+                        value.value[1] +
+                        ' ' +
+                        value.unit
+                    "
+                >
+                    {{ value.value[0] }} to {{ value.value[1] }} {{ value.unit }}
+                </span>
+            </template>
+            <template #contractTermMonths="{ value }">
+                <p class="small">{{ value ? value + ' months' : '' }}</p>
+            </template>
+            <template #updated_at="{ value }">
+                <p class="small">{{ format.date(value) }}</p>
+            </template>
+            <template #created_at="{ value }">
+                <p class="small">{{ format.date(value) }}</p>
+            </template>
+            <template #is_active="{ data, value }">
+                <ToggleActive :data="data" :value="value" route="blacklists" />
+            </template>
+        </NewDatatable>
     </AuthenticatedLayout>
 </template>

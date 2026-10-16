@@ -29,7 +29,7 @@ optionBundle.addColumn('quantity', 'Quantity', {
 });
 optionBundle.addColumn('item.sku', 'SKU');
 optionBundle.addColumn('item.description', 'Description');
-optionBundle.addColumn('item.categories.name', 'Categories');
+optionBundle.addColumn('item.categories.name', 'Categories', { isSortable: false });
 optionBundle.addColumn('item.status', 'Status');
 optionBundle.addColumn('item.price.cost', 'Cost Price', { style: { width: '150px' }, isSearchable: false });
 optionBundle.addColumn('item.price.net', 'Net Price', { style: { width: '150px' }, isSearchable: false });
@@ -40,8 +40,11 @@ optionBundle.addColumn('item.price.active_spas', 'Active SPAs', {
     isSortable: false
 });
 optionBundle.addColumn('item.price_plan.name', 'Renewal Term');
-optionBundle.addColumn('item.steps.name', 'Steps', { style: { width: '150px' } });
-optionBundle.addColumn('item.steps.solution_type.name', 'Solution Type', { style: { width: '250px' } });
+optionBundle.addColumn('item.steps.name', 'Steps', { style: { width: '150px' }, isSortable: false });
+optionBundle.addColumn('item.steps.solution_type.name', 'Solution Type', {
+    style: { width: '250px' },
+    isSortable: false
+});
 
 optionBundle.addQuery('product_id', FilterOperators.EQUALS, proxyValue.value.id);
 optionBundle.setAllowedActions({

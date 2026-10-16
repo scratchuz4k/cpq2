@@ -24,7 +24,7 @@ const optionAddons = new DatatableOptions('product-addons', 'product-addons');
 optionAddons.addColumn('addon.sku', 'SKU');
 optionAddons.addColumn('addon.name', 'Name', { isSticky: true });
 optionAddons.addColumn('addon.description', 'Description');
-optionAddons.addColumn('addon.categories.name', 'Categories');
+optionAddons.addColumn('addon.categories.name', 'Categories', { isSortable: false });
 optionAddons.addColumn('addon.status', 'Status');
 optionAddons.addColumn('addon.price.cost', 'Cost Price', { style: { width: '150px' }, isSearchable: false });
 optionAddons.addColumn('addon.price.net', 'Net Price', { style: { width: '150px' }, isSearchable: false });
@@ -35,8 +35,11 @@ optionAddons.addColumn('addon.price.active_spas', 'Active SPAs', {
     isSortable: false
 });
 optionAddons.addColumn('addon.price_plan.name', 'Renewal Term');
-optionAddons.addColumn('addon.steps.name', 'Steps', { style: { width: '150px' } });
-optionAddons.addColumn('addon.steps.solution_type.name', 'Solution Type', { style: { width: '250px' } });
+optionAddons.addColumn('addon.steps.name', 'Steps', { style: { width: '150px' }, isSortable: false });
+optionAddons.addColumn('addon.steps.solution_type.name', 'Solution Type', {
+    style: { width: '250px' },
+    isSortable: false
+});
 
 optionAddons.addQuery('product_id', FilterOperators.EQUALS, proxyValue.value.id);
 optionAddons.setAllowedActions({

@@ -57,7 +57,7 @@ const optionLinks = new DatatableOptions('product-links', 'product-links');
 optionLinks.addColumn('child.sku', 'SKU');
 optionLinks.addColumn('child.name', 'Name', { isSticky: true });
 optionLinks.addColumn('child.description', 'Description');
-optionLinks.addColumn('child.categories.name', 'Categories');
+optionLinks.addColumn('child.categories.name', 'Categories', { isSortable: false });
 optionLinks.addColumn('child.status', 'Status');
 optionLinks.addColumn('child.price.cost', 'Cost Price', { style: { width: '150px' }, isSearchable: false });
 optionLinks.addColumn('child.price.net', 'Net Price', { style: { width: '150px' }, isSearchable: false });
@@ -68,8 +68,8 @@ optionLinks.addColumn('child.price.active_spas', 'Active SPAs', {
     isSortable: false
 });
 optionLinks.addColumn('child.price_plan.name', 'Renewal Term');
-optionLinks.addColumn('child.steps.name', 'Steps', { style: { width: '150px' } });
-optionLinks.addColumn('child.steps.solution_type.name', 'Solution Type');
+optionLinks.addColumn('child.steps.name', 'Steps', { style: { width: '150px' }, isSortable: false });
+optionLinks.addColumn('child.steps.solution_type.name', 'Solution Type', { isSortable: false });
 
 optionLinks.addQuery('product_id', FilterOperators.EQUALS, proxyValue.value.id);
 optionLinks.setAllowedActions({

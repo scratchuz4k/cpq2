@@ -1,5 +1,8 @@
 <script setup>
-import { Button, InputText, DataTable, Column, Panel } from 'primevue';
+import { Button, InputText } from 'primevue';
+import { DatatableOptions } from '@/Components/Datatables/DatatableOptions.js';
+import { FilterOperators } from '@composables/useApi';
+import { can, hasRole } from '@composables/useAuth';
 import { computed, reactive, ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router, usePage } from '@inertiajs/vue3';
@@ -97,6 +100,27 @@ const addAccount = async () => {
     }
 };
 
+const userOptions = new DatatableOptions('group-users', 'group-users');
+userOptions.addColumn('id', '#');
+userOptions.addColumn('user.name', 'Name');
+userOptions.addColumn('created_at', 'Created At');
+userOptions.addColumn('updated_at', 'Updated At');
+userOptions.addQuery('group_id', FilterOperators.EQUALS, group.id);
+userOptions.setAllowedActions({
+    allowExport: can('export group-user') || hasRole('Super Admin')
+});
+
+const accountOptions = new DatatableOptions('group-accounts', 'group-accounts');
+accountOptions.addColumn('id', '#');
+accountOptions.addColumn('account.name', 'Name');
+accountOptions.addColumn('created_at', 'Created At');
+accountOptions.addColumn('updated_at', 'Updated At');
+accountOptions.addQuery('group_id', FilterOperators.EQUALS, group.id);
+accountOptions.setAllowedActions({
+    destroy: true,
+    allowExport: can('export group-account') || hasRole('Super Admin')
+});
+
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'Settings', url: '/settings' },
@@ -163,30 +187,30 @@ const items = ref([
                     <div class="row mt-3">
                         <div class="col">
                             <label class="form-label">Users:</label>
-                            <Datatable
-                                id="group-users"
-                                :query="[{ column: 'group_id', operator: 'equals', value: group.id }]"
-                                :columns="[
-                                    { data: 'id', title: '#', style: 'width:5%' },
-                                    { data: 'user.name', title: 'Name', style: 'width:50%' },
-                                    { data: 'created_at', title: 'Created At', style: 'width:15%' },
-                                    { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
-                                    { data: 'actions', title: ' At', style: 'width:5%' }
-                                ]"
-                                route="/group-users"
-                            >
+                            <NewDatatable :options="userOptions">
                                 <template #updated_at="{ value }">
-                                    {{ format.date(value) }}
+                                    <p class="small">{{ format.date(value) }}</p>
                                 </template>
                                 <template #created_at="{ value }">
-                                    {{ format.date(value) }}
+                                    <p class="small">{{ format.date(value) }}</p>
                                 </template>
-                                <template #actions="{ data, value, index }">
-                                    <button class="btn px-2 py-0 mx-1 border-0" @click="setUserGroup(data.user, null)">
-                                        <font-awesome-icon :icon="['fas', 'trash-alt']"></font-awesome-icon>
+                                <template #row-actions="{ data, index, close }">
+                                    <button
+                                        type="button"
+                                        :id="'datatable-btn-' + index + '-delete'"
+                                        class="datatable-actions-item datatable-actions-item-danger"
+                                        @click="
+                                            () => {
+                                                setUserGroup(data.user, null);
+                                                close();
+                                            }
+                                        "
+                                    >
+                                        <font-awesome-icon :icon="['fas', 'trash']" class="me-2" />
+                                        Remove
                                     </button>
                                 </template>
-                            </Datatable>
+                            </NewDatatable>
                         </div>
                     </div>
                 </tab>
@@ -214,29 +238,14 @@ const items = ref([
                     <div class="row mt-3">
                         <div class="col">
                             <label class="form-label">Accounts:</label>
-                            <Datatable
-                                id="group-accounts"
-                                :allow="{
-                                    update: false,
-                                    delete: true,
-                                    link: false
-                                }"
-                                :query="[{ column: 'group_id', operator: 'equals', value: group.id }]"
-                                :columns="[
-                                    { data: 'id', title: '#', style: 'width:5%' },
-                                    { data: 'account.name', title: 'Name', style: 'width:55%' },
-                                    { data: 'created_at', title: 'Created At', style: 'width:15%' },
-                                    { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
-                                ]"
-                                route="/group-accounts"
-                            >
+                            <NewDatatable :options="accountOptions">
                                 <template #updated_at="{ value }">
-                                    {{ format.date(value) }}
+                                    <p class="small">{{ format.date(value) }}</p>
                                 </template>
                                 <template #created_at="{ value }">
-                                    {{ format.date(value) }}
+                                    <p class="small">{{ format.date(value) }}</p>
                                 </template>
-                            </Datatable>
+                            </NewDatatable>
                         </div>
                     </div>
                 </tab>

@@ -2,12 +2,10 @@
 import format from '@composables/format';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, usePage } from '@inertiajs/vue3';
-import { Button, Paginator } from 'primevue';
-import { reactive, ref } from 'vue';
-import queryString from 'qs';
+import { computed, reactive, ref } from 'vue';
 import axios from 'axios';
-import { exportData } from '@/Composables/export.js';
 import { can, hasRole } from '@/Composables/useAuth.js';
+import { DatatableOptions } from '@/Components/Datatables/DatatableOptions.js';
 
 const page = usePage();
 const props = defineProps({
@@ -15,10 +13,8 @@ const props = defineProps({
     price_plans: Array
 });
 
-const visible = ref(false);
 const showGlobal = ref(false);
 const selectedRules = ref([]);
-const has_export_permission = can(`export spa`) || hasRole('Super Admin');
 
 const form = reactive({
     rule: null,
@@ -34,17 +30,6 @@ const fields = reactive({
     product: null
 });
 
-const emptyData = ref(true);
-const data = ref([]);
-const meta = reactive({
-    page: 1,
-    total: 0,
-    first: 1,
-    limit: 20,
-    orderBy: 'id',
-    order: 'asc'
-});
-
 const globalRules = {};
 props.rules.forEach((element) => {
     let str = element.code;
@@ -57,6 +42,37 @@ props.rules.forEach((element) => {
         globalRules[splitResult[0]].push(splitResult[1] ?? null);
     }
 });
+
+// The entity filters below don't map onto single columns, so they are pushed into the table as
+// raw query filters (reactive, so the table reloads whenever they change).
+const options = reactive(new DatatableOptions('spas', 'spas-table'));
+options.addColumn('id', '#');
+options.addColumn('is_active', 'Active');
+options.addColumn('rule.name', 'Rule');
+// field_1/field_2 hold the id of a different entity type per rule, so they can be sorted but not searched by name.
+options.addColumn('field_1', 'Level 1', { isSearchable: false });
+options.addColumn('field_2', 'Level 2', { isSearchable: false });
+options.addColumn('price_plan.name', 'Price Plan');
+options.addColumn('operation.code', 'Operation');
+options.addColumn('group.name', 'Group');
+options.addColumn('value', 'Value');
+options.addColumn('percentage', 'Percentage');
+options.addColumnFilter('is_active', 'checkbox');
+options.setSort('asc', 'id');
+options.setAllowedActions({
+    update: true,
+    destroy: true,
+    allowExport: can('export spa') || hasRole('Super Admin'),
+    duplicate: (item) => cloneSpa(item)
+});
+
+const entityFilterCount = computed(
+    () => (showGlobal.value ? 1 : 0) + Object.values(fields).filter((x) => x != null).length + (form.group ? 1 : 0)
+);
+
+const getData = () => {
+    options.query = getFilters();
+};
 
 const handleGlobal = () => {
     let keys = Object.keys(fields).filter((x) => fields[x] != null);
@@ -83,7 +99,6 @@ const handleFields = () => {
     let keys = Object.keys(fields).filter((x) => fields[x] != null);
 
     if (keys.length > 2) {
-        data.value = [];
         selectedRules.value = [];
         notyf.error('Only two entities may be selected at a time');
         return;
@@ -99,22 +114,6 @@ const handleFields = () => {
         });
     }
     getData();
-};
-
-const getData = async () => {
-    let string = queryString.stringify({
-        orderBy: meta.orderBy,
-        order: meta.order,
-        page: meta.page,
-        filters: getFilters(),
-        limit: meta.limit
-    });
-
-    let res = await axios.get('/api/spas?' + string);
-    data.value = res.data.data;
-    emptyData.value = !data.value.length;
-    meta.total = res.data.meta?.total ?? res.data.total;
-    meta.first = (meta.page - 1) * meta.limit;
 };
 
 const getFilters = () => {
@@ -177,23 +176,6 @@ const getFilters = () => {
     return temp;
 };
 
-const deleteRecord = async (id) => {
-    swal.fire({
-        title: 'Are you sure?'
-    }).then(async (result) => {
-        if (['cancel', 'backdrop'].includes(result.dismiss)) {
-            return;
-        }
-        try {
-            let res = await axios.delete('/api/spas/' + id);
-            getData();
-            notyf.success('Removed with success');
-        } catch (err) {
-            notyf.error(err?.response?.data?.message ?? 'Something went wrong');
-        }
-    });
-};
-
 const cloneSpa = async (item) => {
     let result = await swal.fire({
         title: 'Are you sure?',
@@ -215,16 +197,10 @@ const cloneSpa = async (item) => {
             group_id: item.group_id ?? null
         });
         notyf.success('Clone with success');
-        getData();
+        emitter.emit('datatable-refresh:spas-table');
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong');
     }
-};
-
-const handlePaginator = (ev) => {
-    meta.limit = ev.rows;
-    meta.page = ev.page + 1;
-    getData();
 };
 
 const clearFilters = () => {
@@ -235,267 +211,125 @@ const clearFilters = () => {
     getData();
 };
 
-const sortBy = (column) => {
-    let changeSort = meta.order == 'asc' ? 'desc' : 'asc';
-    meta.order = meta.orderBy === column ? changeSort : meta.order;
-    meta.orderBy = column;
-    getData();
-};
-
-const exportDisabled = ref(false);
-
-const getExportData = async () => {
-    if (exportDisabled.value) return;
-    exportDisabled.value = true;
-
-    exportData([], 'spas');
-    setTimeout(() => {
-        exportDisabled.value = false;
-    }, 5000);
-};
 const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/settings' }, { label: 'SPAs' }]);
-
-const columns = [
-    { name: '#', data: 'id' },
-    { name: 'Active', data: 'is_active' },
-    { name: 'Rule', data: 'rule_id' },
-    { name: 'Level 1', data: 'field_1' },
-    { name: 'Level 2', data: 'field_2' },
-    { name: 'Price Plan', data: 'price_plan_id' },
-    { name: 'Operation', data: 'operation_id' },
-    { name: 'Group', data: 'group_id' },
-    { name: 'Value', data: 'value' },
-    { name: 'Percentage', data: 'percentage' }
-];
-
-emitter.on('datatable-refresh' + (props.id ? ':' + props.id : ''), () => {
-    getData();
-});
-
-getData();
 </script>
 <template>
     <Head title="SPAs" />
     <AuthenticatedLayout>
-        <div class="panel">
-            <Header title="SPAs" :breadcrumbs="items">
-                <template #buttons>
-                    <Link id="create-spa" href="/spas/create" class="btn btn-primary me-2">
-                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
-                        New SPA
-                    </Link>
-                </template>
-            </Header>
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 pt-2">
-                <div class="mb-2 mt-1">
-                    <Button
-                        :class="{ 'p-button-secondary': !visible, 'p-button-primary': visible }"
-                        @click="visible = !visible"
-                        class="p-button p-component me-2"
-                    >
-                        <font-awesome-icon :icon="['fas', 'filter']" />
-                    </Button>
-
-                    <Button
-                        v-if="visible"
+        <Header title="SPAs" :breadcrumbs="items">
+            <template #buttons>
+                <Link id="create-spa" href="/spas/create" class="btn btn-primary me-2">
+                    <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                    New SPA
+                </Link>
+            </template>
+        </Header>
+        <NewDatatable :options="options" :extra-filter-count="entityFilterCount" @clear-filters="clearFilters">
+            <template #filters>
+                <p class="spa-filter-title">Entities</p>
+                <div class="mb-2">
+                    <label class="spa-filter-label" for="Global">Global</label>
+                    <button
                         type="button"
-                        class="me-2"
-                        :severity="form.rule ? 'primary' : 'secondary'"
-                        @click="clearFilters()"
+                        id="Global"
+                        class="btn btn-sm w-100"
+                        :class="[showGlobal ? 'btn-primary' : 'btn-outline-primary']"
+                        @click="handleGlobal()"
                     >
-                        <font-awesome-icon :icon="['fas', 'eraser']" />
-                    </Button>
-                    <Button
-                        v-if="has_export_permission"
-                        type="button"
-                        :severity="'secondary'"
-                        @click="getExportData()"
-                        :disabled="!emptyData || exportDisabled"
-                    >
-                        <font-awesome-icon :icon="['fas', 'file-export']" />
-                    </Button>
-                    <div v-if="visible" class="mt-3 mb-3">
-                        <div class="row row-cols-5 border rounded p-2">
-                            <div class="col">
-                                <label class="form-label">Global</label>
-                                <Button
-                                    id="Global"
-                                    class="w-100 py-2 border-2 lh-1"
-                                    :severity="showGlobal ? 'primary' : 'secondary'"
-                                    @click="handleGlobal()"
-                                >
-                                    {{ showGlobal ? 'Hide' : 'Show' }}
-                                </Button>
-                            </div>
-                            <div class="col">
-                                <label class="form-label">Account</label>
-                                <InputSelect
-                                    id="filter-account"
-                                    url="/accounts"
-                                    :fields="['name', 'reference']"
-                                    v-model="fields.account"
-                                    @change="handleFields()"
-                                    placeholder="Select an Account"
-                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
-                                >
-                                </InputSelect>
-                            </div>
-                            <div class="col">
-                                <label class="form-label">Supplier</label>
-                                <InputSelect
-                                    id="filter-supplier"
-                                    url="/suppliers"
-                                    :fields="['name']"
-                                    v-model="fields.supplier"
-                                    @change="handleFields()"
-                                    placeholder="Select an Supplier"
-                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
-                                >
-                                </InputSelect>
-                            </div>
-                            <div class="col">
-                                <label class="form-label">Product</label>
-                                <InputSelect
-                                    id="filter-product"
-                                    url="/products"
-                                    :fields="['name']"
-                                    v-model="fields.product"
-                                    @change="handleFields()"
-                                    placeholder="Select a Product"
-                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
-                                >
-                                </InputSelect>
-                            </div>
-                            <div class="col">
-                                <label class="form-label">Group</label>
-                                <InputSelect
-                                    id="filter-group"
-                                    url="/groups"
-                                    :fields="['name']"
-                                    v-model="form.group"
-                                    @change="handleFields()"
-                                    placeholder="Select a Group"
-                                >
-                                </InputSelect>
-                            </div>
-                        </div>
-                    </div>
-                    <div v-if="selectedRules.length || form.group" class="row mt-3">
-                        <div class="col d-flex">
-                            <p>
-                                <b class="me-2">Selected filters:</b>
-                                <template v-for="(rule, index) in selectedRules">
-                                    <span class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm">
-                                        {{ rule.name }}
-                                    </span>
-                                </template>
-                                <span
-                                    v-if="form.group"
-                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm"
-                                >
-                                    {{ form.group.name }}
-                                </span>
-                            </p>
-                        </div>
-                    </div>
+                        {{ showGlobal ? 'Showing global SPAs' : 'Show global SPAs' }}
+                    </button>
                 </div>
-                <div>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th v-for="column in columns">
-                                    <span
-                                        class="column-title sortable d-inline-flex align-items-center"
-                                        @click="sortBy(column.data)"
-                                        :style="{
-                                            textDecoration: column.data == meta.orderBy ? 'underline' : 'none'
-                                        }"
-                                    >
-                                        {{ column.name }}
-                                        <span class="text-center" style="width: 20px">
-                                            <template v-if="column.data == meta.orderBy">
-                                                <font-awesome-icon
-                                                    v-if="meta.order == 'desc'"
-                                                    :icon="['fas', 'sort-down']"
-                                                />
-                                                <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
-                                            </template>
-                                        </span>
-                                    </span>
-                                </th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(item, index) in data">
-                                <td>{{ item.id }}</td>
-                                <td>
-                                    <ToggleActive
-                                        :data="{
-                                            ...item,
-                                            field_1: item.field_1?.id,
-                                            field_2: item.field_2?.id
-                                        }"
-                                        :value="item.is_active"
-                                        route="spas"
-                                    />
-                                </td>
-                                <td>{{ item.rule.name }}</td>
-                                <td>{{ item.field_1?.name }}</td>
-                                <td>{{ item.field_2?.name }}</td>
-                                <td>{{ item.price_plan?.name }}</td>
-                                <td>{{ item.operation.code }}</td>
-                                <td>{{ item.group?.name }}</td>
-                                <td>{{ item.value }}</td>
-                                <td>{{ item.percentage }}</td>
-                                <td>
-                                    <div class="d-flex justify-content-center">
-                                        <button
-                                            :id="'datatable-btn-' + index + '-clone'"
-                                            class="btn p-2 py-0 mx-1 border-0"
-                                            @click="cloneSpa(item)"
-                                        >
-                                            <font-awesome-icon :icon="['fas', 'copy']" />
-                                        </button>
-                                        <Link
-                                            :id="'datatable-btn-' + index + '-edit'"
-                                            :href="'/spas/' + item.id + '/edit'"
-                                            class="btn p-2 py-0 mx-1 border-0"
-                                        >
-                                            <font-awesome-icon :icon="['fas', 'edit']" />
-                                        </Link>
-
-                                        <button
-                                            :id="'datatable-btn-' + index + '-delete'"
-                                            class="btn p-2 py-0 mx-1 border-0"
-                                            @click="deleteRecord(item.id)"
-                                        >
-                                            <font-awesome-icon icon="fas fa-trash-alt" />
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr v-if="!data.length" class="text-center">
-                                <td colspan="11">No Results Found</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <Paginator
-                        v-model:first="meta.first"
-                        :rows="meta.limit"
-                        :totalRecords="meta.total"
-                        :rowsPerPageOptions="[20, 30, 50]"
-                        @page="handlePaginator"
-                    >
-                    </Paginator>
+                <div class="mb-2">
+                    <label class="spa-filter-label">Account</label>
+                    <InputSelect
+                        id="filter-account"
+                        url="/accounts"
+                        :fields="['name', 'reference']"
+                        v-model="fields.account"
+                        @change="handleFields()"
+                        placeholder="Select an Account"
+                        :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                    />
                 </div>
-            </div>
-        </div>
+                <div class="mb-2">
+                    <label class="spa-filter-label">Supplier</label>
+                    <InputSelect
+                        id="filter-supplier"
+                        url="/suppliers"
+                        :fields="['name']"
+                        v-model="fields.supplier"
+                        @change="handleFields()"
+                        placeholder="Select a Supplier"
+                        :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                    />
+                </div>
+                <div class="mb-2">
+                    <label class="spa-filter-label">Product</label>
+                    <InputSelect
+                        id="filter-product"
+                        url="/products"
+                        :fields="['name']"
+                        v-model="fields.product"
+                        @change="handleFields()"
+                        placeholder="Select a Product"
+                        :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                    />
+                </div>
+                <div class="mb-2">
+                    <label class="spa-filter-label">Group</label>
+                    <InputSelect
+                        id="filter-group"
+                        url="/groups"
+                        :fields="['name']"
+                        v-model="form.group"
+                        @change="handleFields()"
+                        placeholder="Select a Group"
+                    />
+                </div>
+                <div v-if="selectedRules.length" class="mt-2">
+                    <p class="spa-filter-label">Matching rules</p>
+                    <span
+                        v-for="rule in selectedRules"
+                        :key="rule.id"
+                        class="badge border border-secondary text-secondary opacity-75 me-1 mb-1 lh-sm"
+                    >
+                        {{ rule.name }}
+                    </span>
+                </div>
+            </template>
+            <template #is_active="{ data, value }">
+                <ToggleActive
+                    :data="{
+                        ...data,
+                        field_1: data.field_1?.id,
+                        field_2: data.field_2?.id
+                    }"
+                    :value="value"
+                    route="spas"
+                />
+            </template>
+            <template #field_1="{ value }">
+                <p class="small overflow-hidden text-truncate" :title="value?.name">{{ value?.name }}</p>
+            </template>
+            <template #field_2="{ value }">
+                <p class="small overflow-hidden text-truncate" :title="value?.name">{{ value?.name }}</p>
+            </template>
+        </NewDatatable>
     </AuthenticatedLayout>
 </template>
 <style scoped>
-.table thead th,
-.table tbody td {
-    color: #334155;
+/* Matches the column filter rows of DatatableFilterPanel. */
+.spa-filter-title {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.spa-filter-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: #646464;
+    margin-bottom: 4px;
 }
 </style>
